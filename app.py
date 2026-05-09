@@ -172,11 +172,13 @@ section[data-testid="stSidebar"] {
 # ------------------------------------------------------------
 # HEADER
 # ------------------------------------------------------------
-try:
-    st.image(PROJECT_LOGO_URL, width=170)
-except Exception:
-    if PROJECT_LOGO_PATH.exists():
-        st.image(str(PROJECT_LOGO_PATH), width=170)
+# Logo is rendered by the browser directly from the CDN URL.
+# If running in an air-gapped environment the local asset is used as fallback.
+_logo_src = PROJECT_LOGO_URL if PROJECT_LOGO_URL else (
+    str(PROJECT_LOGO_PATH) if PROJECT_LOGO_PATH.exists() else None
+)
+if _logo_src:
+    st.image(_logo_src, width=170)
 st.markdown('<div class="bs-header">MASSIVE</div>', unsafe_allow_html=True)
 st.markdown(
     '<div class="bs-subtitle">Mathematical Architecture for Scalable Social Interaction &amp; Virtual Engine &nbsp;·&nbsp; Many behaving as One</div>',
