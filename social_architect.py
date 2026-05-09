@@ -15,8 +15,19 @@ from pydantic import ValidationError
 
 from schemas import StrategyMatrix
 from simulator import run_with_schedule, resumen_historial, DEFAULT_CONFIG
+from quantum.integration import quantum_optimize_interventions
 
 log = logging.getLogger("massive")
+
+
+def find_optimal_interventions(evaluate_fn, n_agents, n_phases, max_iter=100):
+    """Drop-in replacement para optimización de intervenciones."""
+    return quantum_optimize_interventions(
+        evaluate_fn=evaluate_fn,
+        n_agents=n_agents,
+        n_phases=n_phases,
+        max_iter=max_iter,
+    )
 
 
 # ============================================================

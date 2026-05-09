@@ -28,6 +28,7 @@ Autor: MASSIVE Research
 import numpy as np
 import pandas as pd
 import networkx as nx
+from quantum.integration import compress_agent_states, decompress_agent_states
 
 try:
     from numba import njit
@@ -547,6 +548,7 @@ class MultilayerEngine:
         self.x = np.column_stack([x0_opinion, x0_rest]).astype(np.float64)
 
         self._history: list[np.ndarray] = [self.x.copy()]
+        self.mps_state = None
 
     # ── API pública ─────────────────────────────────────────────────────────
 
@@ -563,6 +565,10 @@ class MultilayerEngine:
             self.x_max,
         )
         self._history.append(self.x.copy())
+        if self.N > 1000:
+            self.mps_state = compress_agent_states(self.x)
+        else:
+            self.mps_state = None
         return self.x
 
     def run(self, steps: int = 100) -> list[np.ndarray]:
@@ -618,6 +624,23 @@ class MultilayerEngine:
                 records.append({"step": step_idx, attribute: group_val,
                                  "mean_opinion": mean_op})
         return pd.DataFrame(records)
+
+    def update_opinions(self, new_opinions: np.ndarray) -> None:
+        """Actualiza el estado y comprime en MPS para poblaciones grandes."""
+        arr = np.asarray(new_opinions, dtype=np.float64)
+        if arr.shape != (self.N, K):
+            raise ValueError(f"new_opinions debe tener forma ({self.N}, {K})")
+        arr[:, COL_OPINION] = np.clip(arr[:, COL_OPINION], self.x_min, self.x_max)
+        arr[:, 1:] = np.clip(arr[:, 1:], 0.0, 1.0)
+        self.x = arr
+        self._history.append(self.x.copy())
+        self.mps_state = compress_agent_states(arr) if self.N > 1000 else None
+
+    def get_opinions(self) -> np.ndarray:
+        """Obtiene el estado actual descomprimiendo MPS cuando aplica."""
+        if self.mps_state is not None:
+            return decompress_agent_states(self.mps_state)
+        return self.x
 
     def behavior_correlation_matrix(self) -> np.ndarray:
         """

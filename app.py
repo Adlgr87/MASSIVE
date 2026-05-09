@@ -9,6 +9,7 @@ from collections import Counter
 
 import numpy as np
 import pandas as pd
+import plotly.graph_objects as go
 import streamlit as st
 from dotenv import load_dotenv
 
@@ -92,6 +93,8 @@ if "objetivo_inverso" not in st.session_state:
 if "corporate_graph" not in st.session_state:
     # Almacena el grafo NetworkX si se sube un CSV corporativo
     st.session_state["corporate_graph"] = None
+if "last_simulation" not in st.session_state:
+    st.session_state["last_simulation"] = None
 
 # ------------------------------------------------------------
 # ESTILOS
@@ -455,11 +458,12 @@ with st.sidebar:
 # ------------------------------------------------------------
 # LÓGICA PRINCIPAL
 # ------------------------------------------------------------
-tab1, tab2, tab3, tab4 = st.tabs([
+tab1, tab2, tab3, tab4, tab5 = st.tabs([
     '📊 Simulación Tradicional',
     '🧠 Arquitecto Social (Modo Inverso)',
     '🌐 Simulación Multicapa',
     '⚡ Simulación Masiva',
+    '🎬 Centro Analítico',
 ])
 
 with tab1:
@@ -522,6 +526,14 @@ with tab1:
         stats     = resumen_historial(historial, config_run)
         opiniones = [h["opinion"] for h in historial]
         delta     = stats["delta_total"]
+        st.session_state["last_simulation"] = {
+            "historial": historial,
+            "stats": stats,
+            "config": config_run,
+            "is_bipolar": es_bipolar,
+            "neutro": neutro,
+            "pasos": pasos,
+        }
 
         # ── BADGES de mecanismos activos ───────────────────────
         badges = []
@@ -1234,8 +1246,6 @@ las sociedades complejas.
 # ------------------------------------------------------------
 
 with tab4:
-    import plotly.graph_objects as go
-
     try:
         from massive_engine import MassiveSimEngine, _GPU_BACKEND
         _MASSIVE_AVAILABLE = True
@@ -1554,6 +1564,137 @@ with tab4:
 **¿Cuándo usar cada modo?**
 - Hasta N=10 000: Simulación Multicapa (Tab 3) — precisión completa por agente.
 - N=10 000 – 1 000 000: Simulación Masiva — estadísticas de clúster, eficiencia máxima.
-- Shock externo: perturba la red en caliente y observa la respuesta de los clústeres dormidos.
+                - Shock externo: perturba la red en caliente y observa la respuesta de los clústeres dormidos.
                 """)
 
+
+with tab5:
+    st.markdown("### 🎬 Centro Analítico de Dinámica Social")
+    st.markdown(
+        "Panel profesional para analizar contagio, polarización y cambios de régimen "
+        "sobre la última simulación tradicional ejecutada."
+    )
+
+    sim_data = st.session_state.get("last_simulation")
+    if not sim_data:
+        st.info("Ejecuta primero una simulación en la pestaña **Simulación Tradicional** para habilitar este panel.")
+    else:
+        historial = sim_data["historial"]
+        neutro = sim_data["neutro"]
+        es_bipolar = sim_data["is_bipolar"]
+
+        steps = [int(h.get("_paso", idx)) for idx, h in enumerate(historial)]
+        opinions = np.array([float(h.get("opinion", 0.0)) for h in historial], dtype=float)
+        polar_proxy = np.abs(opinions - neutro)
+        contagion_proxy = np.array([
+            float(h.get("_sir_I", h.get("_fraccion_adoptantes", abs(h.get("opinion", 0.0) - neutro))))
+            for h in historial
+        ], dtype=float)
+
+        selected_idx = st.slider(
+            "Selecciona el paso a inspeccionar",
+            min_value=0,
+            max_value=len(historial) - 1,
+            value=len(historial) - 1,
+            step=1,
+        )
+        selected_state = historial[selected_idx]
+        selected_step = steps[selected_idx]
+
+        m1, m2, m3, m4 = st.columns(4)
+        with m1:
+            st.metric("Paso", selected_step)
+        with m2:
+            st.metric("Opinión", f"{selected_state.get('opinion', 0.0):+.3f}")
+        with m3:
+            st.metric("Confianza", f"{selected_state.get('confianza', 0.0):.3f}")
+        with m4:
+            st.metric("Polarización (proxy)", f"{polar_proxy[selected_idx]:.3f}")
+
+        fig_anim = go.Figure(
+            data=[
+                go.Scatter(x=[steps[0]], y=[opinions[0]], name="Opinión", line=dict(color="#5ccfe6", width=2)),
+                go.Scatter(x=[steps[0]], y=[polar_proxy[0]], name="Polarización", line=dict(color="#ff8f40", width=2)),
+                go.Scatter(x=[steps[0]], y=[contagion_proxy[0]], name="Contagio", line=dict(color="#bae67e", width=2)),
+            ],
+            frames=[
+                go.Frame(
+                    data=[
+                        go.Scatter(x=steps[: i + 1], y=opinions[: i + 1]),
+                        go.Scatter(x=steps[: i + 1], y=polar_proxy[: i + 1]),
+                        go.Scatter(x=steps[: i + 1], y=contagion_proxy[: i + 1]),
+                    ],
+                    name=str(i),
+                )
+                for i in range(len(steps))
+            ],
+        )
+        fig_anim.add_hline(y=neutro, line_dash="dot", line_color="#3d5166")
+        fig_anim.update_layout(
+            template="plotly_dark",
+            paper_bgcolor="#0a0e14",
+            plot_bgcolor="#0d1520",
+            height=420,
+            xaxis_title="Paso",
+            yaxis_title="Intensidad",
+            margin=dict(l=10, r=10, t=10, b=10),
+            updatemenus=[{
+                "type": "buttons",
+                "direction": "left",
+                "x": 0,
+                "y": 1.12,
+                "buttons": [
+                    {
+                        "label": "▶ Play",
+                        "method": "animate",
+                        "args": [None, {"frame": {"duration": 70, "redraw": True}, "fromcurrent": True}],
+                    },
+                    {
+                        "label": "⏸ Pause",
+                        "method": "animate",
+                        "args": [[None], {"frame": {"duration": 0, "redraw": False}, "mode": "immediate"}],
+                    },
+                ],
+            }],
+            sliders=[{
+                "active": selected_idx,
+                "steps": [
+                    {
+                        "label": str(steps[i]),
+                        "method": "animate",
+                        "args": [[str(i)], {"frame": {"duration": 0, "redraw": True}, "mode": "immediate"}],
+                    }
+                    for i in range(len(steps))
+                ],
+            }],
+        )
+        st.plotly_chart(fig_anim, use_container_width=True)
+
+        st.markdown("#### Topología de red en el paso seleccionado")
+        fig_network = generate_social_network_viz(
+            selected_state.get("opinion", 0.0),
+            float(selected_state.get("confianza", 0.5)),
+            amalgama=not es_bipolar,
+            is_bipolar=es_bipolar,
+        )
+        st.plotly_chart(fig_network, use_container_width=True)
+
+        regime_changes = []
+        previous_rule = None
+        for item in historial:
+            rule = item.get("_regla_nombre", "")
+            if rule and rule != previous_rule:
+                regime_changes.append(
+                    {
+                        "paso": int(item.get("_paso", 0)),
+                        "regla": rule,
+                        "razon": item.get("_razon", "—"),
+                    }
+                )
+            previous_rule = rule or previous_rule
+
+        st.markdown("#### Eventos de cambio de régimen")
+        if regime_changes:
+            st.dataframe(pd.DataFrame(regime_changes), use_container_width=True, hide_index=True)
+        else:
+            st.caption("No se detectaron cambios de régimen en la simulación actual.")
