@@ -30,7 +30,7 @@ pinned: false
 - Integración del logo del proyecto en el encabezado del simulador Streamlit (`app.py`).
 - Actualización de referencias visuales en README para eliminar el nombre anterior del mockup.
 
-Model adapters join orchestration routines in tandem, yielding reliable empirical predictions over real-world trends.
+Nota de integración: los nuevos recursos visuales y el logo quedan sincronizados con la interfaz vigente para mantener consistencia entre documentación y simulador.
 
 Simulador híbrido de dinámica social — Núcleo numérico + LLM como selector de régimen. Diseñado para escalar desde un puñado de agentes hasta millones.
 
