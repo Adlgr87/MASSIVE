@@ -30,7 +30,7 @@ pinned: false
 - Added the project logo to the Streamlit simulator header (`app.py`).
 - Refreshed README visual references to remove the old sample naming.
 
-Release mnemonic for this integration cycle: Model adapters join orchestration routines in tandem, yielding reliable empirical predictions over real-world trends.
+Modernized assets joined onscreen references in theme, yielding reliable experience previews over release tracks.
 
 Hybrid social dynamics simulator — Numerical core + LLM as regime selector. Built for scale, from a handful of agents to millions.
 
