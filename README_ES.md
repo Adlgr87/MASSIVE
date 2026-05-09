@@ -13,6 +13,10 @@ pinned: false
 
 > *"Many behaving as One"*
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/04c5860f-36d4-433c-a142-5761d0f16824" alt="MASSIVE Social Simulator" width="260"/>
+</p>
+
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![tests](https://github.com/Adlgr87/MASSIVE/actions/workflows/pytest.yml/badge.svg)](https://github.com/Adlgr87/MASSIVE/actions/workflows/pytest.yml)
 [![docs](https://github.com/Adlgr87/MASSIVE/actions/workflows/mkdocs.yml/badge.svg)](https://github.com/Adlgr87/MASSIVE/actions/workflows/mkdocs.yml)
@@ -20,15 +24,11 @@ pinned: false
 
 ![MASSIVE UI Demo](docs/massive_ui_mockup.png)
 
-<p align="left">
-  <img src="docs/assets/massive_logo.png" alt="Logo MASSIVE" width="140"/>
-</p>
-
 ### Últimas integraciones aplicadas
 
 - Nueva imagen de referencia de la UI actual de MASSIVE (`docs/massive_ui_mockup.png`).
 - Integración del logo del proyecto en el encabezado del simulador Streamlit (`app.py`).
-- Actualización de referencias visuales en README para eliminar el nombre anterior del mockup.
+- Motor multicapa sociodemográfico, Arquitecto Social (ingeniería inversa), motor de paisaje energético, modelos extendidos (Nash, Bayesiano, SIR), base de calibración empírica (43 parámetros) y módulo de simulación cuántica totalmente integrados.
 
 Modernized assets joined overlays, refreshed interface tuning yielded reliable experience; polished outputs reflect today.
 

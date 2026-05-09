@@ -36,6 +36,9 @@ from simulator import (
 
 ANALYTICS_ANIMATION_FRAME_MS = 70
 ANALYTICS_ANIMATION_PAUSE_MS = 0
+# Logo: use GitHub CDN URL so it works on Streamlit Cloud/HF Spaces;
+# fall back to the local versioned asset when running offline.
+PROJECT_LOGO_URL  = "https://github.com/user-attachments/assets/04c5860f-36d4-433c-a142-5761d0f16824"
 PROJECT_LOGO_PATH = Path(__file__).resolve().parent / "docs" / "assets" / "massive_logo.png"
 
 # EMPIRICAL INTEGRATION — importar indicadores de base empírica si disponibles
@@ -169,8 +172,11 @@ section[data-testid="stSidebar"] {
 # ------------------------------------------------------------
 # HEADER
 # ------------------------------------------------------------
-if PROJECT_LOGO_PATH.exists():
-    st.image(str(PROJECT_LOGO_PATH), width=170)
+try:
+    st.image(PROJECT_LOGO_URL, width=170)
+except Exception:
+    if PROJECT_LOGO_PATH.exists():
+        st.image(str(PROJECT_LOGO_PATH), width=170)
 st.markdown('<div class="bs-header">MASSIVE</div>', unsafe_allow_html=True)
 st.markdown(
     '<div class="bs-subtitle">Mathematical Architecture for Scalable Social Interaction &amp; Virtual Engine &nbsp;·&nbsp; Many behaving as One</div>',

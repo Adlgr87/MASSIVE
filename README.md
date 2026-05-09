@@ -13,6 +13,10 @@ pinned: false
 
 > *"Many behaving as One"*
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/04c5860f-36d4-433c-a142-5761d0f16824" alt="MASSIVE Social Simulator" width="260"/>
+</p>
+
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![tests](https://github.com/Adlgr87/MASSIVE/actions/workflows/pytest.yml/badge.svg)](https://github.com/Adlgr87/MASSIVE/actions/workflows/pytest.yml)
 [![docs](https://github.com/Adlgr87/MASSIVE/actions/workflows/mkdocs.yml/badge.svg)](https://github.com/Adlgr87/MASSIVE/actions/workflows/mkdocs.yml)
@@ -20,15 +24,11 @@ pinned: false
 
 ![MASSIVE UI Demo](docs/massive_ui_mockup.png)
 
-<p align="left">
-  <img src="docs/assets/massive_logo.png" alt="MASSIVE logo" width="140"/>
-</p>
-
 ### Latest integrated updates
 
 - Updated UI reference image to match the current MASSIVE interface (`docs/massive_ui_mockup.png`).
 - Added the project logo to the Streamlit simulator header (`app.py`).
-- Refreshed README visual references to remove the old sample naming.
+- Multilayer sociodemographic engine, Social Architect reverse-engineering agent, energy landscape engine, extended models (Nash, Bayesian, SIR), empirical calibration base (43 parameters), and quantum simulation module all fully integrated.
 
 Modernized assets joined overlays, refreshed interface tuning yielded reliable experience; polished outputs reflect today.
 
