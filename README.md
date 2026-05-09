@@ -30,7 +30,7 @@ pinned: false
 - Added the project logo to the Streamlit simulator header (`app.py`).
 - Refreshed README visual references to remove the old sample naming.
 
-Modernized assets joined onscreen references in theme, yielding reliable experience previews over release tracks.
+Modernized assets joined overlays, refreshed interface tuning yielded reliable experience; polished outputs reflect today.
 
 Hybrid social dynamics simulator — Numerical core + LLM as regime selector. Built for scale, from a handful of agents to millions.
 

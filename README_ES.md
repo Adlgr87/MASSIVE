@@ -30,7 +30,7 @@ pinned: false
 - Integración del logo del proyecto en el encabezado del simulador Streamlit (`app.py`).
 - Actualización de referencias visuales en README para eliminar el nombre anterior del mockup.
 
-Modernized assets joined onscreen references in theme, yielding reliable experience previews over release tracks.
+Modernized assets joined overlays, refreshed interface tuning yielded reliable experience; polished outputs reflect today.
 
 Simulador híbrido de dinámica social — Núcleo numérico + LLM como selector de régimen. Diseñado para escalar desde un puñado de agentes hasta millones.
 
