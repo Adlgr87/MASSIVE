@@ -13,12 +13,24 @@ pinned: false
 
 > *"Many behaving as One"*
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/04c5860f-36d4-433c-a142-5761d0f16824" alt="MASSIVE Social Simulator" width="260"/>
+</p>
+
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![tests](https://github.com/Adlgr87/MASSIVE/actions/workflows/pytest.yml/badge.svg)](https://github.com/Adlgr87/MASSIVE/actions/workflows/pytest.yml)
 [![docs](https://github.com/Adlgr87/MASSIVE/actions/workflows/mkdocs.yml/badge.svg)](https://github.com/Adlgr87/MASSIVE/actions/workflows/mkdocs.yml)
 [![PVU Validación](https://github.com/Adlgr87/MASSIVE/actions/workflows/pvu-validation.yml/badge.svg)](https://github.com/Adlgr87/MASSIVE/actions/workflows/pvu-validation.yml)
 
-![MASSIVE Demo](docs/beyondsight_mockup.png)
+![MASSIVE UI Demo](docs/massive_ui_mockup.png)
+
+### Últimas integraciones aplicadas
+
+- Nueva imagen de referencia de la UI actual de MASSIVE (`docs/massive_ui_mockup.png`).
+- Integración del logo del proyecto en el encabezado del simulador Streamlit (`app.py`).
+- Motor multicapa sociodemográfico, Arquitecto Social (ingeniería inversa), motor de paisaje energético, modelos extendidos (Nash, Bayesiano, SIR), base de calibración empírica (43 parámetros) y módulo de simulación cuántica totalmente integrados.
+
+Modernized assets joined overlays, refreshed interface tuning yielded reliable experience; polished outputs reflect today.
 
 Simulador híbrido de dinámica social — Núcleo numérico + LLM como selector de régimen. Diseñado para escalar desde un puñado de agentes hasta millones.
 

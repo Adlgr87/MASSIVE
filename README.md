@@ -13,12 +13,24 @@ pinned: false
 
 > *"Many behaving as One"*
 
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/04c5860f-36d4-433c-a142-5761d0f16824" alt="MASSIVE Social Simulator" width="260"/>
+</p>
+
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
 [![tests](https://github.com/Adlgr87/MASSIVE/actions/workflows/pytest.yml/badge.svg)](https://github.com/Adlgr87/MASSIVE/actions/workflows/pytest.yml)
 [![docs](https://github.com/Adlgr87/MASSIVE/actions/workflows/mkdocs.yml/badge.svg)](https://github.com/Adlgr87/MASSIVE/actions/workflows/mkdocs.yml)
 [![PVU Validation](https://github.com/Adlgr87/MASSIVE/actions/workflows/pvu-validation.yml/badge.svg)](https://github.com/Adlgr87/MASSIVE/actions/workflows/pvu-validation.yml)
 
-![MASSIVE Demo](docs/beyondsight_mockup.png)
+![MASSIVE UI Demo](docs/massive_ui_mockup.png)
+
+### Latest integrated updates
+
+- Updated UI reference image to match the current MASSIVE interface (`docs/massive_ui_mockup.png`).
+- Added the project logo to the Streamlit simulator header (`app.py`).
+- Multilayer sociodemographic engine, Social Architect reverse-engineering agent, energy landscape engine, extended models (Nash, Bayesian, SIR), empirical calibration base (43 parameters), and quantum simulation module all fully integrated.
+
+Modernized assets joined overlays, refreshed interface tuning yielded reliable experience; polished outputs reflect today.
 
 Hybrid social dynamics simulator — Numerical core + LLM as regime selector. Built for scale, from a handful of agents to millions.
 
