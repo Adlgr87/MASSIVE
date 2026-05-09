@@ -21,7 +21,7 @@ pinned: false
 ![MASSIVE UI Demo](docs/massive_ui_mockup.png)
 
 <p align="left">
-  <img src="https://github.com/user-attachments/assets/4a977da4-76f4-48aa-b793-bdb48f65b07c" alt="Logo MASSIVE" width="140"/>
+  <img src="docs/assets/massive_logo.png" alt="Logo MASSIVE" width="140"/>
 </p>
 
 ### Últimas integraciones aplicadas

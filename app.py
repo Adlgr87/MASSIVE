@@ -35,7 +35,7 @@ from simulator import (
 
 ANALYTICS_ANIMATION_FRAME_MS = 70
 ANALYTICS_ANIMATION_PAUSE_MS = 0
-PROJECT_LOGO_URL = "https://github.com/user-attachments/assets/4a977da4-76f4-48aa-b793-bdb48f65b07c"
+PROJECT_LOGO_PATH = "docs/assets/massive_logo.png"
 
 # EMPIRICAL INTEGRATION — importar indicadores de base empírica si disponibles
 try:
@@ -168,7 +168,7 @@ section[data-testid="stSidebar"] {
 # ------------------------------------------------------------
 # HEADER
 # ------------------------------------------------------------
-st.image(PROJECT_LOGO_URL, width=170)
+st.image(PROJECT_LOGO_PATH, width=170)
 st.markdown('<div class="bs-header">MASSIVE</div>', unsafe_allow_html=True)
 st.markdown(
     '<div class="bs-subtitle">Mathematical Architecture for Scalable Social Interaction &amp; Virtual Engine &nbsp;·&nbsp; Many behaving as One</div>',
