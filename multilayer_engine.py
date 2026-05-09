@@ -28,6 +28,7 @@ Autor: MASSIVE Research
 import numpy as np
 import pandas as pd
 import networkx as nx
+from quantum.integration import compress_agent_states, decompress_agent_states
 
 try:
     from numba import njit
@@ -69,6 +70,7 @@ _STOCHASTIC_SCALE: float = 0.1
 
 # ── Dimensiones del vector de estado ────────────────────────────────────────
 K = 5  # [opinion, cooperation, hierarchy, income, info_access]
+MPS_COMPRESSION_MIN_AGENTS = 1000
 
 # ── Índices de columnas para claridad ────────────────────────────────────────
 COL_OPINION = 0
@@ -547,11 +549,20 @@ class MultilayerEngine:
         self.x = np.column_stack([x0_opinion, x0_rest]).astype(np.float64)
 
         self._history: list[np.ndarray] = [self.x.copy()]
+        self.mps_state = None
 
     # ── API pública ─────────────────────────────────────────────────────────
 
+    def _refresh_mps_state(self) -> None:
+        """Synchronize compressed state according to population size."""
+        self.mps_state = (
+            compress_agent_states(self.x)
+            if self.N > MPS_COMPRESSION_MIN_AGENTS
+            else None
+        )
+
     def step(self) -> np.ndarray:
-        """Avanza un paso de tiempo. Actualiza y devuelve el estado actual."""
+        """Advance one integration step and return the updated state."""
         self.x = multilayer_langevin_step(
             self.x,
             self._layers_flat,
@@ -563,6 +574,7 @@ class MultilayerEngine:
             self.x_max,
         )
         self._history.append(self.x.copy())
+        self._refresh_mps_state()
         return self.x
 
     def run(self, steps: int = 100) -> list[np.ndarray]:
@@ -618,6 +630,34 @@ class MultilayerEngine:
                 records.append({"step": step_idx, attribute: group_val,
                                  "mean_opinion": mean_op})
         return pd.DataFrame(records)
+
+    def update_opinions(self, new_opinions: np.ndarray) -> None:
+        """Update the engine state and optionally compress it for large populations.
+
+        Args:
+            new_opinions: New state matrix with shape (N, K).
+
+        Raises:
+            ValueError: If the provided matrix shape does not match (N, K).
+        """
+        arr = np.asarray(new_opinions, dtype=np.float64)
+        if arr.shape != (self.N, K):
+            raise ValueError(f"new_opinions must have shape ({self.N}, {K})")
+        arr[:, COL_OPINION] = np.clip(arr[:, COL_OPINION], self.x_min, self.x_max)
+        arr[:, 1:] = np.clip(arr[:, 1:], 0.0, 1.0)
+        self.x = arr
+        self._history.append(self.x.copy())
+        self._refresh_mps_state()
+
+    def get_opinions(self) -> np.ndarray:
+        """Return the current state, decompressing MPS payload when present.
+
+        Returns:
+            Numpy array with shape (N, K).
+        """
+        if self.mps_state is not None:
+            return decompress_agent_states(self.mps_state)
+        return self.x
 
     def behavior_correlation_matrix(self) -> np.ndarray:
         """
