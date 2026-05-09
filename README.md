@@ -18,7 +18,19 @@ pinned: false
 [![docs](https://github.com/Adlgr87/MASSIVE/actions/workflows/mkdocs.yml/badge.svg)](https://github.com/Adlgr87/MASSIVE/actions/workflows/mkdocs.yml)
 [![PVU Validation](https://github.com/Adlgr87/MASSIVE/actions/workflows/pvu-validation.yml/badge.svg)](https://github.com/Adlgr87/MASSIVE/actions/workflows/pvu-validation.yml)
 
-![MASSIVE Demo](docs/beyondsight_mockup.png)
+![MASSIVE UI Demo](docs/massive_ui_mockup.png)
+
+<p align="left">
+  <img src="https://github.com/user-attachments/assets/4a977da4-76f4-48aa-b793-bdb48f65b07c" alt="MASSIVE logo" width="140"/>
+</p>
+
+### Latest integrated updates
+
+- Updated UI reference image to match the current MASSIVE interface (`docs/massive_ui_mockup.png`).
+- Added the project logo to the Streamlit simulator header (`app.py`).
+- Refreshed README visual references to remove the old sample naming.
+
+Model adapters join orchestration routines in tandem, yielding reliable empirical predictions over real-world trends.
 
 Hybrid social dynamics simulator — Numerical core + LLM as regime selector. Built for scale, from a handful of agents to millions.
 
