@@ -33,6 +33,9 @@ from simulator import (
     simular_multiples_dask,
 )
 
+ANALYTICS_ANIMATION_FRAME_MS = 70
+ANALYTICS_ANIMATION_PAUSE_MS = 0
+
 # EMPIRICAL INTEGRATION — importar indicadores de base empírica si disponibles
 try:
     from empirical_config import BEYONDSIGHT_RUNTIME_PARAMS as _EMPIRICAL_RUNTIME
@@ -1564,7 +1567,7 @@ with tab4:
 **¿Cuándo usar cada modo?**
 - Hasta N=10 000: Simulación Multicapa (Tab 3) — precisión completa por agente.
 - N=10 000 – 1 000 000: Simulación Masiva — estadísticas de clúster, eficiencia máxima.
-                - Shock externo: perturba la red en caliente y observa la respuesta de los clústeres dormidos.
+- Shock externo: perturba la red en caliente y observa la respuesta de los clústeres dormidos.
                 """)
 
 
@@ -1587,7 +1590,11 @@ with tab5:
         opinions = np.array([float(h.get("opinion", 0.0)) for h in historial], dtype=float)
         polar_proxy = np.abs(opinions - neutro)
         contagion_proxy = np.array([
-            float(h.get("_sir_I", h.get("_fraccion_adoptantes", abs(h.get("opinion", 0.0) - neutro))))
+            float(
+                h.get("_sir_I")
+                if "_sir_I" in h
+                else h.get("_fraccion_adoptantes", 0.0)
+            )
             for h in historial
         ], dtype=float)
 
@@ -1647,12 +1654,12 @@ with tab5:
                     {
                         "label": "▶ Play",
                         "method": "animate",
-                        "args": [None, {"frame": {"duration": 70, "redraw": True}, "fromcurrent": True}],
+                        "args": [None, {"frame": {"duration": ANALYTICS_ANIMATION_FRAME_MS, "redraw": True}, "fromcurrent": True}],
                     },
                     {
                         "label": "⏸ Pause",
                         "method": "animate",
-                        "args": [[None], {"frame": {"duration": 0, "redraw": False}, "mode": "immediate"}],
+                        "args": [[None], {"frame": {"duration": ANALYTICS_ANIMATION_PAUSE_MS, "redraw": False}, "mode": "immediate"}],
                     },
                 ],
             }],

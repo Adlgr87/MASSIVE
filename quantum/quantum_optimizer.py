@@ -27,6 +27,15 @@ def _evaluate_candidate(
 
 
 def _sample_qiskit_candidates(num_qubits: int, shots: int) -> list[np.ndarray]:
+    """Sample binary intervention candidates from a simple quantum circuit.
+
+    Args:
+        num_qubits: Number of qubits (equals n_agents * n_phases).
+        shots: Number of measurements to collect.
+
+    Returns:
+        List of 1D numpy arrays encoded as {-1, +1} decisions.
+    """
     circuit = QuantumCircuit(num_qubits, num_qubits)
     circuit.h(range(num_qubits))
     circuit.measure(range(num_qubits), range(num_qubits))
@@ -37,7 +46,8 @@ def _sample_qiskit_candidates(num_qubits: int, shots: int) -> list[np.ndarray]:
 
     candidates = []
     for bitstring in counts:
-        bit_values = np.array([1 if bit == "1" else -1 for bit in bitstring[::-1]], dtype=np.float64)
+        bits = np.array(list(bitstring[::-1]))
+        bit_values = np.where(bits == "1", 1.0, -1.0).astype(np.float64)
         candidates.append(bit_values)
     return candidates
 
@@ -78,7 +88,7 @@ def qaoa_optimize_interventions(
 ) -> dict:
     """Optimize intervention matrix using optional Qiskit sampling or classical fallback."""
     if n_agents <= 0 or n_phases <= 0:
-        raise ValueError("n_agents y n_phases deben ser > 0")
+        raise ValueError("n_agents and n_phases must be > 0")
 
     if force_classical or not QISKIT_AVAILABLE:
         return _classical_random_search(evaluate_fn, n_agents, n_phases, max_iter, seed)

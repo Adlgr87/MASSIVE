@@ -10,12 +10,22 @@ def compress_to_mps(
     max_bond_dim: int = 32,
     explained_variance: float = 0.99,
 ) -> dict:
-    """Compress a 2D state matrix with truncated SVD and store reconstruction factors."""
+    """Compress a 2D state matrix with truncated SVD and store reconstruction factors.
+
+    Returns:
+        Dictionary with:
+            - left: Left factor with singular values absorbed, shape (n_samples, rank).
+            - right: Right factor, shape (rank, n_features).
+            - mean: Column mean used for centering, shape (1, n_features).
+            - shape: Original matrix shape tuple.
+            - rank: Effective retained rank after truncation.
+            - compression_ratio: Original scalar count / compressed scalar count.
+    """
     arr = np.asarray(states, dtype=np.float64)
     if arr.ndim != 2:
-        raise ValueError("states debe ser una matriz 2D")
+        raise ValueError("states must be a 2D matrix")
     if max_bond_dim < 1:
-        raise ValueError("max_bond_dim debe ser >= 1")
+        raise ValueError("max_bond_dim must be >= 1")
 
     mean = arr.mean(axis=0, keepdims=True)
     centered = arr - mean
@@ -25,7 +35,7 @@ def compress_to_mps(
         rank = 1
     else:
         energy = np.cumsum(s ** 2)
-        total = energy[-1] if energy.size else 1.0
+        total = energy[-1]
         ratio = energy / max(total, 1e-12)
         rank = int(np.searchsorted(ratio, explained_variance) + 1)
 
