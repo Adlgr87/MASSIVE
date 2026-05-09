@@ -6,7 +6,6 @@ Simulador híbrido con soporte completo de modelos extendidos
 import json
 import os
 from collections import Counter
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -36,10 +35,9 @@ from simulator import (
 
 ANALYTICS_ANIMATION_FRAME_MS = 70
 ANALYTICS_ANIMATION_PAUSE_MS = 0
-# Logo: use GitHub CDN URL so it works on Streamlit Cloud/HF Spaces;
-# fall back to the local versioned asset when running offline.
-PROJECT_LOGO_URL  = "https://github.com/user-attachments/assets/04c5860f-36d4-433c-a142-5761d0f16824"
-PROJECT_LOGO_PATH = Path(__file__).resolve().parent / "docs" / "assets" / "massive_logo.png"
+# Logo hosted on GitHub CDN — always accessible on Streamlit Cloud / HF Spaces.
+# A local copy lives at docs/assets/massive_logo.png for offline reference.
+PROJECT_LOGO_URL = "https://github.com/user-attachments/assets/04c5860f-36d4-433c-a142-5761d0f16824"
 
 # EMPIRICAL INTEGRATION — importar indicadores de base empírica si disponibles
 try:
