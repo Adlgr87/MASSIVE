@@ -10,6 +10,8 @@ import logging
 import os
 from typing import Optional
 
+from llm_credentials import resolve_provider_api_key
+
 log = logging.getLogger("massive")
 
 # ── Importaciones opcionales ──────────────────────────────────────────────────
@@ -109,7 +111,7 @@ def build_llm(
             log.warning("[LangChain] langchain-groq no instalado.")
             return None
         return ChatGroq(
-            api_key=api_key or os.getenv("GROQ_API_KEY", ""),
+            api_key=resolve_provider_api_key("groq", fallback=api_key),
             model=model or "llama-3.1-8b-instant",
             temperature=temperature,
         )
@@ -119,12 +121,10 @@ def build_llm(
             log.warning("[LangChain] langchain-openai no instalado.")
             return None
         base_url = None
-        resolved_api_key = api_key
+        resolved_api_key = resolve_provider_api_key("openai", fallback=api_key)
         if p == "openrouter":
             base_url = "https://openrouter.ai/api/v1"
-            resolved_api_key = resolved_api_key or os.getenv("OPENROUTER_API_KEY", "")
-        else:
-            resolved_api_key = resolved_api_key or os.getenv("OPENAI_API_KEY", "")
+            resolved_api_key = resolve_provider_api_key("openrouter", fallback=api_key)
         return ChatOpenAI(
             api_key=resolved_api_key,
             model=model or "gpt-4o-mini",

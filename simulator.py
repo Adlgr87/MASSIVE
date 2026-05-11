@@ -1117,6 +1117,7 @@ def _llamar_openai_compatible(
 ) -> dict | None:
     api_key = resolve_provider_api_key(proveedor, fallback=cfg.get("api_key", ""))
     if not api_key:
+        log.warning(f"Sin API key para proveedor '{proveedor}'.")
         return None
     try:
         resp = requests.post(
