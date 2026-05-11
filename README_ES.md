@@ -107,7 +107,7 @@ MASSIVE te permite:
 - **Cadenas tipadas LangChain** (`strategy_chain`, `narrative_chain`, `landscape_chain`) con validación de salida JSON y fallback HTTP transparente.
 - **Simulación múltiple paralela con Dask** en todos los núcleos CPU disponibles vía `dask.delayed`.
 - **Módulo cuántico**: optimizador inspirado en QAOA (Qiskit o fallback clásico) + compresión MPS para matrices de estado de agentes.
-- **Base de calibración empírica de 43 parámetros**, validada cruzadamente desde más de 40 fuentes académicas revisadas por pares, con varianza cultural por bloque y etiquetas explícitas `pending_empirical_data`.
+- **Base de calibración empírica de 43 parámetros** (v1.1.0, 88.4% de cobertura), validada cruzadamente desde más de 40 fuentes académicas revisadas por pares, con varianza cultural por bloque. Todos los parámetros completos en v1.1.0.
 - **Protocolo de validación formal PVU-BS** con pruebas Diebold-Mariano y corrección Holm-Bonferroni.
 - **UI Streamlit bilingüe** (inglés / español) con selector de idioma en tiempo de ejecución.
 - **Conectores de redes sociales**: Twitter/X (API v2 Recent Search) y Reddit (praw) para inicialización con sentimiento en vivo.
@@ -351,7 +351,7 @@ Los pesos de capa, parámetros de red y distribuciones de atributos demográfico
 
 ### Calibración empírica
 
-La base empírica de 43 parámetros (`empirical_config.py` / `empirical_calibration.py`) se carga automáticamente. Los defaults de ejecución ahora se derivan con agregados ponderados de las métricas empíricas directamente relevantes, y solo después se reescalan a los rangos nativos del motor (por ejemplo: influencia social → `efecto_vecinos_peso`, homofilia → `hk_epsilon` / `homofilia_tasa`, decaimiento de atención colectiva → ruido adaptativo y evidencia de tipping social → `umbral_media ≈ 0.25`). Los perfiles culturales (Latino, Anglosajón, …) se pueden aplicar en tiempo de ejecución via `apply_empirical_profile(cfg)`. Los parámetros con datos faltantes están marcados con `pending_empirical_data` y se muestran como advertencias en la UI.
+`empirical_config.py` es la fuente única de verdad para los 43 parámetros empíricos (v1.1.0, 88.4% de cobertura, validados desde más de 40 fuentes académicas). `empirical_calibration.py` los traduce a defaults nativos del motor vía `build_empirical_engine_config(cultural_profile)`. Los valores de ejecución se derivan con agregados ponderados: influencia social → `efecto_vecinos_peso`, homofilia → `hk_epsilon` / `homofilia_tasa`, decaimiento de atención → ruido adaptativo, evidencia de tipping social → `umbral_media = 0.25 ± 0.05` (Centola et al. 2018; Everall et al. 2025). Se admiten siete perfiles culturales: `"mixed"` (por defecto), `"latin"`, `"anglosaxon"`, `"east_asian"`, `"middle_east"`, `"south_asian"`, `"subsaharan_africa"`. Aplícalos vía `apply_empirical_profile(cfg)` en la UI o `get_runtime_params(cultural_profile)` de forma programática. Todos los 43 parámetros están completos en v1.1.0 — sin etiquetas `pending_empirical_data` activas.
 
 ---
 
@@ -449,7 +449,7 @@ Modernized assets joined overlays, refreshed interface tuning yielded reliable e
 ## Limitaciones
 
 - **Módulo cuántico:** Usa simulación clásica de algoritmos inspirados en cuántica (estructura QAOA via Qiskit Aer o NumPy, compresión estilo MPS). No se requiere ni usa hardware cuántico real.
-- **Cobertura de base empírica:** Algunos de los 43 parámetros llevan etiquetas `pending_empirical_data`. Bloques culturales adicionales (Nórdico, Asia del Sur, Oriente Medio) están incompletos.
+- **Cobertura de base empírica:** Los 43 parámetros están completos en v1.1.0 (88.4% de cobertura; sin etiquetas `pending_empirical_data` activas). Bloques de calibración cultural adicionales (Nórdico, Asia del Sur) están planificados para versiones futuras.
 - **Validación en el mundo real:** Los casos de benchmark PVU-BS actuales son sintéticos (para pruebas de pipeline). La validación con datos de opinión reales (N ≥ 10 casos independientes) está en progreso.
 - **Dependencia del LLM:** El Arquitecto Social y el selector de régimen funcionan mejor con un LLM en la nube. Hay siempre disponible un fallback heurístico, pero produce estrategias menos coherentes contextualmente.
 - **Conectores de redes sociales:** El acceso a la API v2 de Twitter/X requiere una cuenta de desarrollador con el nivel apropiado; el rendimiento depende de los límites de tasa de terceros.
@@ -482,8 +482,8 @@ MASSIVE/
 ├── langchain_workflows.py        # Cadenas tipadas LangChain: estrategia, narrativa, paisaje
 ├── programmatic_architect.py     # Librería de arquetipos + caché RAM/SQLite + generador LLM
 ├── social_connectors.py          # Conectores Twitter/X (v2) y Reddit (praw)
-├── empirical_calibration.py      # Diccionario maestro empírico de 43 parámetros
-├── empirical_config.py           # Cargador de calibración + flag EMPIRICAL_BASE_LOADED
+├── empirical_config.py           # Diccionario maestro empírico (BEYONDSIGHT_EMPIRICAL_MASTER, v1.1.0, 88.4%)
+├── empirical_calibration.py      # Traduce la base empírica → defaults nativos del motor
 ├── utility_logic.py              # Calculador de fuerza estratégica de teoría de juegos
 ├── cache_manager.py              # Caché de paisaje en RAM + SQLite
 ├── llm_credentials.py            # Resolución centralizada de claves API para todos los proveedores
