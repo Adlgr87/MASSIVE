@@ -45,7 +45,7 @@ from scipy.special import erf
 
 from schemas import GamePayoff
 from utility_logic import calculate_strategic_force
-from llm_credentials import get_provider_api_key
+from llm_credentials import resolve_provider_api_key
 from empirical_calibration import (
     BEYONDSIGHT_EMPIRICAL_MASTER,
     BEYONDSIGHT_RUNTIME_PARAMS,
@@ -1154,10 +1154,7 @@ def _obtener_api_key_proveedor(proveedor: str, cfg: dict) -> str:
     Returns:
         API key resuelta para el proveedor, o cadena vacía si no está disponible.
     """
-    env_value = get_provider_api_key(proveedor)
-    if env_value:
-        return env_value
-    return str(cfg.get("api_key", "")).strip()
+    return resolve_provider_api_key(proveedor, fallback=str(cfg.get("api_key", "")))
 
 
 def _llamar_ollama(prompt: str, cfg: dict) -> dict | None:

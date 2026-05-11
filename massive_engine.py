@@ -57,7 +57,7 @@ try:
     try:
         if _cp.cuda.is_available():
             _GPU_BACKEND = "cupy"
-    except Exception as exc:
+    except (AttributeError, RuntimeError, _cp.cuda.runtime.CUDARuntimeError) as exc:
         log.warning(f"[MassiveEngine] CuPy detectado pero CUDA no disponible: {exc}")
 except ImportError:
     pass
@@ -69,7 +69,7 @@ if _GPU_BACKEND == "numpy":
             _GPU_BACKEND = "torch"
     except ImportError:
         pass
-    except Exception as exc:
+    except (AttributeError, RuntimeError) as exc:
         log.warning(f"[MassiveEngine] PyTorch detectado pero CUDA no disponible: {exc}")
 
 log.info(f"[MassiveEngine] Backend detectado: {_GPU_BACKEND}")

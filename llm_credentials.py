@@ -19,6 +19,14 @@ def get_provider_api_key(proveedor: str) -> str:
     return os.getenv(env_name, "").strip()
 
 
+def resolve_provider_api_key(proveedor: str, fallback: str = "") -> str:
+    """Resuelve API key priorizando entorno y luego fallback explícito."""
+    key = get_provider_api_key(proveedor)
+    if key:
+        return key
+    return fallback.strip()
+
+
 def persist_provider_api_key(proveedor: str, api_key: str) -> None:
     """Persiste la API key en variable de entorno del proceso actual."""
     env_name = PROVIDER_ENV_KEYS.get(proveedor, "")
