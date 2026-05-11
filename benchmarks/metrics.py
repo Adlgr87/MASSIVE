@@ -1,153 +1,137 @@
-"""
-BeyondSight — PVU Metrics
-=========================
-Computes core performance metrics used in the PVU validation protocol:
-  - MAE, RMSE, MAPE
-  - Directional Accuracy
-  - Turning-Point F1 / Timing Error (Tipping Forecast Skill)
+"""Evaluation metrics for PVU-BS benchmark.
 
-All functions accept plain Python lists or numpy arrays.
+All functions operate on 1-D numpy arrays.
+
+Metrics
+-------
+mae          : Mean Absolute Error
+rmse         : Root Mean Squared Error
+mape         : Mean Absolute Percentage Error (robust, skips near-zero actuals)
+directional_accuracy : fraction of correct sign predictions
+dm_test      : Diebold–Mariano test statistic and p-value (two-sided)
+holm_bonferroni : Holm–Bonferroni correction for a list of p-values
 """
 from __future__ import annotations
 
 import math
 from typing import Sequence
 
+import numpy as np
+from scipy import stats as _scipy_stats
 
-def _arr(x: Sequence[float]) -> list[float]:
-    return [float(v) for v in x]
 
+# ── point forecast metrics ────────────────────────────────────────────────────
 
-# ---------------------------------------------------------------------------
-# Point-forecast metrics
-# ---------------------------------------------------------------------------
-
-def mae(y_true: Sequence[float], y_pred: Sequence[float]) -> float:
+def mae(y_true: np.ndarray, y_pred: np.ndarray) -> float:
     """Mean Absolute Error."""
-    t, p = _arr(y_true), _arr(y_pred)
-    return sum(abs(a - b) for a, b in zip(t, p)) / len(t)
+    y_true, y_pred = np.asarray(y_true, float), np.asarray(y_pred, float)
+    return float(np.mean(np.abs(y_true - y_pred)))
 
 
-def rmse(y_true: Sequence[float], y_pred: Sequence[float]) -> float:
+def rmse(y_true: np.ndarray, y_pred: np.ndarray) -> float:
     """Root Mean Squared Error."""
-    t, p = _arr(y_true), _arr(y_pred)
-    return math.sqrt(sum((a - b) ** 2 for a, b in zip(t, p)) / len(t))
+    y_true, y_pred = np.asarray(y_true, float), np.asarray(y_pred, float)
+    return float(np.sqrt(np.mean((y_true - y_pred) ** 2)))
 
 
-def mape(y_true: Sequence[float], y_pred: Sequence[float], eps: float = 1e-8) -> float:
-    """Mean Absolute Percentage Error (skips near-zero actuals)."""
-    t, p = _arr(y_true), _arr(y_pred)
-    valid = [(a, b) for a, b in zip(t, p) if abs(a) > eps]
-    if not valid:
-        return float("nan")
-    return sum(abs(a - b) / abs(a) for a, b in valid) / len(valid)
+def mape(y_true: np.ndarray, y_pred: np.ndarray, eps: float = 1e-3) -> float:
+    """Robust MAPE: skips timesteps where |y_true| < eps.
 
-
-def directional_accuracy(y_true: Sequence[float], y_pred: Sequence[float]) -> float:
-    """Fraction of steps where the predicted direction matches the actual direction."""
-    t, p = _arr(y_true), _arr(y_pred)
-    if len(t) < 2:
-        return float("nan")
-    correct = sum(
-        1
-        for i in range(1, len(t))
-        if (t[i] - t[i - 1]) * (p[i] - p[i - 1]) >= 0
-    )
-    return correct / (len(t) - 1)
-
-
-# ---------------------------------------------------------------------------
-# Turning-point (tipping) skill
-# ---------------------------------------------------------------------------
-
-def turning_point_f1(
-    true_events: Sequence[int],
-    pred_events: Sequence[int],
-    tolerance: int = 1,
-) -> float:
+    Returns NaN if all actuals are near zero.
     """
-    F1 score for turning-point detection.
+    y_true, y_pred = np.asarray(y_true, float), np.asarray(y_pred, float)
+    mask = np.abs(y_true) >= eps
+    if not mask.any():
+        return float("nan")
+    return float(np.mean(np.abs((y_true[mask] - y_pred[mask]) / y_true[mask])) * 100)
+
+
+def directional_accuracy(y_true: np.ndarray, y_pred: np.ndarray) -> float:
+    """Fraction of timesteps where predicted direction matches actual direction.
+
+    Direction is the sign of the first difference.  The metric is computed
+    on the *changes* (length n-1), not the levels.
+    """
+    y_true, y_pred = np.asarray(y_true, float), np.asarray(y_pred, float)
+    if len(y_true) < 2:
+        return float("nan")
+    true_dir = np.sign(np.diff(y_true))
+    pred_dir = np.sign(np.diff(y_pred))
+    return float(np.mean(true_dir == pred_dir))
+
+
+# ── Diebold–Mariano test ──────────────────────────────────────────────────────
+
+def dm_test(
+    y_true: np.ndarray,
+    y_pred_a: np.ndarray,
+    y_pred_b: np.ndarray,
+    h: int = 1,
+) -> tuple[float, float]:
+    """Two-sided Diebold–Mariano test: model A vs model B.
+
+    Uses squared-error loss.  Returns (DM statistic, p-value).
+    H0: equal predictive accuracy.  H1: A ≠ B.
 
     Parameters
     ----------
-    true_events : list of int
-        Timestep indices where a turning-point actually occurs.
-    pred_events : list of int
-        Timestep indices where the model predicts a turning-point.
-    tolerance : int
-        A prediction is considered a hit if it falls within ±tolerance steps
-        of any true event.
+    y_true   : actual values
+    y_pred_a : forecasts from model A (MASSIVE)
+    y_pred_b : forecasts from baseline B
+    h        : forecast horizon (for variance correction)
     """
-    if not true_events and not pred_events:
-        return 1.0
-    if not true_events or not pred_events:
-        return 0.0
+    y_true = np.asarray(y_true, float)
+    ea = (y_true - np.asarray(y_pred_a, float)) ** 2
+    eb = (y_true - np.asarray(y_pred_b, float)) ** 2
+    d = ea - eb
+    n = len(d)
+    if n < 2:
+        return float("nan"), float("nan")
 
-    matched_true: set[int] = set()
-    tp = 0
-    for pred in pred_events:
-        for true in true_events:
-            if abs(pred - true) <= tolerance and true not in matched_true:
-                tp += 1
-                matched_true.add(true)
-                break
+    d_bar = d.mean()
+    # Harvey, Leybourne & Newbold (1997) variance with lag h-1 autocovariances
+    gamma0 = np.var(d, ddof=0)
+    gamma_sum = 0.0
+    for k in range(1, h):
+        gamma_sum += (1 - k / h) * np.cov(d[k:], d[:-k], ddof=0)[0, 1]
+    var_d = (gamma0 + 2 * gamma_sum) / n
+    if var_d <= 0:
+        return float("nan"), float("nan")
 
-    precision = tp / len(pred_events) if pred_events else 0.0
-    recall = tp / len(true_events) if true_events else 0.0
-    if precision + recall == 0:
-        return 0.0
-    return 2 * precision * recall / (precision + recall)
+    dm_stat = d_bar / math.sqrt(var_d)
+    p_value = float(2 * _scipy_stats.t.sf(abs(dm_stat), df=n - 1))
+    return float(dm_stat), p_value
 
 
-def turning_point_timing_error(
-    true_events: Sequence[int],
-    pred_events: Sequence[int],
-) -> float:
+# ── Multiple-comparison correction ───────────────────────────────────────────
+
+def holm_bonferroni(p_values: Sequence[float]) -> list[float]:
+    """Return Holm–Bonferroni adjusted p-values (same order as input).
+
+    The adjusted p-value for rank i (1-indexed, sorted ascending) is:
+        p_adj_i = min(p_i * (n - i + 1), 1)
+    with the constraint that p_adj is non-decreasing.
     """
-    Mean absolute timing error between matched true/predicted turning-points.
-    Returns NaN when no matches exist.
-    """
-    if not true_events or not pred_events:
-        return float("nan")
-
-    errors: list[float] = []
-    used: set[int] = set()
-    for true in true_events:
-        best: float | None = None
-        best_pred: int | None = None
-        for pred in pred_events:
-            if pred not in used:
-                d = abs(pred - true)
-                if best is None or d < best:
-                    best = float(d)
-                    best_pred = pred
-        if best_pred is not None:
-            errors.append(best)
-            used.add(best_pred)
-
-    return sum(errors) / len(errors) if errors else float("nan")
+    n = len(p_values)
+    if n == 0:
+        return []
+    indexed = sorted(enumerate(p_values), key=lambda x: x[1])
+    adjusted = [0.0] * n
+    running_max = 0.0
+    for rank, (orig_idx, p) in enumerate(indexed):
+        adj = min(p * (n - rank), 1.0)
+        running_max = max(running_max, adj)
+        adjusted[orig_idx] = running_max
+    return adjusted
 
 
-# ---------------------------------------------------------------------------
-# Summary helper
-# ---------------------------------------------------------------------------
+# ── Aggregate helper ──────────────────────────────────────────────────────────
 
-def compute_all(
-    y_true: Sequence[float],
-    y_pred: Sequence[float],
-    true_events: Sequence[int] | None = None,
-    pred_events: Sequence[int] | None = None,
-    tp_tolerance: int = 1,
-) -> dict:
-    """Return a dict of all PVU metrics."""
-    result: dict = {
+def compute_all_metrics(y_true: np.ndarray, y_pred: np.ndarray) -> dict[str, float]:
+    """Return a dict of all point-forecast metrics."""
+    return {
         "mae": mae(y_true, y_pred),
         "rmse": rmse(y_true, y_pred),
         "mape": mape(y_true, y_pred),
         "directional_accuracy": directional_accuracy(y_true, y_pred),
     }
-    te = true_events or []
-    pe = pred_events or []
-    result["turning_point_f1"] = turning_point_f1(te, pe, tolerance=tp_tolerance)
-    result["turning_point_timing_error"] = turning_point_timing_error(te, pe)
-    return result

@@ -1,5 +1,5 @@
 """
-energy_runner.py — Orquestador de simulaciones Langevin para BeyondSight
+energy_runner.py — Orquestador de simulaciones Langevin para MASSIVE
 Conecta: ProgrammaticArchitect → EnergyConfig → SocialEnergyEngine
 Devuelve historial y métricas compatibles con simulator.py y Streamlit.
 """

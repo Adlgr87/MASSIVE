@@ -1,5 +1,5 @@
 ---
-title: BeyondSight
+title: MASSIVE
 emoji: 🌊
 colorFrom: blue
 colorTo: indigo
@@ -8,408 +8,555 @@ app_file: app.py
 pinned: false
 ---
 
-# BeyondSight
+# MASSIVE
+### Mathematical Architecture for Scalable Social Interaction & Virtual Engine
 
-[![License: PPL 3.0](https://img.shields.io/badge/License-PROSPERITY_PUBLIC_V3.0-blue.svg)](https://prosperitylicense.com)
-[![tests](https://github.com/Adlgr87/BeyondSight/actions/workflows/pytest.yml/badge.svg)](https://github.com/Adlgr87/BeyondSight/actions/workflows/pytest.yml)
-[![docs](https://github.com/Adlgr87/BeyondSight/actions/workflows/mkdocs.yml/badge.svg)](https://github.com/Adlgr87/BeyondSight/actions/workflows/mkdocs.yml)
+> *"Many behaving as One"*
 
-![BeyondSight Demo](docs/beyondsight_mockup.png)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/04c5860f-36d4-433c-a142-5761d0f16824" alt="MASSIVE Social Simulator" width="260"/>
+</p>
 
-Hybrid social dynamics simulator — Numerical core + LLM as regime selector.
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
+[![tests](https://github.com/Adlgr87/MASSIVE/actions/workflows/pytest.yml/badge.svg)](https://github.com/Adlgr87/MASSIVE/actions/workflows/pytest.yml)
+[![docs](https://github.com/Adlgr87/MASSIVE/actions/workflows/mkdocs.yml/badge.svg)](https://github.com/Adlgr87/MASSIVE/actions/workflows/mkdocs.yml)
+[![PVU Validation](https://github.com/Adlgr87/MASSIVE/actions/workflows/pvu-validation.yml/badge.svg)](https://github.com/Adlgr87/MASSIVE/actions/workflows/pvu-validation.yml)
 
-BeyondSight bridges the gap between classic mathematical models of opinion formation and the contextual flexibility of Large Language Models (LLMs).
+![MASSIVE UI Demo](docs/massive_ui_mockup.png)
 
-At the heart of BeyondSight lies the **Social Architect** — a reverse-engineering LLM agent that discovers the precise sequence of mathematical interventions needed to steer any social network t[...] 
 
-## Theoretical Foundations and Research
+MASSIVE is a hybrid social dynamics simulator that combines a rigorous mathematical core with the contextual reasoning of Large Language Models. It models how opinions, behaviors, and social structures form and evolve — from small groups to populations of millions.
 
-The project is inspired by fundamental opinion dynamics models and cutting-edge research.
+Traditional simulators ask *"what will happen?"*. MASSIVE also answers: **"what sequence of interventions gets us where we want to go?"** — via the reverse-engineering Social Architect agent.
 
-### Base Models (Opinion Dynamics)
+---
 
-- **DeGroot and Friedkin-Johnsen Models:** Base implementation for opinion evolution in social networks, considering neighbor influence and resistance to change (prejudices).
-- **Hegselmann-Krause (2002) - Bounded Confidence:** Agents only interact with groups whose opinion is within a radius `ε`, fostering natural polarization and cluster formation.
-- **Competitive Contagion (Beutel et al., 2012):** Models the spread of two rival narratives competing simultaneously in the system.
-- **Heterogeneous Threshold (Granovetter, 1978):** Uses a normal distribution of thresholds in the population instead of a static one, enabling rapid social cascade phenomena.
-- **Co-evolutionary Networks and Homophily (Axelrod, 1997):** Influence intensity varies by opinion similarity, generating endogenous echo chambers.
-- **Replicator Equation — Evolutionary Game Theory (Taylor & Jonker, 1978):** Strategy frequencies evolve according to relative payoff via the replicator ODE integrated with RK45.
-- **Confirmation Bias:** A cognitive transversal mechanism that systematically attenuates the weight of information contrary to the agent's current belief.
-- **Langevin Energy Dynamics:** Physics-inspired stochastic differential equations where agents move through a configurable social energy landscape of attractors and repellers — BeyondSight's ne[...] 
+## Contents
 
-### Extended Models
+- [What it does](#what-it-does)
+- [Key Features](#key-features)
+- [Architecture](#architecture)
+- [Simulation Rules](#simulation-rules)
+- [Installation](#installation)
+- [Running the App](#running-the-app)
+- [Programmatic API](#programmatic-api)
+- [Configuration](#configuration)
+- [Performance at Scale](#performance-at-scale)
+- [Social Media Integration](#social-media-integration)
+- [Validation Protocol (PVU-BS)](#validation-protocol-pvu-bs)
+- [Design Decisions](#design-decisions)
+- [Limitations](#limitations)
+- [Project Structure](#project-structure)
+- [Testing](#testing)
+- [Contributing](#contributing)
+- [License](#license)
 
-Three additional simulation rules (rules 10–12 in `extended_models.py`) expand the mathematical vocabulary of the Social Architect and the traditional simulator:
+---
 
-- **Nash Equilibrium — Game Theory (Nash, 1950):** Rule 10. Models stable mixed-strategy equilibria between social groups. At each step, a 2×2 coordination payoff matrix is built from the curre[...]  
+## What it does
 
-- **Bayesian Opinion Network (Pearl, 1988):** Rule 11. A proper discrete Bayesian network (built with `pgmpy`) with nodes `Propaganda → Opinion ← Confianza, PresionSocial`. Evidence (propagand[...]  
+MASSIVE lets you:
 
-- **SIR Epidemiological Contagion (Kermack & McKendrick, 1927):** Rule 12. Treats opinion adoption as an epidemic: Susceptible (can be influenced), Influenced (adopted), Resistant (immune to furth[...]  
+1. **Run forward simulations** — pick one of 13 mathematical rules, configure opinion, propaganda, trust, and group composition, and watch a social network evolve step by step with live charts and early warning signals.
+2. **Reverse-engineer outcomes** — describe a desired social state in plain language; the Social Architect uses an LLM in an iterative propose-simulate-score-refine loop to find the intervention sequence that gets you there.
+3. **Model structural complexity** — each agent carries a 5-dimensional state vector `(opinion, cooperation, hierarchy, income, info_access)` across three superimposed network layers (social, digital, economic), modulated by demographic attributes.
+4. **Scale to millions** — population-scale simulation on a laptop, combining super-agent clustering, uint8 quantization, event-driven updates, and optional GPU offloading.
+5. **Seed from real data** — fetch live sentiment from Twitter/X or Reddit to initialize simulations from actual public opinion distributions.
 
-### Hybrid Architecture
+---
 
-Unlike purely numerical simulations, BeyondSight uses an LLM (like Llama 3) to analyze historical trajectories and decide which mathematical transition regime is sociologically most coherent at ea[...] 
+## Key Features
 
-**Academic Connection:** BeyondSight's approach resonates with recent research like *"Opinion Consensus Formation Among Networked Large Language Models"* (January 2026), exploring how intelligent [...]  
+### Simulation Core
+- **13 simulation rules** rooted in peer-reviewed opinion dynamics literature (DeGroot, Friedkin-Johnsen, Hegselmann-Krause, Granovetter, Axelrod, Nash, Pearl, Kermack-McKendrick, and more).
+- **LLM as regime selector** — instead of hard-coding which model runs when, the LLM reads the current network state and selects the most sociologically coherent rule at each step.
+- **Two opinion ranges** — probabilistic `[0, 1]` (neutral = 0.5) and bipolar `[-1, 1]` (neutral = 0.0), selectable per run. All values are clipped to range after every update.
+- **Three cross-cutting mechanisms** applied on top of every rule: Confirmation Bias, Dynamic Homophily, and a Game-Theoretic Strategic Force.
 
-### Cross-Cutting Mechanisms
+### Social Architect
+- Iterative LLM agent that **reverse-engineers intervention sequences** to reach a user-defined social outcome.
+- Closed feedback loop: LLM proposes a `StrategyMatrix` → Langevin simulation executes it → score computed (0–100) → LLM refines until score ≥ 90 or attempts exhausted.
+- Two operational modes: **Macro** (public opinion, elections, social movements) and **Corporate** (organizational change, team alignment, informal leadership).
+- Outputs a structured schedule with sociological rationale + a consultant-quality narrative in plain language.
 
-Three mechanisms are applied transversally on top of any simulation rule at every step:
+### Multilayer Sociodemographic Engine
+- Each agent is a **5D state vector** `(opinion, cooperation, hierarchy, income, info_access)` evolving simultaneously.
+- **Three superimposed network layers**: Watts-Strogatz (social), Barabási-Albert (digital), hierarchical star+hubs (economic).
+- **Demographic modulation (θ-matrix)**: religion, education, age, and gender adjust each agent's noise sensitivity per behavioral dimension, producing realistic heterogeneity without per-agent hand-tuning.
+- **Multidimensional social potential** with independent but coupled gradients: double-well polarization (opinion), cooperation clustering, hierarchy bifurcation, income centering, and info-access decay.
 
-- **Confirmation Bias (Sunstein 2009, Nickerson 1998):** Incoming information that contradicts the agent's current position is systematically attenuated proportionally to the configured bias level[...]  
+### Energy Landscape Engine
+- **Langevin stochastic dynamics** on a configurable landscape of Gaussian attractors and repellers.
+- **Numba JIT-compiled** inner loop (`@njit`) — compiled once, runs at native speed for all subsequent calls.
+- **8 pre-built social archetypes** (`polarizacion_extrema`, `consenso_moderado`, `radicalizacion_progresiva`, …) for instant scenario setup.
+- **Resolution pipeline** for free-text goals: exact archetype match → RAM cache → SQLite cache (persists across restarts) → LLM one-shot → fallback.
 
-- **Dynamic Homophily (Axelrod 1997, Flache et al. 2017):** Group influence weights update automatically each step based on opinion similarity — the more similar a group's opinion, the stronger [...]  
+### Massive Scale Engine
+- **Sociological LOD (super-agents)**: N agents collapse to M clusters; matrix size drops from O(N²) to O(M²).
+- **uint8 state quantization**: 87.5% RAM reduction per parameter with resolution ≈ 0.008 per opinion unit.
+- **Event-driven active sets**: sleeping agents (in stable consensus) consume zero CPU until a neighbor change wakes them.
+- **GPU offloading**: CuPy → PyTorch+CUDA → NumPy, selected automatically at startup — no configuration required.
 
-- **Strategic Game Theory Layer (Nash 1950, Axelrod 1984):** A payoff-based force (`utility_logic.py`) biases each agent toward cooperation or defection depending on neighbors' average position re[...]  
+### Analytics & Monitoring
+- **Early Warning Signals (EWS)**: sliding-window variance, lag-1 autocorrelation, and skewness — flags ⚠️ proximity to social tipping points.
+- **Topological Data Analysis (TDA)**: optional persistent homology via Takens delay-embedding + Vietoris-Rips filtration (`ripser` + `persim`), detecting structural regime changes that scalar metrics miss.
+- **Network graph metrics**: degree/betweenness centrality, density, and cluster identification via NetworkX.
 
-### Early Warning Signals & Topological Analysis
+### Integration & Infrastructure
+- **LangChain typed chains** (`strategy_chain`, `narrative_chain`, `landscape_chain`) with JSON output validation and transparent HTTP fallback.
+- **Dask parallel multi-simulation** across all available CPU cores via `dask.delayed`.
+- **Quantum module**: QAOA-inspired intervention optimizer (Qiskit or classical fallback) + MPS tensor-network compression for agent-state matrices.
+- **43-parameter empirical calibration base**, cross-validated from 40+ peer-reviewed sources, with cultural variance per block and explicit `pending_empirical_data` flags.
+- **PVU-BS formal validation protocol** with Diebold-Mariano significance tests and Holm-Bonferroni correction.
+- **Bilingual Streamlit UI** (English / Spanish) with runtime language toggle.
+- **Social media connectors**: Twitter/X (v2 Recent Search API) and Reddit (praw) for live sentiment seeding.
 
-BeyondSight monitors the simulation for proximity to tipping points using two complementary methods:
+---
 
-**Early Warning Signals (EWS) — Critical Slowing Down (Scheffer et al., 2009; Dakos et al., 2012):**  
-Over a sliding window of the last 10 opinion values, the system continuously computes variance, lag-1 autocorrelation, and skewness. When any metric exceeds its threshold, a ⚠️ EWS warning is [...]  
-
-**Topological Data Analysis — Persistent Homology (Carlsson, 2009; Perea & Harer, 2015):**  
-When the optional `ripser` + `persim` packages are installed, BeyondSight performs Takens delay-embedding of the opinion time series and computes H1 persistence diagrams via Vietoris-Rips filtrati[...]  
-
-### Empirical Calibration Base
-
-Modeling complex social phenomena requires anchoring simulations to measurable, real-world parameters.  
-Academic research spanning psychology, political science, and network theory provides this empirical foundation.  
-Jointly calibrated from more than 40 peer-reviewed sources, each parameter carries variance metadata for cultural adaptation.  
-Opinion dynamics treated in isolation from data risks producing mathematically elegant but sociologically hollow results.  
-Rooting the simulator in these calibration indices shifts BeyondSight from a theoretical toy to a research-grade instrument.  
-Indices covering algorithmic drift, parasocial influence, confirmation bias, temporal decay, and game-theoretic payoffs are pre-loaded.  
-Together, they form a living empirical base that researchers can extend by adding parameters or updating cultural variance estimates.  
-Years of accumulated social science converge into a normalized bipolar spectrum, ready to inform every simulation step.  
-Researchers and practitioners alike can query the master dictionary at runtime to inspect source citations and confidence levels.  
-Evidence-grounded parameters prevent the simulator from drifting into pure speculation, keeping outputs interpretable and falsifiable.  
-Providing this layer of empirical accountability is what distinguishes BeyondSight from a pure mathematical sandbox.  
-Over upcoming releases, additional cultural blocks — Nordic, South Asian, Middle Eastern — will be populated with localized estimates.  
-Remaining gaps are flagged with `pending_empirical_data` tags, making the boundaries of current knowledge explicit rather than hidden.  
-Transparency about uncertainty is, ultimately, the most honest form of scientific modeling.
-
-#### Empirical Integrations and Functionality
-
-The empirical data is integrated into the project through several key components:
-
-- **`empirical_calibration.py`**: Contains the master dictionary `BEYONDSIGHT_EMPIRICAL_MASTER` with 43 parameters normalized to [-1.0, 1.0]. Each parameter includes metadata like source references (e.g., I1, I2, I3), cultural variances for different blocks (Latin, Anglo-Saxon, etc.), and notes on conflicts or resolutions.
-
-- **`empirical_config.py`**: Loads the empirical base on import, setting the `EMPIRICAL_BASE_LOADED` flag. It derives runtime parameters in `BEYONDSIGHT_RUNTIME_PARAMS`, including validation flags for parameters without data.
-
-- **Integration in `simulator.py`**: During simulation runs in the `simular()` function, empirical defaults are applied if available. For example:
-  - `ruido_base` (noise level) is set from the `temperature` parameter.
-  - `efecto_vecinos_peso` (social influence weight) from `social_influence_lambda`.
-  - Payoff values for coordination and defection in game theory rules.
-
-- **`apply_empirical_profile(cfg)` function**: Merges empirical values into the simulation configuration without overwriting user-specified settings. Supports cultural profiles that adjust base values (e.g., Latin profile increases algorithmic drift).
-
-- **Cultural Adaptations**: Runtime profiles modify parameters based on cultural variance data, allowing simulations tailored to specific sociological contexts.
-
-- **Validation and Warnings**: Parameters with null values are flagged in `validation_flags`. The Streamlit app (`app.py`) displays warnings for pending empirical data, ensuring users are aware of knowledge gaps.
-
-- **Testing**: Unit tests in `tests/test_empirical_*.py` verify loading, application, and cultural modifications.
-
-This integration ensures simulations are empirically grounded, enhancing their realism and applicability to real-world social dynamics.
-
-The master dictionary consolidates 43 parameters spanning network dynamics, temporal decay, and game-theoretic payoffs, all normalized to the bipolar `[-1.0, 1.0]` spectrum.
-
-## Energy Landscape Engine
-
-BeyondSight's **Energy Landscape Engine** models social dynamics as a physical system where every agent's opinion evolves according to a Langevin stochastic differential equation:
+## Architecture
 
 ```
-x_i(t+η) = x_i(t) − η·∇U(x_i) + η·λ·(x̄_neighbors − x_i) + √(2η·T)·ε
+┌──────────────────────────────────────────────────────────────┐
+│                    Streamlit UI  (app.py)                     │
+│  Tab 1: Simulation │ Tab 2: Architect │ Tab 3: Multilayer │ Tab 4: Massive │
+└─────┬───────────────────┬──────────────────┬────────────────-┘
+      │                   │                  │
+┌─────▼──────┐  ┌─────────▼────────┐  ┌──────▼──────────────┐
+│ simulator  │  │ social_architect  │  │ multilayer_engine    │
+│ (13 rules) │  │ (LLM loop +       │  │ (5D × 3 layers +    │
+│ EWS / TDA  │  │  StrategyMatrix)  │  │  θ-matrix + Numba)  │
+└─────┬──────┘  └─────────┬────────┘  └──────┬──────────────-┘
+      │                   │                  │
+      └──────────┬─────────┘                  │
+                 ▼                            │
+    ┌────────────────────────────────────────-┘
+    │   energy_engine (Langevin / Numba JIT)
+    │   massive_engine (LOD / uint8 / event-driven / GPU)
+    └───────────────────────────────────────────────────
+                 │
+    ┌────────────▼────────────────────────────────────┐
+    │  LLM providers (via llm_credentials.py):         │
+    │  heuristic │ Ollama │ Groq │ OpenAI │ OpenRouter │
+    │  (optional LangChain chains in langchain_workflows.py) │
+    └──────────────────────────────────────────────────┘
+```
+
+### The Langevin equation at each step
+
+```
+x(t + Δt) = f(x(t), r(t)) · α  +  b(x(t)) · (1 − α)  +  G(x(t))  +  η(t)
 ```
 
 | Term | Meaning |
-|---|---|
-| `∇U(x)` | Gradient of the social energy landscape (attractors/repellers) |
-| `λ` (`lambda_social`) | Balance: 0 = pure landscape, 1 = pure social network influence |
-| `T` (`temperature`) | Noise / free will — higher = more chaotic individual behavior |
-| `ε ~ N(0,1)` | Stochastic term (Euler-Maruyama integration) |
+|------|---------|
+| `f(x(t), r(t))` | Output of the active dynamical rule `r` (HK, threshold, replicator, …) |
+| `α` | Blend weight between LLM-selected model and base tendency (default 0.80) |
+| `b(x(t))` | Base tendency: `0.92 · opinion + 0.08 · propaganda` |
+| `G(x(t))` | Group polarization: weighted cluster A/B influence |
+| `η(t) ~ 𝒩(0, σ²)` | Stochastic Wiener increment |
 
-**Attractors** model forces of social cohesion (consensus points, factional identities, official positions). **Repellers** model forces of social division (moderation aversion, anti-consensus dyn[...]  
+Noise adapts to institutional trust: `σ(t) = σ_base + σ_distrust · (1 − trust(t))`. As trust erodes, the diffusion coefficient grows — making the system harder to steer and producing wider opinion swings.
 
-### Pre-built Social Archetypes
+### Social Architect loop
 
-The **Programmatic Architect** (`programmatic_architect.py`) ships with 8 validated archetypes covering the most common sociological scenarios:
+```
+User goal (free text) + initial network state
+        │
+        ▼
+LLM proposes StrategyMatrix (JSON schedule of interventions)
+        │
+        ▼
+run_with_schedule() → Langevin engine executes each phase
+        │
+        ▼
+evaluar_resultado() → score 0–100 (polarization, opinion delta, variance)
+        │
+   Score ≥ 90? ──YES──► generar_narrativa_final() ──► Done
+        │
+       NO
+        │
+inject feedback into LLM context → repeat (up to max_attempts)
+```
 
-| Archetype key | Description |
-|---|---|
-| `polarizacion_extrema` | Two irreconcilable camps. Center is no-man's land. |
-| `polarizacion_moderada` | Two groups with possible dialogue at the center. |
-| `consenso_moderado` | Society gravitates toward agreements. |
-| `consenso_forzado` | Strong institutional pressure toward a single position. |
-| `fragmentacion_3_grupos` | Three coexisting factions that don't merge. |
-| `fragmentacion_4_grupos` | Four tribal communities with high segmentation. |
-| `caos_social` | No clear structure. Each agent acts on its own impulse. |
-| `radicalizacion_progresiva` | Agents start at center and are pulled toward extremes. |
+### Multilayer equation
 
-**Resolution pipeline** — for any free-text goal, the engine tries in order:
-1. **Exact archetype match** (instant, no API call)
-2. **RAM cache** (sub-millisecond, same process)
-3. **SQLite cache** (`LandscapeCache`) — persists across Streamlit sessions and container restarts
-4. **LLM one-shot generation** (Groq / OpenAI / OpenRouter / Ollama) with Pydantic validation
-5. **Fallback** to `caos_social` if LLM fails or returns invalid config
+```
+dx_i/dt = −∇U(x_i) + Σ_ℓ w_ℓ · (A_ℓ · G(x))_i + θ(a_i) · η_i
+```
 
-## 🧠 Social Architect — The Crown Jewel
+Three differentiated network layers run simultaneously:
 
-The **Social Architect** is BeyondSight's flagship feature and its most powerful capability. Where traditional simulations ask *"what will happen?"*, the Social Architect answers: **"what must I [...]**
+| Layer | Topology | Phenomenon captured |
+|-------|----------|---------------------|
+| Social | Watts-Strogatz (small-world) | Face-to-face contacts, local community |
+| Digital | Barabási-Albert (scale-free) | Social media, echo chambers, viral content |
+| Economic | Hierarchical (star + hubs) | Authority flow, wages, organizational power |
 
-### Concept: Sociological Reverse Engineering
+Demographic attributes modulate noise sensitivity per behavioral dimension (calibrated from social-psychology literature):
 
-You describe the **desired social outcome** in plain language — the final state you want a social network, community, or organization to reach. The Social Architect figures out the **exact sequ[...]  
-
-Examples of what you can ask for:
-- *"Eliminate polarization in 30 steps and achieve moderate consensus."*
-- *"Gradually shift the majority opinion toward adoption of a new policy."*
-- *"Dissolve an echo chamber and reconnect fragmented groups."*
-- *"Reduce resistance to organizational change among informal leaders."*  
-
-The system responds with a **structured intervention schedule** (`StrategyMatrix`): a timeline of mathematical regimes, their parameters, and a human-readable sociological narrative explaining wh[...]  
+```python
+theta[i, opinion]     *= 1 + 0.5 * religion_i    # Altemeyer (1988)
+theta[i, cooperation] *= 1 + 0.3 * education_i   # Putnam (2000)
+theta[i, hierarchy]   *= 1 + 0.4 * (age_i / 2)  # Alwin & Krosnick (1991)
+theta[i, income]      *= 1 + 0.2 * youth_i       # labor-market volatility
+theta[i, info_access] *= 1 + 0.4 * education_i   # van Dijk (2005)
+```
 
 ---
 
-### Stochastic Dynamics: The Langevin Equations  
+## Simulation Rules
 
-BeyondSight models social opinion as a continuous stochastic process. At each discrete time step `t`, the opinion of the representative agent evolves according to a **discrete-time Langevin equat[...]  
+| # | Rule | Theoretical basis |
+|---|------|-------------------|
+| 0 | `lineal` | Proportional smooth change |
+| 1 | `umbral` | Threshold jump at critical point |
+| 2 | `memoria` | Past-state inertia |
+| 3 | `backlash` | Propaganda reinforces opposing position |
+| 4 | `polarizacion` | Echo-chamber attractor |
+| 5 | `hk` | Hegselmann-Krause (2002) bounded confidence |
+| 6 | `contagio_competitivo` | Two narratives competing simultaneously — Beutel et al. (2012) |
+| 7 | `umbral_heterogeneo` | Granovetter (1978) threshold distribution — social cascades |
+| 8 | `homofilia` | Co-evolutionary network weights — Axelrod (1997) |
+| 9 | `replicador` | Replicator ODE integrated with RK45 — Taylor & Jonker (1978) |
+| 10 | `nash` | Nash equilibrium coordination game (1950) — via `nashpy` |
+| 11 | `bayesiano` | Bayesian opinion network — Pearl (1988), built with `pgmpy` |
+| 12 | `sir` | SIR epidemiological contagion — Kermack & McKendrick (1927) |
 
-```
-x(t + Δt)  =  f(x(t), r(t))  ·  α  +  b(x(t))  ·  (1 − α)  +  G(x(t))  +  η(t)
-```
-
-Where:
-
-| Term | Meaning |
-|---|---|
-| `f(x(t), r(t))` | Output of the active dynamical regime `r` (e.g., Hegselmann-Krause, threshold, memory, replicator…) |
-| `α` (alpha blend) | Blending weight between LLM-selected model and base tendency (default 0.80) |
-| `b(x(t))` | Base tendency: `0.92 · opinion + 0.08 · propaganda` — inertia and media pressure |
-| `G(x(t))` | Group polarization effect — weighted influence of ideological clusters A and B |
-| `η(t) ~ 𝒩(0, σ(t)²)` | **Stochastic Wiener increment** — Gaussian white noise representing social unpredictability |
-
-The **adaptive noise coefficient** `σ(t)` is the Langevin diffusion term and captures the idea that **distrust amplifies social volatility**:
-
-```
-σ(t) = σ_base + σ_distrust · (1 − trust(t))
-```
-
-- `σ_base = 0.03` — irreducible background noise (spontaneous opinion drift)
-- `σ_distrust = 0.08` — extra volatility injected when institutional trust is low
-- `trust(t) ∈ [0, 1]` — dynamically updated each step
-
-As trust erodes, the diffusion coefficient grows, producing wider fluctuations and making the system harder to steer — a mathematically grounded model of societal instability. In the multi-simu[...]  
+**Cross-cutting mechanisms** (applied on top of every rule at every step):
+- **Confirmation Bias** (Sunstein 2009, Nickerson 1998) — incoming counter-information is attenuated proportionally to the agent's current position.
+- **Dynamic Homophily** (Axelrod 1997, Flache et al. 2017) — group influence weights update each step based on opinion similarity.
+- **Strategic Game-Theory Force** (`utility_logic.py`) — payoff-based bias toward cooperation or defection based on neighbors' average position.
 
 ---
-
-### The Iterative LLM–Simulation Loop
-
-The Social Architect operates through a closed feedback loop that combines the reasoning power of an LLM with the rigor of mathematical simulation:
-
-```
-┌────────────────────────────────────────────────────────────────[...]
-│                    SOCIAL ARCHITECT LOOP                        │
-│                                                                 │
-│  1. USER INPUT                                                  │
-│     Desired sociological outcome (free text) +                  │
-│     Initial network state                                       │
-│              │                                                  │
-│              ▼                                                  │
-│  2. LLM PROPOSAL                                                │
-│     The LLM (GPT-4o, Llama 3, Mistral…) reads the goal and     │
-│     proposes a StrategyMatrix: a JSON schedule of              │
-│     interventions (model_name, parameters, time windows)        │
-│              │                                                  │
-│              ▼                                                  │
-│  3. NUMERICAL SIMULATION                                        │
-│     run_with_schedule() executes each intervention phase        │
-│     through the Langevin engine, step by step                   │
-│              │                                                  │
-│              ▼                                                  │
-│  4. EVALUATION                                                  │
-│     Score 0–100 computed from polarization, opinion delta,      │
-│     variance. Qualitative feedback generated.                   │
-│              │                                                  │
-│         Score ≥ 90? ──YES──► 5. NARRATIVE (success)            │
-│              │                                                  │
-│             NO                                                  │
-│              │                                                  │
-│  6. REFINEMENT                                                  │
-│     Feedback injected into LLM context. LLM proposes a         │
-│     corrected strategy. Loop repeats (up to max_attempts).      │
-│              │                                                  │
-│         Best attempt ──────► 5. NARRATIVE (best effort)         │
-└────────────────────────────────────────────────────────────────[...]
-```
-
-**Step-by-step breakdown:**
-
-1. **User Input:** You describe the target state in natural language and optionally set the initial network conditions (opinion, trust, propaganda, group membership).
-
-2. **LLM Proposal:** An LLM (local via Ollama or cloud via Groq / OpenAI / OpenRouter) receives a system prompt that encodes its role as a sociological strategist and a user prompt containing the[...]  
-
-3. **Numerical Simulation:** `run_with_schedule()` steps through the timeline. In each phase, the specified dynamical regime is locked in and applied at every time step through the Langevin engin[...]  
-
-4. **Evaluation:** `evaluar_resultado()` computes a score (0–100) based on how close the final state is to the stated objective. It analyses mean polarization, total opinion drift (`delta`), an[...]  
-
-5. **Refinement:** If the score is below 90, the feedback (what went wrong, which metrics were off) is appended to the LLM context and a new iteration begins. The LLM can see all prior failures a[...]  
-
-6. **Narrative:** Once a satisfactory strategy is found (or exhausted), `generar_narrativa_final()` asks the LLM to translate the dry mathematical schedule into a **rich sociological or organizat[...]  
-
----
-
-### Two Operational Modes
-
-| Mode | Use Case | Vocabulary & Framing |
-|---|---|---|
-| **Macro** | Public opinion, electoral campaigns, social media polarization, mass movements | Media campaigns, hashtags, echo chambers, political discourse, referendums |
-| **Corporate** | Organizational change, HR, internal culture, team alignment | 1:1 meetings, OKRs, informal leaders, resistance to change, 30-60-90 day plans |
-
-In **Corporate mode**, the Social Architect also receives network graph metrics (betweenness centrality, degree centrality) and can target specific high-influence nodes (informal leaders) as the [...]  
-
----
-
-### Output: The StrategyMatrix
-
-The result is a validated `StrategyMatrix` object containing:
-- A **sequence of intervention phases**, each with: start/end time, mathematical regime, parameters, and sociological rationale.
-- A **score** reflecting how precisely the simulation matched the stated goal.
-- A **final narrative** — a consultant-quality report explaining the full strategy in plain language.
-
-The Social Architect is, in essence, an **AI sociological engineer**: it searches the combinatorial space of mathematical intervention sequences, validates each candidate through the Langevin sim[...]  
-
----
-
-### LangChain Integration
-
-When the **LangChain toggle** is enabled in the sidebar, both the Social Architect and the Programmatic Architect route their LLM calls through typed `LangChain` chains (`langchain_workflows.py`)[...]  
-
-- **Typed output parsing** — `JsonOutputParser` catches malformed JSON before it reaches the simulator.
-- **Provider-agnostic** — supports `groq` (via `langchain-groq`), `openai`, `openrouter`, and `ollama` through the same chain interface.
-- **Composable chains** — `strategy_chain`, `narrative_chain`, and `landscape_chain` can be extended with memory, tools, or agent executors in future iterations.
-
-The fallback is always active: if LangChain is unavailable or the chain fails, the system reverts to direct HTTP calls.
 
 ## Installation
 
+**Requirements:** Python 3.9+
+
 ```bash
+git clone https://github.com/Adlgr87/MASSIVE.git
+cd MASSIVE
 pip install -r requirements.txt
 ```
 
+**Optional accelerators** (installed separately):
+
+```bash
+pip install numba             # JIT-compiled Langevin engine (~10–50× speedup on loops)
+pip install cupy-cuda12x      # GPU offloading via CUDA (auto-detected; falls back to CPU)
+pip install dask              # Parallel multi-simulation runs
+pip install ripser persim     # Topological Data Analysis (persistent homology)
+pip install qiskit qiskit-aer # Quantum-inspired optimizer (falls back to classical)
+```
+
+---
+
 ## Running the App
 
-### Local Mode (Streamlit)
+### Local (Streamlit)
+
 ```bash
 streamlit run app.py
 ```
 
-The UI supports **English and Spanish** — use the Language toggle at the top of the sidebar to switch languages at any time.
+The interface has four tabs:
 
-### Running on Hugging Face Spaces
-This repository is ready to be deployed as a **Hugging Face Space**. Simply connect this repo to a new Streamlit Space.
+| Tab | What it does |
+|-----|-------------|
+| **Simulation** | Configure and run forward simulations with any of the 13 rules; view opinion trajectories, EWS alerts, TDA, and network graph |
+| **Social Architect** | Describe a target outcome in plain language; the LLM agent reverse-engineers the intervention schedule |
+| **Multilayer** | Run the 5D sociodemographic engine across three network layers with demographic breakdowns |
+| **Massive** | Simulate millions of agents using the LOD/uint8/event-driven/GPU engine |
+
+Language toggle (English ↔ Spanish) is available at the top of the sidebar.
+
+### Hugging Face Spaces
+
+This repository is ready to deploy as a Streamlit Space. Connect the repo and set your API keys as Secrets.
+
+---
+
+## Programmatic API
+
+```python
+# Forward simulation — 13 rules, LLM selector, EWS
+from simulator import simular
+
+result = simular(
+    opinion_inicial=0.5,
+    regla="hk",                  # Hegselmann-Krause bounded confidence
+    pasos=100,
+    propaganda=0.3,
+    provider="groq",             # heuristic | ollama | groq | openai | openrouter
+)
+
+# Multilayer engine — 5D vectors, three network layers
+from multilayer_engine import MultilayerEngine
+
+engine = MultilayerEngine(
+    N=200,
+    layer_weights=(0.4, 0.3, 0.3),   # social, digital, economic
+    coupling=0.3,
+    attr_config={"religion_prob": 0.35, "age_dist": (0.25, 0.45, 0.30)},
+)
+history  = engine.run(steps=500)
+traj_df  = engine.trajectories_by_attribute("age_group")
+corr     = engine.behavior_correlation_matrix()
+landscape = engine.get_landscape()
+
+# Massive-scale engine — millions of agents, all optimizations
+from massive_engine import MassiveSimEngine
+
+engine = MassiveSimEngine(
+    N=1_000_000,
+    quantize=True,
+    event_driven=True,
+    layer_weights=(0.4, 0.3, 0.3),
+    seed=42,
+)
+result = engine.run(steps=300)
+print(f"Memory savings: {result['memory_savings_pct']:.1f}%")  # ≈ 99.99%
+print(f"Steps/second:   {result['steps_per_second']:.0f}")
+
+# Apply a news shock to 20% of the network
+engine.apply_shock(shock_value=0.4, fraction=0.2)
+result2 = engine.run(steps=100)
+
+# Memory breakdown
+print(engine.memory_report)
+# {'n_agents': 1000000, 'n_clusters': 1000, 'float64_MB': 40.0,
+#  'lod_MB': 0.04, 'final_MB': 0.005, 'savings_pct': 99.99,
+#  'strategies': ['LOD', 'uint8', 'Event-Driven'], 'gpu_backend': 'numpy'}
+```
+
+---
+
+## Configuration
+
+### Environment variables
+
+Copy `.env.example` to `.env`:
+
+```env
+# LLM providers (at least one required for non-heuristic mode)
+GROQ_API_KEY=your_key
+OPENAI_API_KEY=your_key
+OPENROUTER_API_KEY=your_key
+
+# Social media connectors (optional)
+TWITTER_BEARER_TOKEN=your_token
+REDDIT_CLIENT_ID=your_id
+REDDIT_CLIENT_SECRET=your_secret
+```
+
+All five LLM providers resolve credentials through `llm_credentials.py`. In Hugging Face Spaces, set these as Secrets instead of a `.env` file.
+
+### Multilayer configuration
+
+Layer weights, network parameters, and demographic attribute distributions can be changed without touching code via `configs/multilayer.yaml`.
+
+### Empirical calibration
+
+The 43-parameter empirical base (`empirical_calibration.py`) loads automatically. Cultural profiles (Latin, Anglo-Saxon, …) can be applied at runtime via `apply_empirical_profile(cfg)` to adjust base values for region-specific simulations. Parameters with missing data are flagged with `pending_empirical_data` and surfaced as warnings in the UI.
+
+---
+
+## Performance at Scale
+
+`massive_engine.py` combines four strategies to make population-scale simulation tractable on standard hardware:
+
+### 1 — Sociological LOD (super-agents)
+
+Inspired by Level-of-Detail rendering: N agents collapse to M statistical clusters. Only M << N cluster representatives are evolved; the rest are reconstructed at query time.
+
+| N agents | M clusters (auto) | Matrix size | RAM (float64) |
+|----------|-------------------|-------------|---------------|
+| 10 000 | 100 | 100 × 100 | ~0.08 MB |
+| 100 000 | 316 | 316 × 316 | ~0.8 MB |
+| 1 000 000 | 1 000 | 1 000 × 1 000 | ~8 MB |
+
+### 2 — uint8 state quantization
+
+Agent parameters stored as unsigned 8-bit integers instead of float64: **87.5% RAM reduction** per parameter with resolution ≈ 0.008 per opinion unit.
+
+```python
+opinion_float64 = 0.857432   # 8 bytes
+opinion_uint8   = 219         # 1 byte  → dequantize → 0.856...
+```
+
+### 3 — Event-driven active sets
+
+Only super-agents whose state changed by more than `sleep_threshold` are updated. Agents in stable consensus are frozen — zero CPU cost until a neighbor wakes them.
+
+### 4 — GPU offloading
+
+Matrix operations auto-delegate to GPU when CuPy or PyTorch+CUDA are detected. Falls back to NumPy automatically — no configuration required.
+
+**Combined effect at N = 1 M agents:** >99.99% RAM reduction vs. a naive float64 implementation.
+
+---
 
 ## Social Media Integration
 
-BeyondSight can seed simulations with **real opinion data** fetched live from Twitter/X or Reddit. Configure credentials in the sidebar under **🌐 Datos de Redes Sociales**.
+Seed simulations with live opinion data from real platforms:
 
 ### Twitter / X
 
-Requires a **Bearer Token** (Twitter Developer Portal → Project → App → Keys & Tokens).
-
-| Credential | Where to get it |
-|---|---|
-| Bearer Token | [developer.twitter.com](https://developer.twitter.com) → Project → App → Keys & Tokens |
-
-The connector queries the [Twitter v2 Recent Search API](https://developer.twitter.com/en/docs/twitter-api/tweets/search/introduction), applies keyword-based sentiment scoring, and returns the we[...]  
+Requires a Bearer Token from the [Twitter Developer Portal](https://developer.twitter.com). The connector queries the v2 Recent Search API, applies keyword-based sentiment scoring, and returns a weighted opinion distribution.
 
 ### Reddit
 
-Requires a **script-type application** registered at [reddit.com/prefs/apps](https://www.reddit.com/prefs/apps).
+Requires a script-type app at [reddit.com/prefs/apps](https://www.reddit.com/prefs/apps) (Client ID + Secret). Uses `praw` to score post titles and bodies by sentiment, weighted by Reddit vote score.
 
-| Credential | Description |
-|---|---|
-| Client ID | App's client ID (shown under the app name) |
-| Client Secret | App's secret |
-| User Agent | Any string, e.g. `BeyondSight/1.0` |
+Both connectors support bipolar `[-1, 1]` and unipolar `[0, 1]` ranges and can be configured via the sidebar under **🌐 Social Media Data** or via environment variables.
 
-The connector uses `praw` to search a subreddit, scores each post's title + body for sentiment, weights by Reddit vote score, and returns a distribution of community opinions.
+---
 
-Both connectors work with **bipolar** `[-1, 1]` and **unipolar** `[0, 1]` ranges. You can set credentials via environment variables to avoid re-entering them:
+## Validation Protocol (PVU-BS)
 
-```env
-TWITTER_BEARER_TOKEN=xxx
-REDDIT_CLIENT_ID=xxx
-REDDIT_CLIENT_SECRET=xxx
+MASSIVE ships with a formal **Protocol of Validated Use (PVU-BS)** that defines the minimum evidence standard for claiming validated predictive performance on real-world data.
+
+| Concept | Description |
+|---------|-------------|
+| **Independent case** | A `{network, time_series, interventions, metadata}` tuple — cases sharing confounds get a `cluster_id` |
+| **Target variable** | Compound: Polarization Index P(t) + Turning-Point Skill (F1 on regime transitions) |
+| **Anti-leakage** | Test metrics must never be seen before model config is frozen |
+| **Statistics** | Diebold-Mariano test + Holm-Bonferroni correction; effect sizes (ΔMAE, ΔRMSE, TPS F1) required alongside p-values |
+
+```bash
+# Offline (no API key required — default in CI):
+PYTHONHASHSEED=42 python -m benchmarks.runner \
+    --cases datasets/pvu_cases --offline \
+    --out reports/validation/ci --seed 42
+
+# LLM mode (requires OPENROUTER_API_KEY or OPENAI_API_KEY):
+PYTHONHASHSEED=42 python -m benchmarks.runner \
+    --cases datasets/pvu_cases --llm \
+    --out reports/validation/llm_run --seed 42
 ```
 
-## Performance Optimization
+Full protocol docs: [English](docs/validation/PVU_BeyondSight_EN.md) · [Español](docs/validation/PVU_BeyondSight_ES.md)
 
-### Numba — JIT-accelerated Langevin Engine
+> **Note:** `datasets/pvu_cases/` currently contains synthetic cases for pipeline testing only. Real PVU-BS validation requires N ≥ 10 independent real-world cases.
 
-The `SocialEnergyEngine` in `energy_engine.py` uses **Numba** to JIT-compile the inner Langevin step loop via `@njit`. On first call, the kernel is compiled once; all subsequent calls are native-[...]  
+---
 
-### Dask — Parallel Multi-Simulation
+## Design Decisions
 
-The **⚡ Paralelizar con Dask** toggle in the UI activates `simular_multiples_dask()`, which wraps each of the N simulations in a `dask.delayed` task and executes them concurrently across all av[...]  
+A few architectural choices that shape how MASSIVE works:
+
+**Opinion as a physical system.** Langevin dynamics brings tools from statistical physics — energy wells, stochastic diffusion, tipping-point theory — into social modeling, while remaining anchored to sociological literature rather than physics metaphors.
+
+**LLM as regime selector, not oracle.** The LLM does not predict outcomes. It selects which mathematical model is most appropriate for the current social context at each step. This keeps outputs interpretable: every prediction traces back to a defined mathematical rule and its peer-reviewed basis.
+
+**Inverse before forward.** The Social Architect was designed alongside the simulator, not bolted on afterward. The propose-simulate-score-refine feedback loop is a first-class architectural feature, not a wrapper.
+
+**Empirical accountability by default.** Every calibration parameter has a source citation and a cultural variance estimate. Gaps are flagged explicitly — the simulator surfaces what it doesn't know rather than filling gaps with defaults silently.
+
+**Scale without a cluster.** The LOD + uint8 + event-driven combination degrades gracefully: a laptop runs meaningful simulations, a GPU cluster runs proportionally faster. No infrastructure requirement.
+
+Modernized assets joined overlays, refreshed interface tuning yielded reliable experience; polished outputs reflect today.
+
+---
+
+## Limitations
+
+- **Quantum module:** Uses classical simulation of quantum-inspired algorithms (QAOA structure via Qiskit Aer or NumPy fallback, MPS-style compression). No real quantum hardware required or used.
+- **Empirical base coverage:** Some of the 43 parameters carry `pending_empirical_data` flags. Additional cultural blocks (Nordic, South Asian, Middle Eastern) are partially complete.
+- **Real-world validation:** Current PVU-BS benchmark cases are synthetic (for pipeline testing). Real-world opinion dynamics validation (N ≥ 10 independent cases) is in progress.
+- **LLM dependence:** The Social Architect and regime selector work best with a cloud LLM. A heuristic fallback is always available but produces less contextually coherent strategies.
+- **Social media connectors:** Twitter/X v2 API access requires a developer account with appropriate tier; throughput depends on third-party rate limits.
+
+---
+
+## Roadmap
+
+- [ ] Real PVU-BS validation cases from public opinion datasets
+- [ ] Additional cultural calibration blocks (Nordic, South Asian, Middle Eastern)
+- [ ] LangChain agent executors with tool access (web search, real-time data retrieval)
+- [ ] Node-targeted Social Architect (betweenness-centrality-guided intervention scheduling)
+- [ ] Export simulation runs to standard formats (NetLogo, GEXF, CSV)
+
+---
 
 ## Project Structure
 
 ```
-BeyondSight/
-├── tests/                        # Unit and integration tests
-│   ├── test_energy_core.py       # Energy engine test suite (42 tests)
-│   ├── test_game_theory.py       # Strategic Game Theory layer tests
-│   ├── test_integration_llm.py   # LLM selector integration tests
-│   ├── test_simulator.py         # Simulator core tests
-│   ├── test_social_architect.py
-│   └── test_visualizations.py
-├── docs/                         # MkDocs documentation sources
-├── .env.example                  # Environment variable template
-├── .gitignore
-├── app.py                        # Streamlit interface
-├── cache_manager.py              # RAM + SQLite landscape cache
-├── empirical_calibration.py      # Master empirical calibration dictionary (43 parameters)
-├── empirical_config.py           # Calibration loader — EMPIRICAL_BASE_LOADED flag
-├── energy_engine.py              # Langevin dynamics engine (Numba-accelerated)
+MASSIVE/
+├── app.py                        # Streamlit UI — 4 tabs (Simulation, Architect, Multilayer, Massive)
+├── simulator.py                  # Core: 13 rules, LLM selector, EWS, TDA, Dask parallel
+├── social_architect.py           # Social Architect: iterative LLM reverse-engineering agent
+├── energy_engine.py              # Langevin engine (Numba JIT-compiled)
 ├── energy_runner.py              # Langevin simulation orchestrator
 ├── energy_schemas.py             # Pydantic v2 schemas for EnergyConfig
-├── extended_models.py            # Extended rules: Nash (10), Bayesian BN (11), SIR (12)
+├── multilayer_engine.py          # 5D × 3-layer sociodemographic engine (Numba + θ-matrix)
+├── massive_engine.py             # Scale engine: LOD, uint8, event-driven, GPU offload
+├── extended_models.py            # Rules 10–12: Nash, Bayesian BN (pgmpy), SIR
+├── langchain_workflows.py        # LangChain typed chains: strategy, narrative, landscape
+├── programmatic_architect.py     # Archetype library + RAM/SQLite cache + LLM landscape gen
+├── social_connectors.py          # Twitter/X (v2) and Reddit (praw) live data connectors
+├── empirical_calibration.py      # 43-parameter empirical master dictionary
+├── empirical_config.py           # Calibration loader + EMPIRICAL_BASE_LOADED flag
+├── utility_logic.py              # Game-theoretic strategic force calculator
+├── cache_manager.py              # RAM + SQLite landscape cache
+├── llm_credentials.py            # Centralized API key resolution for all providers
+├── schemas.py                    # Pydantic schemas: StrategyMatrix, GamePayoff
+├── visualizations.py             # Network visualization helpers (Plotly + NetworkX)
 ├── i18n.py                       # Internationalization helpers (English / Spanish)
-├── langchain_workflows.py        # LangChain chains for Social & Programmatic Architects
-├── programmatic_architect.py     # Programmatic Architect (archetypes + cache + LLM)
-├── README.md                     # Documentation (English)
-├── README_ES.md                  # Documentation (Spanish)
-├── requirements.txt              # Dependencies
-├── schemas.py                    # Pydantic schemas for StrategyMatrix and Game Theory
-├── simulator.py                  # Simulator core: 13 rules, EWS, TDA, Dask parallel, LLM logic
-├── social_architect.py           # Social Architect inverse-engineering agent
-├── social_connectors.py          # Twitter/X and Reddit API connectors
-├── utility_logic.py              # Game Theory strategic force calculator
-└── visualizations.py             # Network visualization helpers
+├── quantum/
+│   ├── quantum_optimizer.py      # QAOA-inspired optimizer (Qiskit or classical fallback)
+│   ├── tensor_network.py         # MPS-style compression for agent-state matrices
+│   └── integration.py            # Drop-in helpers used by multilayer_engine and social_architect
+├── benchmarks/                   # PVU-BS offline benchmark runner
+│   ├── runner.py                 # CLI entry point (python -m benchmarks.runner)
+│   ├── baselines.py              # Naive, MA, AR(1), Random regime baselines
+│   ├── metrics.py                # MAE/RMSE/MAPE, Diebold-Mariano, Holm-Bonferroni
+│   ├── turning_points.py         # Turning-point detection and F1 scoring
+│   └── io.py                     # PVU case loader
+├── configs/
+│   ├── multilayer.yaml           # Layer weights and demographic attribute configuration
+│   └── pvu.yaml                  # PVU runner configuration (split ratios, thresholds, seeds)
+├── datasets/pvu_cases/           # Benchmark case folders (currently synthetic)
+├── docs/validation/              # PVU-BS protocol (English + Spanish)
+├── reports/validation/           # Auto-generated benchmark outputs (metrics.json, report.md)
+├── tests/                        # 200+ unit and integration tests
+├── .env.example                  # Environment variable template
+├── README.md                     # This file (English)
+└── README_ES.md                  # Spanish documentation
 ```
 
-## Security
+---
 
-API keys can be managed via environment variables. Copy `.env.example` to `.env` and fill in your keys:
+## Testing
 
-- `GROQ_API_KEY`
-- `OPENAI_API_KEY`
-- `OPENROUTER_API_KEY`
-- `TWITTER_BEARER_TOKEN` *(optional — social media integration)*
-- `REDDIT_CLIENT_ID` / `REDDIT_CLIENT_SECRET` *(optional — social media integration)*
+```bash
+pytest tests/
+```
 
-In Hugging Face Spaces, you can set these as **Secrets**.
+The test suite covers: simulator core, energy engine, multilayer engine, massive-scale engine, game-theory layer, social architect, empirical calibration, PVU benchmark runner, visualizations, and LLM integration. Tests run in CI on every push.
+
+---
+
+## Contributing
+
+Contributions are welcome. Please:
+
+1. Fork the repository and create a feature branch.
+2. Follow the existing code style (Google-style docstrings, type hints, `pytest` for tests).
+3. Add or update tests for any changed behavior and run `pytest tests/` before opening a PR.
+4. For new empirical parameters, include source references and cultural variance metadata matching the format in `BEYONDSIGHT_EMPIRICAL_MASTER`.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for full guidelines and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for community standards.
+
+---
 
 ## License
 
-This project is under the **Prosperity Public License 3.0.0**.
+[Apache License 2.0](LICENSE) — free for personal, academic, and commercial use with attribution.
 
-- **Communal/Personal/Educational Use:** Free and open.
-- **Corporate Use:** Companies can test the software for 30 days. After that, a commercial license must be acquired.
-
-For commercial inquiries, contact [Adlgr87](https://github.com/Adlgr87) on GitHub.
+Design, architecture, and system logic by [Adlgr87](https://github.com/Adlgr87).  
+For consulting or collaboration inquiries, contact via [GitHub](https://github.com/Adlgr87).
 
 ---
-*Developed with a focus on AI interpretability and the study of complex social systems.*
+
+*Many behaving as One.*

@@ -1,11 +1,11 @@
 """
-BeyondSight — Internationalization (i18n)
+MASSIVE — Internationalization (i18n)
 Supports English and Spanish for the UI.
 """
 
 STRINGS = {
     "en": {
-        "title": "BeyondSight",
+        "title": "MASSIVE",
         "subtitle": "Hybrid Simulator · Social Dynamics · LLM + Numerical Core",
         "opinion_space": "#### 📐 Opinion Space",
         "opinion_range": "Opinion Range",
@@ -115,7 +115,7 @@ STRINGS = {
 """,
     },
     "es": {
-        "title": "BeyondSight",
+        "title": "MASSIVE",
         "subtitle": "Simulador híbrido · Dinámica social · LLM + Núcleo numérico",
         "opinion_space": "#### 📐 Espacio de opinión",
         "opinion_range": "Rango de valores",

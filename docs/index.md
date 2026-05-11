@@ -1,6 +1,6 @@
-# BeyondSight Documentation
+# MASSIVE Documentation
 
-Welcome to the **BeyondSight** documentation. This project is a hybrid social dynamics simulator that combines classic numerical models with Large Language Models (LLMs) used as dynamic regime selectors.
+Welcome to the **MASSIVE** documentation. This project is a hybrid social dynamics simulator that combines classic numerical models with Large Language Models (LLMs) used as dynamic regime selectors.
 
 ## Key Features
 

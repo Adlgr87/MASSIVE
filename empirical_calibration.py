@@ -1,5 +1,5 @@
 """
-empirical_calibration.py — Índices de Calibración Empírica para BeyondSight
+empirical_calibration.py — Índices de Calibración Empírica para MASSIVE
 Consolida investigaciones sobre dinámicas de red, efectos temporales y teoría
 de juegos, normalizados al espectro [-1.0, 1.0].
 
@@ -199,12 +199,12 @@ BEYONDSIGHT_RUNTIME_PARAMS: dict = {
 # ============================================================
 # FUNCIÓN DE APLICACIÓN DE PERFIL EMPÍRICO
 # Traduce los parámetros de runtime al formato de configuración
-# del simulador BeyondSight (simulator.py / energy_runner.py).
+# del simulador MASSIVE (simulator.py / energy_runner.py).
 # ============================================================
 
 def apply_empirical_profile(cfg: dict) -> dict:
     """
-    Merges empirically calibrated values into a BeyondSight simulator config.
+    Merges empirically calibrated values into a MASSIVE simulator config.
 
     Maps BEYONDSIGHT_RUNTIME_PARAMS fields to the keys expected by simulator.py
     and energy_runner.py, without overwriting user-set LLM or range options.
@@ -286,3 +286,8 @@ def export_to_json(path: str | None = None) -> str:
             fh.write(result)
 
     return result
+
+
+# ── Backward-compatible aliases (new preferred names) ─────────────────────────
+MASSIVE_EMPIRICAL_MASTER = BEYONDSIGHT_EMPIRICAL_MASTER
+MASSIVE_RUNTIME_PARAMS   = BEYONDSIGHT_RUNTIME_PARAMS

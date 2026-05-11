@@ -1,5 +1,5 @@
 """
-programmatic_architect.py — Arquitecto Social de BeyondSight (Actualizado)
+programmatic_architect.py — Arquitecto Social de MASSIVE (Actualizado)
 Traduce intenciones del usuario en configuraciones matemáticas para el EnergyEngine.
 FLUJO: Arquetipo → Caché (RAM+SQLite) → LLM One-Shot → Fallback
 """
@@ -80,7 +80,7 @@ ARCHETYPES: dict[str, dict] = {
 
 _cache = LandscapeCache()
 
-SYSTEM_PROMPT = """Eres un Diseñador de Dinámicas Sociales para BeyondSight.
+SYSTEM_PROMPT = """Eres un Diseñador de Dinámicas Sociales para MASSIVE.
 Tu única tarea es generar configuraciones matemáticas en formato JSON.
 REGLAS ESTRICTAS:
 Responde SOLO con JSON válido. Sin texto adicional, sin explicaciones, sin markdown.
@@ -142,8 +142,8 @@ def call_llm(user_goal: str, llm_client=None, provider: str = None, api_key: str
             else:
                 headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
                 if provider == "openrouter":
-                    headers["HTTP-Referer"] = "https://github.com/Adlgr87/BeyondSight"
-                    headers["X-Title"] = "BeyondSight Architect"
+                    headers["HTTP-Referer"] = "https://github.com/Adlgr87/MASSIVE"
+                    headers["X-Title"] = "MASSIVE Architect"
                 resp = requests.post(f"{base_url}/chat/completions", headers=headers, json={"model": model, "messages": messages, "temperature": 0.2, "max_tokens": 500}, timeout=30)
                 resp.raise_for_status()
                 raw_json = resp.json()["choices"][0]["message"]["content"]

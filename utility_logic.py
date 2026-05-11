@@ -1,5 +1,5 @@
 """
-BeyondSight — Utility Logic (Game Theory Layer)
+MASSIVE — Utility Logic (Game Theory Layer)
 
 Calculates the Strategic Force that biases agents toward
 cooperation (consensus) or defection (fragmentation) based

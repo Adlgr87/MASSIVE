@@ -5,7 +5,7 @@ import numpy as np
 def generate_social_network_viz(opinion_mean, confianza, amalgama=False, n_nodes=80, is_bipolar=False):
     """
     Genera una visualización de Plotly de una topología de red sintética
-    que representa visualmente el estado macroscópico del simulador BeyondSight.
+    que representa visualmente el estado macroscópico del simulador MASSIVE.
     """
     G = nx.Graph()
     opinions = []
@@ -33,13 +33,15 @@ def generate_social_network_viz(opinion_mean, confianza, amalgama=False, n_nodes
         G.add_node(i, opinion=op)
         
     # Generar aristas basándose en homofilia (confianza y similitud de opinión)
-    for i in range(n_nodes):
-        for j in range(i+1, n_nodes):
-            diff = abs(opinions[i] - opinions[j])
-            # La confianza actúa como multiplicador para la probabilidad de conexión
-            prob = np.exp(-diff * (5.0 * (1.1 - confianza)))
-            if np.random.rand() < prob * 0.15:  # Escala de densidad base
-                G.add_edge(i, j)
+    # Vectorizado con NumPy para evitar el bucle O(N²) en Python puro.
+    # Nota: usa matrices N×N — para n_nodes ≤ 2000 el uso de RAM es negligible
+    # (<32 MB); evitar valores mayores en producción si la RAM es limitada.
+    op_arr = np.array(opinions)
+    diffs = np.abs(op_arr[:, None] - op_arr[None, :])
+    probs = np.exp(-diffs * (5.0 * (1.1 - confianza))) * 0.15
+    rng_matrix = np.random.rand(n_nodes, n_nodes)
+    mask = np.triu(rng_matrix < probs, k=1)
+    G.add_edges_from(zip(*np.where(mask)))
                 
     # Calcular layout de nodos (físicas de atracción)
     pos = nx.spring_layout(G, k=0.18, iterations=35)

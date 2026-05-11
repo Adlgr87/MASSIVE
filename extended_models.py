@@ -1,5 +1,5 @@
 """
-extended_models.py — Modelos extendidos para BeyondSight
+extended_models.py — Modelos extendidos para MASSIVE
 Nash Equilibrium, Bayesian Network, SIR Epidemiológico
 Todos los modelos son 100% funcionales y se integran como reglas de simulator.py.
 """
@@ -11,7 +11,7 @@ from typing import TYPE_CHECKING
 import numpy as np
 from scipy.integrate import solve_ivp
 
-log = logging.getLogger("beyondsight")
+log = logging.getLogger("massive")
 
 # ── Importaciones opcionales (graceful degradation) ──────────────────────────
 try:

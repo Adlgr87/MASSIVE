@@ -1,5 +1,5 @@
 """
-BeyondSight — Social Architect Agent (Inverse Mode)
+MASSIVE — Social Architect Agent (Inverse Mode)
 LLM iterativo que busca la secuencia de intervenciones matemáticas
 que lleva la red a un estado objetivo.
 
@@ -15,8 +15,29 @@ from pydantic import ValidationError
 
 from schemas import StrategyMatrix
 from simulator import run_with_schedule, resumen_historial, DEFAULT_CONFIG
+from quantum.integration import quantum_optimize_interventions
 
-log = logging.getLogger("beyondsight")
+log = logging.getLogger("massive")
+
+
+def find_optimal_interventions(evaluate_fn, n_agents, n_phases, max_iter=100):
+    """Drop-in replacement for intervention optimization.
+
+    Args:
+        evaluate_fn: Objective function that scores intervention matrices.
+        n_agents: Number of agents to optimize.
+        n_phases: Number of intervention phases.
+        max_iter: Maximum optimization iterations.
+
+    Returns:
+        Optimization result dictionary with interventions and score.
+    """
+    return quantum_optimize_interventions(
+        evaluate_fn=evaluate_fn,
+        n_agents=n_agents,
+        n_phases=n_phases,
+        max_iter=max_iter,
+    )
 
 
 # ============================================================
@@ -303,9 +324,8 @@ def buscar_estrategia_inversa(
             from langchain_workflows import build_llm, LangChainSocialArchitect, LANGCHAIN_AVAILABLE
             if LANGCHAIN_AVAILABLE:
                 provider = cfg.get("proveedor", "groq")
-                api_key  = cfg.get("api_key", "")
                 modelo   = cfg.get("modelo", "")
-                llm = build_llm(provider, api_key, modelo, temperature=0.0)
+                llm = build_llm(provider, model=modelo, temperature=0.0)
                 if llm is not None:
                     architect = LangChainSocialArchitect(llm)
                     historial_feedback: list = []

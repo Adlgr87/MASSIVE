@@ -1,5 +1,5 @@
 """
-energy_schemas.py — Modelos Pydantic v2 para BeyondSight Energy Engine
+energy_schemas.py — Modelos Pydantic v2 para MASSIVE Energy Engine
 Validación estricta, autocompletado IDE, serialización segura.
 """
 from pydantic import BaseModel, Field, ConfigDict, field_validator

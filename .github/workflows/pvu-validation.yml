@@ -1,4 +1,4 @@
-name: PVU Validation (offline)
+name: PVU Validation
 
 on:
   pull_request:
@@ -6,20 +6,22 @@ on:
   workflow_dispatch:
     inputs:
       mode:
-        description: "offline or llm"
+        description: "Run mode: offline (no API key) or llm (requires secret)"
         required: true
         default: "offline"
+        type: choice
+        options:
+          - offline
+          - llm
       cases:
-        description: "Path to cases folder"
-        required: true
+        description: "Path to PVU cases folder"
+        required: false
         default: "datasets/pvu_cases"
 
 jobs:
   pvu:
     runs-on: ubuntu-latest
     timeout-minutes: 30
-    permissions:
-      contents: read
 
     steps:
       - name: Checkout
@@ -35,26 +37,58 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: PVU run (offline by default)
-        env:
-          PYTHONHASHSEED: "0"
+      - name: Resolve run parameters
+        id: params
         run: |
+          # On pull_request, inputs are not available → always use offline + default cases.
           MODE="${{ github.event.inputs.mode }}"
-          if [ -z "$MODE" ]; then MODE="offline"; fi
-
           CASES="${{ github.event.inputs.cases }}"
+          if [ -z "$MODE" ]; then MODE="offline"; fi
           if [ -z "$CASES" ]; then CASES="datasets/pvu_cases"; fi
+          echo "mode=$MODE"   >> "$GITHUB_OUTPUT"
+          echo "cases=$CASES" >> "$GITHUB_OUTPUT"
 
-          if [ "$MODE" = "llm" ]; then
-            echo "Running PVU in LLM mode"
-            python -m benchmarks.runner --cases "$CASES" --llm --out reports/validation/ci
+      - name: Check LLM secret availability
+        id: llm_check
+        if: steps.params.outputs.mode == 'llm'
+        run: |
+          if [ -z "${{ secrets.OPENROUTER_API_KEY }}" ] && [ -z "${{ secrets.OPENAI_API_KEY }}" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::warning::LLM mode requested but no API secret configured. Run will fall back to offline mode."
           else
-            echo "Running PVU in OFFLINE mode"
-            python -m benchmarks.runner --cases "$CASES" --offline --out reports/validation/ci
+            echo "skip=false" >> "$GITHUB_OUTPUT"
           fi
+
+      - name: PVU run (offline mode)
+        if: steps.params.outputs.mode == 'offline' || steps.llm_check.outputs.skip == 'true'
+        env:
+          PYTHONHASHSEED: "42"
+        run: |
+          echo "Running PVU in OFFLINE mode"
+          python -m benchmarks.runner \
+            --cases "${{ steps.params.outputs.cases }}" \
+            --offline \
+            --out reports/validation/ci \
+            --seed 42
+
+      - name: PVU run (LLM mode)
+        if: steps.params.outputs.mode == 'llm' && steps.llm_check.outputs.skip != 'true'
+        env:
+          PYTHONHASHSEED: "42"
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          echo "Running PVU in LLM mode"
+          python -m benchmarks.runner \
+            --cases "${{ steps.params.outputs.cases }}" \
+            --llm \
+            --out reports/validation/ci \
+            --seed 42
 
       - name: Upload PVU report artifacts
         uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: pvu-report
           path: reports/validation/ci
+          if-no-files-found: warn

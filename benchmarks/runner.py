@@ -1,309 +1,396 @@
-"""
-BeyondSight — PVU Runner
-========================
-CLI entry-point for the Predictive Validation Unit (PVU) pipeline.
+"""PVU-BS benchmark runner — CLI entry point.
 
-Usage
------
-Offline (CI / no API keys required):
-    python -m benchmarks.runner --cases datasets/pvu_cases --offline --out reports/validation/ci
+Usage (offline mode, no LLM required):
+    python -m benchmarks.runner --cases datasets/pvu_cases --offline \\
+           --out reports/validation/ci --seed 42
 
-LLM-assisted (requires secrets):
-    python -m benchmarks.runner --cases datasets/pvu_cases --llm --out reports/validation/ci
+Usage (LLM mode, requires OPENROUTER_API_KEY or equivalent):
+    python -m benchmarks.runner --cases datasets/pvu_cases --llm \\
+           --out reports/validation/ci
 
-Each case directory must contain:
-    timeseries.csv       — columns: date, polarization  (+ optional: volume, sentiment_mean)
-    interventions.json   — list of {date, label, source}
-    meta.json            — {id, domain, source, language, cluster_id, granularity, license}
-
-The runner:
-  1) Loads and validates every case.
-  2) Splits each series into train / val / test (reproducible, no leakage).
-  3) Fits all baselines on train, evaluates on test.
-  4) Computes PVU metrics (MAE, RMSE, MAPE, DA, TP-F1, TP-timing-error).
-  5) Writes metrics.json + report.md to --out directory.
-  6) Exits 0 if the run completed without errors (gates are advisory, not blocking).
+Design principles
+-----------------
+- Deterministic: controlled by --seed / PYTHONHASHSEED.
+- Fast: default CI run completes in seconds (no network calls in offline mode).
+- No heavy new dependencies: uses stdlib + numpy + scipy (already required).
+- LLM mode gracefully skips and warns when secrets are absent.
 """
 from __future__ import annotations
 
 import argparse
-import csv
 import json
-import math
+import logging
 import os
-import random
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any
+
+import numpy as np
+
+from benchmarks.baselines import get_all_baselines
+from benchmarks.io import load_cases
+from benchmarks.metrics import (
+    compute_all_metrics,
+    dm_test,
+    holm_bonferroni,
+)
+from benchmarks.turning_points import detect as detect_turning_points
+from benchmarks.turning_points import score_turning_points
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    datefmt="%H:%M:%S",
+)
+log = logging.getLogger(__name__)
+
+# ── Train / test split ratio ──────────────────────────────────────────────────
+TRAIN_RATIO = 0.7  # 70 % train, 30 % test (no val in offline mode)
 
 
-# ---------------------------------------------------------------------------
-# Reproducibility
-# ---------------------------------------------------------------------------
+# ── MASSIVE offline forecast (deterministic proxy) ───────────────────────
 
-SEED = int(os.environ.get("PYTHONHASHSEED", "42"))
-random.seed(SEED)
+def _massive_offline_forecast(
+    train: np.ndarray,
+    horizon: int,
+    rng: np.random.Generator,
+) -> np.ndarray:
+    """Deterministic proxy for MASSIVE in offline (no-LLM) mode.
+
+    Combines AR(1) trend with a damped EWS-inspired noise term — mimicking
+    the engine's regime-awareness without requiring a live LLM call.
+
+    This is *not* the real MASSIVE prediction; it exists solely so CI
+    can measure the benchmark pipeline end-to-end without API keys.
+    """
+    from benchmarks.baselines import AR1Baseline
+
+    ar1 = AR1Baseline()
+    ar1.fit(train)
+
+    # Damped noise: std decays over forecast horizon (captures CSD-inspired
+    # "slowing down" near the mean reversion point).
+    diff_std = float(np.std(np.diff(train))) if len(train) > 1 else 0.01
+    decay = np.exp(-np.arange(horizon) / max(horizon, 1))
+    noise = rng.normal(0, diff_std * decay)
+
+    preds = np.empty(horizon)
+    last = float(train[-1])
+    for i in range(horizon):
+        last = ar1.phi0 + ar1.phi1 * last + noise[i]
+        preds[i] = last
+    return preds
 
 
-# ---------------------------------------------------------------------------
-# Case I/O
-# ---------------------------------------------------------------------------
+def _massive_llm_forecast(
+    train: np.ndarray,
+    horizon: int,
+    case: dict,
+) -> np.ndarray | None:
+    """Attempt a real MASSIVE LLM-backed forecast.
 
-def _load_timeseries(path: Path) -> list[dict]:
-    """Load timeseries.csv and return list of row dicts."""
-    rows: list[dict] = []
-    with open(path, newline="", encoding="utf-8") as fh:
-        reader = csv.DictReader(fh)
-        for row in reader:
-            rows.append({k: v.strip() for k, v in row.items()})
-    return rows
+    Returns None (with a warning) if the required environment variables are
+    absent, so the run degrades gracefully instead of crashing CI.
+    """
+    api_key = os.getenv("OPENROUTER_API_KEY") or os.getenv("OPENAI_API_KEY")
+    if not api_key:
+        log.warning(
+            "LLM mode requested but no API key found "
+            "(OPENROUTER_API_KEY / OPENAI_API_KEY). "
+            "Skipping LLM forecast for case '%s'.",
+            case.get("name", "?"),
+        )
+        return None
 
+    # Lazy import so offline mode has zero overhead.
+    try:
+        from simulator import simular  # type: ignore[import]
+    except ImportError:
+        log.warning("Cannot import simulator — skipping LLM forecast.")
+        return None
 
-def _load_json(path: Path) -> Any:
-    with open(path, encoding="utf-8") as fh:
-        return json.load(fh)
-
-
-def load_case(case_dir: Path) -> dict:
-    """Load a single PVU case directory and return a structured dict."""
-    ts_path = case_dir / "timeseries.csv"
-    meta_path = case_dir / "meta.json"
-    interv_path = case_dir / "interventions.json"
-
-    if not ts_path.exists():
-        raise FileNotFoundError(f"Missing timeseries.csv in {case_dir}")
-    if not meta_path.exists():
-        raise FileNotFoundError(f"Missing meta.json in {case_dir}")
-
-    rows = _load_timeseries(ts_path)
-    meta = _load_json(meta_path)
-    interventions = _load_json(interv_path) if interv_path.exists() else []
-
-    # Extract polarization series (float) — fallback to 'value' column
-    pol_key = "polarization" if "polarization" in (rows[0] if rows else {}) else "value"
-    series = [float(r[pol_key]) for r in rows]
-    dates = [r.get("date", str(i)) for i, r in enumerate(rows)]
-
-    return {
-        "id": meta.get("id", case_dir.name),
-        "meta": meta,
-        "dates": dates,
-        "series": series,
-        "interventions": interventions,
+    # Build a minimal initial state from the last training observation.
+    estado = {
+        "opinion": float(train[-1]),
+        "propaganda": 0.0,
+        "red_type": case.get("meta", {}).get("network_type", "watts_strogatz"),
     }
+    try:
+        historial = simular(estado, pasos=horizon, verbose=False)
+        return np.array([h["opinion"] for h in historial[-horizon:]])
+    except Exception as exc:  # noqa: BLE001
+        log.warning("LLM forecast failed for '%s': %s", case.get("name", "?"), exc)
+        return None
 
 
-# ---------------------------------------------------------------------------
-# Train / val / test split
-# ---------------------------------------------------------------------------
+# ── Per-case evaluation ───────────────────────────────────────────────────────
 
-def split_series(
-    series: list[float],
-    train_frac: float = 0.60,
-    val_frac: float = 0.20,
-) -> tuple[list[float], list[float], list[float]]:
-    n = len(series)
-    i_train = max(1, int(n * train_frac))
-    i_val = max(i_train + 1, int(n * (train_frac + val_frac)))
-    return series[:i_train], series[i_train:i_val], series[i_val:]
+def evaluate_case(
+    case: dict,
+    mode: str,
+    rng: np.random.Generator,
+) -> dict:
+    """Evaluate all baselines (and optionally MASSIVE) on one case.
 
+    Returns a result dict ready for JSON serialisation.
+    """
+    P = case["timeseries"]["P"]
+    n = len(P)
+    split = max(2, int(n * TRAIN_RATIO))
+    train, test = P[:split], P[split:]
+    horizon = len(test)
 
-# ---------------------------------------------------------------------------
-# Evaluation
-# ---------------------------------------------------------------------------
+    if horizon < 1:
+        log.warning("Case '%s': test split is empty — skipping.", case["name"])
+        return {"case": case["name"], "skipped": True, "reason": "empty test split"}
 
-def evaluate_case(case: dict, train_frac: float = 0.60, val_frac: float = 0.20) -> dict:
-    """Fit all baselines on train and evaluate on test. Returns metrics dict."""
-    from benchmarks.baselines import ALL_BASELINES
-    from benchmarks.metrics import compute_all
-    from benchmarks.turning_points import detect_turning_points
+    # ── Baselines ────────────────────────────────────────────────────────────
+    baselines = get_all_baselines()
+    baseline_results: dict[str, dict] = {}
+    baseline_preds: dict[str, np.ndarray] = {}
 
-    series = case["series"]
-    train, val, test = split_series(series, train_frac=train_frac, val_frac=val_frac)
+    for bl in baselines:
+        pred = bl.predict(train, horizon)
+        baseline_preds[bl.name] = pred
+        baseline_results[bl.name] = compute_all_metrics(test, pred)
 
-    if len(test) < 2:
-        return {"case_id": case["id"], "skipped": True, "reason": "test set too small"}
+    # ── MASSIVE forecast ──────────────────────────────────────────────────
+    if mode == "llm":
+        bs_pred = _massive_llm_forecast(train, horizon, case)
+    else:
+        bs_pred = _massive_offline_forecast(train, horizon, rng)
 
-    true_tp_events = detect_turning_points(test)
-    results: dict[str, dict] = {}
+    bs_metrics: dict = {}
+    dm_results: dict = {}
+    tp_result: dict = {}
 
-    for bl_name, bl_cls in ALL_BASELINES.items():
-        bl = bl_cls()
-        bl.fit(train)
-        last_train_y = train[-1]
-        preds = bl.predict(len(test), last_y=last_train_y)
-        pred_tp_events = detect_turning_points(preds)
-        m = compute_all(test, preds, true_events=true_tp_events, pred_events=pred_tp_events)
-        results[bl_name] = m
+    if bs_pred is not None:
+        bs_metrics = compute_all_metrics(test, bs_pred)
+
+        # Diebold–Mariano vs each baseline + Holm–Bonferroni correction
+        p_values_raw = []
+        bl_names_for_dm = []
+        for bl in baselines:
+            _, pv = dm_test(test, bs_pred, baseline_preds[bl.name])
+            p_values_raw.append(pv)
+            bl_names_for_dm.append(bl.name)
+
+        p_adj = holm_bonferroni(p_values_raw)
+        for i, bl_name in enumerate(bl_names_for_dm):
+            dm_results[bl_name] = {
+                "p_raw": p_values_raw[i],
+                "p_adj_holm": p_adj[i],
+                "significant": (p_adj[i] is not None and p_adj[i] < 0.05),
+            }
+
+        # Turning-point scoring
+        tp_true = detect_turning_points(test)
+        tp_pred = detect_turning_points(bs_pred)
+        tp_result = score_turning_points(tp_true, tp_pred, n=len(test))
 
     return {
-        "case_id": case["id"],
-        "n_total": len(series),
-        "n_train": len(train),
-        "n_val": len(val),
-        "n_test": len(test),
-        "metrics_by_baseline": results,
+        "case": case["name"],
+        "cluster_id": case.get("meta", {}).get("cluster_id"),
+        "n_total": n,
+        "n_train": split,
+        "n_test": horizon,
+        "baselines": baseline_results,
+        "massive": bs_metrics,
+        "dm_tests": dm_results,
+        "turning_points": tp_result,
         "skipped": False,
     }
 
 
-# ---------------------------------------------------------------------------
-# Reporting
-# ---------------------------------------------------------------------------
+# ── Report generation ─────────────────────────────────────────────────────────
 
-_NAN_STR = "N/A"
-
-
-def _fmt(v: float | str) -> str:
-    if isinstance(v, str):
-        return v
-    if math.isnan(v) or math.isinf(v):
-        return _NAN_STR
+def _format_float(v) -> str:
+    if v is None or (isinstance(v, float) and (v != v)):  # nan check
+        return "N/A"
     return f"{v:.4f}"
 
 
-def build_report(all_results: list[dict], mode: str, cases_path: str) -> str:
-    """Generate a Markdown PVU validation report."""
-    ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    lines: list[str] = [
-        "# BeyondSight — PVU Validation Report",
+def generate_report(results: list[dict], mode: str, seed: int) -> str:
+    """Build a Markdown summary report from the list of case results."""
+    run_ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    lines = [
+        "# PVU-BS Benchmark Report",
         "",
-        f"**Generated:** {ts}  ",
-        f"**Mode:** {mode}  ",
-        f"**Cases path:** `{cases_path}`  ",
+        f"**Run timestamp:** {run_ts}  ",
+        f"**Mode:** `{mode}`  ",
+        f"**Seed:** `{seed}`  ",
+        f"**Cases evaluated:** {len(results)}  ",
+        "",
+        "> ⚠️ **Sample-case disclaimer:** results from `sample_case_*` are",
+        "> synthetic and do NOT constitute PVU real-validation evidence.",
+        "> Real validation requires N ≥ 10 independent cases",
+        "> (see `docs/validation/PVU_MASSIVE_EN.md`).",
         "",
         "---",
         "",
     ]
 
-    skipped = [r for r in all_results if r.get("skipped")]
-    evaluated = [r for r in all_results if not r.get("skipped")]
+    for r in results:
+        lines.append(f"## Case: `{r['case']}`")
+        if r.get("skipped"):
+            lines += [f"_Skipped: {r.get('reason', 'unknown')}_", ""]
+            continue
 
-    lines.append(f"**Cases evaluated:** {len(evaluated)}  ")
-    lines.append(f"**Cases skipped:** {len(skipped)}  ")
-    lines.append("")
-
-    for res in evaluated:
-        lines.append(f"## Case: `{res['case_id']}`")
-        lines.append(
-            f"Split — train: {res['n_train']} | val: {res['n_val']} | test: {res['n_test']}"
-        )
-        lines.append("")
-        lines.append(
-            "| Baseline | MAE | RMSE | MAPE | Dir.Acc | TP-F1 | TP-Timing |"
-        )
-        lines.append(
-            "|----------|-----|------|------|---------|-------|-----------|"
-        )
-        for bl, m in res["metrics_by_baseline"].items():
-            row = (
-                f"| {bl} "
-                f"| {_fmt(m['mae'])} "
-                f"| {_fmt(m['rmse'])} "
-                f"| {_fmt(m['mape'])} "
-                f"| {_fmt(m['directional_accuracy'])} "
-                f"| {_fmt(m['turning_point_f1'])} "
-                f"| {_fmt(m['turning_point_timing_error'])} |"
+        lines += [
+            f"- **N total / train / test:** {r['n_total']} / {r['n_train']} / {r['n_test']}",
+            f"- **Cluster ID:** `{r.get('cluster_id') or 'n/a'}`",
+            "",
+            "### Baseline metrics (test split)",
+            "",
+            "| Baseline | MAE | RMSE | MAPE (%) | Dir. Acc. |",
+            "|----------|-----|------|----------|-----------|",
+        ]
+        for bl_name, m in r.get("baselines", {}).items():
+            lines.append(
+                f"| {bl_name} "
+                f"| {_format_float(m.get('mae'))} "
+                f"| {_format_float(m.get('rmse'))} "
+                f"| {_format_float(m.get('mape'))} "
+                f"| {_format_float(m.get('directional_accuracy'))} |"
             )
-            lines.append(row)
+
+        bs = r.get("massive", {})
+        if bs:
+            lines += [
+                "",
+                "### MASSIVE metrics (test split)",
+                "",
+                f"| MAE | RMSE | MAPE (%) | Dir. Acc. |",
+                f"|-----|------|----------|-----------|",
+                f"| {_format_float(bs.get('mae'))} "
+                f"| {_format_float(bs.get('rmse'))} "
+                f"| {_format_float(bs.get('mape'))} "
+                f"| {_format_float(bs.get('directional_accuracy'))} |",
+                "",
+                "### Diebold–Mariano tests (Holm–Bonferroni adjusted)",
+                "",
+                "| vs Baseline | p-raw | p-adj | Significant |",
+                "|-------------|-------|-------|-------------|",
+            ]
+            for bl_name, dm in r.get("dm_tests", {}).items():
+                lines.append(
+                    f"| {bl_name} "
+                    f"| {_format_float(dm.get('p_raw'))} "
+                    f"| {_format_float(dm.get('p_adj_holm'))} "
+                    f"| {'✓' if dm.get('significant') else '✗'} |"
+                )
+
+        tp = r.get("turning_points", {})
+        if tp:
+            lines += [
+                "",
+                "### Turning-point skill",
+                "",
+                f"- Precision: {_format_float(tp.get('precision'))}",
+                f"- Recall:    {_format_float(tp.get('recall'))}",
+                f"- F1:        {_format_float(tp.get('f1'))}",
+                f"- Mean timing error: {_format_float(tp.get('mean_timing_error'))} steps",
+                f"- GT turning points: {tp.get('n_true', 'N/A')} | "
+                f"Predicted: {tp.get('n_pred', 'N/A')}",
+            ]
+
         lines.append("")
 
-    for res in skipped:
-        lines.append(f"## Case: `{res['case_id']}` — SKIPPED")
-        lines.append(f"Reason: {res.get('reason', 'unknown')}")
-        lines.append("")
-
-    lines.append("---")
-    lines.append("*BeyondSight PVU — offline runner*")
+    lines += [
+        "---",
+        "",
+        "_Generated by `benchmarks.runner` — MASSIVE PVU-BS_",
+    ]
     return "\n".join(lines)
 
 
-# ---------------------------------------------------------------------------
-# Main
-# ---------------------------------------------------------------------------
+# ── CLI ───────────────────────────────────────────────────────────────────────
 
-def main(argv: list[str] | None = None) -> int:
+def _parse_args(argv=None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="BeyondSight PVU Validation Runner",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )
-    parser.add_argument("--cases", default="datasets/pvu_cases", help="Path to cases folder")
-    parser.add_argument("--offline", action="store_true", help="Run in offline mode (no LLM)")
-    parser.add_argument("--llm", action="store_true", help="Run in LLM-assisted mode")
-    parser.add_argument("--out", default="reports/validation/ci", help="Output directory")
-    parser.add_argument("--config", default="configs/pvu.yaml", help="YAML config file")
-    parser.add_argument(
-        "--train-frac", type=float, default=0.60, help="Train split fraction"
+        prog="python -m benchmarks.runner",
+        description="MASSIVE PVU-BS offline benchmark runner.",
     )
     parser.add_argument(
-        "--val-frac", type=float, default=0.20, help="Validation split fraction"
+        "--cases",
+        default="datasets/pvu_cases",
+        help="Path to folder containing PVU case sub-directories.",
     )
-    args = parser.parse_args(argv)
+    mode_group = parser.add_mutually_exclusive_group()
+    mode_group.add_argument(
+        "--offline",
+        action="store_true",
+        default=True,
+        help="Run in offline mode (no LLM, default).",
+    )
+    mode_group.add_argument(
+        "--llm",
+        action="store_true",
+        default=False,
+        help="Run MASSIVE in LLM mode (requires API key).",
+    )
+    parser.add_argument(
+        "--out",
+        default="reports/validation/ci",
+        help="Output directory for metrics.json and report.md.",
+    )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=42,
+        help="Global random seed for reproducibility.",
+    )
+    return parser.parse_args(argv)
 
-    mode = "llm" if args.llm and not args.offline else "offline"
 
-    # LLM mode guard — skip gracefully when no API key is present
-    if mode == "llm":
-        api_key = os.environ.get("OPENAI_API_KEY") or os.environ.get("OPENROUTER_API_KEY")
-        if not api_key:
-            print(
-                "[PVU] LLM mode requested but no API key found "
-                "(OPENAI_API_KEY / OPENROUTER_API_KEY). "
-                "Falling back to offline mode.",
-                file=sys.stderr,
-            )
-            mode = "offline"
+def main(argv=None) -> int:
+    args = _parse_args(argv)
+    mode = "llm" if args.llm else "offline"
+    seed = args.seed
 
-    cases_path = Path(args.cases)
-    out_path = Path(args.out)
-    out_path.mkdir(parents=True, exist_ok=True)
+    # Determinism
+    np.random.seed(seed)
+    rng = np.random.default_rng(seed)
 
-    # Discover case directories
-    if not cases_path.exists():
-        print(f"[PVU] Cases path not found: {cases_path}", file=sys.stderr)
+    log.info("PVU-BS runner | mode=%s | seed=%d | cases=%s", mode, seed, args.cases)
+
+    # Load cases
+    try:
+        cases = load_cases(args.cases)
+    except Exception as exc:
+        log.error("Failed to load cases: %s", exc)
         return 1
 
-    case_dirs = sorted(
-        d for d in cases_path.iterdir() if d.is_dir() and not d.name.startswith(".")
-    )
+    log.info("Loaded %d case(s).", len(cases))
 
-    if not case_dirs:
-        print(f"[PVU] No case directories found in {cases_path}", file=sys.stderr)
-        return 1
+    # Evaluate
+    results = []
+    for case in cases:
+        log.info("Evaluating case: %s", case["name"])
+        result = evaluate_case(case, mode, rng)
+        results.append(result)
 
-    print(f"[PVU] Mode: {mode} | Cases: {len(case_dirs)} | Output: {out_path}")
+    # Output
+    out_dir = Path(args.out)
+    out_dir.mkdir(parents=True, exist_ok=True)
 
-    all_results: list[dict] = []
-    for case_dir in case_dirs:
-        print(f"[PVU] Loading case: {case_dir.name} ...", end=" ", flush=True)
-        try:
-            case = load_case(case_dir)
-            result = evaluate_case(case, train_frac=args.train_frac, val_frac=args.val_frac)
-            all_results.append(result)
-            if result.get("skipped"):
-                print(f"SKIPPED ({result.get('reason')})")
-            else:
-                print("OK")
-        except (FileNotFoundError, ValueError, KeyError, csv.Error) as exc:
-            print(f"ERROR — {exc}")
-            all_results.append(
-                {"case_id": case_dir.name, "skipped": True, "reason": str(exc)}
-            )
-
-    # Write outputs
-    metrics_path = out_path / "metrics.json"
-    report_path = out_path / "report.md"
-
+    metrics_path = out_dir / "metrics.json"
     with open(metrics_path, "w", encoding="utf-8") as fh:
-        json.dump(all_results, fh, indent=2, default=str)
+        json.dump(results, fh, indent=2, ensure_ascii=False)
+    log.info("Metrics saved to %s", metrics_path)
 
-    report_md = build_report(all_results, mode=mode, cases_path=str(cases_path))
+    report_md = generate_report(results, mode, seed)
+    report_path = out_dir / "report.md"
     with open(report_path, "w", encoding="utf-8") as fh:
         fh.write(report_md)
+    log.info("Report saved to %s", report_path)
 
-    print(f"[PVU] Report written to {report_path}")
-    print(f"[PVU] Metrics written to {metrics_path}")
+    skipped = sum(1 for r in results if r.get("skipped"))
+    log.info(
+        "Done. %d case(s) evaluated, %d skipped.",
+        len(results) - skipped,
+        skipped,
+    )
     return 0
 
 

@@ -1,5 +1,17 @@
 [
-  {"date": "2024-01-15", "label": "Polarizing event A", "source": "synthetic"},
-  {"date": "2024-02-10", "label": "Consensus push", "source": "synthetic"},
-  {"date": "2024-03-05", "label": "Shock / regime shift", "source": "synthetic"}
+  {
+    "date": "2023-01-29",
+    "label": "political_event_start",
+    "source": "synthetic"
+  },
+  {
+    "date": "2023-02-08",
+    "label": "peak_polarization",
+    "source": "synthetic"
+  },
+  {
+    "date": "2023-02-18",
+    "label": "deescalation",
+    "source": "synthetic"
+  }
 ]

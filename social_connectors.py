@@ -1,5 +1,5 @@
 """
-social_connectors.py — Conectores de redes sociales para BeyondSight
+social_connectors.py — Conectores de redes sociales para MASSIVE
 Soporta: Twitter/X (tweepy v4) y Reddit (praw).
 Credenciales configurables por el usuario en la UI.
 """
@@ -11,7 +11,7 @@ from typing import Optional
 
 import numpy as np
 
-log = logging.getLogger("beyondsight")
+log = logging.getLogger("massive")
 
 # ── Importaciones opcionales ──────────────────────────────────────────────────
 try:
@@ -177,7 +177,7 @@ class RedditConnector:
         self,
         client_id: str,
         client_secret: str,
-        user_agent: str = "BeyondSight/1.0",
+        user_agent: str = "MASSIVE/1.0",
         username: str = "",
         password: str = "",
     ) -> None:

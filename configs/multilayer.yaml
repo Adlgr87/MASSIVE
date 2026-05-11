@@ -1,0 +1,39 @@
+# multilayer.yaml — Configuración del Motor Multicapa Sociodemográfico
+# BeyondSight Research | Apache License 2.0
+#
+# Personaliza capas de red, atributos y dinámica sin tocar el código.
+# Cargado automáticamente por MultilayerEngine cuando se pasa como config.
+
+# ── Capas de red ─────────────────────────────────────────────────────────────
+layers:
+  social:
+    type: watts_strogatz     # red de mundo pequeño
+    k: 5                     # vecinos en anillo inicial
+    p: 0.1                   # probabilidad de reconexión
+
+  digital:
+    type: scale_free         # Barabási-Albert (hubs virales)
+    m: 2                     # aristas añadidas por nuevo nodo
+
+  economic:
+    type: hierarchical       # red de autoridad descendente
+
+# ── Pesos de capa ────────────────────────────────────────────────────────────
+# Deben sumar 1.0; el motor los normaliza automáticamente.
+layer_weights:
+  social:   0.4
+  digital:  0.3
+  economic: 0.3
+
+# ── Distribuciones de atributos sociodemográficos ────────────────────────────
+attributes:
+  age_groups:     [0.3, 0.4, 0.3]  # proporciones [young, middle, old]
+  religion_prob:  0.3               # fracción de agentes religiosos
+  education_scale: 1.0              # escala del nivel educativo (Beta(2,2))
+  gender_ratio:   0.5               # fracción de agentes femeninos
+
+# ── Dinámica ─────────────────────────────────────────────────────────────────
+dynamics:
+  coupling: 0.3      # intensidad del acoplamiento social λ
+  dt:       0.01     # paso de tiempo de integración
+  range_type: bipolar  # 'bipolar' [-1,1] o 'unipolar' [0,1]

@@ -1,5 +1,5 @@
 """
-langchain_workflows.py — Flujos de trabajo LangChain para BeyondSight
+langchain_workflows.py — Flujos de trabajo LangChain para MASSIVE
 Reemplaza las llamadas HTTP manuales con cadenas LangChain tipadas.
 Soporta: groq, openai, openrouter, ollama.
 """
@@ -10,7 +10,9 @@ import logging
 import os
 from typing import Optional
 
-log = logging.getLogger("beyondsight")
+from llm_credentials import resolve_provider_api_key
+
+log = logging.getLogger("massive")
 
 # ── Importaciones opcionales ──────────────────────────────────────────────────
 try:
@@ -39,7 +41,7 @@ except ImportError:
 # SYSTEM PROMPTS
 # ─────────────────────────────────────────────────────────────────────────────
 
-_STRATEGY_SYSTEM = """Eres el Arquitecto de Simulación de BeyondSight.
+_STRATEGY_SYSTEM = """Eres el Arquitecto de Simulación de MASSIVE.
 Diseña una secuencia de intervenciones matemáticas para alcanzar el objetivo social.
 Modelos permitidos: lineal, umbral, memoria, backlash, polarizacion, hk,
 contagio_competitivo, umbral_heterogeneo, homofilia, replicador, nash, bayesiano, sir.
@@ -58,7 +60,7 @@ Responde ÚNICAMENTE con JSON válido siguiendo exactamente esta estructura:
     ]
 }}"""
 
-_LANDSCAPE_SYSTEM = """Eres un Diseñador de Dinámicas Sociales para BeyondSight.
+_LANDSCAPE_SYSTEM = """Eres un Diseñador de Dinámicas Sociales para MASSIVE.
 Tu única tarea es generar configuraciones matemáticas en formato JSON.
 REGLAS ESTRICTAS:
 Responde SOLO con JSON válido. Sin texto adicional, sin explicaciones, sin markdown.
@@ -109,7 +111,7 @@ def build_llm(
             log.warning("[LangChain] langchain-groq no instalado.")
             return None
         return ChatGroq(
-            api_key=api_key or os.getenv("GROQ_API_KEY", ""),
+            api_key=resolve_provider_api_key("groq", fallback=api_key),
             model=model or "llama-3.1-8b-instant",
             temperature=temperature,
         )
@@ -119,16 +121,18 @@ def build_llm(
             log.warning("[LangChain] langchain-openai no instalado.")
             return None
         base_url = None
+        resolved_api_key = resolve_provider_api_key("openai", fallback=api_key)
         if p == "openrouter":
             base_url = "https://openrouter.ai/api/v1"
+            resolved_api_key = resolve_provider_api_key("openrouter", fallback=api_key)
         return ChatOpenAI(
-            api_key=api_key or os.getenv("OPENAI_API_KEY", ""),
+            api_key=resolved_api_key,
             model=model or "gpt-4o-mini",
             temperature=temperature,
             base_url=base_url,
             default_headers=(
-                {"HTTP-Referer": "https://github.com/Adlgr87/BeyondSight",
-                 "X-Title": "BeyondSight"}
+                {"HTTP-Referer": "https://github.com/Adlgr87/MASSIVE",
+                 "X-Title": "MASSIVE"}
                 if p == "openrouter" else {}
             ),
         )
@@ -157,7 +161,7 @@ def build_llm(
 
 class LangChainSocialArchitect:
     """
-    LangChain-based Social Architect for BeyondSight.
+    LangChain-based Social Architect for MASSIVE.
 
     Replaces raw HTTP calls in social_architect.py with proper LangChain chains:
     1. strategy_chain  — generates a JSON intervention schedule.
@@ -231,7 +235,7 @@ class LangChainSocialArchitect:
 
 class LangChainProgrammaticArchitect:
     """
-    LangChain-based Programmatic Architect for BeyondSight Energy Engine.
+    LangChain-based Programmatic Architect for MASSIVE Energy Engine.
 
     Generates EnergyConfig JSON from a natural-language goal using a
     properly structured LangChain chain with JSON output parsing.

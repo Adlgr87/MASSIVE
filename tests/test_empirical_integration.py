@@ -1,5 +1,5 @@
 """
-Tests de integración empírica — BeyondSight
+Tests de integración empírica — MASSIVE
 Verifica que la base empírica de calibración se cargue correctamente
 y que sus valores satisfagan las propiedades esperadas.
 """

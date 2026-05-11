@@ -1,5 +1,5 @@
 """
-BeyondSight — app package
+MASSIVE — app package
 
 Exposes the core simulation API so that ``import app`` works as a library
 import without triggering Streamlit's runtime context requirements.

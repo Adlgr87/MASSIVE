@@ -1,5 +1,5 @@
 """
-Suite de pruebas para el núcleo Energy de BeyondSight.
+Suite de pruebas para el núcleo Energy de MASSIVE.
 Cubre: SocialEnergyEngine, EnergySchemas, LandscapeCache, ProgrammaticArchitect, run_energy_simulation
 """
 import pytest

@@ -1,41 +1,42 @@
-# BeyondSight — PVU runner configuration
-# See docs/validation/PVU_BeyondSight_EN.md for protocol details.
+# PVU-BS Runner Configuration
+# ─────────────────────────────────────────────────────────────────
+# This file controls the offline benchmark runner.
+# Edit thresholds and split ratios here; do NOT hard-code them in code.
 
-split:
-  train: 0.60
-  val: 0.20
-  test: 0.20
+# ── Data ───────────────────────────────────────────────────────────
+cases_dir: datasets/pvu_cases
+output_dir: reports/validation/ci
 
-reproducibility:
-  seed: 42
-  pythonhashseed: "0"
+# ── Reproducibility ────────────────────────────────────────────────
+seed: 42                  # PYTHONHASHSEED should match this value in CI
 
-metrics:
-  - mae
-  - rmse
-  - mape
-  - directional_accuracy
-  - turning_point_f1
-  - turning_point_timing_error
+# ── Split ratios (fractions of total timesteps per case) ───────────
+train_ratio: 0.70         # 70 % training
+# Remaining 30 % is the held-out test set.
+# For real PVU runs add a val_ratio and adjust accordingly.
 
-baselines:
-  - naive
-  - moving_average
-  - ar1
-  - random_regime
-  - degroot
+# ── Turning-point detection ────────────────────────────────────────
+turning_points:
+  order: 2                # neighbour half-window for local extrema
+  min_prominence: 0.02    # min abs height diff to count as turning point
+  tolerance: 3            # ±steps within which a prediction counts as match
 
-thresholds:
+# ── Statistical thresholds ────────────────────────────────────────
+statistics:
+  alpha: 0.05             # significance level (Holm–Bonferroni adjusted)
+  dm_horizon: 1           # Diebold–Mariano forecast horizon h
+
+# ── PVU validation levels (informational; not enforced in offline CI) ──
+pvu_levels:
   bronze:
-    mae_vs_naive: 0.10        # ≥10 % improvement over naïve
+    min_cases: 10
+    dm_vs_naive: "p_adj < 0.05"
+    effect_size: "delta_mae > 0"
   silver:
-    mae_vs_naive: 0.20
-    turning_point_f1: 0.60
+    min_cases: 20
+    dm_vs_all_baselines: "p_adj < 0.05"
+    tp_f1: ">= 0.50"
   gold:
-    mae_vs_naive: 0.30
-    turning_point_f1: 0.75
-    p_adj_vs_ar1: 0.05        # Holm-corrected Diebold-Mariano p-value
-
-output:
-  report_format: markdown
-  save_plots: true
+    min_cases: 30
+    external_replication: true
+    tp_f1: ">= 0.70"

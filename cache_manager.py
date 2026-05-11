@@ -1,5 +1,5 @@
 """
-cache_manager.py — Gestor de caché para BeyondSight Architect
+cache_manager.py — Gestor de caché para MASSIVE Architect
 Arquitectura: Memoria RAM (ultra-rápido) + SQLite (persistente cross-session)
 Compatible con: Streamlit, HF Spaces, Docker, serverless con volumen montado.
 """

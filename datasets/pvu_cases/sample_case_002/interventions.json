@@ -1,4 +1,12 @@
 [
-  {"date": "2024-06-01", "label": "Platform policy change", "source": "synthetic"},
-  {"date": "2024-09-15", "label": "External shock", "source": "synthetic"}
+  {
+    "date": "2023-01-21",
+    "label": "viral_content_spread",
+    "source": "synthetic"
+  },
+  {
+    "date": "2023-02-05",
+    "label": "saturation_plateau",
+    "source": "synthetic"
+  }
 ]

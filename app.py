@@ -1,5 +1,5 @@
 """
-BeyondSight — Interfaz Streamlit
+MASSIVE — Interfaz Streamlit
 Simulador híbrido con soporte completo de modelos extendidos
 """
 
@@ -9,10 +9,12 @@ from collections import Counter
 
 import numpy as np
 import pandas as pd
+import plotly.graph_objects as go
 import streamlit as st
 from dotenv import load_dotenv
 
 from i18n import t
+from llm_credentials import persist_provider_api_key
 from social_architect import buscar_estrategia_inversa
 from visualizations import generate_social_network_viz
 from simulator import (
@@ -31,6 +33,12 @@ from simulator import (
     simular_multiples,
     simular_multiples_dask,
 )
+
+ANALYTICS_ANIMATION_FRAME_MS = 70
+ANALYTICS_ANIMATION_PAUSE_MS = 0
+# Logo hosted on GitHub CDN — always accessible on Streamlit Cloud / HF Spaces.
+# A local copy lives at docs/assets/massive_logo.png for offline reference.
+PROJECT_LOGO_URL = "https://github.com/user-attachments/assets/04c5860f-36d4-433c-a142-5761d0f16824"
 
 # EMPIRICAL INTEGRATION — importar indicadores de base empírica si disponibles
 try:
@@ -66,7 +74,7 @@ _STRATEGIC_PRESETS: list[dict] = [
 # PÁGINA
 # ------------------------------------------------------------
 st.set_page_config(
-    page_title="BeyondSight",
+    page_title="MASSIVE",
     page_icon="🌊",
     layout="wide",
     initial_sidebar_state="expanded",
@@ -79,7 +87,7 @@ import streamlit.components.v1 as components
 components.html("""
 <script>
   // Google Analytics / PostHog script placeholder
-  console.log('BeyondSight Analytics loaded');
+  console.log('MASSIVE Analytics loaded');
 </script>
 """, width=0, height=0)
 
@@ -92,6 +100,8 @@ if "objetivo_inverso" not in st.session_state:
 if "corporate_graph" not in st.session_state:
     # Almacena el grafo NetworkX si se sube un CSV corporativo
     st.session_state["corporate_graph"] = None
+if "last_simulation" not in st.session_state:
+    st.session_state["last_simulation"] = None
 
 # ------------------------------------------------------------
 # ESTILOS
@@ -161,9 +171,12 @@ section[data-testid="stSidebar"] {
 # ------------------------------------------------------------
 # HEADER
 # ------------------------------------------------------------
-st.markdown('<div class="bs-header">BeyondSight</div>', unsafe_allow_html=True)
+# Streamlit renders image URLs directly in the browser; the local asset in
+# docs/assets/massive_logo.png serves as an offline reference copy.
+st.image(PROJECT_LOGO_URL, width=170)
+st.markdown('<div class="bs-header">MASSIVE</div>', unsafe_allow_html=True)
 st.markdown(
-    '<div class="bs-subtitle">Simulador híbrido · Dinámica social · LLM + Núcleo numérico</div>',
+    '<div class="bs-subtitle">Mathematical Architecture for Scalable Social Interaction &amp; Virtual Engine &nbsp;·&nbsp; Many behaving as One</div>',
     unsafe_allow_html=True,
 )
 
@@ -181,10 +194,10 @@ if _EMPIRICAL_VALIDATION_FLAGS:
 # ------------------------------------------------------------
 with st.sidebar:
 
-    st.markdown("### BeyondSight Enterprise")
-    st.markdown("Gratis para uso no comercial (Prosperity Public License 3.0). Para agencias, corporativos y consultoría privada, se requiere Licencia Comercial.")
-    st.link_button("💼 Adquirir Licencia Comercial", "mailto:BeyondSight@ejemplo.com")
-    st.link_button("🤝 Contratar Consultoría", "mailto:BeyondSight@ejemplo.com")
+    st.markdown("### MASSIVE Open")
+    st.markdown("Proyecto de código abierto bajo licencia Apache 2.0. Libre para uso personal, académico y comercial con atribución al autor.")
+    st.link_button("💼 Consultoría & Servicios", "mailto:MASSIVE@ejemplo.com")
+    st.link_button("🤝 Contribuir al Proyecto", "https://github.com/Adlgr87/MASSIVE")
     st.markdown("---")
 
     # ── LANGUAGE ───────────────────────────────────────────
@@ -455,7 +468,13 @@ with st.sidebar:
 # ------------------------------------------------------------
 # LÓGICA PRINCIPAL
 # ------------------------------------------------------------
-tab1, tab2 = st.tabs(['📊 Simulación Tradicional', '🧠 Arquitecto Social (Modo Inverso)'])
+tab1, tab2, tab3, tab4, tab5 = st.tabs([
+    '📊 Simulación Tradicional',
+    '🧠 Arquitecto Social (Modo Inverso)',
+    '🌐 Simulación Multicapa',
+    '⚡ Simulación Masiva',
+    '🎬 Centro Analítico',
+])
 
 with tab1:
     if correr:
@@ -464,11 +483,12 @@ with tab1:
             st.error(f"⚠️ **{proveedor}** requiere API key.")
             st.stop()
 
+        persist_provider_api_key(proveedor, api_key)
+
         config_run = {
             "rango":              nombre_rango,
             "proveedor":          proveedor,
             "modelo":             modelo,
-            "api_key":            api_key,
             "ollama_host":        ollama_host,
             "alpha_blend":        alpha,
             "sesgo_confirmacion": sesgo_conf,
@@ -517,6 +537,14 @@ with tab1:
         stats     = resumen_historial(historial, config_run)
         opiniones = [h["opinion"] for h in historial]
         delta     = stats["delta_total"]
+        st.session_state["last_simulation"] = {
+            "historial": historial,
+            "stats": stats,
+            "config": config_run,
+            "is_bipolar": es_bipolar,
+            "neutro": neutro,
+            "pasos": pasos,
+        }
 
         # ── BADGES de mecanismos activos ───────────────────────
         badges = []
@@ -618,8 +646,8 @@ with tab1:
             fig_net = generate_social_network_viz(opiniones[-1], historial[-1]["confianza"], amalgama=not es_bipolar, is_bipolar=es_bipolar)
             st.plotly_chart(fig_net, use_container_width=True)
             
-            share_url = "https://github.com/Adlgr87/BeyondSight"
-            st.markdown(f"**¿Impresionante?** [Compartir en 𝕏](https://twitter.com/intent/tweet?text=Acabo%20de%20simular%20una%20dinámica%20social%20en%20BeyondSight%20AI!%20&url={share_url}) | [Compartir en LinkedIn](https://www.linkedin.com/sharing/share-offsite/?url={share_url})")
+            share_url = "https://github.com/Adlgr87/MASSIVE"
+            st.markdown(f"**¿Impresionante?** [Compartir en 𝕏](https://twitter.com/intent/tweet?text=Acabo%20de%20simular%20una%20dinámica%20social%20en%20MASSIVE%20AI!%20&url={share_url}) | [Compartir en LinkedIn](https://www.linkedin.com/sharing/share-offsite/?url={share_url})")
 
         with col_s:
             st.markdown("**Distribución de reglas**")
@@ -704,11 +732,11 @@ with tab1:
             with ca:
                 st.download_button("⬇ CSV",
                     data=df_exp[cols_ok].to_csv(index=False),
-                    file_name="beyondsight.csv", mime="text/csv")
+                    file_name="massive.csv", mime="text/csv")
             with cb:
                 st.download_button("⬇ JSON",
                     data=json.dumps(historial, indent=2, default=str),
-                    file_name="beyondsight.json", mime="application/json")
+                    file_name="massive.json", mime="application/json")
 
     # ------------------------------------------------------------
     # EMPTY STATE
@@ -810,16 +838,17 @@ with tab2:
                 st.error("⚠️ Se requiere API key para generar estrategias con el LLM.")
                 st.stop()
 
+            persist_provider_api_key(proveedor, api_key)
+
             config_run = {
-                "rango": nombre_rango,
-                "proveedor": proveedor,
-                "modelo": modelo,
-                "api_key": api_key,
-                "ollama_host": ollama_host,
-                "alpha_blend": alpha,
+                "rango":              nombre_rango,
+                "proveedor":          proveedor,
+                "modelo":             modelo,
+                "ollama_host":        ollama_host,
+                "alpha_blend":        alpha,
                 "sesgo_confirmacion": sesgo_conf,
-                "hk_epsilon": hk_epsilon,
-                "homofilia_tasa": homofilia_tasa,
+                "hk_epsilon":         hk_epsilon,
+                "homofilia_tasa":     homofilia_tasa,
                 # Pasar tamaño del grafo para el cálculo de proporciones target_nodes
                 "_n_nodos": grafo_org.number_of_nodes() if grafo_org else 20,
             }
@@ -907,7 +936,7 @@ with tab2:
             st.write(data_inv["narrativa"])
 
             if data_inv["hist_inverso"]:
-                st.markdown("**Trayectoria de opinión (Estrategia Aplicada)** — *BeyondSight AI*")
+                st.markdown("**Trayectoria de opinión (Estrategia Aplicada)** — *MASSIVE AI*")
                 opiniones_inv = [h["opinion"] for h in data_inv["hist_inverso"]]
                 df_data_inv = {"Opinión": opiniones_inv, "Neutro": [neutro] * len(opiniones_inv)}
                 st.line_chart(pd.DataFrame(df_data_inv), color=["#5ccfe6", "#3d5166"])
@@ -944,12 +973,743 @@ with tab2:
                 f"{data_inv['narrativa']}\n\n"
                 "MATRIZ:\n" + json.dumps(data_inv["estrategia"], indent=2) + "\n\n"
                 + "-" * 50 + "\n"
-                + "Generado con BeyondSight AI - Simulador de Redes Sociales.\n"
-                + "Descubre más y obtén tu licencia en: https://github.com/Adlgr87/BeyondSight\n"
+                + "Generado con MASSIVE AI - Simulador de Redes Sociales.\n"
+                + "Descubre más y obtén tu licencia en: https://github.com/Adlgr87/MASSIVE\n"
                 + "-" * 50
             )
             st.download_button(
                 "📥 Descargar Reporte Ejecutivo (TXT)",
                 data=report_text,
-                file_name=f"Reporte_BeyondSight_{modo_inv.capitalize()}.txt",
+                file_name=f"Reporte_MASSIVE_{modo_inv.capitalize()}.txt",
             )
+
+
+# ------------------------------------------------------------
+# TAB 3 — SIMULACIÓN MULTICAPA SOCIODEMOGRÁFICA
+# Dinámica vectorial con capas de red diferenciadas y atributos
+# sociodemográficos fijos por agente.
+# ------------------------------------------------------------
+
+with tab3:
+    import plotly.graph_objects as go
+
+    try:
+        from multilayer_engine import (
+            MultilayerEngine,
+            generate_attributes,
+            COL_OPINION,
+            COL_COOP,
+            K as ML_K,
+        )
+        _ML_AVAILABLE = True
+    except ImportError as _ml_err:
+        _ML_AVAILABLE = False
+        st.error(f"multilayer_engine no disponible: {_ml_err}")
+
+    if _ML_AVAILABLE:
+        st.markdown("### 🌐 Simulador Social Multicapa")
+        st.markdown(
+            "Cada agente es un **vector de estado 5D** "
+            "`(opinión, cooperación, jerarquía, ingreso, acceso_info)` "
+            "que evoluciona sobre tres redes superpuestas — social, digital y económica — "
+            "moduladas por atributos sociodemográficos fijos."
+        )
+
+        # ── Controles en columnas ─────────────────────────────────────────────
+        ml_col1, ml_col2, ml_col3 = st.columns(3)
+
+        with ml_col1:
+            ml_n = st.slider("👥 Agentes (N)", 20, 500, 100, 10,
+                             help="Número total de agentes en la simulación.")
+            ml_steps = st.slider("⏱ Pasos", 50, 500, 150, 10)
+            ml_dt = st.select_slider("Δt (paso de tiempo)", [0.001, 0.005, 0.01, 0.02, 0.05], value=0.01)
+
+        with ml_col2:
+            st.markdown("**Pesos de capa**")
+            w_social   = st.slider("🤝 Social (Watts-Strogatz)",   0.0, 1.0, 0.4, 0.05)
+            w_digital  = st.slider("📱 Digital (Libre de Escala)", 0.0, 1.0, 0.3, 0.05)
+            w_economic = st.slider("💼 Económica (Jerárquica)",    0.0, 1.0, 0.3, 0.05)
+            ml_coupling = st.slider("λ Acoplamiento social", 0.05, 1.0, 0.3, 0.05)
+
+        with ml_col3:
+            st.markdown("**Distribución de atributos**")
+            pct_young = st.slider("% Jóvenes (18-35)",   0, 100, 30, 5)
+            pct_mid   = st.slider("% Adultos (36-55)",   0, 100, 40, 5)
+            pct_old   = 100 - pct_young - pct_mid
+            pct_old   = max(0, pct_old)
+            st.caption(f"→ Adultos mayores (56+): {pct_old}%")
+            ml_religion  = st.slider("⛪ % Religiosos",  0, 100, 30, 5) / 100.0
+            ml_edu_scale = st.slider("🎓 Escala educativa", 0.5, 1.5, 1.0, 0.1)
+            ml_seed = st.number_input("🎲 Semilla", value=42, step=1)
+
+        if pct_young + pct_mid > 100:
+            st.warning(
+                f"⚠️ La suma de jóvenes ({pct_young}%) + adultos ({pct_mid}%) "
+                f"supera el 100%. Se ajusta el grupo mayor a 0%."
+            )
+
+        age_dist = (pct_young / 100.0, pct_mid / 100.0, pct_old / 100.0)
+        total_w  = w_social + w_digital + w_economic
+        layer_w  = (
+            (w_social / total_w, w_digital / total_w, w_economic / total_w)
+            if total_w > 0 else (0.4, 0.3, 0.3)
+        )
+
+        ml_run = st.button("🚀 Simular Multicapa", type="primary")
+
+        if ml_run:
+            with st.spinner("Simulando dinámica multicapa con Numba..."):
+                engine = MultilayerEngine(
+                    N=ml_n,
+                    layer_weights=layer_w,
+                    coupling=ml_coupling,
+                    dt=ml_dt,
+                    range_type="bipolar",
+                    attr_config={
+                        "age_dist":       age_dist,
+                        "religion_prob":  ml_religion,
+                        "education_scale": ml_edu_scale,
+                    },
+                    seed=int(ml_seed),
+                )
+                engine.run(steps=ml_steps)
+
+            # ── Métricas finales ──────────────────────────────────────────────
+            st.markdown("#### Métricas del paisaje social")
+            landscape = engine.get_landscape()
+            mc1, mc2, mc3, mc4 = st.columns(4)
+            with mc1:
+                st.markdown(f"""<div class="metric-card">
+                    <div class="metric-label">Opinión media</div>
+                    <div class="metric-value">{landscape['mean_opinion']:+.3f}</div>
+                </div>""", unsafe_allow_html=True)
+            with mc2:
+                st.markdown(f"""<div class="metric-card">
+                    <div class="metric-label">Polarización</div>
+                    <div class="metric-value">{landscape['polarization']:.3f}</div>
+                </div>""", unsafe_allow_html=True)
+            with mc3:
+                st.markdown(f"""<div class="metric-card">
+                    <div class="metric-label">Cooperación media</div>
+                    <div class="metric-value">{landscape['mean_cooperation']:.3f}</div>
+                </div>""", unsafe_allow_html=True)
+            with mc4:
+                st.markdown(f"""<div class="metric-card">
+                    <div class="metric-label">Jerarquía media</div>
+                    <div class="metric-value">{landscape['mean_hierarchy']:.3f}</div>
+                </div>""", unsafe_allow_html=True)
+
+            st.markdown("<br>", unsafe_allow_html=True)
+            plot_c1, plot_c2 = st.columns(2)
+
+            # ── Plot 1: Trayectorias por grupo etario ─────────────────────────
+            with plot_c1:
+                st.markdown("**Trayectoria de opinión por grupo etario**")
+                traj_df = engine.trajectories_by_attribute("age_group")
+                age_labels = {0: "Jóvenes (18-35)", 1: "Adultos (36-55)", 2: "Mayores (56+)"}
+                age_colors = {0: "#5ccfe6", 1: "#bae67e", 2: "#c3a6ff"}
+                fig_traj = go.Figure()
+                for age_val in sorted(traj_df["age_group"].unique()):
+                    sub = traj_df[traj_df["age_group"] == age_val]
+                    fig_traj.add_trace(go.Scatter(
+                        x=sub["step"], y=sub["mean_opinion"],
+                        name=age_labels.get(int(age_val), str(age_val)),
+                        line=dict(color=age_colors.get(int(age_val), "#ffffff"), width=2),
+                    ))
+                fig_traj.add_hline(y=0, line_dash="dot", line_color="#3d5166",
+                                   annotation_text="neutro")
+                fig_traj.update_layout(
+                    template="plotly_dark", paper_bgcolor="#0a0e14",
+                    plot_bgcolor="#0d1520", height=320,
+                    xaxis_title="Paso", yaxis_title="Opinión media",
+                    legend=dict(orientation="h", y=-0.3),
+                    margin=dict(l=10, r=10, t=10, b=10),
+                )
+                st.plotly_chart(fig_traj, use_container_width=True)
+
+            # ── Plot 2: Heatmap de correlaciones entre comportamientos ─────────
+            with plot_c2:
+                st.markdown("**Correlaciones entre comportamientos**")
+                corr = engine.behavior_correlation_matrix()
+                behavior_labels = ["Opinión", "Cooperación", "Jerarquía", "Ingreso", "Info"]
+                fig_corr = go.Figure(go.Heatmap(
+                    z=corr,
+                    x=behavior_labels,
+                    y=behavior_labels,
+                    colorscale="RdBu",
+                    zmid=0, zmin=-1, zmax=1,
+                    text=np.round(corr, 2),
+                    texttemplate="%{text}",
+                    showscale=True,
+                ))
+                fig_corr.update_layout(
+                    template="plotly_dark", paper_bgcolor="#0a0e14",
+                    plot_bgcolor="#0d1520", height=320,
+                    margin=dict(l=10, r=10, t=10, b=10),
+                )
+                st.plotly_chart(fig_corr, use_container_width=True)
+
+            # ── Plot 3: Paisaje 2D opinión vs cooperación ─────────────────────
+            st.markdown("**Paisaje 2D: Opinión × Cooperación (estado final)**")
+            attrs_df = engine.attributes_df
+            age_arr  = attrs_df["age_group"].to_numpy()
+            rel_arr  = attrs_df["religion"].to_numpy()
+            fig_land = go.Figure()
+
+            group_cfg = [
+                (age_arr == 0, "#5ccfe6", "Jóvenes"),
+                (age_arr == 1, "#bae67e", "Adultos"),
+                (age_arr == 2, "#c3a6ff", "Mayores"),
+            ]
+            for mask, color, label in group_cfg:
+                if mask.sum() > 0:
+                    fig_land.add_trace(go.Scatter(
+                        x=engine.x[mask, COL_OPINION],
+                        y=engine.x[mask, COL_COOP],
+                        mode="markers",
+                        name=label,
+                        marker=dict(color=color, size=5, opacity=0.6),
+                    ))
+
+            fig_land.update_layout(
+                template="plotly_dark", paper_bgcolor="#0a0e14",
+                plot_bgcolor="#0d1520", height=380,
+                xaxis_title="Opinión", yaxis_title="Cooperación",
+                xaxis=dict(range=[-1.05, 1.05]),
+                yaxis=dict(range=[-0.05, 1.05]),
+                legend=dict(orientation="h", y=-0.2),
+                margin=dict(l=10, r=10, t=10, b=10),
+            )
+            st.plotly_chart(fig_land, use_container_width=True)
+
+            # ── LLM bias dirigido ─────────────────────────────────────────────
+            with st.expander("🎯 Narrativa LLM dirigida a segmento demográfico"):
+                from multilayer_engine import targeted_llm_bias
+                bias_layer = st.selectbox(
+                    "Capa objetivo", ["digital", "social", "economic"], key="ml_bias_layer"
+                )
+                bias_demo  = st.selectbox(
+                    "Grupo demográfico", [
+                        "religion=1", "religion=0",
+                        "age_group=0", "age_group=2",
+                        "gender=1", "gender=0",
+                    ], key="ml_bias_demo"
+                )
+                if st.button("Generar narrativa", key="ml_bias_btn"):
+                    with st.spinner("Generando argumento..."):
+                        narrative = targeted_llm_bias(
+                            layer_target=bias_layer,
+                            demographic=bias_demo,
+                            proveedor=proveedor,
+                            modelo=modelo,
+                        )
+                    st.success(narrative)
+
+            # ── Exportar datos multicapa ──────────────────────────────────────
+            with st.expander("⬇️ Exportar datos multicapa"):
+                final_df = pd.DataFrame(engine.x, columns=["opinion", "cooperation",
+                                                            "hierarchy", "income", "info_access"])
+                final_df = pd.concat([final_df, engine.attributes_df.reset_index(drop=True)], axis=1)
+                st.dataframe(final_df, use_container_width=True)
+                st.download_button("⬇ CSV Estado Final",
+                                   data=final_df.to_csv(index=False),
+                                   file_name="massive_multilayer.csv",
+                                   mime="text/csv")
+
+        else:
+            st.markdown("""
+            <div style="border:1px dashed #1a2535;border-radius:4px;padding:48px;text-align:center;margin-top:2rem;">
+                <div style="font-family:'IBM Plex Mono',monospace;color:#3d5166;font-size:0.8rem;letter-spacing:2px;">
+                    CONFIGURA LAS CAPAS Y PULSA · SIMULAR MULTICAPA ·
+                </div>
+            </div>""", unsafe_allow_html=True)
+
+            with st.expander("📖 ¿Qué es la Simulación Multicapa?"):
+                st.markdown("""
+**Vector de estado por agente** `x_i ∈ ℝ⁵`:
+
+| Columna | Variable | Rango |
+|---------|----------|-------|
+| 0 | Opinión (s_i) | [-1, 1] |
+| 1 | Cooperación (c_i) | [0, 1] |
+| 2 | Jerarquía (h_i) | [0, 1] |
+| 3 | Ingreso (y_i) | [0, 1] |
+| 4 | Acceso a información (φ_i) | [0, 1] |
+
+**Tres capas de red superpuestas**:
+- 🤝 **Social** (Watts-Strogatz): red de mundo pequeño — contactos cara a cara.
+- 📱 **Digital** (Barabási-Albert): red libre de escala — redes sociales y medios virales.
+- 💼 **Económica** (Jerárquica): flujo de autoridad descendente — mercados y empleo.
+
+**Modulación por atributos**: la matriz θ(a_i) amplifica el ruido de cada agente
+según su religiosidad, educación y edad, reproduciendo la heterogeneidad real de
+las sociedades complejas.
+                """)
+
+
+# ------------------------------------------------------------
+# TAB 4 — SIMULACIÓN MASIVA
+# Motor de escala masiva con 4 estrategias de eficiencia:
+#   1. LOD (Super-Agentes): N agentes → M clústeres
+#   2. Cuantización uint8: ~87.5% menos RAM
+#   3. Event-Driven: solo procesa clústeres activos
+#   4. GPU offloading (CuPy/PyTorch si disponibles)
+# ------------------------------------------------------------
+
+with tab4:
+    try:
+        from massive_engine import MassiveSimEngine, _GPU_BACKEND
+        _MASSIVE_AVAILABLE = True
+    except ImportError as _me_err:
+        _MASSIVE_AVAILABLE = False
+        st.error(f"massive_engine no disponible: {_me_err}")
+
+    if _MASSIVE_AVAILABLE:
+        st.markdown("### ⚡ Simulación Masiva — Millones de Agentes")
+        st.markdown(
+            "Simula desde **10 000 hasta 1 000 000+ agentes** usando cuatro estrategias de "
+            "eficiencia combinadas: representación LOD por super-agentes, cuantización uint8, "
+            "actualización dirigida por eventos y aceleración GPU opcional."
+        )
+
+        # ── Badge GPU ─────────────────────────────────────────────────────────
+        gpu_color = "#bae67e" if _GPU_BACKEND != "numpy" else "#3d5166"
+        gpu_label = f"GPU: {_GPU_BACKEND}" if _GPU_BACKEND != "numpy" else "CPU (numpy) · GPU no detectada"
+        st.markdown(
+            f'<span class="badge" style="background:#0d1520;color:{gpu_color};border:1px solid {gpu_color}">'
+            f'🖥 {gpu_label}</span>',
+            unsafe_allow_html=True,
+        )
+
+        # ── Controles ─────────────────────────────────────────────────────────
+        ms_col1, ms_col2, ms_col3 = st.columns(3)
+
+        with ms_col1:
+            st.markdown("**Escala**")
+            ms_N = st.select_slider(
+                "👥 Agentes (N)",
+                options=[10_000, 25_000, 50_000, 100_000, 250_000, 500_000, 1_000_000],
+                value=100_000,
+                help="Número de agentes reales representados por los super-agentes.",
+            )
+            ms_M_auto = st.toggle("Auto M (√N)", value=True,
+                                  help="M se calcula como max(50, √N) — recomendado.")
+            if ms_M_auto:
+                ms_M = max(50, int(ms_N ** 0.5))
+                st.caption(f"→ M = {ms_M} super-agentes")
+            else:
+                ms_M = st.slider("🔵 Super-agentes (M)", 50, 500, 200, 10)
+            ms_steps = st.slider("⏱ Pasos", 50, 500, 200, 10)
+
+        with ms_col2:
+            st.markdown("**Estrategias de eficiencia**")
+            ms_quantize = st.toggle(
+                "📦 Cuantización uint8",
+                value=True,
+                help="Almacena el estado en 1 byte/parámetro. ~87.5% menos RAM que float64.",
+            )
+            ms_event = st.toggle(
+                "⚡ Event-Driven",
+                value=True,
+                help="Solo procesa super-agentes con cambios significativos. Ahorra CPU.",
+            )
+            ms_sleep_thr = st.select_slider(
+                "Umbral de 'sueño'",
+                options=[1e-4, 5e-4, 1e-3, 5e-3, 1e-2],
+                value=5e-3,
+                format_func=lambda v: f"{v:.0e}",
+                help="Cambio mínimo para considerar activo a un super-agente.",
+            )
+            ms_use_gpu = st.toggle(
+                f"🖥 GPU ({_GPU_BACKEND})",
+                value=_GPU_BACKEND != "numpy",
+                disabled=_GPU_BACKEND == "numpy",
+                help="Usa CuPy o PyTorch para operaciones matriciales en GPU.",
+            )
+
+        with ms_col3:
+            st.markdown("**Parámetros de red**")
+            ms_w_s = st.slider("🤝 Peso Social",    0.0, 1.0, 0.4, 0.05)
+            ms_w_d = st.slider("📱 Peso Digital",   0.0, 1.0, 0.3, 0.05)
+            ms_w_e = st.slider("💼 Peso Económico", 0.0, 1.0, 0.3, 0.05)
+            ms_coupling = st.slider("λ Acoplamiento", 0.05, 1.0, 0.3, 0.05)
+            ms_dt = st.select_slider("Δt", [0.001, 0.005, 0.01, 0.02, 0.05], value=0.01)
+            ms_seed = st.number_input("🎲 Semilla", value=42, step=1)
+
+        ms_run = st.button("🚀 Simular Masiva", type="primary")
+
+        # ── Preview de ahorro de memoria ──────────────────────────────────────
+        float64_MB = ms_N * 5 * 8 / 1e6
+        lod_MB     = ms_M * 5 * 8 / 1e6
+        final_MB   = ms_M * 5 * 1 / 1e6 if ms_quantize else lod_MB
+        savings_pct = (1.0 - final_MB / float64_MB) * 100.0
+
+        prev_c1, prev_c2, prev_c3 = st.columns(3)
+        with prev_c1:
+            st.markdown(f"""<div class="metric-card">
+                <div class="metric-label">RAM sin optimizar</div>
+                <div class="metric-value">{float64_MB:.1f} MB</div>
+                <div class="metric-delta-neu">N={ms_N:,} × 5 dim × float64</div>
+            </div>""", unsafe_allow_html=True)
+        with prev_c2:
+            st.markdown(f"""<div class="metric-card">
+                <div class="metric-label">RAM con LOD</div>
+                <div class="metric-value">{lod_MB:.2f} MB</div>
+                <div class="metric-delta-pos">M={ms_M} clústeres × float64</div>
+            </div>""", unsafe_allow_html=True)
+        with prev_c3:
+            st.markdown(f"""<div class="metric-card">
+                <div class="metric-label">RAM final estimada</div>
+                <div class="metric-value">{final_MB:.3f} MB</div>
+                <div class="metric-delta-pos">▼ {savings_pct:.1f}% vs naive</div>
+            </div>""", unsafe_allow_html=True)
+
+        if ms_run:
+            total_w = ms_w_s + ms_w_d + ms_w_e
+            layer_w = (
+                (ms_w_s / total_w, ms_w_d / total_w, ms_w_e / total_w)
+                if total_w > 0 else (0.4, 0.3, 0.3)
+            )
+
+            with st.spinner(f"Simulando {ms_N:,} agentes en {ms_M} clústeres..."):
+                ms_engine = MassiveSimEngine(
+                    N=ms_N,
+                    M=ms_M,
+                    quantize=ms_quantize,
+                    event_driven=ms_event,
+                    sleep_threshold=float(ms_sleep_thr),
+                    use_gpu=ms_use_gpu,
+                    layer_weights=layer_w,
+                    coupling=ms_coupling,
+                    dt=ms_dt,
+                    seed=int(ms_seed),
+                )
+                ms_result = ms_engine.run(steps=ms_steps)
+
+            # ── Métricas de resultado ─────────────────────────────────────────
+            st.markdown("#### Resultados de la simulación masiva")
+            rc1, rc2, rc3, rc4 = st.columns(4)
+            with rc1:
+                st.markdown(f"""<div class="metric-card">
+                    <div class="metric-label">Opinión media final</div>
+                    <div class="metric-value">{ms_result['mean_opinion']:+.3f}</div>
+                    <div class="metric-delta-neu">σ = {ms_result['std_opinion']:.3f}</div>
+                </div>""", unsafe_allow_html=True)
+            with rc2:
+                st.markdown(f"""<div class="metric-card">
+                    <div class="metric-label">Polarización</div>
+                    <div class="metric-value">{ms_result['polarization']:.3f}</div>
+                    <div class="metric-delta-neu">|opinión| media</div>
+                </div>""", unsafe_allow_html=True)
+            with rc3:
+                st.markdown(f"""<div class="metric-card">
+                    <div class="metric-label">Velocidad</div>
+                    <div class="metric-value">{ms_result['steps_per_second']:.0f}</div>
+                    <div class="metric-delta-pos">pasos/segundo</div>
+                </div>""", unsafe_allow_html=True)
+            with rc4:
+                st.markdown(f"""<div class="metric-card">
+                    <div class="metric-label">Ahorro RAM real</div>
+                    <div class="metric-value">{ms_result['memory_savings_pct']:.1f}%</div>
+                    <div class="metric-delta-pos">vs float64 naive</div>
+                </div>""", unsafe_allow_html=True)
+
+            st.markdown("<br>", unsafe_allow_html=True)
+
+            # ── Badges de estrategias activas ─────────────────────────────────
+            badge_colors = {
+                "LOD (Super-Agentes)": "#5ccfe6",
+                "Cuantización uint8":  "#bae67e",
+                "Event-Driven":        "#ff8f40",
+            }
+            badges_ms = []
+            for strat in ms_result.get("strategies_active", []):
+                color = badge_colors.get(strat, "#c3a6ff")
+                badges_ms.append(
+                    f'<span class="badge" style="background:#0d1520;color:{color};'
+                    f'border:1px solid {color}">{strat}</span>'
+                )
+            if badges_ms:
+                st.markdown(" ".join(badges_ms), unsafe_allow_html=True)
+
+            # ── Gráficos ──────────────────────────────────────────────────────
+            plot_m1, plot_m2 = st.columns(2)
+
+            with plot_m1:
+                st.markdown("**Trayectoria de opinión media (ponderada por clúster)**")
+                opinion_hist = ms_result["opinion_history"]
+                fig_ms_op = go.Figure()
+                fig_ms_op.add_trace(go.Scatter(
+                    y=opinion_hist,
+                    name="Opinión media",
+                    line=dict(color="#5ccfe6", width=2),
+                ))
+                fig_ms_op.add_hline(y=0, line_dash="dot", line_color="#3d5166",
+                                    annotation_text="neutro")
+                fig_ms_op.update_layout(
+                    template="plotly_dark", paper_bgcolor="#0a0e14",
+                    plot_bgcolor="#0d1520", height=300,
+                    xaxis_title="Paso", yaxis_title="Opinión media",
+                    margin=dict(l=10, r=10, t=10, b=10),
+                )
+                st.plotly_chart(fig_ms_op, use_container_width=True)
+
+            with plot_m2:
+                if ms_event:
+                    st.markdown("**Fracción de super-agentes activos por paso**")
+                    active_hist = ms_result["active_history"]
+                    fig_ms_act = go.Figure()
+                    fig_ms_act.add_trace(go.Scatter(
+                        y=active_hist * 100,
+                        name="% Activos",
+                        fill="tozeroy",
+                        line=dict(color="#ff8f40", width=1.5),
+                    ))
+                    fig_ms_act.update_layout(
+                        template="plotly_dark", paper_bgcolor="#0a0e14",
+                        plot_bgcolor="#0d1520", height=300,
+                        xaxis_title="Paso", yaxis_title="% Super-agentes activos",
+                        yaxis=dict(range=[0, 105]),
+                        margin=dict(l=10, r=10, t=10, b=10),
+                    )
+                    st.plotly_chart(fig_ms_act, use_container_width=True)
+                else:
+                    st.info("Activa Event-Driven para ver la evolución de agentes activos.")
+
+            # ── Distribución final de opinión entre clústeres ─────────────────
+            st.markdown("**Distribución de opinión entre super-agentes (estado final)**")
+            cluster_ops = ms_result["cluster_opinions"]
+            cluster_cnts = ms_result["cluster_counts"]
+
+            fig_hist = go.Figure()
+            fig_hist.add_trace(go.Histogram(
+                x=cluster_ops,
+                nbinsx=30,
+                name="Clústeres",
+                marker_color="#5ccfe6",
+                opacity=0.75,
+            ))
+            fig_hist.update_layout(
+                template="plotly_dark", paper_bgcolor="#0a0e14",
+                plot_bgcolor="#0d1520", height=280,
+                xaxis_title="Opinión del super-agente",
+                yaxis_title="Nº de clústeres",
+                xaxis=dict(range=[-1.05, 1.05]),
+                margin=dict(l=10, r=10, t=10, b=10),
+            )
+            st.plotly_chart(fig_hist, use_container_width=True)
+
+            # ── Shock externo ─────────────────────────────────────────────────
+            with st.expander("💥 Aplicar Shock Externo (perturbación masiva)"):
+                st.markdown(
+                    "Simula un evento externo — noticia viral, crisis económica, cambio político — "
+                    "que perturba la opinión de una fracción de la red y reactiva clústeres dormidos."
+                )
+                sc1, sc2 = st.columns(2)
+                with sc1:
+                    shock_val = st.slider("Intensidad del shock", -1.0, 1.0, 0.3, 0.05)
+                    shock_frac = st.slider("Fracción de agentes afectados", 0.05, 1.0, 0.2, 0.05)
+                if st.button("⚡ Aplicar shock y re-simular"):
+                    ms_engine.apply_shock(shock_value=shock_val, fraction=shock_frac)
+                    with st.spinner("Re-simulando tras el shock..."):
+                        ms_result2 = ms_engine.run(steps=ms_steps // 2)
+                    st.success(
+                        f"Shock aplicado. Opinión post-shock: "
+                        f"{ms_result2['mean_opinion']:+.3f} "
+                        f"(era {ms_result['mean_opinion']:+.3f})"
+                    )
+                    post_hist = ms_result2["opinion_history"]
+                    fig_post = go.Figure()
+                    fig_post.add_trace(go.Scatter(
+                        y=post_hist, name="Post-shock",
+                        line=dict(color="#c3a6ff", width=2),
+                    ))
+                    fig_post.add_hline(y=0, line_dash="dot", line_color="#3d5166")
+                    fig_post.update_layout(
+                        template="plotly_dark", paper_bgcolor="#0a0e14",
+                        plot_bgcolor="#0d1520", height=250,
+                        xaxis_title="Paso", yaxis_title="Opinión media",
+                        margin=dict(l=10, r=10, t=10, b=10),
+                    )
+                    st.plotly_chart(fig_post, use_container_width=True)
+
+            # ── Exportar datos masivos ────────────────────────────────────────
+            with st.expander("⬇️ Exportar datos de simulación masiva"):
+                df_ms = pd.DataFrame({
+                    "cluster_id":      range(ms_M),
+                    "opinion_final":   ms_result["cluster_opinions"],
+                    "n_agents":        ms_result["cluster_counts"],
+                })
+                st.dataframe(df_ms, use_container_width=True)
+                st.download_button(
+                    "⬇ CSV Clústeres",
+                    data=df_ms.to_csv(index=False),
+                    file_name="massive_masiva.csv",
+                    mime="text/csv",
+                )
+
+        else:
+            st.markdown("""
+            <div style="border:1px dashed #1a2535;border-radius:4px;padding:48px;text-align:center;margin-top:2rem;">
+                <div style="font-family:'IBM Plex Mono',monospace;color:#3d5166;font-size:0.8rem;letter-spacing:2px;">
+                    CONFIGURA LA ESCALA Y LAS ESTRATEGIAS · PULSA ⚡ SIMULAR MASIVA ·
+                </div>
+            </div>""", unsafe_allow_html=True)
+
+            with st.expander("📖 ¿Cómo funciona la Simulación Masiva?"):
+                st.markdown("""
+**4 estrategias de eficiencia integradas:**
+
+| # | Estrategia | Ahorro | Cómo funciona |
+|---|---|---|---|
+| 1 | **LOD — Super-Agentes** | O(N²→M²) menos RAM | N agentes → M clústeres representativos. Solo se simula la dinámica de M centros. |
+| 2 | **Cuantización uint8** | ~87.5% menos RAM | Estado almacenado en 1 byte/parámetro vs 8 bytes float64. Resolución ≈ 0.008. |
+| 3 | **Event-Driven** | Variable en CPU | Solo los super-agentes con cambios significativos se actualizan. Los demás duermen. |
+| 4 | **GPU Offloading** | 10-100× en velocidad | Si CuPy o PyTorch+CUDA está disponible, las multiplicaciones matriciales van a GPU. |
+
+**Ejemplo de ahorro combinado:**
+- N = 1 000 000 agentes, K = 5 dimensiones, float64
+- Sin optimizar: 1M × 5 × 8 bytes = **40 MB**
+- Con LOD (M=316) + uint8: 316 × 5 × 1 byte = **~1.6 KB** — ahorro del **99.996%**
+
+**¿Cuándo usar cada modo?**
+- Hasta N=10 000: Simulación Multicapa (Tab 3) — precisión completa por agente.
+- N=10 000 – 1 000 000: Simulación Masiva — estadísticas de clúster, eficiencia máxima.
+- Shock externo: perturba la red en caliente y observa la respuesta de los clústeres dormidos.
+                """)
+
+
+with tab5:
+    st.markdown("### 🎬 Centro Analítico de Dinámica Social")
+    st.markdown(
+        "Panel profesional para analizar contagio, polarización y cambios de régimen "
+        "sobre la última simulación tradicional ejecutada."
+    )
+
+    sim_data = st.session_state.get("last_simulation")
+    if not sim_data:
+        st.info("Ejecuta primero una simulación en la pestaña **Simulación Tradicional** para habilitar este panel.")
+    else:
+        historial = sim_data["historial"]
+        neutro = sim_data["neutro"]
+        es_bipolar = sim_data["is_bipolar"]
+
+        steps = [int(h.get("_paso", idx)) for idx, h in enumerate(historial)]
+        opinions = np.array([float(h.get("opinion", 0.0)) for h in historial], dtype=float)
+        polar_proxy = np.abs(opinions - neutro)
+        contagion_proxy = np.array([
+            float(
+                h.get("_sir_I")
+                if "_sir_I" in h
+                else h.get("_fraccion_adoptantes", 0.0)
+            )
+            for h in historial
+        ], dtype=float)
+
+        selected_idx = st.slider(
+            "Selecciona el paso a inspeccionar",
+            min_value=0,
+            max_value=len(historial) - 1,
+            value=len(historial) - 1,
+            step=1,
+        )
+        selected_state = historial[selected_idx]
+        selected_step = steps[selected_idx]
+
+        m1, m2, m3, m4 = st.columns(4)
+        with m1:
+            st.metric("Paso", selected_step)
+        with m2:
+            st.metric("Opinión", f"{selected_state.get('opinion', 0.0):+.3f}")
+        with m3:
+            st.metric("Confianza", f"{selected_state.get('confianza', 0.0):.3f}")
+        with m4:
+            st.metric("Polarización (proxy)", f"{polar_proxy[selected_idx]:.3f}")
+
+        fig_anim = go.Figure(
+            data=[
+                go.Scatter(x=[steps[0]], y=[opinions[0]], name="Opinión", line=dict(color="#5ccfe6", width=2)),
+                go.Scatter(x=[steps[0]], y=[polar_proxy[0]], name="Polarización", line=dict(color="#ff8f40", width=2)),
+                go.Scatter(x=[steps[0]], y=[contagion_proxy[0]], name="Contagio", line=dict(color="#bae67e", width=2)),
+            ],
+            frames=[
+                go.Frame(
+                    data=[
+                        go.Scatter(x=steps[: i + 1], y=opinions[: i + 1]),
+                        go.Scatter(x=steps[: i + 1], y=polar_proxy[: i + 1]),
+                        go.Scatter(x=steps[: i + 1], y=contagion_proxy[: i + 1]),
+                    ],
+                    name=str(i),
+                )
+                for i in range(len(steps))
+            ],
+        )
+        fig_anim.add_hline(y=neutro, line_dash="dot", line_color="#3d5166")
+        fig_anim.update_layout(
+            template="plotly_dark",
+            paper_bgcolor="#0a0e14",
+            plot_bgcolor="#0d1520",
+            height=420,
+            xaxis_title="Paso",
+            yaxis_title="Intensidad",
+            margin=dict(l=10, r=10, t=10, b=10),
+            updatemenus=[{
+                "type": "buttons",
+                "direction": "left",
+                "x": 0,
+                "y": 1.12,
+                "buttons": [
+                    {
+                        "label": "▶ Play",
+                        "method": "animate",
+                        "args": [None, {"frame": {"duration": ANALYTICS_ANIMATION_FRAME_MS, "redraw": True}, "fromcurrent": True}],
+                    },
+                    {
+                        "label": "⏸ Pause",
+                        "method": "animate",
+                        "args": [[None], {"frame": {"duration": ANALYTICS_ANIMATION_PAUSE_MS, "redraw": False}, "mode": "immediate"}],
+                    },
+                ],
+            }],
+            sliders=[{
+                "active": selected_idx,
+                "steps": [
+                    {
+                        "label": str(steps[i]),
+                        "method": "animate",
+                        "args": [[str(i)], {"frame": {"duration": 0, "redraw": True}, "mode": "immediate"}],
+                    }
+                    for i in range(len(steps))
+                ],
+            }],
+        )
+        st.plotly_chart(fig_anim, use_container_width=True)
+
+        st.markdown("#### Topología de red en el paso seleccionado")
+        fig_network = generate_social_network_viz(
+            selected_state.get("opinion", 0.0),
+            float(selected_state.get("confianza", 0.5)),
+            amalgama=not es_bipolar,
+            is_bipolar=es_bipolar,
+        )
+        st.plotly_chart(fig_network, use_container_width=True)
+
+        regime_changes = []
+        previous_rule = None
+        for item in historial:
+            rule = item.get("_regla_nombre", "")
+            if rule and rule != previous_rule:
+                regime_changes.append(
+                    {
+                        "paso": int(item.get("_paso", 0)),
+                        "regla": rule,
+                        "razon": item.get("_razon", "—"),
+                    }
+                )
+            previous_rule = rule or previous_rule
+
+        st.markdown("#### Eventos de cambio de régimen")
+        if regime_changes:
+            st.dataframe(pd.DataFrame(regime_changes), use_container_width=True, hide_index=True)
+        else:
+            st.caption("No se detectaron cambios de régimen en la simulación actual.")
