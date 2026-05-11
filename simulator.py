@@ -45,6 +45,7 @@ from scipy.special import erf
 
 from schemas import GamePayoff
 from utility_logic import calculate_strategic_force
+from llm_credentials import resolve_provider_api_key
 from empirical_calibration import (
     BEYONDSIGHT_EMPIRICAL_MASTER,
     BEYONDSIGHT_RUNTIME_PARAMS,
@@ -57,6 +58,9 @@ try:
     TDA_AVAILABLE = True
 except ImportError:
     TDA_AVAILABLE = False
+    logging.getLogger("massive").warning(
+        "[TDA] ripser/persim no instalados — detección topológica desactivada."
+    )
 
 try:
     from extended_models import regla_nash, regla_bayesiana, regla_sir
@@ -1104,8 +1108,17 @@ def _extraer_json(texto: str) -> dict | None:
         return None
 
 
-def _llamar_openai_compatible(prompt: str, base_url: str, api_key: str,
-                               modelo: str, cfg: dict) -> dict | None:
+def _llamar_openai_compatible(
+    prompt: str,
+    base_url: str,
+    modelo: str,
+    cfg: dict,
+    proveedor: str,
+) -> dict | None:
+    api_key = resolve_provider_api_key(proveedor, fallback=cfg.get("api_key", ""))
+    if not api_key:
+        log.warning(f"Sin API key para proveedor '{proveedor}'.")
+        return None
     try:
         resp = requests.post(
             f"{base_url}/chat/completions",
@@ -1178,12 +1191,17 @@ def llamar_llm(estado: dict, escenario: str,
         data = _llamar_ollama(prompt, cfg)
     elif proveedor in PROVEEDORES:
         info    = PROVEEDORES[proveedor]
-        api_key = cfg.get("api_key", "").strip()
         modelo  = cfg.get("modelo", "").strip() or info["modelos_sugeridos"][0]
-        if not api_key:
+        if not resolve_provider_api_key(proveedor, fallback=cfg.get("api_key", "")):
             log.error(f"'{proveedor}' requiere API key. → heurístico.")
             return llamar_llm_heuristico(estado, escenario, historial_reciente, cfg)
-        data = _llamar_openai_compatible(prompt, info["base_url"], api_key, modelo, cfg)
+        data = _llamar_openai_compatible(
+            prompt,
+            info["base_url"],
+            modelo,
+            cfg,
+            proveedor,
+        )
     else:
         log.error(f"Proveedor desconocido: '{proveedor}'. → heurístico.")
         return llamar_llm_heuristico(estado, escenario, historial_reciente, cfg)

@@ -28,6 +28,7 @@ Autor: MASSIVE Research
 import numpy as np
 import pandas as pd
 import networkx as nx
+from llm_credentials import resolve_provider_api_key
 from quantum.integration import compress_agent_states, decompress_agent_states
 
 try:
@@ -436,7 +437,9 @@ def targeted_llm_bias(
         f"Responde solo con el argumento, sin explicaciones adicionales."
     )
 
-    if proveedor == "heurístico" or not api_key:
+    key = resolve_provider_api_key(proveedor, fallback=api_key)
+
+    if proveedor == "heurístico" or not key:
         return (
             f"[Heurístico] Narrativa para {grupo_label} vía {layer_label}: "
             f"La cooperación compartida fortalece a tu comunidad. "
@@ -453,7 +456,7 @@ def targeted_llm_bias(
                 f"[Fallback] Narrativa para {grupo_label}: "
                 f"El diálogo y la cooperación construyen comunidades más resilientes."
             )
-        headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
+        headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
         payload = {
             "model": modelo,
             "messages": [{"role": "user", "content": prompt}],

@@ -7,10 +7,12 @@ __pycache__/
 .venv/
 venv/
 beyondsight_run.log
+*.log
 .vscode/
 .kilocode/
 archive/
 .env
+.ipynb_checkpoints/
 leads.csv
 landscapes_cache.db
 # PVU benchmark run outputs (generated; not committed)

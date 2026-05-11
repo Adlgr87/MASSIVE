@@ -14,6 +14,7 @@ import streamlit as st
 from dotenv import load_dotenv
 
 from i18n import t
+from llm_credentials import persist_provider_api_key
 from social_architect import buscar_estrategia_inversa
 from visualizations import generate_social_network_viz
 from simulator import (
@@ -482,11 +483,12 @@ with tab1:
             st.error(f"⚠️ **{proveedor}** requiere API key.")
             st.stop()
 
+        persist_provider_api_key(proveedor, api_key)
+
         config_run = {
             "rango":              nombre_rango,
             "proveedor":          proveedor,
             "modelo":             modelo,
-            "api_key":            api_key,
             "ollama_host":        ollama_host,
             "alpha_blend":        alpha,
             "sesgo_confirmacion": sesgo_conf,
@@ -836,16 +838,17 @@ with tab2:
                 st.error("⚠️ Se requiere API key para generar estrategias con el LLM.")
                 st.stop()
 
+            persist_provider_api_key(proveedor, api_key)
+
             config_run = {
-                "rango": nombre_rango,
-                "proveedor": proveedor,
-                "modelo": modelo,
-                "api_key": api_key,
-                "ollama_host": ollama_host,
-                "alpha_blend": alpha,
+                "rango":              nombre_rango,
+                "proveedor":          proveedor,
+                "modelo":             modelo,
+                "ollama_host":        ollama_host,
+                "alpha_blend":        alpha,
                 "sesgo_confirmacion": sesgo_conf,
-                "hk_epsilon": hk_epsilon,
-                "homofilia_tasa": homofilia_tasa,
+                "hk_epsilon":         hk_epsilon,
+                "homofilia_tasa":     homofilia_tasa,
                 # Pasar tamaño del grafo para el cálculo de proporciones target_nodes
                 "_n_nodos": grafo_org.number_of_nodes() if grafo_org else 20,
             }
@@ -1198,7 +1201,6 @@ with tab3:
                             layer_target=bias_layer,
                             demographic=bias_demo,
                             proveedor=proveedor,
-                            api_key=api_key,
                             modelo=modelo,
                         )
                     st.success(narrative)
