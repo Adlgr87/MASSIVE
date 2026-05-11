@@ -20,6 +20,20 @@ from empirical_config import (
 
 HK_EPSILON_MIN = 0.20
 HK_EPSILON_MAX = 0.35
+RUIDO_BASE_MIN = 0.01
+RUIDO_BASE_MAX = 0.20
+RUIDO_DESCONFIANZA_MIN = 0.04
+RUIDO_DESCONFIANZA_MAX = 0.18
+EFECTO_VECINOS_MIN = 0.02
+EFECTO_VECINOS_MAX = 0.12
+ALPHA_BLEND_MIN = 0.55
+ALPHA_BLEND_MAX = 0.85
+COMPETENCIA_PESO_MIN = 0.25
+COMPETENCIA_PESO_MAX = 0.60
+HOMOFILIA_TASA_MIN = 0.02
+HOMOFILIA_TASA_MAX = 0.12
+STRATEGIC_WEIGHT_MIN = 0.18
+STRATEGIC_WEIGHT_MAX = 0.32
 # Centola et al. (2018) and Everall et al. (2025) place practical social
 # tipping points near one quarter of the population, with a common 20–30% band.
 TIPPING_POINT_MEAN = 0.25
@@ -90,17 +104,32 @@ def build_empirical_engine_config(cultural_profile: str = "mixed") -> dict:
     )
 
     return {
-        "ruido_base": round(_scale_unit_to_range(runtime["temperature"], 0.01, 0.20), 4),
+        "ruido_base": round(
+            _scale_unit_to_range(runtime["temperature"], RUIDO_BASE_MIN, RUIDO_BASE_MAX),
+            4,
+        ),
         "ruido_desconfianza": round(
-            _scale_unit_to_range(runtime["narrative_decay_rate"], 0.04, 0.18),
+            _scale_unit_to_range(
+                runtime["narrative_decay_rate"],
+                RUIDO_DESCONFIANZA_MIN,
+                RUIDO_DESCONFIANZA_MAX,
+            ),
             4,
         ),
         "efecto_vecinos_peso": round(
-            _scale_unit_to_range(runtime["social_influence_lambda"], 0.02, 0.12),
+            _scale_unit_to_range(
+                runtime["social_influence_lambda"],
+                EFECTO_VECINOS_MIN,
+                EFECTO_VECINOS_MAX,
+            ),
             4,
         ),
         "alpha_blend": round(
-            _scale_unit_to_range(runtime["attractor_depth"], 0.55, 0.85),
+            _scale_unit_to_range(
+                runtime["attractor_depth"],
+                ALPHA_BLEND_MIN,
+                ALPHA_BLEND_MAX,
+            ),
             4,
         ),
         "sesgo_confirmacion": round(confirmation_bias, 4),
@@ -111,10 +140,24 @@ def build_empirical_engine_config(cultural_profile: str = "mixed") -> dict:
             HK_EPSILON_MIN + (HK_EPSILON_MAX - HK_EPSILON_MIN) * (1.0 - homophily),
             4,
         ),
-        "competencia_peso": round(0.25 + 0.35 * viral_amplification, 4),
+        "competencia_peso": round(
+            _scale_unit_to_range(
+                viral_amplification,
+                COMPETENCIA_PESO_MIN,
+                COMPETENCIA_PESO_MAX,
+            ),
+            4,
+        ),
         "umbral_media": TIPPING_POINT_MEAN,
         "umbral_std": TIPPING_POINT_STD,
-        "homofilia_tasa": round(0.02 + 0.10 * homophily, 4),
+        "homofilia_tasa": round(
+            _scale_unit_to_range(
+                homophily,
+                HOMOFILIA_TASA_MIN,
+                HOMOFILIA_TASA_MAX,
+            ),
+            4,
+        ),
         "cultural_profile": cultural_profile,
         "validation_flags": list(runtime["validation_flags"]),
         "strategic": {
@@ -124,7 +167,11 @@ def build_empirical_engine_config(cultural_profile: str = "mixed") -> dict:
                 "dd": float(runtime["payoff_defection"]),
             },
             "strategic_weight": round(
-                _scale_unit_to_range(abs(runtime["repeller_strength"]), 0.18, 0.32),
+                _scale_unit_to_range(
+                    abs(runtime["repeller_strength"]),
+                    STRATEGIC_WEIGHT_MIN,
+                    STRATEGIC_WEIGHT_MAX,
+                ),
                 4,
             ),
         },
