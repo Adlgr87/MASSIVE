@@ -125,8 +125,17 @@ class TestApplyEmpiricalProfile(unittest.TestCase):
 
     def test_adds_additional_engine_calibration_keys(self):
         result = apply_empirical_profile({})
-        for key in ("ruido_desconfianza", "hk_epsilon", "umbral_media", "umbral_std", "homofilia_tasa"):
-            self.assertIn(key, result)
+        self.assertIn("ruido_desconfianza", result)
+        self.assertGreaterEqual(result["ruido_desconfianza"], 0.04)
+        self.assertLessEqual(result["ruido_desconfianza"], 0.18)
+        self.assertIn("hk_epsilon", result)
+        self.assertGreaterEqual(result["hk_epsilon"], 0.20)
+        self.assertLessEqual(result["hk_epsilon"], 0.35)
+        self.assertEqual(result["umbral_media"], 0.25)
+        self.assertEqual(result["umbral_std"], 0.05)
+        self.assertIn("homofilia_tasa", result)
+        self.assertGreaterEqual(result["homofilia_tasa"], 0.02)
+        self.assertLessEqual(result["homofilia_tasa"], 0.12)
 
     def test_confirmation_bias_comes_from_empirical_master(self):
         result = apply_empirical_profile({})

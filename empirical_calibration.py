@@ -15,8 +15,6 @@ import json
 from empirical_config import (
     BEYONDSIGHT_EMPIRICAL_MASTER,
     BEYONDSIGHT_RUNTIME_PARAMS,
-    MASSIVE_EMPIRICAL_MASTER,
-    MASSIVE_RUNTIME_PARAMS,
     get_runtime_params,
 )
 
@@ -170,4 +168,3 @@ def export_to_json(path: str | None = None) -> str:
             fh.write(result)
 
     return result
-

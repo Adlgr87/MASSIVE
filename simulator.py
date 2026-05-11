@@ -1374,6 +1374,8 @@ def simular(
             if k not in user_keys:
                 cfg[k] = v
         if "strategic" not in user_keys:
+            # strategic needs nested merging so empirical payoffs enrich the
+            # default matrix without discarding other simulator defaults.
             strategic_defaults = empirical_defaults.get("strategic", {})
             payoff_defaults = strategic_defaults.get("payoff_matrix", {})
             cfg["strategic"] = {
