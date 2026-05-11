@@ -1,0 +1,3 @@
+# reports/validation directory — CI artifacts land here
+# This placeholder keeps the directory tracked by git while build outputs
+# (which are excluded via .gitignore) remain untracked.
