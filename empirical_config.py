@@ -431,7 +431,7 @@ def _weighted_mean(refs: list[tuple[str, str]], absolute: bool = False) -> float
     Weighted average of empirically related parameters.
 
     Args:
-        refs: Sequence of ``(category, param_id)`` pairs pointing to entries in
+        refs: List of ``(category, param_id)`` pairs pointing to entries in
             ``BEYONDSIGHT_EMPIRICAL_MASTER``.
         absolute: When ``True``, aggregate magnitudes instead of signed values.
 
