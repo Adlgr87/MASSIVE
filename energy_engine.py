@@ -11,13 +11,18 @@ Donde:
   - T        : temperatura — nivel de ruido / libre albedrío
   - ε ~ N(0,1): ruido estocástico
 """
+import logging
+
 import numpy as np
+
+log = logging.getLogger("massive")
 
 try:
     from numba import njit
     NUMBA_AVAILABLE = True
 except ImportError:
     NUMBA_AVAILABLE = False
+    log.warning("[EnergyEngine] Numba no instalado — usando ruta Python (más lenta).")
     def njit(*args, **kwargs):
         """No-op decorator when Numba is not installed."""
         def decorator(fn):

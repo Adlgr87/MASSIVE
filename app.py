@@ -39,6 +39,19 @@ ANALYTICS_ANIMATION_PAUSE_MS = 0
 # A local copy lives at docs/assets/massive_logo.png for offline reference.
 PROJECT_LOGO_URL = "https://github.com/user-attachments/assets/04c5860f-36d4-433c-a142-5761d0f16824"
 
+_PROVIDER_ENV_KEYS = {
+    "groq": "GROQ_API_KEY",
+    "openai": "OPENAI_API_KEY",
+    "openrouter": "OPENROUTER_API_KEY",
+}
+
+
+def _persist_provider_api_key(proveedor: str, api_key: str) -> None:
+    env_var = _PROVIDER_ENV_KEYS.get(proveedor)
+    key = api_key.strip()
+    if env_var and key:
+        os.environ[env_var] = key
+
 # EMPIRICAL INTEGRATION — importar indicadores de base empírica si disponibles
 try:
     from empirical_config import BEYONDSIGHT_RUNTIME_PARAMS as _EMPIRICAL_RUNTIME
@@ -482,11 +495,12 @@ with tab1:
             st.error(f"⚠️ **{proveedor}** requiere API key.")
             st.stop()
 
+        _persist_provider_api_key(proveedor, api_key)
+
         config_run = {
             "rango":              nombre_rango,
             "proveedor":          proveedor,
             "modelo":             modelo,
-            "api_key":            api_key,
             "ollama_host":        ollama_host,
             "alpha_blend":        alpha,
             "sesgo_confirmacion": sesgo_conf,
@@ -836,11 +850,12 @@ with tab2:
                 st.error("⚠️ Se requiere API key para generar estrategias con el LLM.")
                 st.stop()
 
+            _persist_provider_api_key(proveedor, api_key)
+
             config_run = {
                 "rango": nombre_rango,
                 "proveedor": proveedor,
                 "modelo": modelo,
-                "api_key": api_key,
                 "ollama_host": ollama_host,
                 "alpha_blend": alpha,
                 "sesgo_confirmacion": sesgo_conf,
@@ -1198,7 +1213,6 @@ with tab3:
                             layer_target=bias_layer,
                             demographic=bias_demo,
                             proveedor=proveedor,
-                            api_key=api_key,
                             modelo=modelo,
                         )
                     st.success(narrative)

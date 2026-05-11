@@ -324,9 +324,8 @@ def buscar_estrategia_inversa(
             from langchain_workflows import build_llm, LangChainSocialArchitect, LANGCHAIN_AVAILABLE
             if LANGCHAIN_AVAILABLE:
                 provider = cfg.get("proveedor", "groq")
-                api_key  = cfg.get("api_key", "")
                 modelo   = cfg.get("modelo", "")
-                llm = build_llm(provider, api_key, modelo, temperature=0.0)
+                llm = build_llm(provider, model=modelo, temperature=0.0)
                 if llm is not None:
                     architect = LangChainSocialArchitect(llm)
                     historial_feedback: list = []

@@ -119,10 +119,14 @@ def build_llm(
             log.warning("[LangChain] langchain-openai no instalado.")
             return None
         base_url = None
+        resolved_api_key = api_key
         if p == "openrouter":
             base_url = "https://openrouter.ai/api/v1"
+            resolved_api_key = resolved_api_key or os.getenv("OPENROUTER_API_KEY", "")
+        else:
+            resolved_api_key = resolved_api_key or os.getenv("OPENAI_API_KEY", "")
         return ChatOpenAI(
-            api_key=api_key or os.getenv("OPENAI_API_KEY", ""),
+            api_key=resolved_api_key,
             model=model or "gpt-4o-mini",
             temperature=temperature,
             base_url=base_url,

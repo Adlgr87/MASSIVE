@@ -38,10 +38,13 @@ Autor: MASSIVE Research
 
 from __future__ import annotations
 
+import logging
 import time
 from typing import Any
 
 import numpy as np
+
+log = logging.getLogger("massive")
 
 # ── GPU detection ──────────────────────────────────────────────────────────────
 # Intentamos CuPy → PyTorch → NumPy (fallback).
@@ -51,14 +54,25 @@ _GPU_BACKEND: str = "numpy"
 
 try:
     import cupy as _cp
-    _GPU_BACKEND = "cupy"
+    try:
+        if bool(_cp.cuda.is_available()):
+            _GPU_BACKEND = "cupy"
+    except Exception as exc:
+        log.warning(f"[MassiveEngine] CuPy detectado pero CUDA no disponible: {exc}")
 except ImportError:
+    pass
+
+if _GPU_BACKEND == "numpy":
     try:
         import torch as _torch
-        if _torch.cuda.is_available():
+        if bool(_torch.cuda.is_available()):
             _GPU_BACKEND = "torch"
     except ImportError:
         pass
+    except Exception as exc:
+        log.warning(f"[MassiveEngine] PyTorch detectado pero CUDA no disponible: {exc}")
+
+log.info(f"[MassiveEngine] Backend detectado: {_GPU_BACKEND}")
 
 
 def _get_array_module(use_gpu: bool):
