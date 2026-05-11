@@ -33,6 +33,14 @@ def _clamp(value: float, lower: float, upper: float) -> float:
 def _scale_unit_to_range(value: float, lower: float, upper: float) -> float:
     """
     Projects a normalised [0, 1] empirical intensity into an engine-safe range.
+
+    Args:
+        value: Normalised empirical magnitude in [0, 1].
+        lower: Lower bound of the simulator-native range.
+        upper: Upper bound of the simulator-native range.
+
+    Returns:
+        Float rescaled to the inclusive ``[lower, upper]`` interval.
     """
     value = _clamp(value, 0.0, 1.0)
     return float(lower + (upper - lower) * value)
@@ -54,6 +62,14 @@ def build_empirical_engine_config(cultural_profile: str = "mixed") -> dict:
     Relevant parameters are translated only when they already exist in the
     simulator, avoiding speculative integrations.  All returned values are in the
     native ranges expected by ``simulator.py``.
+
+    Args:
+        cultural_profile: Cultural block used to apply variance modifiers before
+            translating the empirical values to simulator-native defaults.
+
+    Returns:
+        Dict with simulator-facing defaults such as noise, social influence,
+        bounded confidence, threshold parameters and strategic payoffs.
     """
     runtime = get_runtime_params(cultural_profile)
 
@@ -165,6 +181,13 @@ def apply_empirical_profile(cfg: dict) -> dict:
 def export_to_json(path: str | None = None) -> str:
     """
     Serialises both dictionaries to a JSON string and optionally writes to disk.
+
+    Args:
+        path: Optional file path where the serialised payload should be written.
+
+    Returns:
+        JSON string containing the empirical master data, runtime parameters and
+        derived engine defaults.
     """
     payload = {
         "master": BEYONDSIGHT_EMPIRICAL_MASTER,

@@ -430,11 +430,13 @@ def _weighted_mean(refs: list[tuple[str, str]], absolute: bool = False) -> float
     """
     Weighted average of empirically related parameters.
 
-    The optional `digital_weight` metadata is reused when present; otherwise each
-    parameter contributes equally.  When ``absolute=True`` the magnitude of each
-    empirical value is used, which is useful for rates whose directional sign is
-    modelled elsewhere. This keeps runtime defaults tied to the master empirical
-    base instead of hand-tuned constants.
+    The optional `digital_weight` metadata is reused when present; it increases
+    the contribution of parameters whose original evidence is more specific to
+    digital-platform behaviour. Otherwise each parameter contributes equally.
+    When ``absolute=True`` the magnitude of each empirical value is used, which
+    is useful for rates whose directional sign is modelled elsewhere. This keeps
+    runtime defaults tied to the master empirical base instead of hand-tuned
+    constants.
     """
     total = 0.0
     weight_sum = 0.0
