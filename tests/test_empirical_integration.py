@@ -54,26 +54,18 @@ class TestEmpiricalIntegration(unittest.TestCase):
             "payoff_defection debe ser negativo (costo de disidencia)",
         )
 
-    def test_zero_values_active(self):
-        """Los valores 0.0 (neutralidad activa) no son reemplazados por None."""
+    def test_decay_and_saturation_values_active(self):
+        """Los parámetros calibrados temporalmente se mantienen numéricos y activos."""
         self.assertIsNotNone(
             BEYONDSIGHT_RUNTIME_PARAMS["narrative_decay_rate"],
-            "narrative_decay_rate no debe ser None — es neutralidad activa",
+            "narrative_decay_rate no debe ser None",
         )
         self.assertIsNotNone(
             BEYONDSIGHT_RUNTIME_PARAMS["saturation_threshold"],
-            "saturation_threshold no debe ser None — es neutralidad activa",
+            "saturation_threshold no debe ser None",
         )
-        self.assertEqual(
-            BEYONDSIGHT_RUNTIME_PARAMS["narrative_decay_rate"],
-            0.0,
-            "narrative_decay_rate debe ser 0.0 (neutralidad activa)",
-        )
-        self.assertEqual(
-            BEYONDSIGHT_RUNTIME_PARAMS["saturation_threshold"],
-            0.0,
-            "saturation_threshold debe ser 0.0 (neutralidad activa)",
-        )
+        self.assertGreater(BEYONDSIGHT_RUNTIME_PARAMS["narrative_decay_rate"], 0.0)
+        self.assertGreater(BEYONDSIGHT_RUNTIME_PARAMS["saturation_threshold"], 0.0)
 
     def test_null_params_flagged(self):
         """validation_flags refleja únicamente parámetros realmente pendientes."""

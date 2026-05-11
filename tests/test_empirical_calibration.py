@@ -33,7 +33,8 @@ class TestEmpiricalMaster(unittest.TestCase):
         nd = BEYONDSIGHT_EMPIRICAL_MASTER["network_dynamics"]
         self.assertIn("DERIVA_ALGORITMICA", nd)
         self.assertIn("INFLUENCIA_PARASOCIAL", nd)
-        self.assertIn("UMBRAL_INFLEXION", nd)
+        self.assertIn("HOMOFILIA_RED", nd)
+        self.assertIn("AMPLIFICACION_VIRAL", nd)
 
     def test_temporal_keys(self):
         t = BEYONDSIGHT_EMPIRICAL_MASTER["temporal"]
@@ -44,7 +45,7 @@ class TestEmpiricalMaster(unittest.TestCase):
 
     def test_game_theory_keys(self):
         gt = BEYONDSIGHT_EMPIRICAL_MASTER["game_theory"]
-        self.assertIn("UTILIDAD_COORDINACION", gt)
+        self.assertIn("EQUILIBRIO_NASH_SOCIAL", gt)
         self.assertIn("COSTO_DISIDENCIA", gt)
 
 
