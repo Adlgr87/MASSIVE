@@ -26,9 +26,9 @@ Autor: MASSIVE Research
 """
 
 import numpy as np
-import os
 import pandas as pd
 import networkx as nx
+from llm_credentials import get_provider_api_key
 from quantum.integration import compress_agent_states, decompress_agent_states
 
 try:
@@ -437,12 +437,7 @@ def targeted_llm_bias(
         f"Responde solo con el argumento, sin explicaciones adicionales."
     )
 
-    provider_env_key = {
-        "groq": "GROQ_API_KEY",
-        "openai": "OPENAI_API_KEY",
-        "openrouter": "OPENROUTER_API_KEY",
-    }.get(proveedor, "")
-    resolved_api_key = os.getenv(provider_env_key, "").strip() if provider_env_key else ""
+    resolved_api_key = get_provider_api_key(proveedor)
     if not resolved_api_key:
         resolved_api_key = api_key.strip()
 

@@ -14,6 +14,7 @@ import streamlit as st
 from dotenv import load_dotenv
 
 from i18n import t
+from llm_credentials import persist_provider_api_key
 from social_architect import buscar_estrategia_inversa
 from visualizations import generate_social_network_viz
 from simulator import (
@@ -38,19 +39,6 @@ ANALYTICS_ANIMATION_PAUSE_MS = 0
 # Logo hosted on GitHub CDN — always accessible on Streamlit Cloud / HF Spaces.
 # A local copy lives at docs/assets/massive_logo.png for offline reference.
 PROJECT_LOGO_URL = "https://github.com/user-attachments/assets/04c5860f-36d4-433c-a142-5761d0f16824"
-
-_PROVIDER_ENV_KEYS = {
-    "groq": "GROQ_API_KEY",
-    "openai": "OPENAI_API_KEY",
-    "openrouter": "OPENROUTER_API_KEY",
-}
-
-
-def _persist_provider_api_key(proveedor: str, api_key: str) -> None:
-    env_var = _PROVIDER_ENV_KEYS.get(proveedor)
-    key = api_key.strip()
-    if env_var and key:
-        os.environ[env_var] = key
 
 # EMPIRICAL INTEGRATION — importar indicadores de base empírica si disponibles
 try:
@@ -495,7 +483,7 @@ with tab1:
             st.error(f"⚠️ **{proveedor}** requiere API key.")
             st.stop()
 
-        _persist_provider_api_key(proveedor, api_key)
+        persist_provider_api_key(proveedor, api_key)
 
         config_run = {
             "rango":              nombre_rango,
@@ -850,7 +838,7 @@ with tab2:
                 st.error("⚠️ Se requiere API key para generar estrategias con el LLM.")
                 st.stop()
 
-            _persist_provider_api_key(proveedor, api_key)
+            persist_provider_api_key(proveedor, api_key)
 
             config_run = {
                 "rango":              nombre_rango,

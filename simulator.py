@@ -32,7 +32,6 @@ Autor: MASSIVE Research
 
 import json
 import logging
-import os
 from collections import Counter, deque
 from pathlib import Path
 from typing import Any
@@ -46,6 +45,7 @@ from scipy.special import erf
 
 from schemas import GamePayoff
 from utility_logic import calculate_strategic_force
+from llm_credentials import get_provider_api_key
 from empirical_calibration import (
     BEYONDSIGHT_EMPIRICAL_MASTER,
     BEYONDSIGHT_RUNTIME_PARAMS,
@@ -1141,24 +1141,22 @@ def _llamar_openai_compatible(
     return None
 
 
-_PROVIDER_ENV_KEYS: dict[str, str] = {
-    "groq": "GROQ_API_KEY",
-    "openai": "OPENAI_API_KEY",
-    "openrouter": "OPENROUTER_API_KEY",
-}
-
-
 def _obtener_api_key_proveedor(proveedor: str, cfg: dict) -> str:
     """
     Resuelve la API key del proveedor desde variables de entorno.
 
     Mantiene compatibilidad hacia atrás aceptando cfg["api_key"] como fallback.
+
+    Args:
+        proveedor: Nombre del proveedor LLM ("groq", "openai", "openrouter").
+        cfg: Configuración de simulación.
+
+    Returns:
+        API key resuelta para el proveedor, o cadena vacía si no está disponible.
     """
-    env_name = _PROVIDER_ENV_KEYS.get(proveedor, "")
-    if env_name:
-        env_value = os.getenv(env_name, "").strip()
-        if env_value:
-            return env_value
+    env_value = get_provider_api_key(proveedor)
+    if env_value:
+        return env_value
     return str(cfg.get("api_key", "")).strip()
 
 
