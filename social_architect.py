@@ -444,7 +444,7 @@ def buscar_estrategia_inversa(
                 if llm is not None:
                     architect = LangChainSocialArchitect(llm)
                     # Inyectar el feedback del Intento 0 CfC si existe
-                    historial_feedback: list = ([feedback_inicial] if feedback_inicial else [])
+                    historial_feedback: list = [feedback_inicial] if feedback_inicial else []
                     mejor_estrategia = {}
                     mejor_historial = None
                     mejor_score = -1
@@ -494,7 +494,7 @@ def buscar_estrategia_inversa(
     # ── Standard HTTP path ────────────────────────────────────────────────────
     client = setup_client()
     # Inyectar el feedback del Intento 0 CfC si existe
-    historial_feedback = ([feedback_inicial] if feedback_inicial else [])
+    historial_feedback = [feedback_inicial] if feedback_inicial else []
 
     estrategia_json = {}
     mejor_estrategia = {}

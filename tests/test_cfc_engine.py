@@ -15,8 +15,13 @@ class TestCfCEngineImport(unittest.TestCase):
     def test_import_no_crash_without_torch(self):
         """cfc_engine importa si torch está instalado, y falla con ImportError si no."""
         try:
-            import torch  # noqa: F401
-            import cfc_engine  # noqa: F401
+            import torch
+            import cfc_engine
+            # Si torch está disponible, verificar que los símbolos esperados existen
+            self.assertTrue(hasattr(cfc_engine, "CfCCell"))
+            self.assertTrue(hasattr(cfc_engine, "CfCRegimeSelector"))
+            self.assertTrue(hasattr(cfc_engine, "CfCTauMatrix"))
+            self.assertTrue(hasattr(cfc_engine, "CfCArchitectPolicy"))
         except ImportError:
             pass  # Aceptable si torch no está instalado
 

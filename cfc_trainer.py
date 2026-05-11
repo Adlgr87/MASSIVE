@@ -103,9 +103,12 @@ def generate_regime_dataset(
                 cfg["confianza"],
                 cfg["opinion_grupo_a"],
                 cfg["opinion_grupo_b"],
-                0.4,   # trust placeholder
-                0.0,   # ews_variance placeholder
-                0.0,   # ews_autocorr placeholder
+                # trust, ews_variance, ews_autocorr are 0.0 here because the
+                # heuristic teacher does not track them; knowledge distillation
+                # focuses on the opinion + parameter space that the teacher uses.
+                0.4,   # trust (static default from DEFAULT_CONFIG)
+                0.0,   # ews_variance (not accumulated in short runs)
+                0.0,   # ews_autocorr (not accumulated in short runs)
             ])
             Y.append(regimes[t - 1])
 

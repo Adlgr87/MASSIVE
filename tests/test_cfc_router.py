@@ -29,8 +29,9 @@ class TestCfCRouterFallback(unittest.TestCase):
         history = [0.5, 0.52, 0.54, 0.55, 0.53, 0.51]
         state = {"opinion": 0.5, "propaganda": 0.7, "confianza": 0.4}
         rid, source, conf = self.router.select_regime(history, state)
-        self.assertEqual(rid, -1)
         self.assertEqual(source, "llm_fallback")
+        # When source is llm_fallback, regime_id must always be -1
+        self.assertEqual(rid, -1)
         self.assertEqual(conf, 0.0)
 
     def test_compute_tau_matrix_fallback(self):

@@ -93,7 +93,7 @@ class CfCRouter:
             log.debug("[CfC] PyTorch no disponible — CfC desactivado.")
             return
 
-        from cfc_engine import CfCRegimeSelector, CfCTauMatrix, CfCArchitectPolicy
+        from cfc_engine import CfCRegimeSelector, CfCTauMatrix, CfCArchitectPolicy, NUM_REGIMES
 
         base = Path("models")
 
@@ -123,6 +123,7 @@ class CfCRouter:
         )
         self._arch = _try_load(
             "cfc_architect.pt", CfCArchitectPolicy,
+            state_dim=10, goal_dim=5, hidden=128, n_phases=5, n_regimes=NUM_REGIMES,
         )
 
     # ── API pública ──────────────────────────────────────────────────────────
