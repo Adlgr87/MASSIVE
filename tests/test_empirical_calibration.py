@@ -4,7 +4,12 @@ import unittest
 from empirical_calibration import (
     BEYONDSIGHT_EMPIRICAL_MASTER,
     BEYONDSIGHT_RUNTIME_PARAMS,
+    HK_EPSILON_MAX,
+    HK_EPSILON_MIN,
+    TIPPING_POINT_MEAN,
+    TIPPING_POINT_STD,
     apply_empirical_profile,
+    build_empirical_engine_config,
     export_to_json,
 )
 
@@ -32,17 +37,19 @@ class TestEmpiricalMaster(unittest.TestCase):
         nd = BEYONDSIGHT_EMPIRICAL_MASTER["network_dynamics"]
         self.assertIn("DERIVA_ALGORITMICA", nd)
         self.assertIn("INFLUENCIA_PARASOCIAL", nd)
-        self.assertIn("UMBRAL_INFLEXION", nd)
+        self.assertIn("HOMOFILIA_RED", nd)
+        self.assertIn("AMPLIFICACION_VIRAL", nd)
 
     def test_temporal_keys(self):
         t = BEYONDSIGHT_EMPIRICAL_MASTER["temporal"]
         self.assertIn("MEDIA_VIDA_DIGITAL", t)
         self.assertIn("ELASTICIDAD_CONFIANZA", t)
-        self.assertIn("SILENCIO_ESTRATEGICO", t)
+        self.assertIn("CICLO_ATENCION", t)
+        self.assertIn("FATIGA_OUTRAGE", t)
 
     def test_game_theory_keys(self):
         gt = BEYONDSIGHT_EMPIRICAL_MASTER["game_theory"]
-        self.assertIn("UTILIDAD_COORDINACION", gt)
+        self.assertIn("EQUILIBRIO_NASH_SOCIAL", gt)
         self.assertIn("COSTO_DISIDENCIA", gt)
 
 
@@ -101,10 +108,11 @@ class TestApplyEmpiricalProfile(unittest.TestCase):
 
     def test_efecto_vecinos_peso_set(self):
         result = apply_empirical_profile({})
+        expected_engine = build_empirical_engine_config()
         self.assertIn("efecto_vecinos_peso", result)
         self.assertAlmostEqual(
             result["efecto_vecinos_peso"],
-            BEYONDSIGHT_RUNTIME_PARAMS["social_influence_lambda"],
+            expected_engine["efecto_vecinos_peso"],
         )
 
     def test_ruido_base_within_engine_range(self):
@@ -114,10 +122,32 @@ class TestApplyEmpiricalProfile(unittest.TestCase):
         self.assertLessEqual(ruido, 0.20)
 
     def test_ruido_base_scaling_matches_temperature(self):
-        """ruido_base = temperature * 0.20, clamped to [0.01, 0.20]."""
+        """ruido_base uses the shared engine calibration helper."""
         result = apply_empirical_profile({})
-        expected = max(0.01, min(0.20, BEYONDSIGHT_RUNTIME_PARAMS["temperature"] * 0.20))
+        expected = build_empirical_engine_config()["ruido_base"]
         self.assertAlmostEqual(result["ruido_base"], expected, places=6)
+
+    def test_adds_additional_engine_calibration_keys(self):
+        result = apply_empirical_profile({})
+        self.assertIn("ruido_desconfianza", result)
+        self.assertGreaterEqual(result["ruido_desconfianza"], 0.04)
+        self.assertLessEqual(result["ruido_desconfianza"], 0.18)
+        self.assertIn("hk_epsilon", result)
+        self.assertGreaterEqual(result["hk_epsilon"], HK_EPSILON_MIN)
+        self.assertLessEqual(result["hk_epsilon"], HK_EPSILON_MAX)
+        self.assertEqual(result["umbral_media"], TIPPING_POINT_MEAN)
+        self.assertEqual(result["umbral_std"], TIPPING_POINT_STD)
+        self.assertIn("homofilia_tasa", result)
+        self.assertGreaterEqual(result["homofilia_tasa"], 0.02)
+        self.assertLessEqual(result["homofilia_tasa"], 0.12)
+
+    def test_confirmation_bias_comes_from_empirical_master(self):
+        result = apply_empirical_profile({})
+        self.assertAlmostEqual(
+            result["sesgo_confirmacion"],
+            build_empirical_engine_config()["sesgo_confirmacion"],
+            places=6,
+        )
 
     def test_payoff_cc_set_from_runtime(self):
         result = apply_empirical_profile({})
@@ -157,6 +187,7 @@ class TestExportToJson(unittest.TestCase):
         parsed = json.loads(export_to_json())
         self.assertIn("meta", parsed["master"])
         self.assertIn("temperature", parsed["runtime_params"])
+        self.assertIn("engine_defaults", parsed)
 
     def test_write_to_disk(self):
         import os

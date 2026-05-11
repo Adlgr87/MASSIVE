@@ -351,7 +351,7 @@ Los pesos de capa, parámetros de red y distribuciones de atributos demográfico
 
 ### Calibración empírica
 
-La base empírica de 43 parámetros (`empirical_calibration.py`) se carga automáticamente. Los perfiles culturales (Latino, Anglosajón, …) se pueden aplicar en tiempo de ejecución via `apply_empirical_profile(cfg)`. Los parámetros con datos faltantes están marcados con `pending_empirical_data` y se muestran como advertencias en la UI.
+La base empírica de 43 parámetros (`empirical_config.py` / `empirical_calibration.py`) se carga automáticamente. Los defaults de ejecución ahora se derivan con agregados ponderados de las métricas empíricas directamente relevantes, y solo después se reescalan a los rangos nativos del motor (por ejemplo: influencia social → `efecto_vecinos_peso`, homofilia → `hk_epsilon` / `homofilia_tasa`, decaimiento de atención colectiva → ruido adaptativo y evidencia de tipping social → `umbral_media ≈ 0.25`). Los perfiles culturales (Latino, Anglosajón, …) se pueden aplicar en tiempo de ejecución via `apply_empirical_profile(cfg)`. Los parámetros con datos faltantes están marcados con `pending_empirical_data` y se muestran como advertencias en la UI.
 
 ---
 

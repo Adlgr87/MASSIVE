@@ -1,284 +1,248 @@
 """
-empirical_calibration.py — Índices de Calibración Empírica para MASSIVE
-Consolida investigaciones sobre dinámicas de red, efectos temporales y teoría
-de juegos, normalizados al espectro [-1.0, 1.0].
+empirical_calibration.py — Traducción empírica al motor de simulación MASSIVE.
 
-Referencias:
-  I1 — Cartografía de la Opinión Pública: Un Marco Empírico Normalizado.
-  I2 — BeyondSight-Data-Architect v2 - Gap Search.
-  I3 — Cartografía Empírica Avanzada para BeyondSight v2.
+Este módulo toma la base empírica normalizada de ``empirical_config.py`` como
+fuente única de verdad y la convierte en parámetros directamente utilizables por
+``simulator.py``.  La calibración mantiene la API pública existente, pero evita
+escalas inconsistentes entre la carga automática del simulador y el perfil
+empírico aplicado manualmente desde la UI.
 """
 
-import datetime
+from __future__ import annotations
+
 import json
 
-# ============================================================
-# DICCIONARIO MAESTRO EMPÍRICO
-# Metadata completa, varianza cultural y modificadores demográficos.
-# Todos los valores normalizados al espectro [-1.0, 1.0].
-# ============================================================
+from empirical_config import (
+    BEYONDSIGHT_EMPIRICAL_MASTER,
+    BEYONDSIGHT_RUNTIME_PARAMS,
+    get_runtime_params,
+)
 
-BEYONDSIGHT_EMPIRICAL_MASTER: dict = {
-    "meta": {
-        "version": "1.0.0",
-        "total_params": 43,
-        "coverage_pct": 53.8,
-        "generated": datetime.date.today().isoformat(),
-        "conflicts_resolved": 1,
-        "high_confidence_pct": 37.2,
-        "cultural_blocks": [
-            "latino", "anglosaxon", "east_asian",
-            "south_asian", "middle_eastern", "nordic",
-        ],
-        "notes": (
-            "Conflicto resuelto: Umbral de Inflexión (P026) — datos empíricos I1 "
-            "prevalecen sobre Granovetter por rigor metodológico."
+HK_EPSILON_MIN = 0.20
+HK_EPSILON_MAX = 0.35
+RUIDO_BASE_MIN = 0.01
+RUIDO_BASE_MAX = 0.20
+RUIDO_DESCONFIANZA_MIN = 0.04
+RUIDO_DESCONFIANZA_MAX = 0.18
+EFECTO_VECINOS_MIN = 0.02
+EFECTO_VECINOS_MAX = 0.12
+ALPHA_BLEND_MIN = 0.55
+ALPHA_BLEND_MAX = 0.85
+COMPETENCIA_PESO_MIN = 0.25
+COMPETENCIA_PESO_MAX = 0.60
+HOMOFILIA_TASA_MIN = 0.02
+HOMOFILIA_TASA_MAX = 0.12
+STRATEGIC_WEIGHT_MIN = 0.18
+STRATEGIC_WEIGHT_MAX = 0.32
+# Centola et al. (2018) and Everall et al. (2025) place practical social
+# tipping points near one quarter of the population, with a common 20–30% band.
+TIPPING_POINT_MEAN = 0.25
+TIPPING_POINT_STD = 0.05
+ENGINE_METADATA_KEYS = {"strategic", "cultural_profile", "validation_flags"}
+
+
+def _clamp(value: float, lower: float, upper: float) -> float:
+    return float(max(lower, min(upper, value)))
+
+
+def _scale_unit_to_range(value: float, lower: float, upper: float) -> float:
+    """
+    Projects a normalised [0, 1] empirical intensity into an engine-safe range.
+
+    Args:
+        value: Normalised empirical magnitude in [0, 1].
+        lower: Lower bound of the simulator-native range.
+        upper: Upper bound of the simulator-native range.
+
+    Returns:
+        Float rescaled to the inclusive ``[lower, upper]`` interval.
+    """
+    value = _clamp(value, 0.0, 1.0)
+    return float(lower + (upper - lower) * value)
+
+
+def _profile_value(category: str, param_id: str, cultural_profile: str) -> float:
+    entry = BEYONDSIGHT_EMPIRICAL_MASTER[category][param_id]
+    if cultural_profile != "mixed":
+        variance = entry.get("cultural_variance", {})
+        if cultural_profile in variance:
+            return float(variance[cultural_profile])
+    return float(entry["value"])
+
+
+def build_empirical_engine_config(cultural_profile: str = "mixed") -> dict:
+    """
+    Builds simulator-facing defaults from the normalised empirical runtime base.
+
+    Relevant parameters are translated only when they already exist in the
+    simulator, avoiding speculative integrations.  All returned values are in the
+    native ranges expected by ``simulator.py``.
+
+    Args:
+        cultural_profile: Cultural block used to apply variance modifiers before
+            translating the empirical values to simulator-native defaults.
+
+    Returns:
+        Dict with simulator-facing defaults such as noise, social influence,
+        bounded confidence, threshold parameters (`umbral_media`, `umbral_std`),
+        homophily, confirmation bias and strategic payoffs.
+    """
+    runtime = get_runtime_params(cultural_profile)
+
+    homophily = _clamp(
+        _profile_value("network_dynamics", "HOMOFILIA_RED", cultural_profile),
+        0.0,
+        1.0,
+    )
+    confirmation_bias = _clamp(
+        _profile_value("individual_psychology", "SESGO_CONFIRMACION", cultural_profile),
+        0.0,
+        1.0,
+    )
+    viral_amplification = _clamp(
+        _profile_value("network_dynamics", "AMPLIFICACION_VIRAL", cultural_profile),
+        0.0,
+        1.0,
+    )
+
+    return {
+        "ruido_base": round(
+            _scale_unit_to_range(runtime["temperature"], RUIDO_BASE_MIN, RUIDO_BASE_MAX),
+            4,
         ),
-    },
-
-    # ── Dinámica de redes ──────────────────────────────────────────────────────
-    "network_dynamics": {
-        "DERIVA_ALGORITMICA": {
-            "id": "P022",
-            "label": "Aceleración por Deriva Algorítmica",
-            "value": 0.45,
-            "digital_weight": 1.0,
-            "cultural_variance": {
-                "latin": 0.40,
-                "anglosaxon": 0.50,
-                "east_asian": 0.65,
+        "ruido_desconfianza": round(
+            _scale_unit_to_range(
+                runtime["narrative_decay_rate"],
+                RUIDO_DESCONFIANZA_MIN,
+                RUIDO_DESCONFIANZA_MAX,
+            ),
+            4,
+        ),
+        "efecto_vecinos_peso": round(
+            _scale_unit_to_range(
+                runtime["social_influence_lambda"],
+                EFECTO_VECINOS_MIN,
+                EFECTO_VECINOS_MAX,
+            ),
+            4,
+        ),
+        "alpha_blend": round(
+            _scale_unit_to_range(
+                runtime["attractor_depth"],
+                ALPHA_BLEND_MIN,
+                ALPHA_BLEND_MAX,
+            ),
+            4,
+        ),
+        "sesgo_confirmacion": round(confirmation_bias, 4),
+        # Online homophily lowers the bounded-confidence radius instead of
+        # increasing it, keeping epsilon in the empirically plausible
+        # Hegselmann-Krause / bounded-confidence ~0.20–0.35 band.
+        "hk_epsilon": round(
+            HK_EPSILON_MIN + (HK_EPSILON_MAX - HK_EPSILON_MIN) * (1.0 - homophily),
+            4,
+        ),
+        "competencia_peso": round(
+            _scale_unit_to_range(
+                viral_amplification,
+                COMPETENCIA_PESO_MIN,
+                COMPETENCIA_PESO_MAX,
+            ),
+            4,
+        ),
+        "umbral_media": TIPPING_POINT_MEAN,
+        "umbral_std": TIPPING_POINT_STD,
+        "homofilia_tasa": round(
+            _scale_unit_to_range(
+                homophily,
+                HOMOFILIA_TASA_MIN,
+                HOMOFILIA_TASA_MAX,
+            ),
+            4,
+        ),
+        "cultural_profile": cultural_profile,
+        "validation_flags": list(runtime["validation_flags"]),
+        "strategic": {
+            "enabled": False,
+            "payoff_matrix": {
+                "cc": float(runtime["payoff_coordination"]),
+                "dd": float(runtime["payoff_defection"]),
             },
-            "source": ["Bonchi et al., 2024-2025"],
-            "notes": "Fuerza de arrastre exógena de sistemas de recomendación (ADS).",
-        },
-        "INFLUENCIA_PARASOCIAL": {
-            "id": "P023",
-            "label": "Asimetría de Influencia Parasocial",
-            "value": 0.35,
-            "digital_weight": 0.85,
-            "cultural_variance": {
-                "latin": 0.50,
-                "anglosaxon": 0.40,
-            },
-            "source": ["Schramm et al., 2024"],
-            "notes": "Preeminencia de influencers sobre expertos en autoridad epistémica.",
-        },
-        "UMBRAL_INFLEXION": {
-            "id": "P026",
-            "label": "Umbral de Inflexión de Cascada",
-            "value": -0.50,
-            "digital_weight": 0.90,
-            "cultural_variance": {
-                "latin": -0.45,
-                "anglosaxon": -0.55,
-                "east_asian": -0.60,
-            },
-            "source": ["I1", "I3"],
-            "conflict_resolution": "Datos empíricos I1 prevalecen sobre Granovetter.",
-            "notes": "Punto de inflexión donde la cascada social se vuelve autosuficiente.",
-        },
-    },
-
-    # ── Efectos temporales ─────────────────────────────────────────────────────
-    "temporal": {
-        "ASIMETRIA_NEG_POS": {
-            "id": "P032",
-            "label": "Asimetría Negativo/Positivo",
-            "value": 0.00,
-            "normalization": {
-                "note": "Valor neutro activo — asimetría nula en condiciones basales.",
-            },
-            "source": ["I2"],
-            "notes": "Diferencia en velocidad de propagación entre contenido negativo y positivo.",
-        },
-        "MEDIA_VIDA_DIGITAL": {
-            "id": "P033",
-            "label": "Media-Vida de Atención Digital",
-            "value": 0.00,
-            "normalization": {
-                "original_scale": "horas",
-                "original_value": 36.0,
-                "original_max": 168.0,
-                "note": "Decaimiento estándar ~36h → 0.0 en escala logarítmica normalizada.",
-            },
-            "source": ["I2"],
-            "notes": "Velocidad de decaimiento de la atención en narrativas virales.",
-        },
-        "PUNTO_SATURACION": {
-            "id": "P035",
-            "label": "Punto de Saturación de Mensaje",
-            "value": 0.00,
-            "normalization": {
-                "note": "Umbral de fatiga de mensaje — efecto boomerang a partir de este punto.",
-            },
-            "source": ["I2"],
-            "notes": "Sobreexposición a un mensaje dispara rechazo activo (efecto boomerang).",
-        },
-        "ELASTICIDAD_CONFIANZA": {
-            "id": "P037",
-            "label": "Elasticidad de Confianza Institucional",
-            "value": -0.25,
-            "digital_weight": 0.70,
-            "cultural_variance": {
-                "latin": -0.30,
-                "anglosaxon": -0.20,
-                "nordic": -0.10,
-            },
-            "source": ["I2"],
-            "notes": "Efecto de la inflación sostenida en la confianza institucional.",
-        },
-        "SILENCIO_ESTRATEGICO": {
-            "id": "P044",
-            "label": "Costo del Silencio Estratégico",
-            "value": 0.30,
-            "digital_weight": 0.75,
-            "cultural_variance": {
-                "latin": 0.25,
-                "anglosaxon": 0.35,
-                "east_asian": 0.20,
-            },
-            "source": ["I2", "I3"],
-            "notes": (
-                "Diferenciado de autocensura pasiva. Representa el costo activo de "
-                "abstenerse deliberadamente de expresar una opinión en contexto público."
+            "strategic_weight": round(
+                _scale_unit_to_range(
+                    abs(runtime["repeller_strength"]),
+                    STRATEGIC_WEIGHT_MIN,
+                    STRATEGIC_WEIGHT_MAX,
+                ),
+                4,
             ),
         },
-    },
+    }
 
-    # ── Teoría de juegos ───────────────────────────────────────────────────────
-    "game_theory": {
-        "UTILIDAD_COORDINACION": {
-            "label": "Utilidad de Unirse al Consenso",
-            "value": 0.602,
-            "notes": "Payoff de coordinación — recompensa por unirse a la narrativa dominante.",
-        },
-        "COSTO_DISIDENCIA": {
-            "label": "Costo de la Disidencia",
-            "value": -0.50,
-            "notes": "Costo social y epistémico de mantener una posición minoritaria.",
-        },
-        "ANIMOSIDAD_OUTGROUP": {
-            "label": "Animosidad Hacia el Exogrupo",
-            "value": -0.45,
-            "notes": "Prosocialidad invertida — fuerza repulsora hacia el grupo contrario.",
-        },
-    },
-}
-
-
-# ============================================================
-# PARÁMETROS DE EJECUCIÓN (RUNTIME)
-# Valores directos para alimentar el motor de simulación.
-# Todos normalizados al espectro [-1.0, 1.0].
-# ============================================================
-
-BEYONDSIGHT_RUNTIME_PARAMS: dict = {
-    # Caos/Irracionalidad — modula backfire vs. efecto de inoculación
-    "temperature": 0.45,
-    # Peso de la red vs. convicción propia (λ — social influence lambda)
-    "social_influence_lambda": 0.58,
-    # Fuerza de la narrativa dominante (profundidad del atractor)
-    "attractor_depth": 0.75,
-    # Animosidad out-group — prosocialidad invertida (repulsor)
-    "repeller_strength": -0.45,
-    # Utilidad de unirse al consenso (payoff cooperación-cooperación)
-    "payoff_coordination": 0.602,
-    # Costo de la disidencia (payoff defección-defección)
-    "payoff_defection": -0.50,
-    # Media-vida de influencia narrativa (0.0 = decaimiento estándar ~36h)
-    "narrative_decay_rate": 0.00,
-    # Punto de rechazo por sobreexposición (0.0 = umbral de saturación neutro)
-    "saturation_threshold": 0.00,
-    # Perfil cultural activo
-    "cultural_profile": "mixed",
-    # Flags de validación de síntesis (vacío = todos OK)
-    "validation_flags": [],
-}
-
-
-# ============================================================
-# FUNCIÓN DE APLICACIÓN DE PERFIL EMPÍRICO
-# Traduce los parámetros de runtime al formato de configuración
-# del simulador MASSIVE (simulator.py / energy_runner.py).
-# ============================================================
 
 def apply_empirical_profile(cfg: dict) -> dict:
     """
     Merges empirically calibrated values into a MASSIVE simulator config.
 
-    Maps BEYONDSIGHT_RUNTIME_PARAMS fields to the keys expected by simulator.py
-    and energy_runner.py, without overwriting user-set LLM or range options.
-
-    The mapping is:
-      social_influence_lambda → efecto_vecinos_peso
-      temperature             → ruido_base   (scaled ×0.20 to match [0.01, 0.20])
-      payoff_coordination     → strategic.payoff_matrix.cc
-      payoff_defection        → strategic.payoff_matrix.dd
-
     Args:
         cfg: Existing simulator configuration dict (may be empty).
 
     Returns:
-        New dict with empirical values merged in. The original dict is not mutated.
+        New dict with empirical engine values merged in. The original dict is not
+        mutated.
     """
     merged = dict(cfg)
+    cultural_profile = str(merged.get("cultural_profile", "mixed"))
+    engine_cfg = build_empirical_engine_config(cultural_profile)
 
-    rp = BEYONDSIGHT_RUNTIME_PARAMS
+    for key in (
+        "efecto_vecinos_peso",
+        "ruido_base",
+        "ruido_desconfianza",
+        "alpha_blend",
+        "sesgo_confirmacion",
+        "hk_epsilon",
+        "competencia_peso",
+        "umbral_media",
+        "umbral_std",
+        "homofilia_tasa",
+    ):
+        merged[key] = engine_cfg[key]
 
-    # Social influence weight
-    merged["efecto_vecinos_peso"] = float(rp["social_influence_lambda"])
-
-    # Noise / chaos level — runtime temperature is in [-1,1] normalised scale;
-    # simulator ruido_base operates in [0.01, 0.20].  We scale proportionally.
-    merged["ruido_base"] = float(max(0.01, min(0.20, rp["temperature"] * 0.20)))
-
-    # Narrative decay maps to ruido_desconfianza only when non-zero
-    if rp["narrative_decay_rate"] != 0.0:
-        merged["ruido_desconfianza"] = float(
-            max(0.01, min(0.30, abs(rp["narrative_decay_rate"]) * 0.30))
-        )
-
-    # Confirmation bias — asymmetric neg/pos response
-    asim = BEYONDSIGHT_EMPIRICAL_MASTER["temporal"]["ASIMETRIA_NEG_POS"]["value"]
-    if asim != 0.0:
-        merged["sesgo_confirmacion"] = float(max(0.0, min(1.0, abs(asim))))
-
-    # Strategic layer — payoff matrix from empirical game-theory values
     strategic = dict(merged.get("strategic", {}))
     strategic.setdefault("enabled", False)
-    payoff = dict(strategic.get("payoff_matrix", {"cc": 1.0, "cd": -1.0, "dc": 1.0, "dd": -1.0}))
-    payoff["cc"] = float(rp["payoff_coordination"])   # consensus reward
-    payoff["dd"] = float(rp["payoff_defection"])       # mutual defection cost
+    strategic.setdefault("strategic_weight", engine_cfg["strategic"]["strategic_weight"])
+    payoff = dict(
+        strategic.get(
+            "payoff_matrix",
+            {"cc": 1.0, "cd": -1.0, "dc": 1.0, "dd": -1.0},
+        )
+    )
+    payoff["cc"] = engine_cfg["strategic"]["payoff_matrix"]["cc"]
+    payoff["dd"] = engine_cfg["strategic"]["payoff_matrix"]["dd"]
     strategic["payoff_matrix"] = payoff
     merged["strategic"] = strategic
 
-    # Tag the config with the empirical profile version for traceability
     merged["_empirical_profile"] = BEYONDSIGHT_EMPIRICAL_MASTER["meta"]["version"]
-
     return merged
 
-
-# ============================================================
-# EXPORTACIÓN JSON
-# ============================================================
 
 def export_to_json(path: str | None = None) -> str:
     """
     Serialises both dictionaries to a JSON string and optionally writes to disk.
 
     Args:
-        path: If provided, the JSON string is written to this file path.
+        path: Optional file path where the serialised payload should be written.
 
     Returns:
-        JSON string representation of the full calibration data.
+        JSON string containing the empirical master data, runtime parameters and
+        derived engine defaults.
     """
     payload = {
         "master": BEYONDSIGHT_EMPIRICAL_MASTER,
         "runtime_params": BEYONDSIGHT_RUNTIME_PARAMS,
+        "engine_defaults": build_empirical_engine_config(),
     }
-    # Re-stamp generation date
-    payload["master"]["meta"]["generated"] = datetime.date.today().isoformat()
-
     result = json.dumps(payload, ensure_ascii=False, indent=2)
 
     if path is not None:
@@ -286,8 +250,3 @@ def export_to_json(path: str | None = None) -> str:
             fh.write(result)
 
     return result
-
-
-# ── Backward-compatible aliases (new preferred names) ─────────────────────────
-MASSIVE_EMPIRICAL_MASTER = BEYONDSIGHT_EMPIRICAL_MASTER
-MASSIVE_RUNTIME_PARAMS   = BEYONDSIGHT_RUNTIME_PARAMS
