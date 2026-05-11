@@ -36,6 +36,7 @@ Traditional simulators ask *"what will happen?"*. MASSIVE also answers: **"what 
 - [What it does](#what-it-does)
 - [Key Features](#key-features)
 - [Architecture](#architecture)
+- [CfC Neural Engine](#cfc-neural-engine)
 - [Simulation Rules](#simulation-rules)
 - [Installation](#installation)
 - [Running the App](#running-the-app)
@@ -103,6 +104,7 @@ MASSIVE lets you:
 - **Network graph metrics**: degree/betweenness centrality, density, and cluster identification via NetworkX.
 
 ### Integration & Infrastructure
+- **CfC Neural Engine** (optional, additive) — Closed-form Continuous-time networks replace the LLM in the hot path when pre-trained models are present in `models/`. Zero-config fallback to heuristic/LLM if models are absent.
 - **LangChain typed chains** (`strategy_chain`, `narrative_chain`, `landscape_chain`) with JSON output validation and transparent HTTP fallback.
 - **Dask parallel multi-simulation** across all available CPU cores via `dask.delayed`.
 - **Quantum module**: QAOA-inspired intervention optimizer (Qiskit or classical fallback) + MPS tensor-network compression for agent-state matrices.
@@ -123,21 +125,31 @@ MASSIVE lets you:
       │                   │                  │
 ┌─────▼──────┐  ┌─────────▼────────┐  ┌──────▼──────────────┐
 │ simulator  │  │ social_architect  │  │ multilayer_engine    │
-│ (13 rules) │  │ (LLM loop +       │  │ (5D × 3 layers +    │
-│ EWS / TDA  │  │  StrategyMatrix)  │  │  θ-matrix + Numba)  │
-└─────┬──────┘  └─────────┬────────┘  └──────┬──────────────-┘
-      │                   │                  │
-      └──────────┬─────────┘                  │
-                 ▼                            │
-    ┌────────────────────────────────────────-┘
-    │   energy_engine (Langevin / Numba JIT)
-    │   massive_engine (LOD / uint8 / event-driven / GPU)
-    └───────────────────────────────────────────────────
+│ (13 rules) │  │ (CfC Attempt 0 + │  │ (5D × 3 layers +    │
+│ EWS / TDA  │  │  LLM loop)        │  │  CfC τ-matrix +     │
+│ CfC fast   │  │                  │  │  Numba JIT)         │
+│ path ⚡    │  └─────────┬────────┘  └──────┬──────────────-┘
+└─────┬──────┘            │                  │
+      │         ┌─────────▼──────────────────▼────────────────┐
+      │         │        cfc_router.py  (singleton)            │
+      │         │   CfCRegimeSelector │ CfCTauMatrix │         │
+      │         │   CfCArchitectPolicy                         │
+      │         │   ↳ models/cfc_*.pt  (generados localmente) │
+      │         │   ↳ fallback automático si no hay modelos   │
+      │         └──────────────────────────────────────────────┘
+      │                   │
+      └──────────┬─────────┘
+                 ▼
+    ┌────────────────────────────────────────────────┐
+    │   energy_engine (Langevin / Numba JIT)         │
+    │   massive_engine (LOD / uint8 / event-driven / GPU)│
+    └───────────────────────────────────────────────-┘
                  │
     ┌────────────▼────────────────────────────────────┐
     │  LLM providers (via llm_credentials.py):         │
     │  heuristic │ Ollama │ Groq │ OpenAI │ OpenRouter │
-    │  (optional LangChain chains in langchain_workflows.py) │
+    │  (LangChain chains en langchain_workflows.py)    │
+    │  ↳ sólo se invoca si CfC no tiene alta confianza│
     └──────────────────────────────────────────────────┘
 ```
 
@@ -163,7 +175,14 @@ Noise adapts to institutional trust: `σ(t) = σ_base + σ_distrust · (1 − tr
 User goal (free text) + initial network state
         │
         ▼
-LLM proposes StrategyMatrix (JSON schedule of interventions)
+[CfC Attempt 0] CfCArchitectPolicy proposes strategy (no API call)
+        │
+   Score ≥ 90? ──YES──► generar_narrativa_final() ──► Done (0 LLM calls)
+        │
+       NO (or CfC not available)
+        │
+        ▼
+LLM proposes StrategyMatrix (JSON schedule, enriched with CfC feedback)
         │
         ▼
 run_with_schedule() → Langevin engine executes each phase
@@ -201,6 +220,101 @@ theta[i, hierarchy]   *= 1 + 0.4 * (age_i / 2)  # Alwin & Krosnick (1991)
 theta[i, income]      *= 1 + 0.2 * youth_i       # labor-market volatility
 theta[i, info_access] *= 1 + 0.4 * education_i   # van Dijk (2005)
 ```
+
+---
+
+## CfC Neural Engine
+
+MASSIVE includes an optional **Closed-form Continuous-time (CfC)** neural layer that replaces the LLM in the hot path of three key operations. The integration is **fully additive**: without trained models, MASSIVE works exactly as before.
+
+### What are CfC networks?
+
+CfC networks solve a continuous-time ODE per step:
+
+```
+dx/dt = −x/τ + B(u) + C · tanh(Wx·x + Wu·u)
+```
+
+where τ is learned dynamically from the current state and input — making the network *inherently adaptive* to temporal scale. This makes them ideal for social dynamics, where regime timescales vary widely (slow consensus formation vs. rapid polarization cascades).
+
+### The three CfC components
+
+| Component | Replaces | File |
+|-----------|----------|------|
+| `CfCRegimeSelector` | LLM call in `simulator.py` hot path | `cfc_engine.py` |
+| `CfCTauMatrix` | Fixed θ-matrix in `multilayer_engine.py` | `cfc_engine.py` |
+| `CfCArchitectPolicy` | Attempt 0 in `social_architect.py` (no API call) | `cfc_engine.py` |
+
+### Decision flow in `simulator.py`
+
+```
+Each simulation step
+        │
+    CfC available AND history ≥ 6 steps?
+        │               │
+       YES              NO
+        │               └──► LLM / heuristic (unchanged)
+        ▼
+ CfCRegimeSelector → confidence?
+        │               │
+    conf ≥ 0.75        conf < 0.75
+        │               └──► LLM / heuristic fallback
+        ▼
+ Use CfC regime (no API call, ~0.1 ms)
+```
+
+### Training your own models
+
+```bash
+# Install PyTorch (CPU is enough):
+pip install torch>=2.2.0
+
+# Generate datasets and train all components (≈ 10 min on CPU with defaults):
+python cfc_trainer.py --component all --n-sims 10000 --n-samples 5000
+
+# Or train selectively:
+python cfc_trainer.py --component selector --n-sims 5000 --epochs-selector 20
+python cfc_trainer.py --component tau      --n-samples 2000 --epochs-tau 30
+```
+
+Trained models are saved to `models/` (gitignored) and loaded automatically at startup. The sidebar shows which components are active: **⚡ CfC activo: selector, τ-matrix, architect**.
+
+### Programmatic CfC API
+
+```python
+from cfc_router import CfCRouter
+
+router = CfCRouter.get()  # singleton
+
+# Check status
+print(router.status)
+# {'regime_selector': True, 'tau_matrix': True, 'architect_policy': False}
+
+# Direct regime prediction
+rid, source, confidence = router.select_regime(
+    history=[0.5, 0.52, 0.54, 0.55, 0.53, 0.51],
+    state={"opinion": 0.51, "propaganda": 0.7, "confianza": 0.4, ...}
+)
+# ('cfc', 5, 0.88)  → chose rule 5 (HK) with 88% confidence
+
+# Tau matrix for multilayer engine
+import numpy as np
+attrs = np.stack([religion, education, age_norm, gender], axis=1)  # (N, 4)
+tau = router.compute_tau_matrix(attrs)  # (N, 5) — always ≥ 0.1
+
+# Social Architect strategy proposal (no LLM call)
+proposal = router.propose_strategy(
+    initial_state={"opinion": 0.5, "propaganda": 0.7, ...},
+    goal_embedding=[1.0, 0.0, -0.5, 0.0, 0.0],  # consensus goal
+)
+```
+
+### Key invariants
+
+- **CfC never blocks.** Without `models/*.pt`, without PyTorch, or with low confidence → MASSIVE works exactly as today.
+- **Confidence threshold:** `0.75` by default. Below this, the LLM/heuristic takes over.
+- **13 regimes:** CfCRegimeSelector covers all rules 0–12, including extended models (Nash, Bayesian, SIR).
+- **Zero new required dependencies** to run MASSIVE: `torch` and `torchdiffeq` are optional.
 
 ---
 
@@ -248,6 +362,8 @@ pip install dask              # Parallel multi-simulation runs
 pip install ripser persim     # Topological Data Analysis (persistent homology)
 pip install qiskit qiskit-aer # Quantum-inspired optimizer (falls back to classical)
 ```
+
+> **Note:** `torch>=2.2.0` and `torchdiffeq>=0.2.3` are listed in `requirements.txt` for the CfC engine. If you only want to run MASSIVE without training CfC models, these packages are still installed but remain dormant — no model files means pure heuristic/LLM mode, same as before.
 
 ---
 
@@ -456,6 +572,8 @@ Full protocol docs: [English](docs/validation/PVU_BeyondSight_EN.md) · [Españo
 
 A few architectural choices that shape how MASSIVE works:
 
+**CfC as fast-path, not replacement.** The CfC layer is not designed to outperform a frontier LLM at creative reasoning. It is designed to handle the easy, repetitive, high-confidence regime selections at near-zero latency and zero API cost — freeing the LLM for genuinely ambiguous situations. The confidence threshold (0.75) makes this boundary explicit and tunable.
+
 **Opinion as a physical system.** Langevin dynamics brings tools from statistical physics — energy wells, stochastic diffusion, tipping-point theory — into social modeling, while remaining anchored to sociological literature rather than physics metaphors.
 
 **LLM as regime selector, not oracle.** The LLM does not predict outcomes. It selects which mathematical model is most appropriate for the current social context at each step. This keeps outputs interpretable: every prediction traces back to a defined mathematical rule and its peer-reviewed basis.
@@ -466,22 +584,23 @@ A few architectural choices that shape how MASSIVE works:
 
 **Scale without a cluster.** The LOD + uint8 + event-driven combination degrades gracefully: a laptop runs meaningful simulations, a GPU cluster runs proportionally faster. No infrastructure requirement.
 
-Modernized assets joined overlays, refreshed interface tuning yielded reliable experience; polished outputs reflect today.
-
 ---
 
 ## Limitations
 
+- **CfC models not pre-trained:** The repository ships without `models/*.pt` files. CfC components activate only after you run `python cfc_trainer.py`. Until then, MASSIVE operates identically to previous versions.
 - **Quantum module:** Uses classical simulation of quantum-inspired algorithms (QAOA structure via Qiskit Aer or NumPy fallback, MPS-style compression). No real quantum hardware required or used.
 - **Empirical base coverage:** All 43 parameters are complete as of v1.1.0 (88.4% coverage; no active `pending_empirical_data` flags). Additional cultural calibration blocks (Nordic, South Asian) are planned for future releases.
 - **Real-world validation:** Current PVU-BS benchmark cases are synthetic (for pipeline testing). Real-world opinion dynamics validation (N ≥ 10 independent cases) is in progress.
-- **LLM dependence:** The Social Architect and regime selector work best with a cloud LLM. A heuristic fallback is always available but produces less contextually coherent strategies.
+- **LLM dependence:** The Social Architect and regime selector work best with a cloud LLM when CfC models are not trained. A heuristic fallback is always available but produces less contextually coherent strategies.
 - **Social media connectors:** Twitter/X v2 API access requires a developer account with appropriate tier; throughput depends on third-party rate limits.
 
 ---
 
 ## Roadmap
 
+- [ ] Pre-trained CfC model weights published as a GitHub Release asset
+- [ ] CfC training via Hugging Face Datasets (real opinion survey data)
 - [ ] Real PVU-BS validation cases from public opinion datasets
 - [ ] Additional cultural calibration blocks (Nordic, South Asian, Middle Eastern)
 - [ ] LangChain agent executors with tool access (web search, real-time data retrieval)
@@ -494,19 +613,34 @@ Modernized assets joined overlays, refreshed interface tuning yielded reliable e
 
 ```
 MASSIVE/
-├── app.py                        # Streamlit UI — 4 tabs (Simulation, Architect, Multilayer, Massive)
-├── simulator.py                  # Core: 13 rules, LLM selector, EWS, TDA, Dask parallel
-├── social_architect.py           # Social Architect: iterative LLM reverse-engineering agent
+├── app.py                        # Streamlit UI — 5 tabs (Simulation, Architect, Multilayer, Massive, Analytics)
+│                                 # ⚡ CfC status badge + regime source shown in sidebar and metrics
+├── simulator.py                  # Core: 13 rules, CfC fast path, LLM selector, EWS, TDA, Dask parallel
+├── social_architect.py           # Social Architect: CfC Attempt 0 + iterative LLM reverse-engineering
+├── multilayer_engine.py          # 5D × 3-layer engine: CfC τ-matrix + Numba JIT + θ-matrix fallback
+├── cfc_engine.py                 # ⚡ NEW — CfC neural architectures (pure PyTorch, no MASSIVE deps)
+│   ├── CfCCell                   #    ODE base cell (Euler step, dynamic τ)
+│   ├── CfCRegimeSelector         #    13-class regime selector (replaces LLM in hot path)
+│   ├── CfCTauMatrix              #    Sociodemographic τ-matrix generator
+│   └── CfCArchitectPolicy        #    Strategy proposer (Social Architect Attempt 0)
+├── cfc_router.py                 # ⚡ NEW — Singleton router: CfC vs LLM decision at runtime
+│                                 #    Loads models/*.pt; graceful fallback if absent
+├── cfc_trainer.py                # ⚡ NEW — Dataset generation + training pipeline (CLI + API)
+│                                 #    Uses heuristic selector as teacher (knowledge distillation)
+├── models/                       # ⚡ NEW — Trained model weights (gitignored, generate locally)
+│   ├── .gitkeep
+│   ├── cfc_selector.pt           #    (generated) Regime selector weights
+│   ├── cfc_tau.pt                #    (generated) Tau matrix weights
+│   └── cfc_architect.pt          #    (generated) Architect policy weights
 ├── energy_engine.py              # Langevin engine (Numba JIT-compiled)
 ├── energy_runner.py              # Langevin simulation orchestrator
 ├── energy_schemas.py             # Pydantic v2 schemas for EnergyConfig
-├── multilayer_engine.py          # 5D × 3-layer sociodemographic engine (Numba + θ-matrix)
 ├── massive_engine.py             # Scale engine: LOD, uint8, event-driven, GPU offload
 ├── extended_models.py            # Rules 10–12: Nash, Bayesian BN (pgmpy), SIR
 ├── langchain_workflows.py        # LangChain typed chains: strategy, narrative, landscape
 ├── programmatic_architect.py     # Archetype library + RAM/SQLite cache + LLM landscape gen
 ├── social_connectors.py          # Twitter/X (v2) and Reddit (praw) live data connectors
-├── empirical_config.py           # 43-parameter empirical master (BEYONDSIGHT_EMPIRICAL_MASTER, v1.1.0, 88.4% coverage)
+├── empirical_config.py           # 43-parameter empirical master (v1.1.0, 88.4% coverage)
 ├── empirical_calibration.py      # Translates empirical base → engine-safe simulator defaults
 ├── utility_logic.py              # Game-theoretic strategic force calculator
 ├── cache_manager.py              # RAM + SQLite landscape cache
@@ -531,6 +665,9 @@ MASSIVE/
 ├── docs/validation/              # PVU-BS protocol (English + Spanish)
 ├── reports/validation/           # Auto-generated benchmark outputs (metrics.json, report.md)
 ├── tests/                        # 200+ unit and integration tests
+│   ├── test_cfc_engine.py        # ⚡ NEW — CfC architecture unit tests
+│   ├── test_cfc_router.py        # ⚡ NEW — Router fallback and integration tests
+│   └── [existing tests]
 ├── .env.example                  # Environment variable template
 ├── README.md                     # This file (English)
 └── README_ES.md                  # Spanish documentation
@@ -544,7 +681,9 @@ MASSIVE/
 pytest tests/
 ```
 
-The test suite covers: simulator core, energy engine, multilayer engine, massive-scale engine, game-theory layer, social architect, empirical calibration, PVU benchmark runner, visualizations, and LLM integration. Tests run in CI on every push.
+The test suite covers: simulator core (including CfC fast path), CfC engine architecture, CfC router fallback and integration, energy engine, multilayer engine (including CfC τ-matrix), massive-scale engine, game-theory layer, social architect, empirical calibration, PVU benchmark runner, visualizations, and LLM integration. Tests run in CI on every push.
+
+CfC model tests that require PyTorch are automatically skipped if the library is not installed (`pytest.mark.skipif`), so CI never breaks due to missing weights or optional dependencies.
 
 ---
 

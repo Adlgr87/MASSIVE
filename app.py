@@ -47,6 +47,13 @@ try:
 except ImportError:
     _EMPIRICAL_VALIDATION_FLAGS = []
 
+# CfC INTEGRATION — estado del motor neuronal para mostrar en la UI
+try:
+    from cfc_router import CfCRouter
+    _CFC_STATUS = CfCRouter.get().status
+except ImportError:
+    _CFC_STATUS = {"regime_selector": False, "tau_matrix": False, "architect_policy": False}
+
 # Load environment variables from .env
 load_dotenv()
 
@@ -198,6 +205,31 @@ with st.sidebar:
     st.markdown("Proyecto de código abierto bajo licencia Apache 2.0. Libre para uso personal, académico y comercial con atribución al autor.")
     st.link_button("💼 Consultoría & Servicios", "mailto:MASSIVE@ejemplo.com")
     st.link_button("🤝 Contribuir al Proyecto", "https://github.com/Adlgr87/MASSIVE")
+    st.markdown("---")
+
+    # ── CfC ENGINE STATUS ──────────────────────────────────
+    _any_cfc = any(_CFC_STATUS.values())
+    if _any_cfc:
+        _cfc_parts = []
+        if _CFC_STATUS["regime_selector"]:
+            _cfc_parts.append("selector")
+        if _CFC_STATUS["tau_matrix"]:
+            _cfc_parts.append("τ-matrix")
+        if _CFC_STATUS["architect_policy"]:
+            _cfc_parts.append("architect")
+        st.markdown(
+            f'<div class="badge" style="background:#0a1a0a;color:#bae67e;border:1px solid #bae67e">'
+            f'⚡ CfC activo: {", ".join(_cfc_parts)}</div>',
+            unsafe_allow_html=True,
+        )
+        st.caption("Motor neuronal CfC activo — menor latencia, sin API key.")
+    else:
+        st.markdown(
+            '<div class="badge" style="background:#0d1520;color:#3d5166;border:1px solid #3d5166">'
+            '◇ CfC: sin modelos (modo LLM/heurístico)</div>',
+            unsafe_allow_html=True,
+        )
+        st.caption("Entrena los modelos con `python cfc_trainer.py` para activar CfC.")
     st.markdown("---")
 
     # ── LANGUAGE ───────────────────────────────────────────
@@ -613,10 +645,17 @@ with tab1:
             regla_dom     = stats.get("regla_dominante", "—")
             reglas_usadas = [h.get("_regla_nombre", "") for h in historial if "_regla_nombre" in h]
             n_dom         = Counter(reglas_usadas).get(regla_dom, 0)
+            # Detectar si el selector CfC actuó en algún paso
+            razones = [h.get("_razon", "") for h in historial if "_razon" in h]
+            n_cfc   = sum(1 for r in razones if r.startswith("cfc"))
+            selector_label = (
+                f"⚡ CfC ({n_cfc} pasos)" if n_cfc > 0 else
+                ("heurístico" if proveedor == "heurístico" else proveedor)
+            )
             st.markdown(f"""<div class="metric-card">
                 <div class="metric-label">{t('dominant_regime', lang)}</div>
                 <div class="metric-value" style="font-size:1.0rem">{regla_dom}</div>
-                <div class="metric-delta-neu">{n_dom}/{pasos} {t('time_steps', lang).lower()}</div>
+                <div class="metric-delta-neu">{n_dom}/{pasos} · {selector_label}</div>
             </div>""", unsafe_allow_html=True)
 
         st.markdown("<br>", unsafe_allow_html=True)
