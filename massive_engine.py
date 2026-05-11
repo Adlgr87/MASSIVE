@@ -57,7 +57,9 @@ try:
     try:
         if _cp.cuda.is_available():
             _GPU_BACKEND = "cupy"
-    except (AttributeError, RuntimeError, _cp.cuda.runtime.CUDARuntimeError) as exc:
+    except (AttributeError, RuntimeError) as exc:
+        log.warning(f"[MassiveEngine] CuPy detectado pero CUDA no disponible: {exc}")
+    except Exception as exc:
         log.warning(f"[MassiveEngine] CuPy detectado pero CUDA no disponible: {exc}")
 except ImportError:
     pass

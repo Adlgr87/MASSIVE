@@ -1154,7 +1154,7 @@ def _obtener_api_key_proveedor(proveedor: str, cfg: dict) -> str:
     Returns:
         API key resuelta para el proveedor, o cadena vacía si no está disponible.
     """
-    return resolve_provider_api_key(proveedor, fallback=str(cfg.get("api_key", "")))
+    return resolve_provider_api_key(proveedor, fallback=cfg.get("api_key", ""))
 
 
 def _llamar_ollama(prompt: str, cfg: dict) -> dict | None:

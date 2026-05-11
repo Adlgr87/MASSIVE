@@ -437,9 +437,9 @@ def targeted_llm_bias(
         f"Responde solo con el argumento, sin explicaciones adicionales."
     )
 
-    resolved_api_key = resolve_provider_api_key(proveedor, fallback=api_key)
+    key = resolve_provider_api_key(proveedor, fallback=api_key)
 
-    if proveedor == "heurístico" or not resolved_api_key:
+    if proveedor == "heurístico" or not key:
         return (
             f"[Heurístico] Narrativa para {grupo_label} vía {layer_label}: "
             f"La cooperación compartida fortalece a tu comunidad. "
@@ -456,7 +456,7 @@ def targeted_llm_bias(
                 f"[Fallback] Narrativa para {grupo_label}: "
                 f"El diálogo y la cooperación construyen comunidades más resilientes."
             )
-        headers = {"Authorization": f"Bearer {resolved_api_key}", "Content-Type": "application/json"}
+        headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
         payload = {
             "model": modelo,
             "messages": [{"role": "user", "content": prompt}],
