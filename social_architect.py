@@ -19,6 +19,14 @@ from quantum.integration import quantum_optimize_interventions
 
 log = logging.getLogger("massive")
 
+# CfC INTEGRATION — primer intento sin llamada LLM si el modelo está disponible
+try:
+    from cfc_router import CfCRouter
+    _cfc = CfCRouter.get()
+    CFC_AVAILABLE = _cfc.status["architect_policy"]
+except ImportError:
+    CFC_AVAILABLE, _cfc = False, None
+
 
 def find_optimal_interventions(evaluate_fn, n_agents, n_phases, max_iter=100):
     """Drop-in replacement for intervention optimization.
@@ -287,6 +295,84 @@ Secuencia final de intervenciones matemáticas ejecutadas: {json.dumps(estrategi
 
 
 # ============================================================
+# CfC HELPERS — codificación de objetivo y decodificación de estrategia
+# ============================================================
+
+def _encode_goal(objetivo: str) -> list:
+    """
+    Codifica un objetivo en texto libre en un vector de 5 floats
+    para CfCArchitectPolicy.
+
+    Args:
+        objetivo: Descripción del objetivo en lenguaje natural.
+
+    Returns:
+        Lista de 5 floats normalizada al rango [-1, 1].
+    """
+    kw = {
+        "consenso":     [ 1.0,  0.0, -0.5,  0.0,  0.0],
+        "polarizacion": [ 0.0,  1.0,  0.5,  0.0,  0.0],
+        "moderado":     [ 0.5,  0.0, -0.3,  0.0,  0.0],
+        "cambio":       [ 0.0,  0.0,  0.0,  1.0,  0.5],
+        "resistencia":  [ 0.0,  0.0,  0.0, -1.0,  0.5],
+        "despolarizar": [ 1.0, -0.5,  0.0,  0.0,  0.0],
+        "radicalizar":  [-0.5,  1.0,  0.5,  0.0,  0.0],
+        "alinear":      [ 0.8,  0.0, -0.2,  0.5,  0.0],
+        "cohesion":     [ 0.7,  0.0, -0.3,  0.3,  0.0],
+    }
+    v = [0.0] * 5
+    obj_lower = objetivo.lower()
+    for k, e in kw.items():
+        if k in obj_lower:
+            v = [a + b for a, b in zip(v, e)]
+    norm = max(abs(x) for x in v) or 1.0
+    return [x / norm for x in v]
+
+
+def _decode_strategy(propuesta: dict, total_pasos: int = 60) -> dict:
+    """
+    Convierte la salida de CfCArchitectPolicy en un StrategyMatrix válido.
+
+    Args:
+        propuesta:    Diccionario de salida del modelo CfC.
+        total_pasos:  Número total de pasos de la simulación.
+
+    Returns:
+        Diccionario con estructura {"interventions": [...]} compatible con
+        run_with_schedule().
+    """
+    import numpy as np
+    from simulator import NOMBRES_REGLAS
+
+    regime_logits = propuesta["regime_logits"][0]          # (n_regimes,)
+    durations = propuesta["durations"][0]                   # (n_phases,)
+    n_phases = len(durations)
+
+    # Régimen más probable (único, compartido entre fases por simplicidad)
+    rid = int(np.argmax(regime_logits))
+    regla_nombre = NOMBRES_REGLAS.get(rid, "lineal")
+
+    interventions = []
+    t = 1
+    for i in range(n_phases):
+        dur = max(1, int(round(float(durations[i]) * total_pasos)))
+        end = min(t + dur - 1, total_pasos)
+        interventions.append({
+            "time_start": t,
+            "time_end": end,
+            "model_name": regla_nombre,
+            "parameters": {},
+            "fase_rationale": f"CfC fase {i + 1}: régimen {regla_nombre}",
+            "target_nodes": None,
+        })
+        t = end + 1
+        if t > total_pasos:
+            break
+
+    return {"interventions": interventions}
+
+
+# ============================================================
 # ÁRQUITECTO SOCIAL — BÚSQUEDA INVERSA PRINCIPAL
 # ============================================================
 
@@ -303,10 +389,13 @@ def buscar_estrategia_inversa(
     Ejecuta el bucle de ingeniería inversa para encontrar la estrategia
     que lleva la red al estado objetivo.
 
+    Si CfC está disponible, ejecuta un "Intento 0" neuronal antes del
+    bucle LLM. Si score ≥ 90, retorna sin invocar ninguna API.
+
     Args:
         estado_inicial: Estado inicial del simulador.
         objetivo_usuario: Descripción del objetivo deseado.
-        max_intentos: Número máximo de iteraciones de refinamiento.
+        max_intentos: Número máximo de iteraciones de refinamiento LLM.
         config: Configuración global del simulador.
         modo_simulacion: 'macro' (redes sociales/políticas) o
                          'corporativo' (redes organizacionales).
@@ -318,6 +407,32 @@ def buscar_estrategia_inversa(
     """
     cfg = {**DEFAULT_CONFIG, **(config or {})}
 
+    # ── CfC Intento 0 — sin llamada LLM ──────────────────────────────────────
+    feedback_inicial = ""
+    if CFC_AVAILABLE:
+        try:
+            goal_emb = _encode_goal(objetivo_usuario)
+            propuesta = _cfc.propose_strategy(estado_inicial, goal_emb)
+            if propuesta is not None:
+                pasos_cfg = cfg.get("pasos", 60)
+                estrategia_cfc = _decode_strategy(propuesta, total_pasos=pasos_cfg)
+                historial_cfc = run_with_schedule(
+                    estado_inicial, estrategia_cfc, config=cfg
+                )
+                score_cfc, fb_cfc = evaluar_resultado(
+                    historial_cfc, objetivo_usuario, cfg
+                )
+                log.info(f"[CfC Architect] Intento 0: score={score_cfc:.1f}")
+                if score_cfc >= 90:
+                    narrativa = (
+                        "Estrategia generada por CfC (sin API LLM). "
+                        f"Score: {score_cfc:.1f}/100.\n\n{fb_cfc}"
+                    )
+                    return estrategia_cfc, narrativa, 0, historial_cfc
+                feedback_inicial = f"[CfC score={score_cfc:.1f}] {fb_cfc} "
+        except Exception as exc:
+            log.debug(f"[CfC Architect] Intento 0 fallido: {exc}")
+
     # ── LangChain path ────────────────────────────────────────────────────────
     if use_langchain:
         try:
@@ -328,7 +443,8 @@ def buscar_estrategia_inversa(
                 llm = build_llm(provider, model=modelo, temperature=0.0)
                 if llm is not None:
                     architect = LangChainSocialArchitect(llm)
-                    historial_feedback: list = []
+                    # Inyectar el feedback del Intento 0 CfC si existe
+                    historial_feedback: list = [feedback_inicial] if feedback_inicial else []
                     mejor_estrategia = {}
                     mejor_historial = None
                     mejor_score = -1
@@ -377,7 +493,8 @@ def buscar_estrategia_inversa(
 
     # ── Standard HTTP path ────────────────────────────────────────────────────
     client = setup_client()
-    historial_feedback = []
+    # Inyectar el feedback del Intento 0 CfC si existe
+    historial_feedback = [feedback_inicial] if feedback_inicial else []
 
     estrategia_json = {}
     mejor_estrategia = {}

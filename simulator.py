@@ -70,6 +70,14 @@ try:
 except ImportError:
     EXTENDED_MODELS_AVAILABLE = False
 
+# CfC INTEGRATION — fast path neuronal para selector de régimen
+try:
+    from cfc_router import CfCRouter
+    _cfc = CfCRouter.get()
+    CFC_AVAILABLE = _cfc.status["regime_selector"]
+except ImportError:
+    CFC_AVAILABLE, _cfc = False, None
+
 # EMPIRICAL INTEGRATION — importar base empírica si está disponible
 try:
     from empirical_config import BEYONDSIGHT_RUNTIME_PARAMS, EMPIRICAL_BASE_LOADED
@@ -1419,6 +1427,17 @@ def simular(
             )
             dt = float(cfg.get("dt", 0.1))
             return 9, {"payoff_matrix": payoff.tolist(), "dt": dt}, "replicador: EGT mode active"
+
+        # CfC fast path — evita llamada LLM cuando hay modelo entrenado y confianza alta
+        if CFC_AVAILABLE and len(hist) >= 6:
+            opinion_window = [h["opinion"] for h in hist[-6:]]
+            rid, source, conf = _cfc.select_regime(
+                history=opinion_window, state=est
+            )
+            if source == "cfc":
+                p = _validar_params(NOMBRES_REGLAS[rid], {})
+                return rid, p, f"cfc (conf={conf:.2f})"
+
         ventana = hist[-cfg["ventana_historial_llm"]:]
         dec     = llamar_llm(est, escenario, ventana, cfg)
         r_id    = dec["regla"]

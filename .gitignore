@@ -19,3 +19,7 @@ landscapes_cache.db
 # PVU benchmark run outputs (generated; not committed)
 reports/validation/ci/
 reports/validation/llm_run/
+
+# CfC trained models and datasets (generated locally; not committed)
+models/*.pt
+models/dataset_*.pt

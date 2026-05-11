@@ -537,6 +537,23 @@ class MultilayerEngine:
         self.attributes_df = generate_attributes(N, seed=seed, **attr_cfg)
         self.theta = compute_theta(self.attributes_df)
 
+        # CfC INTEGRATION — τ aprendido sustituye la theta manual si está disponible
+        try:
+            from cfc_router import CfCRouter
+            _cfc_tau = CfCRouter.get().compute_tau_matrix(
+                np.stack([
+                    self.attributes_df["religion"].to_numpy(dtype=np.float32),
+                    self.attributes_df["education"].to_numpy(dtype=np.float32),
+                    (self.attributes_df["age_group"].to_numpy(dtype=np.float32) / 3.0),
+                    self.attributes_df["gender"].to_numpy(dtype=np.float32),
+                ], axis=1)
+            )
+            if _cfc_tau is not None:
+                # Escalar al rango de la theta manual para compatibilidad
+                self.theta = (_cfc_tau * self.theta.max()).astype(np.float64)
+        except ImportError:
+            pass
+
         # Capas de red
         self.layers = build_layers(N, layer_config)
         self._layers_flat = np.stack([
