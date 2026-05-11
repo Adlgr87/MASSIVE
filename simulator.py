@@ -1369,6 +1369,8 @@ def simular(
         # Only set keys NOT already overridden by the caller's config argument
         user_keys = set((config or {}).keys())
         for k, v in empirical_defaults.items():
+            # strategic requires nested merging; cultural_profile and
+            # validation_flags are metadata, not simulator control knobs.
             if k in {"strategic", "cultural_profile", "validation_flags"}:
                 continue
             if k not in user_keys:

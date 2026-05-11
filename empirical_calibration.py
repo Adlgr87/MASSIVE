@@ -18,6 +18,13 @@ from empirical_config import (
     get_runtime_params,
 )
 
+HK_EPSILON_MIN = 0.20
+HK_EPSILON_MAX = 0.35
+# Centola et al. (2018) and Everall et al. (2025) place practical social
+# tipping points near one quarter of the population, with a common 20–30% band.
+TIPPING_POINT_MEAN = 0.25
+TIPPING_POINT_STD = 0.05
+
 
 def _clamp(value: float, lower: float, upper: float) -> float:
     return float(max(lower, min(upper, value)))
@@ -82,12 +89,15 @@ def build_empirical_engine_config(cultural_profile: str = "mixed") -> dict:
         ),
         "sesgo_confirmacion": round(confirmation_bias, 4),
         # Online homophily lowers the bounded-confidence radius instead of
-        # increasing it, keeping epsilon in the empirically plausible ~0.20–0.35 band.
-        "hk_epsilon": round(0.20 + 0.15 * (1.0 - homophily), 4),
+        # increasing it, keeping epsilon in the empirically plausible
+        # Hegselmann-Krause / bounded-confidence ~0.20–0.35 band.
+        "hk_epsilon": round(
+            HK_EPSILON_MIN + (HK_EPSILON_MAX - HK_EPSILON_MIN) * (1.0 - homophily),
+            4,
+        ),
         "competencia_peso": round(0.25 + 0.35 * viral_amplification, 4),
-        # Social tipping evidence consistently places critical mass around 20–30%.
-        "umbral_media": 0.25,
-        "umbral_std": 0.05,
+        "umbral_media": TIPPING_POINT_MEAN,
+        "umbral_std": TIPPING_POINT_STD,
         "homofilia_tasa": round(0.02 + 0.10 * homophily, 4),
         "cultural_profile": cultural_profile,
         "validation_flags": list(runtime["validation_flags"]),

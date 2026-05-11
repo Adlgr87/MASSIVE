@@ -4,6 +4,10 @@ import unittest
 from empirical_calibration import (
     BEYONDSIGHT_EMPIRICAL_MASTER,
     BEYONDSIGHT_RUNTIME_PARAMS,
+    HK_EPSILON_MAX,
+    HK_EPSILON_MIN,
+    TIPPING_POINT_MEAN,
+    TIPPING_POINT_STD,
     apply_empirical_profile,
     build_empirical_engine_config,
     export_to_json,
@@ -129,10 +133,10 @@ class TestApplyEmpiricalProfile(unittest.TestCase):
         self.assertGreaterEqual(result["ruido_desconfianza"], 0.04)
         self.assertLessEqual(result["ruido_desconfianza"], 0.18)
         self.assertIn("hk_epsilon", result)
-        self.assertGreaterEqual(result["hk_epsilon"], 0.20)
-        self.assertLessEqual(result["hk_epsilon"], 0.35)
-        self.assertEqual(result["umbral_media"], 0.25)
-        self.assertEqual(result["umbral_std"], 0.05)
+        self.assertGreaterEqual(result["hk_epsilon"], HK_EPSILON_MIN)
+        self.assertLessEqual(result["hk_epsilon"], HK_EPSILON_MAX)
+        self.assertEqual(result["umbral_media"], TIPPING_POINT_MEAN)
+        self.assertEqual(result["umbral_std"], TIPPING_POINT_STD)
         self.assertIn("homofilia_tasa", result)
         self.assertGreaterEqual(result["homofilia_tasa"], 0.02)
         self.assertLessEqual(result["homofilia_tasa"], 0.12)

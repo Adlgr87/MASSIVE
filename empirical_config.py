@@ -38,7 +38,7 @@ def _normalize_attention_half_life(hours: float, max_hours: float = _ATTENTION_M
     the result in [0, 1].
     """
     if hours <= 0.0:
-        return 0.0
+        return 1.0
     return float(max(0.0, min(1.0, 1.0 - math.log1p(hours) / math.log1p(max_hours))))
 
 
@@ -431,8 +431,10 @@ def _weighted_mean(refs: list[tuple[str, str]], absolute: bool = False) -> float
     Weighted average of empirically related parameters.
 
     The optional `digital_weight` metadata is reused when present; otherwise each
-    parameter contributes equally.  This keeps runtime defaults tied to the master
-    empirical base instead of hand-tuned constants.
+    parameter contributes equally.  When ``absolute=True`` the magnitude of each
+    empirical value is used, which is useful for rates whose directional sign is
+    modelled elsewhere. This keeps runtime defaults tied to the master empirical
+    base instead of hand-tuned constants.
     """
     total = 0.0
     weight_sum = 0.0
