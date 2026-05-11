@@ -76,27 +76,16 @@ class TestEmpiricalIntegration(unittest.TestCase):
         )
 
     def test_null_params_flagged(self):
-        """Los parámetros con value: null aparecen en validation_flags."""
+        """validation_flags refleja únicamente parámetros realmente pendientes."""
         flags = BEYONDSIGHT_RUNTIME_PARAMS["validation_flags"]
         self.assertIsInstance(flags, list, "validation_flags debe ser una lista")
-        self.assertGreater(
-            len(flags),
-            0,
-            "validation_flags debe contener al menos un parámetro pendiente",
-        )
-        # Verify that all flags contain the expected message suffix
         for flag in flags:
             self.assertIn(
                 "pending_empirical_data",
                 flag,
                 f"Flag '{flag}' debe contener 'pending_empirical_data'",
             )
-        # Spot-check: at least one known null param is flagged
-        flagged_ids = [f.split(":")[0].strip() for f in flags]
-        self.assertTrue(
-            any("HOMOFILIA_RED" in fid for fid in flagged_ids),
-            "HOMOFILIA_RED (null) debe estar en validation_flags",
-        )
+        self.assertEqual(flags, [], "No debe haber flags pendientes si no hay parámetros null")
 
     def test_cultural_profile_mixed(self):
         """get_runtime_params('mixed') retorna un dict completo sin errores."""
@@ -147,8 +136,8 @@ class TestEmpiricalIntegration(unittest.TestCase):
         self.assertIsInstance(params, dict)
         self.assertEqual(params["cultural_profile"], "latin")
         # Temperature is modified by DERIVA_ALGORITMICA cultural variance
-        # latin=0.40, base=0.45 → delta=-0.05 → temperature=0.45+(-0.05)=0.40
-        self.assertAlmostEqual(params["temperature"], 0.40, places=5)
+        # latin=0.40, base param=0.474 → delta=-0.05 → temperature≈0.424
+        self.assertAlmostEqual(params["temperature"], 0.424, places=3)
 
     def test_master_dict_has_required_categories(self):
         """BEYONDSIGHT_EMPIRICAL_MASTER contiene las categorías esperadas."""

@@ -368,7 +368,7 @@ Layer weights, network parameters, and demographic attribute distributions can b
 
 ### Empirical calibration
 
-The 43-parameter empirical base (`empirical_calibration.py`) loads automatically. Cultural profiles (Latin, Anglo-Saxon, …) can be applied at runtime via `apply_empirical_profile(cfg)` to adjust base values for region-specific simulations. Parameters with missing data are flagged with `pending_empirical_data` and surfaced as warnings in the UI.
+The 43-parameter empirical base (`empirical_config.py` / `empirical_calibration.py`) loads automatically. Runtime defaults are now derived from weighted aggregates of the directly relevant empirical metrics, while simulator-facing parameters are rescaled only into the engine-safe ranges they already use (for example: social influence → `efecto_vecinos_peso`, homophily → `hk_epsilon` / `homofilia_tasa`, collective-attention decay → adaptive noise, and social tipping evidence → `umbral_media ≈ 0.25`). Cultural profiles (Latin, Anglo-Saxon, …) can be applied at runtime via `apply_empirical_profile(cfg)` to adjust base values for region-specific simulations. Parameters with missing data are flagged with `pending_empirical_data` and surfaced as warnings in the UI.
 
 ---
 

@@ -8,11 +8,42 @@ Todos los valores están normalizados al rango bipolar [-1.0, 1.0].
 """
 
 import datetime
+import math
 
 # ------------------------------------------------------------
 # FLAG DE CARGA
 # ------------------------------------------------------------
 EMPIRICAL_BASE_LOADED = True
+
+# ============================================================
+# HELPERS DE CALIBRACIÓN
+# ============================================================
+
+_ATTENTION_HALF_LIFE_HOURS = 69.0 / 60.0
+_ATTENTION_MAX_HOURS = 168.0
+
+
+def _clip_signed(value: float) -> float:
+    """Constrain calibration values to the shared [-1, 1] spectrum."""
+    return float(max(-1.0, min(1.0, value)))
+
+
+def _normalize_attention_half_life(hours: float, max_hours: float = _ATTENTION_MAX_HOURS) -> float:
+    """
+    Maps shorter digital attention half-lives to larger positive values.
+
+    Wu & Huberman (2007) estimate a ~69 min half-life for news attention on Digg,
+    while Lorenz-Spreen et al. (2019) document continued acceleration of collective
+    attention.  The log transform preserves sensitivity at short horizons and keeps
+    the result in [0, 1].
+    """
+    if hours <= 0.0:
+        return 0.0
+    return float(max(0.0, min(1.0, 1.0 - math.log1p(hours) / math.log1p(max_hours))))
+
+
+_MEDIA_VIDA_DIGITAL_VALUE = _normalize_attention_half_life(_ATTENTION_HALF_LIFE_HOURS)
+
 
 # ============================================================
 # DICCIONARIO MAESTRO EMPÍRICO DE MASSIVE
@@ -81,9 +112,20 @@ BEYONDSIGHT_EMPIRICAL_MASTER = {
     },
     "temporal": {
         "MEDIA_VIDA_DIGITAL": {
-            "value": 0.0,  # Neutralidad en escala logarítmica normalizada
-            "normalization": {"original_scale": "horas", "original_max": 168.0},
-            "notes": "Decaimiento de la atención en narrativas virales.",
+            "label": "Media-vida de atención digital",
+            "value": _MEDIA_VIDA_DIGITAL_VALUE,
+            "normalization": {
+                "original_scale": "horas",
+                "original_value": round(_ATTENTION_HALF_LIFE_HOURS, 3),
+                "original_max": _ATTENTION_MAX_HOURS,
+                "method": "1 - log1p(half_life_hours) / log1p(max_hours)",
+            },
+            "source": ["Wu & Huberman, 2007", "Lorenz-Spreen et al., 2019"],
+            "notes": (
+                "Decaimiento de la atención colectiva en plataformas digitales. "
+                "Un valor positivo alto indica ciclos de atención cortos y fuerte "
+                "pérdida de novedad."
+            ),
         },
         "ELASTICIDAD_CONFIANZA": {
             "value": -0.25,
@@ -378,18 +420,78 @@ BEYONDSIGHT_EMPIRICAL_MASTER = {
     },
 }
 
+
+def _get_entry(category: str, param_id: str) -> dict:
+    """Shortcut to access empirical entries once the master dictionary exists."""
+    return BEYONDSIGHT_EMPIRICAL_MASTER[category][param_id]
+
+
+def _weighted_mean(refs: list[tuple[str, str]], absolute: bool = False) -> float:
+    """
+    Weighted average of empirically related parameters.
+
+    The optional `digital_weight` metadata is reused when present; otherwise each
+    parameter contributes equally.  This keeps runtime defaults tied to the master
+    empirical base instead of hand-tuned constants.
+    """
+    total = 0.0
+    weight_sum = 0.0
+    for category, param_id in refs:
+        entry = _get_entry(category, param_id)
+        value = float(entry["value"])
+        if absolute:
+            value = abs(value)
+        weight = float(entry.get("digital_weight", 1.0))
+        total += value * weight
+        weight_sum += weight
+    return _clip_signed(total / weight_sum if weight_sum else 0.0)
+
 # ============================================================
 # PARÁMETROS DE EJECUCIÓN DEL MOTOR
 # ============================================================
 BEYONDSIGHT_RUNTIME_PARAMS: dict = {
-    "temperature": 0.45,             # Caos/Irracionalidad (backfire vs inoculación)
-    "social_influence_lambda": 0.58,  # Peso de la red vs convicción propia
-    "attractor_depth": 0.75,          # Fuerza de la narrativa dominante
-    "repeller_strength": -0.45,       # Animosidad out-group (prosocialidad invertida)
-    "payoff_coordination": 0.602,     # Utilidad de unirse al consenso
-    "payoff_defection": -0.5,         # Costo de la disidencia
-    "narrative_decay_rate": 0.0,      # Media-vida de influencia narrativa (neutralidad activa)
-    "saturation_threshold": 0.0,      # Punto de rechazo por sobreexposición (neutralidad activa)
+    # Volatilidad basal: deriva algorítmica + pensamiento intuitivo + contagio emocional.
+    "temperature": round(_weighted_mean([
+        ("network_dynamics", "DERIVA_ALGORITMICA"),
+        ("individual_psychology", "PENSAMIENTO_RAPIDO"),
+        ("mass_psychology", "CONTAGIO_EMOCIONAL"),
+    ]), 3),
+    # Influencia social: parasocialidad + homofilia + cascada + herding.
+    "social_influence_lambda": round(_weighted_mean([
+        ("network_dynamics", "INFLUENCIA_PARASOCIAL"),
+        ("network_dynamics", "HOMOFILIA_RED"),
+        ("mass_psychology", "CASCADA_INFORMACIONAL"),
+        ("mass_psychology", "EFECTO_MANADA"),
+    ]), 3),
+    # Profundidad del atractor: viralidad + cascadas + polarización + coordinación.
+    "attractor_depth": round(_weighted_mean([
+        ("network_dynamics", "AMPLIFICACION_VIRAL"),
+        ("mass_psychology", "CASCADA_INFORMACIONAL"),
+        ("mass_psychology", "POLARIZACION_GRUPO"),
+        ("game_theory", "EQUILIBRIO_NASH_SOCIAL"),
+    ]), 3),
+    # Fuerzas repelentes: costo de disidencia + espiral del silencio.
+    "repeller_strength": round(_weighted_mean([
+        ("mass_psychology", "SILENCIO_ESPIRAL"),
+        ("game_theory", "COSTO_DISIDENCIA"),
+    ]), 3),
+    # Coordinación estratégica: promedio de los juegos prosociales disponibles.
+    "payoff_coordination": round(_weighted_mean([
+        ("game_theory", "EQUILIBRIO_NASH_SOCIAL"),
+        ("game_theory", "DILEMA_PRISIONERO_SOCIAL"),
+        ("game_theory", "CAZA_CIERVO"),
+    ]), 3),
+    "payoff_defection": round(float(_get_entry("game_theory", "COSTO_DISIDENCIA")["value"]), 3),
+    # Decaimiento narrativo: media-vida digital + aceleración del ciclo + fatiga.
+    "narrative_decay_rate": round(_weighted_mean([
+        ("temporal", "MEDIA_VIDA_DIGITAL"),
+        ("temporal", "CICLO_ATENCION"),
+        ("temporal", "FATIGA_OUTRAGE"),
+    ], absolute=True), 3),
+    # Umbral de saturación: proxy conservador basado en fatiga de indignación.
+    "saturation_threshold": round(_weighted_mean([
+        ("temporal", "FATIGA_OUTRAGE"),
+    ], absolute=True), 3),
     "cultural_profile": "mixed",
     "validation_flags": [],
 }

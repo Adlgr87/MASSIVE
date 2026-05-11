@@ -50,6 +50,7 @@ from empirical_calibration import (
     BEYONDSIGHT_EMPIRICAL_MASTER,
     BEYONDSIGHT_RUNTIME_PARAMS,
     apply_empirical_profile,
+    build_empirical_engine_config,
 )
 
 try:
@@ -1363,19 +1364,26 @@ def simular(
     # EMPIRICAL INTEGRATION — aplicar parámetros empíricos como defaults antes que el usuario los sobreescriba
     # Los parámetros del usuario en config tienen prioridad; los valores 0.0 se tratan como neutralidad activa.
     if EMPIRICAL_AVAILABLE and BEYONDSIGHT_RUNTIME_PARAMS:
-        empirical_defaults = {
-            # EMPIRICAL INTEGRATION — alias: temperature → ruido_base (caos/irracionalidad)
-            "ruido_base": float(np.clip(BEYONDSIGHT_RUNTIME_PARAMS.get("temperature", DEFAULT_CONFIG["ruido_base"]), 0.0, 1.0)),
-            # EMPIRICAL INTEGRATION — alias: social_influence_lambda → efecto_vecinos_peso
-            "efecto_vecinos_peso": float(np.clip(BEYONDSIGHT_RUNTIME_PARAMS.get("social_influence_lambda", DEFAULT_CONFIG["efecto_vecinos_peso"]) * 0.1, 0.0, 1.0)),
-            # EMPIRICAL INTEGRATION — alias: attractor_depth → alpha_blend (fuerza de narrativa dominante)
-            "alpha_blend": float(np.clip(BEYONDSIGHT_RUNTIME_PARAMS.get("attractor_depth", DEFAULT_CONFIG["alpha_blend"]), 0.0, 1.0)),
-        }
+        cultural_profile = str((config or {}).get("cultural_profile", "mixed"))
+        empirical_defaults = build_empirical_engine_config(cultural_profile)
         # Only set keys NOT already overridden by the caller's config argument
         user_keys = set((config or {}).keys())
         for k, v in empirical_defaults.items():
+            if k in {"strategic", "cultural_profile", "validation_flags"}:
+                continue
             if k not in user_keys:
                 cfg[k] = v
+        if "strategic" not in user_keys:
+            strategic_defaults = empirical_defaults.get("strategic", {})
+            payoff_defaults = strategic_defaults.get("payoff_matrix", {})
+            cfg["strategic"] = {
+                **cfg.get("strategic", {}),
+                **{k: v for k, v in strategic_defaults.items() if k != "payoff_matrix"},
+                "payoff_matrix": {
+                    **cfg.get("strategic", {}).get("payoff_matrix", {}),
+                    **payoff_defaults,
+                },
+            }
     r           = _get_rango(cfg)
     alpha_blend = cfg["alpha_blend"]
     proveedor   = cfg.get("proveedor", "heurístico")
