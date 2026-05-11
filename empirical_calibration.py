@@ -38,6 +38,7 @@ STRATEGIC_WEIGHT_MAX = 0.32
 # tipping points near one quarter of the population, with a common 20–30% band.
 TIPPING_POINT_MEAN = 0.25
 TIPPING_POINT_STD = 0.05
+ENGINE_METADATA_KEYS = {"strategic", "cultural_profile", "validation_flags"}
 
 
 def _clamp(value: float, lower: float, upper: float) -> float:
@@ -83,7 +84,8 @@ def build_empirical_engine_config(cultural_profile: str = "mixed") -> dict:
 
     Returns:
         Dict with simulator-facing defaults such as noise, social influence,
-        bounded confidence, threshold parameters and strategic payoffs.
+        bounded confidence, threshold parameters (`umbral_media`, `umbral_std`),
+        homophily, confirmation bias and strategic payoffs.
     """
     runtime = get_runtime_params(cultural_profile)
 

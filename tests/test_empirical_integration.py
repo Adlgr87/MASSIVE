@@ -67,7 +67,7 @@ class TestEmpiricalIntegration(unittest.TestCase):
         self.assertGreater(BEYONDSIGHT_RUNTIME_PARAMS["narrative_decay_rate"], 0.0)
         self.assertGreater(BEYONDSIGHT_RUNTIME_PARAMS["saturation_threshold"], 0.0)
 
-    def test_null_params_flagged(self):
+    def test_no_null_params_when_calibrated(self):
         """validation_flags refleja únicamente parámetros realmente pendientes."""
         flags = BEYONDSIGHT_RUNTIME_PARAMS["validation_flags"]
         self.assertIsInstance(flags, list, "validation_flags debe ser una lista")

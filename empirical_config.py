@@ -430,6 +430,11 @@ def _weighted_mean(refs: list[tuple[str, str]], absolute: bool = False) -> float
     """
     Weighted average of empirically related parameters.
 
+    Args:
+        refs: Sequence of ``(category, param_id)`` pairs pointing to entries in
+            ``BEYONDSIGHT_EMPIRICAL_MASTER``.
+        absolute: When ``True``, aggregate magnitudes instead of signed values.
+
     The optional `digital_weight` metadata is reused when present; it increases
     the contribution of parameters whose original evidence is more specific to
     digital-platform behaviour. Otherwise each parameter contributes equally.

@@ -49,6 +49,7 @@ from llm_credentials import resolve_provider_api_key
 from empirical_calibration import (
     BEYONDSIGHT_EMPIRICAL_MASTER,
     BEYONDSIGHT_RUNTIME_PARAMS,
+    ENGINE_METADATA_KEYS,
     apply_empirical_profile,
     build_empirical_engine_config,
 )
@@ -1371,7 +1372,7 @@ def simular(
         for k, v in empirical_defaults.items():
             # strategic requires nested merging; cultural_profile and
             # validation_flags are metadata, not simulator control knobs.
-            if k in {"strategic", "cultural_profile", "validation_flags"}:
+            if k in ENGINE_METADATA_KEYS:
                 continue
             if k not in user_keys:
                 cfg[k] = v
