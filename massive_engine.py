@@ -60,7 +60,7 @@ try:
     except (AttributeError, RuntimeError) as exc:
         log.warning(f"[MassiveEngine] CuPy detectado pero CUDA no disponible: {exc}")
     except Exception as exc:
-        log.warning(f"[MassiveEngine] CuPy detectado pero CUDA no disponible: {exc}")
+        log.warning(f"[MassiveEngine] Error inesperado verificando CUDA en CuPy: {exc}")
 except ImportError:
     pass
 

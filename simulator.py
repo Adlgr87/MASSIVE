@@ -1115,7 +1115,7 @@ def _llamar_openai_compatible(
     cfg: dict,
     proveedor: str,
 ) -> dict | None:
-    api_key = _obtener_api_key_proveedor(proveedor, cfg)
+    api_key = resolve_provider_api_key(proveedor, fallback=cfg.get("api_key", ""))
     if not api_key:
         return None
     try:
@@ -1139,22 +1139,6 @@ def _llamar_openai_compatible(
     except (KeyError, IndexError) as e:
         log.warning(f"Error parseando respuesta: {e}")
     return None
-
-
-def _obtener_api_key_proveedor(proveedor: str, cfg: dict) -> str:
-    """
-    Resuelve la API key del proveedor desde variables de entorno.
-
-    Mantiene compatibilidad hacia atrás aceptando cfg["api_key"] como fallback.
-
-    Args:
-        proveedor: Nombre del proveedor LLM ("groq", "openai", "openrouter").
-        cfg: Configuración de simulación.
-
-    Returns:
-        API key resuelta para el proveedor, o cadena vacía si no está disponible.
-    """
-    return resolve_provider_api_key(proveedor, fallback=cfg.get("api_key", ""))
 
 
 def _llamar_ollama(prompt: str, cfg: dict) -> dict | None:
@@ -1207,7 +1191,7 @@ def llamar_llm(estado: dict, escenario: str,
     elif proveedor in PROVEEDORES:
         info    = PROVEEDORES[proveedor]
         modelo  = cfg.get("modelo", "").strip() or info["modelos_sugeridos"][0]
-        if not _obtener_api_key_proveedor(proveedor, cfg):
+        if not resolve_provider_api_key(proveedor, fallback=cfg.get("api_key", "")):
             log.error(f"'{proveedor}' requiere API key. → heurístico.")
             return llamar_llm_heuristico(estado, escenario, historial_reciente, cfg)
         data = _llamar_openai_compatible(
