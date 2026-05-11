@@ -250,6 +250,15 @@ pip install qiskit qiskit-aer # Optimizador inspirado en cuántica (fallback cl�
 streamlit run app.py
 ```
 
+### Docker
+
+```bash
+docker build -t massive:latest .
+docker run --rm -p 8501:8501 --env-file .env massive:latest
+```
+
+Luego abre: `http://localhost:8501`
+
 La interfaz tiene cuatro pestañas:
 
 | Pestaña | Función |

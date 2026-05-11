@@ -259,6 +259,15 @@ pip install qiskit qiskit-aer # Quantum-inspired optimizer (falls back to classi
 streamlit run app.py
 ```
 
+### Docker
+
+```bash
+docker build -t massive:latest .
+docker run --rm -p 8501:8501 --env-file .env massive:latest
+```
+
+Then open: `http://localhost:8501`
+
 The interface has four tabs:
 
 | Tab | What it does |
