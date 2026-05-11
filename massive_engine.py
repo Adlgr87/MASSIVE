@@ -55,7 +55,7 @@ _GPU_BACKEND: str = "numpy"
 try:
     import cupy as _cp
     try:
-        if bool(_cp.cuda.is_available()):
+        if _cp.cuda.is_available():
             _GPU_BACKEND = "cupy"
     except Exception as exc:
         log.warning(f"[MassiveEngine] CuPy detectado pero CUDA no disponible: {exc}")
@@ -65,7 +65,7 @@ except ImportError:
 if _GPU_BACKEND == "numpy":
     try:
         import torch as _torch
-        if bool(_torch.cuda.is_available()):
+        if _torch.cuda.is_available():
             _GPU_BACKEND = "torch"
     except ImportError:
         pass

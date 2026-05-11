@@ -853,14 +853,14 @@ with tab2:
             _persist_provider_api_key(proveedor, api_key)
 
             config_run = {
-                "rango": nombre_rango,
-                "proveedor": proveedor,
-                "modelo": modelo,
-                "ollama_host": ollama_host,
-                "alpha_blend": alpha,
+                "rango":              nombre_rango,
+                "proveedor":          proveedor,
+                "modelo":             modelo,
+                "ollama_host":        ollama_host,
+                "alpha_blend":        alpha,
                 "sesgo_confirmacion": sesgo_conf,
-                "hk_epsilon": hk_epsilon,
-                "homofilia_tasa": homofilia_tasa,
+                "hk_epsilon":         hk_epsilon,
+                "homofilia_tasa":     homofilia_tasa,
                 # Pasar tamaño del grafo para el cálculo de proporciones target_nodes
                 "_n_nodos": grafo_org.number_of_nodes() if grafo_org else 20,
             }
