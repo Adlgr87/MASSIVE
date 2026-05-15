@@ -36,6 +36,7 @@ Traditional simulators ask *"what will happen?"*. MASSIVE also answers: **"what 
 - [What it does](#what-it-does)
 - [Key Features](#key-features)
 - [Architecture](#architecture)
+- [Temporal Forecast Engine (Design v1.0)](#temporal-forecast-engine-design-v10)
 - [CfC Neural Engine](#cfc-neural-engine)
 - [Simulation Rules](#simulation-rules)
 - [Installation](#installation)
@@ -219,6 +220,61 @@ theta[i, cooperation] *= 1 + 0.3 * education_i   # Putnam (2000)
 theta[i, hierarchy]   *= 1 + 0.4 * (age_i / 2)  # Alwin & Krosnick (1991)
 theta[i, income]      *= 1 + 0.2 * youth_i       # labor-market volatility
 theta[i, info_access] *= 1 + 0.4 * education_i   # van Dijk (2005)
+```
+
+---
+
+## Temporal Forecast Engine (Design v1.0)
+
+MASSIVE now incorporates an explicit **time factor** for early-warning decisions: not only *if* a tipping event is likely, but also *when* and with what uncertainty under each intervention scenario.
+
+### What this adds
+
+- **Temporal calibration layer** (`temporal.step_duration_days`, `temporal.time_horizon_days`, `temporal.event_type`) to map simulation steps to real days.
+- **Probabilistic forecast engine** with two modes:
+  - **Analytical** (fast estimate using trajectory velocity + EWS strength)
+  - **Monte Carlo** (multiple stochastic runs for more robust uncertainty)
+- **Scenario comparison runner** to evaluate `P(event | scenario)` and rank intervention plans.
+- **Social Architect enriched output** with:
+  - probability without intervention,
+  - probability with best plan,
+  - minimum expected effect time,
+  - feasibility against the selected deadline.
+
+### Temporal config example (`engine_config.json`)
+
+```json
+{
+  "temporal": {
+    "step_duration_days": 7,
+    "time_horizon_days": 90,
+    "event_type": "labor_conflict",
+    "calendar_start": "2024-01-15",
+    "notes": "1 step = 1 calendar week"
+  }
+}
+```
+
+### Supported event types
+
+| event_type | Typical use case | Recommended step duration |
+|---|---|---|
+| `viral_online` | Social media trends | 1 day |
+| `protest_campaign` | Mobilization/protest waves | 1–3 days |
+| `labor_conflict` | Labor conflict / strike risk | 7 days |
+| `electoral_campaign` | Electoral campaign dynamics | 7 days |
+| `policy_adoption` | Public policy adoption | 30 days |
+| `cultural_shift` | Long-term cultural attitude change | 30–90 days |
+
+### Planned module layout
+
+```text
+forecast/
+├── __init__.py
+├── temporal_config.py     # TemporalConfig dataclass
+├── engine.py              # Analytical + Monte Carlo probability forecast
+├── scenarios.py           # Scenario runner and probability comparison
+└── intervention_map.py    # Intervention-to-parameter mapping
 ```
 
 ---
