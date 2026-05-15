@@ -1,5 +1,5 @@
-site_name: BeyondSight Documentation
-site_description: Hybrid social dynamics simulator — Numerical core + LLM as regime selector.
+site_name: MASSIVE Documentation
+site_description: MASSIVE — Hybrid social dynamics simulator. Numerical core + LLM as regime selector.
 theme:
   name: material
   palette:
