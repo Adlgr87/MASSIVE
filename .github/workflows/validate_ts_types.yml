@@ -1,0 +1,40 @@
+name: Validate TS Types In Sync
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+    branches: ["main", "master"]
+    paths:
+      - "backend/app/models/**"
+      - "frontend/src/types/api.generated.ts"
+      - "scripts/gen_ts_types.py"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Pydantic
+        run: pip install "pydantic>=2.0"
+
+      - name: Regenerate TS types
+        run: python scripts/gen_ts_types.py
+
+      - name: Fail if api.generated.ts is out of sync
+        run: |
+          git diff --exit-code frontend/src/types/api.generated.ts || {
+            echo ""
+            echo "❌  api.generated.ts is out of sync with backend/app/models."
+            echo "   Run:  python scripts/gen_ts_types.py"
+            echo "   Then commit the updated file before merging."
+            exit 1
+          }
