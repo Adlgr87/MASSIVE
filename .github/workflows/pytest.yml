@@ -1,4 +1,4 @@
-name: BeyondSight CI Tests
+name: MASSIVE CI Tests
 
 on:
   push:
