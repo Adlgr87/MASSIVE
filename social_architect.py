@@ -16,6 +16,7 @@ from pydantic import ValidationError
 from schemas import StrategyMatrix
 from simulator import run_with_schedule, resumen_historial, DEFAULT_CONFIG
 from quantum.integration import quantum_optimize_interventions
+from forecast import TemporalConfig, forecast
 
 log = logging.getLogger("massive")
 
@@ -126,6 +127,56 @@ def evaluar_resultado(historial, objetivo_usuario, config):
     return score, feedback
 
 
+def _build_temporal_forecast(
+    historial: list[dict],
+    cfg: dict,
+    estado_inicial: dict | None = None,
+) -> dict:
+    """
+    Computes an analytical temporal forecast from a simulation history.
+    """
+    if not historial:
+        return {}
+
+    event_type = str(cfg.get("forecast_event_type", "labor_conflict"))
+    horizon_days = int(cfg.get("forecast_time_horizon_days", 90))
+    step_days = int(cfg.get("forecast_step_duration_days", 7))
+
+    temporal_cfg = TemporalConfig(
+        event_type=event_type,
+        time_horizon_days=max(1, horizon_days),
+        step_duration_days=max(1, step_days),
+    )
+    state = dict(historial[-1])
+    state["historial"] = historial
+    state["config"] = cfg
+
+    result_best = forecast(state, temporal_cfg, mode="analytical")
+
+    result_base = None
+    if estado_inicial:
+        estado_base = dict(estado_inicial)
+        estado_base["config"] = cfg
+        result_base = forecast(estado_base, temporal_cfg, mode="analytical")
+
+    no_action = result_base.p_event if result_base else result_best.p_event
+    min_days = result_best.days_to_event
+
+    return {
+        "p_event": result_best.p_event,
+        "days_to_event": result_best.days_to_event,
+        "confidence": result_best.confidence,
+        "p_event_no_intervention": no_action,
+        "p_event_best_plan": result_best.p_event,
+        "min_effect_time_days": min_days,
+        "feasibility_vs_deadline": bool(
+            min_days is not None and min_days <= temporal_cfg.time_horizon_days
+        ),
+        "forecast_best_plan": result_best.model_dump(),
+        "forecast_no_intervention": result_base.model_dump() if result_base else None,
+    }
+
+
 # ============================================================
 # CONSTRUCTORES DE SISTEMA DE PROMPTS — conscientes del modo
 # ============================================================
@@ -222,6 +273,7 @@ def generar_narrativa_final(
     objetivo_usuario: str,
     modo_simulacion: str = "macro",
     metricas_red: str = "",
+    temporal_forecast: dict | None = None,
     use_langchain: bool = False,
 ) -> str:
     """
@@ -275,6 +327,7 @@ def generar_narrativa_final(
     prompt = f"""
 Objetivo original del usuario: {objetivo_usuario}
 Secuencia final de intervenciones matemáticas ejecutadas: {json.dumps(estrategia_json, indent=2)}
+Pronóstico temporal: {json.dumps(temporal_forecast or {}, indent=2)}
 
 {contexto}
 """
@@ -424,9 +477,14 @@ def buscar_estrategia_inversa(
                 )
                 log.info(f"[CfC Architect] Intento 0: score={score_cfc:.1f}")
                 if score_cfc >= 90:
+                    temporal = _build_temporal_forecast(historial_cfc, cfg, estado_inicial)
+                    estrategia_cfc = dict(estrategia_cfc)
+                    estrategia_cfc["temporal_forecast"] = temporal
                     narrativa = (
                         "Estrategia generada por CfC (sin API LLM). "
-                        f"Score: {score_cfc:.1f}/100.\n\n{fb_cfc}"
+                        f"Score: {score_cfc:.1f}/100.\n\n{fb_cfc}\n\n"
+                        f"Pronóstico temporal: P(evento)={temporal.get('p_event', 0.0):.2%}, "
+                        f"días estimados={temporal.get('days_to_event')}"
                     )
                     return estrategia_cfc, narrativa, 0, historial_cfc
                 feedback_inicial = f"[CfC score={score_cfc:.1f}] {fb_cfc} "
@@ -468,6 +526,9 @@ def buscar_estrategia_inversa(
                             mejor_historial = historial_sim
 
                         if score >= 90:
+                            temporal = _build_temporal_forecast(historial_sim, cfg, estado_inicial)
+                            estrategia_json = dict(estrategia_json)
+                            estrategia_json["temporal_forecast"] = temporal
                             narrativa = architect.generate_narrative(
                                 estrategia_json, objetivo_usuario,
                                 modo_simulacion, metricas_red,
@@ -477,6 +538,9 @@ def buscar_estrategia_inversa(
                             historial_feedback.append(f"Intento {intento+1}: {feedback}")
 
                     if mejor_score >= 0:
+                        temporal = _build_temporal_forecast(mejor_historial or [], cfg, estado_inicial)
+                        mejor_estrategia = dict(mejor_estrategia)
+                        mejor_estrategia["temporal_forecast"] = temporal
                         narrativa = (
                             architect.generate_narrative(
                                 mejor_estrategia, objetivo_usuario,
@@ -546,16 +610,28 @@ def buscar_estrategia_inversa(
             mejor_historial = historial_sim
 
         if score >= 90:
+            temporal = _build_temporal_forecast(historial_sim, cfg, estado_inicial)
+            estrategia_json = dict(estrategia_json)
+            estrategia_json["temporal_forecast"] = temporal
             narrativa = generar_narrativa_final(
-                estrategia_json, objetivo_usuario, modo_simulacion, metricas_red
+                estrategia_json, objetivo_usuario, modo_simulacion, metricas_red, temporal
             )
             return estrategia_json, narrativa, intento + 1, historial_sim
         else:
             historial_feedback.append(f"Intento {intento+1}: {feedback}")
 
     if mejor_score >= 0:
+        temporal = _build_temporal_forecast(mejor_historial or [], cfg, estado_inicial)
+        mejor_estrategia = dict(mejor_estrategia)
+        mejor_estrategia["temporal_forecast"] = temporal
         narrativa = (
-            generar_narrativa_final(mejor_estrategia, objetivo_usuario, modo_simulacion, metricas_red)
+            generar_narrativa_final(
+                mejor_estrategia,
+                objetivo_usuario,
+                modo_simulacion,
+                metricas_red,
+                temporal,
+            )
             + "\n\n*(La estrategia es la mejor aproximación, pero puede no haber cumplido todo el objetivo).* "
         )
         return mejor_estrategia, narrativa, max_intentos, mejor_historial
