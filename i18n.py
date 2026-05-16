@@ -80,6 +80,21 @@ STRINGS = {
         "range_guide_expander": "📖 Which range to use?",
         "error_api_key": "⚠️ **{proveedor}** requires an API key.",
         "simulating": "Simulating...",
+        "temporal_forecast_section": "#### ⏱ Temporal Forecast",
+        "temporal_event_type": "Event type",
+        "temporal_horizon_days": "Time horizon (days)",
+        "temporal_step_days": "Step duration (days)",
+        "temporal_analytical_result": "Analytical forecast",
+        "temporal_run_mc": "Run Monte Carlo forecast",
+        "temporal_mc_result": "Monte Carlo forecast",
+        "temporal_p_event": "P(event)",
+        "temporal_days_to_event": "Days to event",
+        "temporal_confidence": "Confidence",
+        "temporal_ci": "95% CI",
+        "social_temporal_metrics": "Temporal Forecast Metrics",
+        "social_p_no_action": "P(event | no action)",
+        "social_p_best_plan": "P(event | best plan)",
+        "social_days_to_effect": "Days to effect",
         "model_guide_content": """
 **Transition Rules:**
 
@@ -190,6 +205,21 @@ STRINGS = {
         "range_guide_expander": "📖 ¿Qué rango usar?",
         "error_api_key": "⚠️ **{proveedor}** requiere API key.",
         "simulating": "Simulando...",
+        "temporal_forecast_section": "#### ⏱ Pronóstico temporal",
+        "temporal_event_type": "Tipo de evento",
+        "temporal_horizon_days": "Horizonte temporal (días)",
+        "temporal_step_days": "Duración del paso (días)",
+        "temporal_analytical_result": "Pronóstico analítico",
+        "temporal_run_mc": "Ejecutar pronóstico Monte Carlo",
+        "temporal_mc_result": "Pronóstico Monte Carlo",
+        "temporal_p_event": "P(evento)",
+        "temporal_days_to_event": "Días al evento",
+        "temporal_confidence": "Confianza",
+        "temporal_ci": "IC 95%",
+        "social_temporal_metrics": "Métricas de pronóstico temporal",
+        "social_p_no_action": "P(evento | sin acción)",
+        "social_p_best_plan": "P(evento | mejor plan)",
+        "social_days_to_effect": "Días hasta efecto",
         "model_guide_content": """
 **Reglas de transición:**
 

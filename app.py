@@ -17,6 +17,7 @@ from i18n import t
 from llm_credentials import persist_provider_api_key
 from social_architect import buscar_estrategia_inversa
 from visualizations import generate_social_network_viz
+from forecast import TemporalConfig, forecast
 from simulator import (
     BEYONDSIGHT_EMPIRICAL_MASTER,
     BEYONDSIGHT_RUNTIME_PARAMS,
@@ -658,6 +659,81 @@ with tab1:
                 <div class="metric-delta-neu">{n_dom}/{pasos} · {selector_label}</div>
             </div>""", unsafe_allow_html=True)
 
+        # ── TEMPORAL FORECAST ───────────────────────────────────
+        with st.expander(t("temporal_forecast_section", lang), expanded=False):
+            event_labels = {
+                "viral_online": "Viral online",
+                "protest_campaign": "Protest campaign",
+                "labor_conflict": "Labor conflict",
+                "electoral_campaign": "Electoral campaign",
+                "policy_adoption": "Policy adoption",
+                "cultural_shift": "Cultural shift",
+            }
+            tf_c1, tf_c2, tf_c3 = st.columns(3)
+            with tf_c1:
+                temporal_event_type = st.selectbox(
+                    t("temporal_event_type", lang),
+                    options=list(event_labels.keys()),
+                    format_func=lambda key: event_labels.get(key, key),
+                    key="tab1_temporal_event_type",
+                )
+            with tf_c2:
+                temporal_horizon_days = st.slider(
+                    t("temporal_horizon_days", lang),
+                    min_value=7,
+                    max_value=720,
+                    value=90,
+                    step=1,
+                    key="tab1_temporal_horizon_days",
+                )
+            with tf_c3:
+                temporal_step_days = st.slider(
+                    t("temporal_step_days", lang),
+                    min_value=1,
+                    max_value=90,
+                    value=7,
+                    step=1,
+                    key="tab1_temporal_step_days",
+                )
+
+            temporal_cfg = TemporalConfig(
+                event_type=temporal_event_type,
+                time_horizon_days=temporal_horizon_days,
+                step_duration_days=temporal_step_days,
+            )
+            temporal_state = dict(historial[-1])
+            temporal_state["historial"] = historial
+            temporal_state["config"] = config_run
+            temporal_analytical = forecast(temporal_state, temporal_cfg, mode="analytical")
+            st.markdown(f"**{t('temporal_analytical_result', lang)}**")
+            tfm1, tfm2, tfm3 = st.columns(3)
+            with tfm1:
+                st.metric(t("temporal_p_event", lang), f"{temporal_analytical.p_event:.1%}")
+            with tfm2:
+                st.metric(
+                    t("temporal_days_to_event", lang),
+                    temporal_analytical.days_to_event if temporal_analytical.days_to_event is not None else "—",
+                )
+            with tfm3:
+                st.metric(
+                    t("temporal_confidence", lang),
+                    temporal_analytical.confidence or "—",
+                )
+
+            if st.button(t("temporal_run_mc", lang), key="tab1_temporal_run_mc"):
+                with st.spinner(t("simulating", lang)):
+                    temporal_mc = forecast(
+                        temporal_state,
+                        temporal_cfg,
+                        mode="monte_carlo",
+                        n_runs=100,
+                    )
+                st.markdown(f"**{t('temporal_mc_result', lang)}**")
+                st.write(
+                    f"{t('temporal_p_event', lang)}: {temporal_mc.p_event:.1%} | "
+                    f"{t('temporal_ci', lang)}: [{(temporal_mc.p_ci_low or 0.0):.1%}, {(temporal_mc.p_ci_high or 0.0):.1%}]"
+                )
+
         st.markdown("<br>", unsafe_allow_html=True)
 
         # ── GRÁFICO PRINCIPAL ──────────────────────────────────
@@ -890,6 +966,9 @@ with tab2:
                 "homofilia_tasa":     homofilia_tasa,
                 # Pasar tamaño del grafo para el cálculo de proporciones target_nodes
                 "_n_nodos": grafo_org.number_of_nodes() if grafo_org else 20,
+                "forecast_event_type": "labor_conflict",
+                "forecast_time_horizon_days": 90,
+                "forecast_step_duration_days": 7,
             }
             if activar_replicador:
                 config_run["modelo_matematico"] = "Replicator"
@@ -973,6 +1052,24 @@ with tab2:
             )
             st.subheader(titulo_narrativa)
             st.write(data_inv["narrativa"])
+
+            temporal_arch = data_inv.get("estrategia", {}).get("temporal_forecast", {})
+            if temporal_arch:
+                st.markdown(f"**{t('social_temporal_metrics', lang)}**")
+                ta1, ta2, ta3 = st.columns(3)
+                with ta1:
+                    st.metric(
+                        t("social_p_no_action", lang),
+                        f"{float(temporal_arch.get('p_event_no_intervention', 0.0)):.1%}",
+                    )
+                with ta2:
+                    st.metric(
+                        t("social_p_best_plan", lang),
+                        f"{float(temporal_arch.get('p_event_best_plan', temporal_arch.get('p_event', 0.0))):.1%}",
+                    )
+                with ta3:
+                    days_effect = temporal_arch.get("min_effect_time_days", temporal_arch.get("days_to_event"))
+                    st.metric(t("social_days_to_effect", lang), days_effect if days_effect is not None else "—")
 
             if data_inv["hist_inverso"]:
                 st.markdown("**Trayectoria de opinión (Estrategia Aplicada)** — *MASSIVE AI*")
