@@ -6,7 +6,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
-from schemas import StrategyMatrix
+from schemas import Intervention, StrategyMatrix
 from simulator import run_with_schedule
 
 from .engine import ForecastResult, forecast
@@ -68,7 +68,7 @@ def _state_for_strategy(base_state: dict, strategy: StrategyMatrix) -> dict:
     )
     return {
         "historial": hist,
-        "opinion": hist[-1].get("opinion", base_state.get("opinion", 0.5)) if hist else base_state.get("opinion", 0.5),
+        "opinion": hist[-1].get("opinion", 0.5) if hist else base_state.get("opinion", 0.5),
         "confianza": base_state.get("confianza", 0.5),
         "config": cfg,
     }

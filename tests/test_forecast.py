@@ -7,7 +7,7 @@ from forecast.scenarios import ScenarioSpec
 from schemas import Intervention
 
 
-def _sample_historial() -> list[dict]:
+def _sample_historical() -> list[dict]:
     return [
         {"opinion": 0.30},
         {"opinion": 0.34},
@@ -48,7 +48,7 @@ def test_temporal_config_defaults() -> None:
 
 
 def test_analytical_forecast_smoke() -> None:
-    historial = _sample_historial()
+    historial = _sample_historical()
     state = dict(historial[-1])
     state["historial"] = historial
     state["confianza"] = 0.5
@@ -61,7 +61,7 @@ def test_analytical_forecast_smoke() -> None:
 
 
 def test_monte_carlo_forecast_smoke() -> None:
-    historial = _sample_historial()
+    historial = _sample_historical()
     state = dict(historial[-1])
     state["historial"] = historial
     state["confianza"] = 0.6

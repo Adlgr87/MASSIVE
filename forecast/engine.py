@@ -16,6 +16,7 @@ from simulator import DEFAULT_CONFIG
 from .temporal_config import TemporalConfig
 
 log = logging.getLogger("massive")
+_VELOCITY_LOOKBACK_WINDOW = 8
 
 
 class ForecastResult(BaseModel):
@@ -101,7 +102,7 @@ def _compute_analytical(
     steps_to_event = None
     days_to_event = None
     if len(series) >= 2:
-        velocity = float(np.mean(np.diff(series[-min(8, len(series)): ])))
+        velocity = float(np.mean(np.diff(series[-min(_VELOCITY_LOOKBACK_WINDOW, len(series)):])))
         current = float(series[-1])
         if velocity > 1e-6 and current < threshold:
             est_steps = int(math.ceil((threshold - current) / velocity))
@@ -150,7 +151,7 @@ def _compute_monte_carlo(
     series = _extract_series(simulation_state)
     current = float(series[-1]) if series else float(simulation_state.get("opinion", 0.5))
     if len(series) >= 2:
-        drift = float(np.mean(np.diff(series[-min(8, len(series)): ])))
+        drift = float(np.mean(np.diff(series[-min(_VELOCITY_LOOKBACK_WINDOW, len(series)):])))
     else:
         drift = float(simulation_state.get("drift", 0.0))
 
