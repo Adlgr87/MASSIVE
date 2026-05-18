@@ -106,8 +106,8 @@ MASSIVE te permite:
 ### Integración e Infraestructura
 - **Cadenas tipadas LangChain** (`strategy_chain`, `narrative_chain`, `landscape_chain`) con validación de salida JSON y fallback HTTP transparente.
 - **Simulación múltiple paralela con Dask** en todos los núcleos CPU disponibles vía `dask.delayed`.
-- **Módulo cuántico**: optimizador inspirado en QAOA (Qiskit o fallback clásico) + compresión MPS para matrices de estado de agentes.
-- **Base de calibración empírica de 43 parámetros** (v1.1.0, 88.4% de cobertura), validada cruzadamente desde más de 40 fuentes académicas revisadas por pares, con varianza cultural por bloque. Todos los parámetros completos en v1.1.0.
+- **Módulo cuántico**: optimizador inspirado en QAOA (Qiskit o fallback clásico) + compresión MPS para matrices de estado de agentes. **Actualmente es una prueba de concepto y no es 100% funcional.**
+- **Base de calibración empírica de 43 parámetros** (v1.1.0, 88.4% de cobertura), validada cruzadamente desde más de 40 fuentes académicas revisadas por pares, con varianza cultural por bloque. Todos los parámetros completos en v1.1.0. **Recordatorio: la sociedad es más compleja que 43 variables; esta área requiere evaluación, ampliación y evolución constantes.**
 - **Protocolo de validación formal PVU-BS** con pruebas Diebold-Mariano y corrección Holm-Bonferroni.
 - **UI Streamlit bilingüe** (inglés / español) con selector de idioma en tiempo de ejecución.
 - **Conectores de redes sociales**: Twitter/X (API v2 Recent Search) y Reddit (praw) para inicialización con sentimiento en vivo.
@@ -351,7 +351,7 @@ Los pesos de capa, parámetros de red y distribuciones de atributos demográfico
 
 ### Calibración empírica
 
-`empirical_config.py` es la fuente única de verdad para los 43 parámetros empíricos (v1.1.0, 88.4% de cobertura, validados desde más de 40 fuentes académicas). `empirical_calibration.py` los traduce a defaults nativos del motor vía `build_empirical_engine_config(cultural_profile)`. Los valores de ejecución se derivan con agregados ponderados: influencia social → `efecto_vecinos_peso`, homofilia → `hk_epsilon` / `homofilia_tasa`, decaimiento de atención → ruido adaptativo, evidencia de tipping social → `umbral_media = 0.25 ± 0.05` (Centola et al. 2018; Everall et al. 2025). Se admiten siete perfiles culturales: `"mixed"` (por defecto), `"latin"`, `"anglosaxon"`, `"east_asian"`, `"middle_east"`, `"south_asian"`, `"subsaharan_africa"`. Aplícalos vía `apply_empirical_profile(cfg)` en la UI o `get_runtime_params(cultural_profile)` de forma programática. Todos los 43 parámetros están completos en v1.1.0 — sin etiquetas `pending_empirical_data` activas.
+`empirical_config.py` es la fuente única de verdad para los 43 parámetros empíricos (v1.1.0, 88.4% de cobertura, validados desde más de 40 fuentes académicas). `empirical_calibration.py` los traduce a defaults nativos del motor vía `build_empirical_engine_config(cultural_profile)`. Los valores de ejecución se derivan con agregados ponderados: influencia social → `efecto_vecinos_peso`, homofilia → `hk_epsilon` / `homofilia_tasa`, decaimiento de atención → ruido adaptativo, evidencia de tipping social → `umbral_media = 0.25 ± 0.05` (Centola et al. 2018; Everall et al. 2025). Se admiten siete perfiles culturales: `"mixed"` (por defecto), `"latin"`, `"anglosaxon"`, `"east_asian"`, `"middle_east"`, `"south_asian"`, `"subsaharan_africa"`. Aplícalos vía `apply_empirical_profile(cfg)` en la UI o `get_runtime_params(cultural_profile)` de forma programática. Todos los 43 parámetros están completos en v1.1.0 — sin etiquetas `pending_empirical_data` activas. Recordatorio: la sociedad es más compleja que 43 variables y esta área debe mantenerse en evaluación, ampliación y evolución continua.
 
 ---
 
@@ -448,8 +448,8 @@ Modernized assets joined overlays, refreshed interface tuning yielded reliable e
 
 ## Limitaciones
 
-- **Módulo cuántico:** Usa simulación clásica de algoritmos inspirados en cuántica (estructura QAOA via Qiskit Aer o NumPy, compresión estilo MPS). No se requiere ni usa hardware cuántico real.
-- **Cobertura de base empírica:** Los 43 parámetros están completos en v1.1.0 (88.4% de cobertura; sin etiquetas `pending_empirical_data` activas). Bloques de calibración cultural adicionales (Nórdico, Asia del Sur) están planificados para versiones futuras.
+- **Módulo cuántico:** Usa simulación clásica de algoritmos inspirados en cuántica (estructura QAOA via Qiskit Aer o NumPy, compresión estilo MPS). No se requiere ni usa hardware cuántico real. Actualmente se presenta como una prueba de concepto y no es 100% funcional.
+- **Cobertura de base empírica:** Los 43 parámetros están completos en v1.1.0 (88.4% de cobertura; sin etiquetas `pending_empirical_data` activas). Bloques de calibración cultural adicionales (Nórdico, Asia del Sur) están planificados para versiones futuras. Recordatorio: la sociedad es más compleja que 43 variables y este bloque debe revisarse, ampliarse y evolucionar de forma permanente.
 - **Validación en el mundo real:** Los casos de benchmark PVU-BS actuales son sintéticos (para pruebas de pipeline). La validación con datos de opinión reales (N ≥ 10 casos independientes) está en progreso.
 - **Dependencia del LLM:** El Arquitecto Social y el selector de régimen funcionan mejor con un LLM en la nube. Hay siempre disponible un fallback heurístico, pero produce estrategias menos coherentes contextualmente.
 - **Conectores de redes sociales:** El acceso a la API v2 de Twitter/X requiere una cuenta de desarrollador con el nivel apropiado; el rendimiento depende de los límites de tasa de terceros.

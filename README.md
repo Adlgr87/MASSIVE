@@ -108,8 +108,8 @@ MASSIVE lets you:
 - **CfC Neural Engine** (optional, additive) — Closed-form Continuous-time networks replace the LLM in the hot path when pre-trained models are present in `models/`. Zero-config fallback to heuristic/LLM if models are absent.
 - **LangChain typed chains** (`strategy_chain`, `narrative_chain`, `landscape_chain`) with JSON output validation and transparent HTTP fallback.
 - **Dask parallel multi-simulation** across all available CPU cores via `dask.delayed`.
-- **Quantum module**: QAOA-inspired intervention optimizer (Qiskit or classical fallback) + MPS tensor-network compression for agent-state matrices.
-- **43-parameter empirical calibration base** (v1.1.0, 88.4% coverage), cross-validated from 40+ peer-reviewed sources, with cultural variance per block. All parameters are complete as of v1.1.0.
+- **Quantum module**: QAOA-inspired intervention optimizer (Qiskit or classical fallback) + MPS tensor-network compression for agent-state matrices. **This is currently a proof of concept and is not 100% functional.**
+- **43-parameter empirical calibration base** (v1.1.0, 88.4% coverage), cross-validated from 40+ peer-reviewed sources, with cultural variance per block. All parameters are complete as of v1.1.0. **Reminder: society is more complex than 43 variables, so this area must stay under continuous evaluation, expansion, and evolution.**
 - **PVU-BS formal validation protocol** with Diebold-Mariano significance tests and Holm-Bonferroni correction.
 - **Bilingual Streamlit UI** (English / Spanish) with runtime language toggle.
 - **Social media connectors**: Twitter/X (v2 Recent Search API) and Reddit (praw) for live sentiment seeding.
@@ -540,7 +540,7 @@ Layer weights, network parameters, and demographic attribute distributions can b
 
 ### Empirical calibration
 
-`empirical_config.py` is the single source of truth for all 43 empirical parameters (v1.1.0, 88.4% coverage, cross-validated from 40+ peer-reviewed sources). `empirical_calibration.py` translates this base into engine-safe simulator defaults via `build_empirical_engine_config(cultural_profile)`. Runtime values are derived from weighted aggregates: social influence → `efecto_vecinos_peso`, homophily → `hk_epsilon` / `homofilia_tasa`, collective-attention decay → adaptive noise, social tipping evidence → `umbral_media = 0.25 ± 0.05` (Centola et al. 2018; Everall et al. 2025). Seven cultural profiles are supported at runtime: `"mixed"` (default), `"latin"`, `"anglosaxon"`, `"east_asian"`, `"middle_east"`, `"south_asian"`, `"subsaharan_africa"`. Apply them via `apply_empirical_profile(cfg)` in the UI or `get_runtime_params(cultural_profile)` programmatically. All 43 parameters are complete in v1.1.0 — no `pending_empirical_data` flags are active.
+`empirical_config.py` is the single source of truth for all 43 empirical parameters (v1.1.0, 88.4% coverage, cross-validated from 40+ peer-reviewed sources). `empirical_calibration.py` translates this base into engine-safe simulator defaults via `build_empirical_engine_config(cultural_profile)`. Runtime values are derived from weighted aggregates: social influence → `efecto_vecinos_peso`, homophily → `hk_epsilon` / `homofilia_tasa`, collective-attention decay → adaptive noise, social tipping evidence → `umbral_media = 0.25 ± 0.05` (Centola et al. 2018; Everall et al. 2025). Seven cultural profiles are supported at runtime: `"mixed"` (default), `"latin"`, `"anglosaxon"`, `"east_asian"`, `"middle_east"`, `"south_asian"`, `"subsaharan_africa"`. Apply them via `apply_empirical_profile(cfg)` in the UI or `get_runtime_params(cultural_profile)` programmatically. All 43 parameters are complete in v1.1.0 — no `pending_empirical_data` flags are active. Reminder: society is more complex than 43 variables, and this area should remain in continuous evaluation, expansion, and evolution.
 
 ---
 
@@ -645,8 +645,8 @@ A few architectural choices that shape how MASSIVE works:
 ## Limitations
 
 - **CfC models not pre-trained:** The repository ships without `models/*.pt` files. CfC components activate only after you run `python cfc_trainer.py`. Until then, MASSIVE operates identically to previous versions.
-- **Quantum module:** Uses classical simulation of quantum-inspired algorithms (QAOA structure via Qiskit Aer or NumPy fallback, MPS-style compression). No real quantum hardware required or used.
-- **Empirical base coverage:** All 43 parameters are complete as of v1.1.0 (88.4% coverage; no active `pending_empirical_data` flags). Additional cultural calibration blocks (Nordic, South Asian) are planned for future releases.
+- **Quantum module:** Uses classical simulation of quantum-inspired algorithms (QAOA structure via Qiskit Aer or NumPy fallback, MPS-style compression). No real quantum hardware required or used. It is currently presented as a proof of concept and is not 100% functional.
+- **Empirical base coverage:** All 43 parameters are complete as of v1.1.0 (88.4% coverage; no active `pending_empirical_data` flags). Additional cultural calibration blocks (Nordic, South Asian) are planned for future releases. Reminder: society is more complex than 43 variables, so this block should be reviewed, expanded, and evolved continuously.
 - **Real-world validation:** Current PVU-BS benchmark cases are synthetic (for pipeline testing). Real-world opinion dynamics validation (N ≥ 10 independent cases) is in progress.
 - **LLM dependence:** The Social Architect and regime selector work best with a cloud LLM when CfC models are not trained. A heuristic fallback is always available but produces less contextually coherent strategies.
 - **Social media connectors:** Twitter/X v2 API access requires a developer account with appropriate tier; throughput depends on third-party rate limits.
