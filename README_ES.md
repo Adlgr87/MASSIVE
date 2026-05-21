@@ -106,7 +106,7 @@ MASSIVE te permite:
 ### Integración e Infraestructura
 - **Cadenas tipadas LangChain** (`strategy_chain`, `narrative_chain`, `landscape_chain`) con validación de salida JSON y fallback HTTP transparente.
 - **Simulación múltiple paralela con Dask** en todos los núcleos CPU disponibles vía `dask.delayed`.
-- **Módulo cuántico**: optimizador inspirado en QAOA (Qiskit o fallback clásico) + compresión MPS para matrices de estado de agentes. **Actualmente es una prueba de concepto y no es 100% funcional.**
+- **Optimización y compresión escalable**: búsqueda estocástica para planes de intervención + compresión SVD para matrices de estado de agentes grandes.
 - **Base de calibración empírica de 43 parámetros** (v1.1.0, 88.4% de cobertura), validada cruzadamente desde más de 40 fuentes académicas revisadas por pares, con varianza cultural por bloque. Todos los parámetros completos en v1.1.0. **Recordatorio: la sociedad es más compleja que 43 variables; esta área requiere evaluación, ampliación y evolución constantes.**
 - **Protocolo de validación formal PVU-BS** con pruebas Diebold-Mariano y corrección Holm-Bonferroni.
 - **UI Streamlit bilingüe** (inglés / español) con selector de idioma en tiempo de ejecución.
@@ -237,7 +237,6 @@ pip install numba             # Motor Langevin compilado JIT (~10–50× acelera
 pip install cupy-cuda12x      # Descarga en GPU via CUDA (se detecta automáticamente; fallback a CPU)
 pip install dask              # Simulaciones múltiples paralelas
 pip install ripser persim     # Análisis de Datos Topológicos (homología persistente)
-pip install qiskit qiskit-aer # Optimizador inspirado en cuántica (fallback clásico disponible)
 ```
 
 ---
@@ -448,7 +447,7 @@ Modernized assets joined overlays, refreshed interface tuning yielded reliable e
 
 ## Limitaciones
 
-- **Módulo cuántico:** Usa simulación clásica de algoritmos inspirados en cuántica (estructura QAOA via Qiskit Aer o NumPy, compresión estilo MPS). No se requiere ni usa hardware cuántico real. Actualmente se presenta como una prueba de concepto y no es 100% funcional.
+- **Optimización de intervenciones:** La búsqueda actual es estocástica y puede converger a óptimos locales; para análisis críticos se recomienda ejecutar múltiples semillas y comparar estabilidad del plan.
 - **Cobertura de base empírica:** Los 43 parámetros están completos en v1.1.0 (88.4% de cobertura; sin etiquetas `pending_empirical_data` activas). Bloques de calibración cultural adicionales (Nórdico, Asia del Sur) están planificados para versiones futuras. Recordatorio: la sociedad es más compleja que 43 variables y este bloque debe revisarse, ampliarse y evolucionar de forma permanente.
 - **Validación en el mundo real:** Los casos de benchmark PVU-BS actuales son sintéticos (para pruebas de pipeline). La validación con datos de opinión reales (N ≥ 10 casos independientes) está en progreso.
 - **Dependencia del LLM:** El Arquitecto Social y el selector de régimen funcionan mejor con un LLM en la nube. Hay siempre disponible un fallback heurístico, pero produce estrategias menos coherentes contextualmente.
@@ -490,10 +489,8 @@ MASSIVE/
 ├── schemas.py                    # Esquemas Pydantic: StrategyMatrix, GamePayoff
 ├── visualizations.py             # Ayudantes de visualización de red (Plotly + NetworkX)
 ├── i18n.py                       # Internacionalización (inglés / español)
-├── quantum/
-│   ├── quantum_optimizer.py      # Optimizador inspirado en QAOA (Qiskit o fallback clásico)
-│   ├── tensor_network.py         # Compresión estilo MPS para matrices de estado de agentes
-│   └── integration.py            # Ayudantes drop-in usados por multilayer_engine y social_architect
+├── intervention_optimizer.py     # Optimizador estocástico para estrategia por fases
+├── state_compression.py          # Compresión SVD para estados grandes de agentes
 ├── benchmarks/                   # Ejecutor de benchmark offline PVU-BS
 ├── configs/
 │   ├── multilayer.yaml           # Configuración de capas y atributos demográficos

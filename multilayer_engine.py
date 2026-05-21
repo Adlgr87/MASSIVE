@@ -30,7 +30,7 @@ import pandas as pd
 import networkx as nx
 from scipy import sparse
 from llm_credentials import resolve_provider_api_key
-from quantum.integration import compress_agent_states, decompress_agent_states
+from state_compression import compress_agent_states, decompress_agent_states
 
 try:
     from numba import njit

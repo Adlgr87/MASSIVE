@@ -1,26 +1,16 @@
-"""Lightweight MPS-like compression for large agent-state matrices."""
+"""State compression helpers for large agent-state matrices."""
 
 from __future__ import annotations
 
 import numpy as np
 
 
-def compress_to_mps(
+def compress_agent_states(
     states: np.ndarray,
     max_bond_dim: int = 32,
     explained_variance: float = 0.99,
 ) -> dict:
-    """Compress a 2D state matrix with truncated SVD and store reconstruction factors.
-
-    Returns:
-        Dictionary with:
-            - left: Left factor with singular values absorbed, shape (n_samples, rank).
-            - right: Right factor, shape (rank, n_features).
-            - mean: Column mean used for centering, shape (1, n_features).
-            - shape: Original matrix shape tuple.
-            - rank: Effective retained rank after truncation.
-            - compression_ratio: Original scalar count / compressed scalar count.
-    """
+    """Compress a 2D state matrix with truncated SVD."""
     arr = np.asarray(states, dtype=np.float64)
     if arr.ndim != 2:
         raise ValueError("states must be a 2D matrix")
@@ -57,8 +47,8 @@ def compress_to_mps(
     }
 
 
-def decompress_from_mps(mps_state: dict) -> np.ndarray:
-    """Decompress a matrix produced by `compress_to_mps`."""
+def decompress_agent_states(mps_state: dict) -> np.ndarray:
+    """Decompress a matrix produced by `compress_agent_states`."""
     left = np.asarray(mps_state["left"], dtype=np.float64)
     right = np.asarray(mps_state["right"], dtype=np.float64)
     mean = np.asarray(mps_state["mean"], dtype=np.float64)

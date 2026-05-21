@@ -1,94 +1,65 @@
 # MASSIVE
 
-MASSIVE es un simulador híbrido de dinámica social que combina motor matemático, selección de régimen por LLM/CfC y herramientas de arquitectura social para diseñar intervenciones.
+## 1. Visión General
 
-## Estado funcional actual
+MASSIVE es una plataforma de simulación social para modelar evolución de opinión, polarización y propagación de influencia en redes complejas.  
+El núcleo histórico (`simulator.py`) mantiene una API estable (`simular`, `simular_multiples`, `run_with_schedule`) y hoy convive con capas modernas: simulación integrada adaptativa (`IntegratedSimulator`), forecast temporal (`forecast/`) y selección de régimen con motor neuronal opcional CfC (`cfc_router.py`).
 
-### 1) Núcleo clásico (`simulator.py`)
-- API estable y retrocompatible: `simular`, `simular_multiples`, `run_with_schedule`.
-- Reglas de dinámica social (lineal, umbral, memoria, backlash, polarización, HK, contagio competitivo, umbral heterogéneo, homofilia, replicador, etc.).
-- Selección de reglas por heurística, LLM o **Router CfC** cuando hay modelos entrenados.
-- Integración de calibración empírica, métricas EWS y detección topológica.
+Su propósito actual es combinar ejecución operativa (simulación), diseño estratégico (Social Architect) y estimación de riesgo temporal en un flujo único, reproducible y ejecutable en hardware estándar.
 
-### 2) Nuevo núcleo adaptativo (`IntegratedSimulator`)
-Integrado dentro del flujo principal, con activación por configuración:
-- **Saltos de Lévy** (`enable_levy_jumps`): perturbaciones endógenas de cola pesada.
-- **Topología dinámica** (`enable_dynamic_topology`): recableado contextual de capas sociales.
-- **Diagnóstico mariposa/Lyapunov** (`butterfly_interval`, `butterfly_threshold`): monitoreo continuo de divergencia y alertas.
-- **Comunicación contextual** vía hooks opcionales:
-  - `router_feedback_hook`
-  - `social_architect_hook`
+## 2. Arquitectura y Áreas Clave
 
-### 3) Shock exógeno manual (Cisne Negro)
-- Se mantiene **manual** por diseño en `MassiveEngine.apply_shock(...)`.
-- No corre automáticamente en el loop principal.
-- Soporta distribuciones `uniform`, `normal`, `pareto` y fracción de agentes afectados.
+- **Motor de simulación base (`simulator.py`)**
+  - Reglas principales: `regla_lineal`, `regla_umbral`, `regla_memoria`, `regla_backlash`, `regla_hk`, `regla_homofilia`, `regla_replicador`.
+  - Métricas y utilidades: `calculate_ews_metrics`, `detect_topological_change`, `resumen_historial`.
+  - API pública legacy preservada para compatibilidad.
 
-### 4) Motor multicapa (`multilayer_engine.py`)
-- `MultilayerEngine` para redes social/digital/económica con dinámica de Langevin multicapa.
-- Nuevo `dynamic_rewiring(layer_name, mode, intensity)` para evolución topológica en runtime.
-- Alias de compatibilidad: `MultiLayerEngine`.
+- **Orquestación dinámica (`IntegratedSimulator` en `simulator.py`)**
+  - Integra `MassiveEngine` y `MultilayerEngine`.
+  - Añade drift contextual, saltos de Lévy, topología dinámica (`dynamic_rewiring`) y diagnóstico de divergencia (`run_butterfly_diagnostic`).
 
-### 5) Motor masivo (`massive_engine.py`)
-- `MassiveSimEngine` para simulación eficiente con:
-  - super-agentes (LOD),
-  - cuantización uint8,
-  - modo event-driven,
-  - aceleración GPU opcional.
-- `MassiveEngine` para estado completo de agentes + shock manual exógeno.
+- **Escalamiento computacional (`massive_engine.py`)**
+  - `MassiveSimEngine` implementa LOD por super-agentes (`build_super_agents`), cuantización (`quantize_state`) y ejecución event-driven (`ActiveSet`), con fallback de backend GPU/CPU.
 
-## Configuración relevante (nuevo simulador integrado)
+- **Dinámica multicapa (`multilayer_engine.py`)**
+  - `MultilayerEngine` modela capas social/digital/económica y atributos sociodemográficos.
+  - Compresión de estado para poblaciones grandes mediante `state_compression.py` (`compress_agent_states`, `decompress_agent_states`).
 
-Parámetros en `DEFAULT_CONFIG` / config runtime:
-- `n_agents`, `n_ticks`, `dt`, `diffusion_sigma`
-- `enable_levy_jumps`, `levy_lambda`, `alpha_stable`, `jump_magnitude_scale`
-- `enable_dynamic_topology`, `topology_update_freq`, `topology_intensity`
-- `butterfly_interval`, `butterfly_threshold`
+- **Diseño de estrategias (`social_architect.py`)**
+  - Bucle inverso con `buscar_estrategia_inversa`.
+  - Optimización de fases con `find_optimal_interventions` + `optimize_interventions` (`intervention_optimizer.py`).
 
-## Uso rápido
+- **Forecast temporal (`forecast/`)**
+  - API: `forecast(...)` con modos `analytical` y `monte_carlo`.
+  - Configuración tipada con `TemporalConfig`.
+  - Comparación de escenarios con `compare_scenarios`.
 
-### Instalar
+- **Capa contractual backend/frontend**
+  - DTOs Pydantic v2 en `backend/app/models/`.
+  - Generación tipada TypeScript con `python scripts/gen_ts_types.py` hacia `frontend/src/types/api.generated.ts`.
+  - Adaptador estable `massive_core/` para importaciones nuevas sin romper módulos legacy.
+
+## 3. Características Vanguardistas
+
+- Selección híbrida de régimen (CfC/LLM/heurístico) con fallback no disruptivo (`CfCRouter`).
+- Motor temporal dual (analítico + Monte Carlo) con intervalos de confianza y horizonte configurable.
+- Simulación integrada con topología dinámica y monitoreo de transición caótica (Lyapunov).
+- Escalamiento para grandes poblaciones con LOD, cuantización y conjuntos activos event-driven.
+- Contratos API estrictos (`extra="forbid"`) y generación automática de tipos frontend para evitar deriva entre backend y UI.
+
+## 4. Línea de Tiempo / Hitos
+
+- **Base del proyecto:** consolidación del simulador social clásico con reglas múltiples y API estable (`simular`, `simular_multiples`).
+- **Calibración empírica:** incorporación de `empirical_config.py` y `empirical_calibration.py`.
+- **Motor CfC:** integración de `cfc_engine.py`, `cfc_router.py`, `cfc_trainer.py` como capa neuronal opcional.
+- **Forecast temporal:** creación de `forecast/` e integración en UI y Social Architect.
+- **Capa de contratos:** incorporación de DTOs Pydantic v2, `massive_core/` y pipeline de generación TS + validación CI.
+- **Simulación integrada reciente:** commits recientes incorporan/refinan `IntegratedSimulator`, ajustes de constantes dinámicas y endurecimiento de hooks (historial reciente: PRs #41, #42, #43).
+
+## 5. Guía de Inicio Rápido
+
 ```bash
 pip install -r requirements.txt
-```
-
-### Ejecutar app
-```bash
 streamlit run app.py
-```
-
-### Ejecutar tests
-```bash
-pytest tests/
-```
-
-## Ejemplo mínimo: simulador integrado
-
-```python
-from simulator import IntegratedSimulator
-
-sim = IntegratedSimulator({
-    "n_agents": 500,
-    "n_ticks": 200,
-    "enable_levy_jumps": True,
-    "enable_dynamic_topology": True,
-    "topology_update_freq": 10,
-    "butterfly_interval": 25,
-})
-
-history = sim.run()
-```
-
-## Ejemplo mínimo: Cisne Negro manual
-
-```python
-from massive_engine import MassiveEngine
-
-engine = MassiveEngine({"n_agents": 1000, "seed": 42})
-engine.apply_shock(
-    magnitude=0.3,
-    distribution="pareto",
-    target_layer=0,
-    affected_fraction=0.1,
-)
+python -m pytest tests/
 ```

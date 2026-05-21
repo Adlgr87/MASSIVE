@@ -22,7 +22,3 @@ jobs:
     - name: Run Pytest
       run: |
         python -m pytest tests/
-    - name: Test Quantum Module
-      run: |
-        pip install numpy scipy numba qiskit qiskit-aer
-        python -m pytest tests/test_quantum.py -v
