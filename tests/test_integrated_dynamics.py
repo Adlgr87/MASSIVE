@@ -80,12 +80,14 @@ class TestIntegratedSimulator:
                 "n_agents": 20,
                 "n_ticks": n_ticks,
                 "seed": 5,
-                "router_feedback_hook": lambda payload: captured.append(("router", payload["tick"])),
-                "social_architect_hook": lambda payload: captured.append(("architect", payload["tick"])),
+                "router_feedback_hook": lambda payload: captured.append(("router", payload)),
+                "social_architect_hook": lambda payload: captured.append(("architect", payload)),
             }
         )
         sim.run()
         assert len(captured) == n_ticks * 2
+        for _, payload in captured:
+            assert {"tick", "polarization", "viral_activity", "lyapunov"} <= set(payload.keys())
 
 
 class TestButterflyDiagnosticCore:

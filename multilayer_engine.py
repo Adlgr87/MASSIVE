@@ -73,6 +73,7 @@ _STOCHASTIC_SCALE: float = 0.1
 # ── Dimensiones del vector de estado ────────────────────────────────────────
 K = 5  # [opinion, cooperation, hierarchy, income, info_access]
 MPS_COMPRESSION_MIN_AGENTS = 1000
+VIRAL_HUB_EDGE_MULTIPLIER = 10
 
 # ── Índices de columnas para claridad ────────────────────────────────────────
 COL_OPINION = 0
@@ -525,6 +526,7 @@ class MultilayerEngine:
         self.coupling = float(coupling)
         self.dt = float(dt)
         self.seed = seed
+        self._rewire_rng = np.random.default_rng(seed + 991)
         self.range_type = range_type
         self.x_min = -1.0 if range_type == "bipolar" else 0.0
         self.x_max = 1.0
@@ -705,7 +707,7 @@ class MultilayerEngine:
         if intensity <= 0.0:
             return
 
-        rng = np.random.default_rng(self.seed + len(self._history))
+        rng = self._rewire_rng
         adjacency = (self.layers[layer_name] > 0).astype(np.float64)
         np.fill_diagonal(adjacency, 0.0)
         adjacency = np.maximum(adjacency, adjacency.T)
@@ -722,7 +724,7 @@ class MultilayerEngine:
                 adjacency[i_sel, j_sel] = 0.0
                 adjacency[j_sel, i_sel] = 0.0
         elif mode == "viral_hub":
-            n_new_edges = max(1, int(self.N * intensity * 10))
+            n_new_edges = max(1, int(self.N * intensity * VIRAL_HUB_EDGE_MULTIPLIER))
             degrees = adjacency.sum(axis=1) + 1.0
             probs = degrees / degrees.sum()
             sources = rng.integers(0, self.N, size=n_new_edges)

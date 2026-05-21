@@ -262,6 +262,14 @@ HISTORY_BUFFER_SIZE: int = 10
 # highly polarised when the strategic layer is active (used by the heuristic
 # selector to prefer the EGT Replicator rule).
 _STRATEGIC_POLARIZATION_THRESHOLD: float = 0.5
+_INTEGRATED_CFC_HISTORY_MIN: int = 6
+_INTEGRATED_CFC_DRIFT_SCALE: float = 0.002
+_INTEGRATED_DRIFT_FALLBACK_STD: float = 0.01
+_INTEGRATED_LEVY_CLIP: float = 10.0
+_INTEGRATED_CENSORSHIP_POLARIZATION_THRESHOLD: float = 0.7
+_INTEGRATED_TOPOLOGY_POLARIZATION_CENTER: float = 0.5
+_INTEGRATED_TOPOLOGY_INTENSITY_MIN: float = 0.01
+_INTEGRATED_TOPOLOGY_INTENSITY_MAX: float = 0.2
 
 
 # ============================================================
@@ -1928,9 +1936,13 @@ class IntegratedSimulator:
             if arr.shape == (self.n_agents,):
                 return arr
 
-        if CFC_AVAILABLE and len(self.opinion_history) >= 6 and _cfc is not None:
+        if (
+            CFC_AVAILABLE
+            and len(self.opinion_history) >= _INTEGRATED_CFC_HISTORY_MIN
+            and _cfc is not None
+        ):
             rid, source, _ = _cfc.select_regime(
-                history=self.opinion_history[-6:],
+                history=self.opinion_history[-_INTEGRATED_CFC_HISTORY_MIN:],
                 state={
                     "opinion": float(np.mean(self.massive_engine.agents[:, 0])),
                     "propaganda": float(np.mean(self.massive_engine.agents[:, 1])),
@@ -1940,10 +1952,10 @@ class IntegratedSimulator:
                 },
             )
             if source == "cfc":
-                scale = 0.002 * (1 + rid)
+                scale = _INTEGRATED_CFC_DRIFT_SCALE * (1 + rid)
                 return self.rng.normal(0.0, scale, self.n_agents)
 
-        return self.rng.normal(0.0, 0.01, self.n_agents)
+        return self.rng.normal(0.0, _INTEGRATED_DRIFT_FALLBACK_STD, self.n_agents)
 
     def _sample_levy_jump_magnitudes(self, n_jumps: int) -> np.ndarray:
         if n_jumps <= 0:
@@ -1959,7 +1971,7 @@ class IntegratedSimulator:
                 random_state=self.rng,
             )
         jumps = np.asarray(jumps, dtype=np.float64)
-        jumps = np.clip(jumps, -10.0, 10.0)
+        jumps = np.clip(jumps, -_INTEGRATED_LEVY_CLIP, _INTEGRATED_LEVY_CLIP)
         return jumps * self.jump_magnitude_scale
 
     def update_agents_with_langevin(self, drift_vector: np.ndarray) -> None:
@@ -1995,12 +2007,19 @@ class IntegratedSimulator:
 
     def update_network_topology(self) -> None:
         polarization_current = self.calculate_polarization()
-        mode = "censorship" if polarization_current > 0.7 else "viral_hub"
+        mode = (
+            "censorship"
+            if polarization_current > _INTEGRATED_CENSORSHIP_POLARIZATION_THRESHOLD
+            else "viral_hub"
+        )
         intensity = float(
             np.clip(
-                max(self.topology_intensity, abs(polarization_current - 0.5)),
-                0.01,
-                0.2,
+                max(
+                    self.topology_intensity,
+                    abs(polarization_current - _INTEGRATED_TOPOLOGY_POLARIZATION_CENTER),
+                ),
+                _INTEGRATED_TOPOLOGY_INTENSITY_MIN,
+                _INTEGRATED_TOPOLOGY_INTENSITY_MAX,
             )
         )
         for layer_name in self.multilayer_engine.layers.keys():

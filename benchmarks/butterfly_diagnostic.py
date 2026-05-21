@@ -5,6 +5,10 @@ from __future__ import annotations
 import numpy as np
 from scipy import sparse
 
+_SELF_WEIGHT = 0.85
+_NETWORK_WEIGHT = 0.15
+_NONLINEAR_WEIGHT = 0.05
+
 
 def _to_dense_mean_adjacency(graphs: dict | None, n_agents: int) -> np.ndarray:
     if not graphs:
@@ -53,8 +57,16 @@ def run_butterfly_diagnostic_core(
     max_distance = d0
 
     for _ in range(horizon):
-        base = np.clip(0.85 * base + 0.15 * (adjacency @ base) + 0.05 * np.tanh(base), -1.0, 1.0)
-        shadow = np.clip(0.85 * shadow + 0.15 * (adjacency @ shadow) + 0.05 * np.tanh(shadow), -1.0, 1.0)
+        base = np.clip(
+            _SELF_WEIGHT * base + _NETWORK_WEIGHT * (adjacency @ base) + _NONLINEAR_WEIGHT * np.tanh(base),
+            -1.0,
+            1.0,
+        )
+        shadow = np.clip(
+            _SELF_WEIGHT * shadow + _NETWORK_WEIGHT * (adjacency @ shadow) + _NONLINEAR_WEIGHT * np.tanh(shadow),
+            -1.0,
+            1.0,
+        )
         dist = np.linalg.norm(shadow - base) + 1e-12
         growth_logs.append(np.log(dist / d0))
         max_distance = max(max_distance, dist)

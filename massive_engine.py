@@ -97,6 +97,8 @@ _COL_OPINION: int = 0
 # Opinión: rango bipolar [-1, 1] por defecto (igual que MultilayerEngine)
 _OPINION_MIN: float = -1.0
 _OPINION_MAX: float = 1.0
+_PARETO_SHOCK_PERCENTILE: float = 95.0
+_PARETO_SHOCK_AMPLIFICATION: float = 5.0
 
 
 class MassiveEngine:
@@ -146,10 +148,10 @@ class MassiveEngine:
         elif distribution == "pareto":
             raw = rng.pareto(alpha_pareto, n_affected)
             centered = (raw - np.mean(raw)) * magnitude
-            threshold = np.percentile(np.abs(centered), 95)
+            threshold = np.percentile(np.abs(centered), _PARETO_SHOCK_PERCENTILE)
             mask = np.abs(centered) > threshold
             affected_indices = affected_indices[mask]
-            shock_values = centered[mask] * 5.0
+            shock_values = centered[mask] * _PARETO_SHOCK_AMPLIFICATION
         else:
             raise ValueError("distribution must be one of: uniform, normal, pareto")
 
