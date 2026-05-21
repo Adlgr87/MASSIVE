@@ -1981,7 +1981,7 @@ class IntegratedSimulator:
         self.massive_engine.agents = agents
 
     def apply_levy_jumps_to_agents(self) -> None:
-        """Los saltos de Lévy ya se aplican dentro de update_agents_with_langevin."""
+        """No-op por compatibilidad: Lévy se integra en update_agents_with_langevin."""
         return None
 
     def calculate_polarization(self) -> float:

@@ -45,7 +45,8 @@ def run_butterfly_diagnostic_core(
 
     base = opinions.copy()
     shadow = opinions.copy()
-    shadow[0] = np.clip(shadow[0] + epsilon, -1.0, 1.0)
+    pivot = int(np.argmin(np.abs(opinions - np.median(opinions))))
+    shadow[pivot] = np.clip(shadow[pivot] + epsilon, -1.0, 1.0)
 
     d0 = np.linalg.norm(shadow - base) + 1e-12
     growth_logs: list[float] = []
