@@ -99,6 +99,70 @@ _OPINION_MIN: float = -1.0
 _OPINION_MAX: float = 1.0
 
 
+class MassiveEngine:
+    """Motor base de agentes completos con shock manual exógeno."""
+
+    def __init__(self, config: dict | None = None) -> None:
+        cfg = config or {}
+        self.agents = self.initialize_agents(cfg)
+
+    def initialize_agents(self, config: dict) -> np.ndarray:
+        n_agents = int(config.get("n_agents", 100))
+        seed = config.get("seed")
+        rng = np.random.default_rng(seed)
+        agents = rng.uniform(-0.5, 0.5, (n_agents, 5))
+        agents[:, 1:] = np.clip(agents[:, 1:], 0.0, 1.0)
+        return agents.astype(np.float64)
+
+    def apply_shock(
+        self,
+        magnitude: float = 0.1,
+        distribution: str = "uniform",
+        target_layer: int = 0,
+        alpha_pareto: float = 1.5,
+        affected_fraction: float = 0.1,
+        seed: int | None = None,
+    ) -> None:
+        """
+        Aplica manualmente un shock exógeno (Cisne Negro) a una fracción de agentes.
+        """
+        n_agents, n_layers = self.agents.shape
+        if n_layers < 1:
+            return
+
+        target = int(np.clip(target_layer, 0, n_layers - 1))
+        frac = float(np.clip(affected_fraction, 0.0, 1.0))
+        n_affected = int(n_agents * frac)
+        if n_affected <= 0:
+            return
+
+        rng = np.random.default_rng(seed)
+        affected_indices = rng.choice(n_agents, n_affected, replace=False)
+
+        if distribution == "uniform":
+            shock_values = rng.uniform(-magnitude, magnitude, n_affected)
+        elif distribution == "normal":
+            shock_values = rng.normal(0.0, magnitude, n_affected)
+        elif distribution == "pareto":
+            raw = rng.pareto(alpha_pareto, n_affected)
+            centered = (raw - np.mean(raw)) * magnitude
+            threshold = np.percentile(np.abs(centered), 95)
+            mask = np.abs(centered) > threshold
+            affected_indices = affected_indices[mask]
+            shock_values = centered[mask] * 5.0
+        else:
+            raise ValueError("distribution must be one of: uniform, normal, pareto")
+
+        if shock_values.size == 0:
+            return
+
+        self.agents[affected_indices, target] += shock_values
+        if target == _COL_OPINION:
+            self.agents[:, target] = np.clip(self.agents[:, target], _OPINION_MIN, _OPINION_MAX)
+        else:
+            self.agents[:, target] = np.clip(self.agents[:, target], 0.0, 1.0)
+
+
 # ============================================================
 # ESTRATEGIA 2 — CUANTIZACIÓN DE ESTADO (uint8)
 # ============================================================

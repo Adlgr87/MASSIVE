@@ -28,6 +28,7 @@ Autor: MASSIVE Research
 import numpy as np
 import pandas as pd
 import networkx as nx
+from scipy import sparse
 from llm_credentials import resolve_provider_api_key
 from quantum.integration import compress_agent_states, decompress_agent_states
 
@@ -679,6 +680,67 @@ class MultilayerEngine:
             return decompress_agent_states(self.mps_state)
         return self.x
 
+    @property
+    def graphs(self) -> dict[str, sparse.csr_matrix]:
+        """Matriz de grafos expuesta como CSR para integración externa."""
+        return {name: sparse.csr_matrix(matrix) for name, matrix in self.layers.items()}
+
+    def dynamic_rewiring(
+        self,
+        layer_name: str,
+        mode: str = "censorship",
+        intensity: float = 0.05,
+    ) -> None:
+        """
+        Reconfigura una capa de red durante la simulación.
+
+        Modes:
+            censorship: elimina aristas activas aleatorias.
+            viral_hub: añade aristas nuevas con preferencia por nodos de alto grado.
+        """
+        if layer_name not in self.layers:
+            raise KeyError(f"Unknown layer_name: {layer_name}")
+
+        intensity = float(np.clip(intensity, 0.0, 1.0))
+        if intensity <= 0.0:
+            return
+
+        rng = np.random.default_rng(self.seed + len(self._history))
+        adjacency = (self.layers[layer_name] > 0).astype(np.float64)
+        np.fill_diagonal(adjacency, 0.0)
+        adjacency = np.maximum(adjacency, adjacency.T)
+
+        if mode == "censorship":
+            rows, cols = np.triu_indices(self.N, k=1)
+            active_mask = adjacency[rows, cols] > 0
+            active_edges = np.flatnonzero(active_mask)
+            n_to_break = int(active_edges.size * intensity)
+            if n_to_break > 0:
+                chosen = rng.choice(active_edges, size=n_to_break, replace=False)
+                i_sel = rows[chosen]
+                j_sel = cols[chosen]
+                adjacency[i_sel, j_sel] = 0.0
+                adjacency[j_sel, i_sel] = 0.0
+        elif mode == "viral_hub":
+            n_new_edges = max(1, int(self.N * intensity * 10))
+            degrees = adjacency.sum(axis=1) + 1.0
+            probs = degrees / degrees.sum()
+            sources = rng.integers(0, self.N, size=n_new_edges)
+            targets = rng.choice(self.N, size=n_new_edges, p=probs)
+            for s, t in zip(sources, targets):
+                if s != t:
+                    adjacency[s, t] = 1.0
+                    adjacency[t, s] = 1.0
+        else:
+            raise ValueError("mode must be 'censorship' or 'viral_hub'")
+
+        rewired = _normalize_rows(adjacency)
+        self.layers[layer_name] = rewired
+
+        layer_order = ("social", "digital", "economic")
+        for idx, name in enumerate(layer_order):
+            self._layers_flat[idx] = self.layers[name]
+
     def behavior_correlation_matrix(self) -> np.ndarray:
         """
         Calcula la matriz de correlación (K × K) entre los K comportamientos
@@ -701,3 +763,6 @@ class MultilayerEngine:
             "corr_matrix":     self.behavior_correlation_matrix(),
             "landscape":       self.get_landscape(),
         }
+
+
+MultiLayerEngine = MultilayerEngine
