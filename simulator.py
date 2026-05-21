@@ -43,6 +43,9 @@ from scipy import stats
 from scipy.integrate import solve_ivp
 from scipy.special import erf
 
+from benchmarks.butterfly_diagnostic import run_butterfly_diagnostic_core
+from massive_engine import MassiveEngine
+from multilayer_engine import MultilayerEngine
 from schemas import GamePayoff
 from utility_logic import calculate_strategic_force
 from llm_credentials import resolve_provider_api_key
@@ -214,6 +217,20 @@ DEFAULT_CONFIG: dict[str, Any] = {
         "payoff_matrix": {"cc": 1.0, "cd": -1.0, "dc": 1.0, "dd": -1.0},
         "strategic_weight": 0.3,
     },
+    # Simulador integrado (dinámica emergente)
+    "n_agents": 500,
+    "n_ticks": 100,
+    "dt": 0.1,
+    "diffusion_sigma": 0.05,
+    "enable_levy_jumps": False,
+    "levy_lambda": 0.01,
+    "alpha_stable": 1.5,
+    "jump_magnitude_scale": 0.5,
+    "enable_dynamic_topology": False,
+    "topology_update_freq": 10,
+    "topology_intensity": 0.05,
+    "butterfly_interval": 100,
+    "butterfly_threshold": 0.5,
 }
 
 # Default 2×2 payoff matrix for the Replicator (EGT) rule.
@@ -245,6 +262,14 @@ HISTORY_BUFFER_SIZE: int = 10
 # highly polarised when the strategic layer is active (used by the heuristic
 # selector to prefer the EGT Replicator rule).
 _STRATEGIC_POLARIZATION_THRESHOLD: float = 0.5
+_INTEGRATED_CFC_HISTORY_MIN: int = 6
+_INTEGRATED_CFC_DRIFT_SCALE: float = 0.002
+_INTEGRATED_DRIFT_FALLBACK_STD: float = 0.01
+_INTEGRATED_LEVY_CLIP: float = 10.0
+_INTEGRATED_CENSORSHIP_POLARIZATION_THRESHOLD: float = 0.7
+_INTEGRATED_TOPOLOGY_POLARIZATION_CENTER: float = 0.5
+_INTEGRATED_TOPOLOGY_INTENSITY_MIN: float = 0.01
+_INTEGRATED_TOPOLOGY_INTENSITY_MAX: float = 0.2
 
 
 # ============================================================
@@ -1835,6 +1860,228 @@ def get_graph_metrics(G: nx.Graph, modo: str = "macro", top_n: int = 5) -> str:
         f"{label_puentes}: {fmt(top_between)}."
     )
     return resumen
+
+
+# ============================================================
+# SIMULADOR INTEGRADO (MOTORES DINÁMICOS CONDICIONALES)
+# ============================================================
+
+class IntegratedSimulator:
+    """Coordinador central de dinámica interna con motores contextuales."""
+
+    def __init__(self, config: dict | None = None):
+        self.config = {**DEFAULT_CONFIG, **(config or {})}
+        self.n_agents = int(self.config["n_agents"])
+        self.n_ticks = int(self.config["n_ticks"])
+        self.dt = float(self.config.get("dt", 0.1))
+        self.diffusion_sigma = float(self.config.get("diffusion_sigma", 0.05))
+        self.rng = np.random.default_rng(self.config.get("seed"))
+
+        self.massive_engine = MassiveEngine(self.config)
+        self.multilayer_engine = MultilayerEngine(
+            N=self.n_agents,
+            dt=self.dt,
+            coupling=float(self.config.get("coupling", 0.3)),
+            layer_config=self.config.get("layers"),
+            seed=int(self.config.get("seed", 42)),
+        )
+
+        self.enable_levy_jumps = bool(self.config.get("enable_levy_jumps", False))
+        self.levy_lambda = float(self.config.get("levy_lambda", 0.01))
+        self.alpha_stable = float(self.config.get("alpha_stable", 1.5))
+        self.jump_magnitude_scale = float(self.config.get("jump_magnitude_scale", 0.5))
+
+        self.enable_dynamic_topology = bool(self.config.get("enable_dynamic_topology", False))
+        self.topology_update_freq = max(1, int(self.config.get("topology_update_freq", 10)))
+        self.topology_intensity = float(self.config.get("topology_intensity", 0.05))
+
+        self.butterfly_interval = max(1, int(self.config.get("butterfly_interval", 100)))
+        self.butterfly_threshold = float(self.config.get("butterfly_threshold", 0.5))
+
+        self.tick_counter = 0
+        self.lyapunov_history: list[float] = []
+        self.topology_history: list[dict[str, Any]] = []
+        self.opinion_history: list[float] = []
+        self._prev_opinions = self.massive_engine.agents[:, 0].copy()
+
+    def _build_runtime_context(self) -> dict[str, Any]:
+        return {
+            "tick": self.tick_counter,
+            "polarization": self.calculate_polarization(),
+            "viral_activity": self.calculate_viral_activity(),
+            "lyapunov": self.lyapunov_history[-1] if self.lyapunov_history else 0.0,
+        }
+
+    def _emit_runtime_context(self) -> None:
+        context = self._build_runtime_context()
+        for hook_name in ("router_feedback_hook", "social_architect_hook"):
+            hook = self.config.get(hook_name)
+            if callable(hook):
+                try:
+                    hook(context)
+                except Exception as exc:  # noqa: BLE001
+                    log.warning(
+                        "[IntegratedSimulator] Hook '%s' failed at tick=%s: %s | payload=%s",
+                        hook_name,
+                        self.tick_counter,
+                        exc,
+                        context,
+                    )
+
+    def select_drift_vector(self) -> np.ndarray:
+        callback = self.config.get("drift_selector")
+        if callable(callback):
+            drift = callback(self._build_runtime_context())
+            arr = np.asarray(drift, dtype=np.float64)
+            if arr.shape == (self.n_agents,):
+                return arr
+
+        if (
+            CFC_AVAILABLE
+            and len(self.opinion_history) >= _INTEGRATED_CFC_HISTORY_MIN
+            and _cfc is not None
+        ):
+            rid, source, _ = _cfc.select_regime(
+                history=self.opinion_history[-_INTEGRATED_CFC_HISTORY_MIN:],
+                state={
+                    "opinion": float(np.mean(self.massive_engine.agents[:, 0])),
+                    "propaganda": float(np.mean(self.massive_engine.agents[:, 1])),
+                    "confianza": 0.5,
+                    "opinion_grupo_a": float(np.percentile(self.massive_engine.agents[:, 0], 75)),
+                    "opinion_grupo_b": float(np.percentile(self.massive_engine.agents[:, 0], 25)),
+                },
+            )
+            if source == "cfc":
+                scale = _INTEGRATED_CFC_DRIFT_SCALE * (1 + rid)
+                return self.rng.normal(0.0, scale, self.n_agents)
+
+        return self.rng.normal(0.0, _INTEGRATED_DRIFT_FALLBACK_STD, self.n_agents)
+
+    def _sample_levy_jump_magnitudes(self, n_jumps: int) -> np.ndarray:
+        if n_jumps <= 0:
+            return np.zeros(0, dtype=np.float64)
+        alpha = float(np.clip(self.alpha_stable, 1.0, 2.0))
+        if abs(alpha - 1.0) < 1e-8:
+            jumps = self.rng.standard_cauchy(n_jumps)
+        else:
+            jumps = stats.levy_stable.rvs(
+                alpha,
+                0.0,
+                size=n_jumps,
+                random_state=self.rng,
+            )
+        jumps = np.asarray(jumps, dtype=np.float64)
+        jumps = np.clip(jumps, -_INTEGRATED_LEVY_CLIP, _INTEGRATED_LEVY_CLIP)
+        return jumps * self.jump_magnitude_scale
+
+    def update_agents_with_langevin(self, drift_vector: np.ndarray) -> None:
+        agents = self.massive_engine.agents
+        n_agents = agents.shape[0]
+        dx_drift = np.asarray(drift_vector, dtype=np.float64) * self.dt
+        dW = self.rng.normal(0.0, np.sqrt(self.dt), n_agents)
+        dx_diffusion = self.diffusion_sigma * dW
+
+        dx_jump = np.zeros(n_agents, dtype=np.float64)
+        if self.enable_levy_jumps:
+            jump_occurred = self.rng.poisson(self.levy_lambda, n_agents) > 0
+            n_jumps = int(np.sum(jump_occurred))
+            if n_jumps > 0:
+                dx_jump[jump_occurred] = self._sample_levy_jump_magnitudes(n_jumps)
+
+        updated = agents[:, 0] + dx_drift + dx_diffusion + dx_jump
+        agents[:, 0] = np.clip(updated, -1.0, 1.0)
+        self.massive_engine.agents = agents
+
+    def apply_levy_jumps_to_agents(self) -> None:
+        """No-op por compatibilidad: Lévy se integra en update_agents_with_langevin."""
+        return None
+
+    def calculate_polarization(self) -> float:
+        opinions = self.massive_engine.agents[:, 0]
+        return float(np.clip(np.std(opinions) * 2.0, 0.0, 1.0))
+
+    def calculate_viral_activity(self) -> float:
+        opinions = self.massive_engine.agents[:, 0]
+        delta = np.abs(opinions - self._prev_opinions)
+        return float(np.clip(np.mean(delta) * 10.0, 0.0, 1.0))
+
+    def update_network_topology(self) -> None:
+        polarization_current = self.calculate_polarization()
+        mode = (
+            "censorship"
+            if polarization_current > _INTEGRATED_CENSORSHIP_POLARIZATION_THRESHOLD
+            else "viral_hub"
+        )
+        intensity = float(
+            np.clip(
+                max(
+                    self.topology_intensity,
+                    abs(polarization_current - _INTEGRATED_TOPOLOGY_POLARIZATION_CENTER),
+                ),
+                _INTEGRATED_TOPOLOGY_INTENSITY_MIN,
+                _INTEGRATED_TOPOLOGY_INTENSITY_MAX,
+            )
+        )
+        for layer_name in self.multilayer_engine.layers.keys():
+            self.multilayer_engine.dynamic_rewiring(
+                layer_name=layer_name,
+                mode=mode,
+                intensity=intensity,
+            )
+        self.topology_history.append(
+            {
+                "tick": self.tick_counter,
+                "mode": mode,
+                "intensity": intensity,
+                "polarization": polarization_current,
+            }
+        )
+
+    def run_butterfly_diagnostic(self) -> float:
+        snapshot = {
+            "agents": self.massive_engine.agents.copy(),
+            "graphs": self.multilayer_engine.graphs,
+            "n_ticks_left": max(self.n_ticks - self.tick_counter, 1),
+        }
+        result = run_butterfly_diagnostic_core(snapshot)
+        return float(result.get("divergence_score", 0.0))
+
+    def step(self) -> dict[str, Any]:
+        drift_vector = self.select_drift_vector()
+        self.update_agents_with_langevin(drift_vector)
+        self.multilayer_engine.update_opinions(self.massive_engine.agents.copy())
+
+        if self.enable_dynamic_topology and self.tick_counter % self.topology_update_freq == 0:
+            self.update_network_topology()
+
+        if self.tick_counter > 0 and self.tick_counter % self.butterfly_interval == 0:
+            lyapunov_score = self.run_butterfly_diagnostic()
+            self.lyapunov_history.append(lyapunov_score)
+            if lyapunov_score > self.butterfly_threshold:
+                log.warning(
+                    "⚠️ ALERTA: transición caótica detectada (Lyapunov=%.4f)",
+                    lyapunov_score,
+                )
+
+        self.opinion_history.append(float(np.mean(self.massive_engine.agents[:, 0])))
+        self._emit_runtime_context()
+        self._prev_opinions = self.massive_engine.agents[:, 0].copy()
+        self.tick_counter += 1
+
+        return {
+            "tick": self.tick_counter,
+            "mean_opinion": float(np.mean(self.massive_engine.agents[:, 0])),
+            "polarization": self.calculate_polarization(),
+            "viral_activity": self.calculate_viral_activity(),
+            "lyapunov": self.lyapunov_history[-1] if self.lyapunov_history else 0.0,
+        }
+
+    def run(self, steps: int | None = None) -> list[dict[str, Any]]:
+        total = self.n_ticks if steps is None else int(steps)
+        history: list[dict[str, Any]] = []
+        for _ in range(max(0, total)):
+            history.append(self.step())
+        return history
 
 
 # ============================================================
