@@ -15,7 +15,7 @@ from pydantic import ValidationError
 
 from schemas import StrategyMatrix
 from simulator import run_with_schedule, resumen_historial, DEFAULT_CONFIG
-from quantum.integration import quantum_optimize_interventions
+from intervention_optimizer import optimize_interventions
 from forecast import TemporalConfig, forecast
 
 log = logging.getLogger("massive")
@@ -41,7 +41,7 @@ def find_optimal_interventions(evaluate_fn, n_agents, n_phases, max_iter=100):
     Returns:
         Optimization result dictionary with interventions and score.
     """
-    return quantum_optimize_interventions(
+    return optimize_interventions(
         evaluate_fn=evaluate_fn,
         n_agents=n_agents,
         n_phases=n_phases,
