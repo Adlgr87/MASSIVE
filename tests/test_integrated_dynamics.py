@@ -74,17 +74,18 @@ class TestIntegratedSimulator:
 
     def test_integrated_simulator_emits_context_hooks(self):
         captured = []
+        n_ticks = 2
         sim = IntegratedSimulator(
             {
                 "n_agents": 20,
-                "n_ticks": 2,
+                "n_ticks": n_ticks,
                 "seed": 5,
                 "router_feedback_hook": lambda payload: captured.append(("router", payload["tick"])),
                 "social_architect_hook": lambda payload: captured.append(("architect", payload["tick"])),
             }
         )
         sim.run()
-        assert len(captured) == 4
+        assert len(captured) == n_ticks * 2
 
 
 class TestButterflyDiagnosticCore:

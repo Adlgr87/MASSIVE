@@ -1912,7 +1912,13 @@ class IntegratedSimulator:
                 try:
                     hook(context)
                 except Exception as exc:  # noqa: BLE001
-                    log.debug(f"[IntegratedSimulator] Hook {hook_name} failed: {exc}")
+                    log.warning(
+                        "[IntegratedSimulator] Hook '%s' failed at tick=%s: %s | payload=%s",
+                        hook_name,
+                        self.tick_counter,
+                        exc,
+                        context,
+                    )
 
     def select_drift_vector(self) -> np.ndarray:
         callback = self.config.get("drift_selector")
