@@ -59,7 +59,7 @@ streamlit run app.py
 
 ### Ejecutar tests
 ```bash
-python -m pytest tests/
+pytest tests/
 ```
 
 ## Ejemplo mínimo: simulador integrado
