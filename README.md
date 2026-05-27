@@ -63,3 +63,7 @@ pip install -r requirements.txt
 streamlit run app.py
 python -m pytest tests/
 ```
+
+
+## Deployment note
+CI deploy no longer uses force-push to Hugging Face Spaces. Ensure HF_TOKEN is configured in repository secrets.
