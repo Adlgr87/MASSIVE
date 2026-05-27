@@ -23,3 +23,7 @@ reports/validation/llm_run/
 # CfC trained models and datasets (generated locally; not committed)
 models/*.pt
 models/dataset_*.pt
+
+# Ignore runtime artifacts
+massive_run.log
+Untitled-1.txt
