@@ -539,3 +539,7 @@ Para consultoría o colaboraciones, contacta via [GitHub](https://github.com/Adl
 ---
 
 *Many behaving as One.*
+
+
+## Nota de despliegue
+El CI ya no usa push forzado a Hugging Face Spaces. Configure HF_TOKEN en los secretos del repositorio.
