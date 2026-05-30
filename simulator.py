@@ -1646,7 +1646,12 @@ def simular_multiples_dask(
     Falls back to sequential simular_multiples if Dask is unavailable.
 
     Args:
-        Same as simular_multiples, plus:
+        estado_inicial: Base state for all simulations.
+        escenario: Scenario key.
+        pasos: Steps per simulation.
+        cada_n_pasos: LLM update frequency.
+        config: Override config.
+        n_simulaciones: Number of runs.
         seed: Optional RNG seed for reproducibility (default: None = random).
 
     Returns:

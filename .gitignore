@@ -27,3 +27,6 @@ models/dataset_*.pt
 # Ignore runtime artifacts
 massive_run.log
 Untitled-1.txt
+
+# MkDocs build output
+site/
