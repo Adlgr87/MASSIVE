@@ -505,6 +505,7 @@ class MultilayerEngine:
         attr_config:    dict  | None = None,
         layer_config:   dict  | None = None,
         seed:           int   = 42,
+        scientific_config: dict | None = None,
     ):
         """
         Inicializa el motor multicapa.
@@ -518,6 +519,7 @@ class MultilayerEngine:
             attr_config: Parámetros de generación de atributos (ver generate_attributes).
             layer_config: Parámetros de generación de capas (ver build_layers).
             seed: Semilla para reproducibilidad.
+            scientific_config: Configuración opt-in para solvers científicos.
         """
         if N < 2:
             raise ValueError("N debe ser ≥ 2")
@@ -530,6 +532,12 @@ class MultilayerEngine:
         self.range_type = range_type
         self.x_min = -1.0 if range_type == "bipolar" else 0.0
         self.x_max = 1.0
+        from massive_core.config import ScientificRuntimeConfig
+        from massive_core.numerics import create_stepper
+
+        self.scientific_config = ScientificRuntimeConfig.from_dict(scientific_config)
+        self._stepper = create_stepper(self.scientific_config.solver)
+        self.last_numerical_diagnostics = None
 
         # Pesos de capas normalizados
         w = np.array(layer_weights, dtype=np.float64)
@@ -586,16 +594,40 @@ class MultilayerEngine:
 
     def step(self) -> np.ndarray:
         """Advance one integration step and return the updated state."""
-        self.x = multilayer_langevin_step(
-            self.x,
-            self._layers_flat,
-            self.layer_weights,
-            self.theta,
-            self.coupling,
-            self.dt,
-            self.x_min,
-            self.x_max,
-        )
+        if self._stepper is not None:
+            def drift(current: np.ndarray) -> np.ndarray:
+                social_force = np.zeros_like(current)
+                for ell, weight in enumerate(self.layer_weights):
+                    social_force[:, COL_OPINION] += (
+                        self.coupling
+                        * weight
+                        * (self._layers_flat[ell] @ current[:, COL_OPINION])
+                    )
+                return -multi_potential_gradient(current) + social_force
+
+            noise = np.random.randn(*self.x.shape)
+            result = self._stepper.step(
+                self.x,
+                self.dt,
+                drift,
+                diffusion=self.theta * _STOCHASTIC_SCALE,
+                noise=noise,
+            )
+            self.x = result.state
+            self.x[:, COL_OPINION] = np.clip(self.x[:, COL_OPINION], self.x_min, self.x_max)
+            self.x[:, 1:] = np.clip(self.x[:, 1:], 0.0, 1.0)
+            self.last_numerical_diagnostics = result.diagnostics
+        else:
+            self.x = multilayer_langevin_step(
+                self.x,
+                self._layers_flat,
+                self.layer_weights,
+                self.theta,
+                self.coupling,
+                self.dt,
+                self.x_min,
+                self.x_max,
+            )
         self._history.append(self.x.copy())
         self._refresh_mps_state()
         return self.x

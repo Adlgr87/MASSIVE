@@ -91,13 +91,13 @@ st.set_page_config(
 # ------------------------------------------------------------
 # ANALYTICS & SESSION STATE
 # ------------------------------------------------------------
-import streamlit.components.v1 as components
-components.html("""
-<script>
-  // Google Analytics / PostHog script placeholder
-  console.log('MASSIVE Analytics loaded');
-</script>
-""", width=0, height=0)
+# Optional analytics can be injected by deployment environments through
+# MASSIVE_ANALYTICS_SNIPPET. No placeholder script is emitted by default.
+analytics_snippet = os.getenv("MASSIVE_ANALYTICS_SNIPPET", "").strip()
+if analytics_snippet:
+    import streamlit.components.v1 as components
+
+    components.html(analytics_snippet, width=0, height=0)
 
 if "lead_captured" not in st.session_state:
     st.session_state["lead_captured"] = False
