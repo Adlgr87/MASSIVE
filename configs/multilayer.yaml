@@ -1,5 +1,5 @@
 # multilayer.yaml — Configuración del Motor Multicapa Sociodemográfico
-# BeyondSight Research | Apache License 2.0
+# MASSIVE Research | Apache License 2.0
 #
 # Personaliza capas de red, atributos y dinámica sin tocar el código.
 # Cargado automáticamente por MultilayerEngine cuando se pasa como config.

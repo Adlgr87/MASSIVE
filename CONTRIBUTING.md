@@ -8,7 +8,7 @@ We welcome contributions in various forms:
 - **LLM Integrations:** Testing and providing support for new Large Language Model APIs via OpenRouter, Anthropic, etc.
 - **Visuals:** Creating new algorithms for `visualizations.py` to support 3D interactions.
 - **Bug Reporting & Docs:** Reporting issues and fixing typos or i18n bugs.
-- **PVU Validation Cases:** Adding new real-world PVU cases to `datasets/pvu_cases/` following the schema in [docs/validation/PVU_BeyondSight_EN.md](docs/validation/PVU_BeyondSight_EN.md).
+- **PVU Validation Cases:** Adding new real-world PVU cases to `datasets/pvu_cases/` following the schema in [docs/validation/PVU_MASSIVE_EN.md](docs/validation/PVU_MASSIVE_EN.md).
 
 ## 2. Setting up your environment
 1. Fork the repo and clone it locally.

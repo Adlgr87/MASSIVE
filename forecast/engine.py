@@ -10,7 +10,7 @@ from typing import Literal
 import numpy as np
 from pydantic import BaseModel, Field
 
-from empirical_config import BEYONDSIGHT_EMPIRICAL_MASTER
+from empirical_config import MASSIVE_EMPIRICAL_MASTER
 from simulator import DEFAULT_CONFIG
 
 from .temporal_config import TemporalConfig
@@ -84,7 +84,7 @@ def _compute_analytical(
 ) -> ForecastResult:
     var_v, ac_v, sk_v = _extract_ews(simulation_state)
 
-    temporal_block = BEYONDSIGHT_EMPIRICAL_MASTER.get("temporal", {})
+    temporal_block = MASSIVE_EMPIRICAL_MASTER.get("temporal", {})
     cycle_speed = float(temporal_block.get("CICLO_ATENCION", {}).get("value", 0.42))
     trust_elasticity = abs(float(temporal_block.get("ELASTICIDAD_CONFIANZA", {}).get("value", -0.25)))
 

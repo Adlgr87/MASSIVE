@@ -9,7 +9,7 @@
 
 | Document / Documento | English | Español |
 |----------------------|---------|---------|
-| PVU Protocol | [PVU_BeyondSight_EN.md](PVU_BeyondSight_EN.md) | [PVU_BeyondSight_ES.md](PVU_BeyondSight_ES.md) |
+| PVU Protocol | [PVU_MASSIVE_EN.md](PVU_MASSIVE_EN.md) | [PVU_MASSIVE_ES.md](PVU_MASSIVE_ES.md) |
 | Pre-registration template | [preregistration_template_EN.md](preregistration_template_EN.md) | [preregistration_template_ES.md](preregistration_template_ES.md) |
 | Validation report template | [validation_report_template_EN.md](validation_report_template_EN.md) | [validation_report_template_ES.md](validation_report_template_ES.md) |
 

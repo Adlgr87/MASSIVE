@@ -7,8 +7,8 @@ y que sus valores satisfagan las propiedades esperadas.
 import unittest
 
 from empirical_config import (
-    BEYONDSIGHT_EMPIRICAL_MASTER,
-    BEYONDSIGHT_RUNTIME_PARAMS,
+    MASSIVE_EMPIRICAL_MASTER,
+    MASSIVE_RUNTIME_PARAMS,
     EMPIRICAL_BASE_LOADED,
     get_param,
     get_runtime_params,
@@ -18,7 +18,7 @@ from empirical_config import (
 class TestEmpiricalIntegration(unittest.TestCase):
 
     def test_all_runtime_values_in_range(self):
-        """Todos los valores numéricos de BEYONDSIGHT_RUNTIME_PARAMS están en [-1.0, 1.0]."""
+        """Todos los valores numéricos de MASSIVE_RUNTIME_PARAMS están en [-1.0, 1.0]."""
         numeric_keys = [
             "temperature",
             "social_influence_lambda",
@@ -30,7 +30,7 @@ class TestEmpiricalIntegration(unittest.TestCase):
             "saturation_threshold",
         ]
         for key in numeric_keys:
-            value = BEYONDSIGHT_RUNTIME_PARAMS[key]
+            value = MASSIVE_RUNTIME_PARAMS[key]
             self.assertIsInstance(value, (int, float), f"{key} debe ser numérico")
             self.assertGreaterEqual(
                 value, -1.0,
@@ -44,12 +44,12 @@ class TestEmpiricalIntegration(unittest.TestCase):
     def test_negative_values_preserved(self):
         """repeller_strength y payoff_defection mantienen su signo negativo."""
         self.assertLess(
-            BEYONDSIGHT_RUNTIME_PARAMS["repeller_strength"],
+            MASSIVE_RUNTIME_PARAMS["repeller_strength"],
             0.0,
             "repeller_strength debe ser negativo (repelente activo)",
         )
         self.assertLess(
-            BEYONDSIGHT_RUNTIME_PARAMS["payoff_defection"],
+            MASSIVE_RUNTIME_PARAMS["payoff_defection"],
             0.0,
             "payoff_defection debe ser negativo (costo de disidencia)",
         )
@@ -57,19 +57,19 @@ class TestEmpiricalIntegration(unittest.TestCase):
     def test_decay_and_saturation_values_active(self):
         """Los parámetros calibrados temporalmente se mantienen numéricos y activos."""
         self.assertIsNotNone(
-            BEYONDSIGHT_RUNTIME_PARAMS["narrative_decay_rate"],
+            MASSIVE_RUNTIME_PARAMS["narrative_decay_rate"],
             "narrative_decay_rate no debe ser None",
         )
         self.assertIsNotNone(
-            BEYONDSIGHT_RUNTIME_PARAMS["saturation_threshold"],
+            MASSIVE_RUNTIME_PARAMS["saturation_threshold"],
             "saturation_threshold no debe ser None",
         )
-        self.assertGreater(BEYONDSIGHT_RUNTIME_PARAMS["narrative_decay_rate"], 0.0)
-        self.assertGreater(BEYONDSIGHT_RUNTIME_PARAMS["saturation_threshold"], 0.0)
+        self.assertGreater(MASSIVE_RUNTIME_PARAMS["narrative_decay_rate"], 0.0)
+        self.assertGreater(MASSIVE_RUNTIME_PARAMS["saturation_threshold"], 0.0)
 
     def test_no_null_params_when_calibrated(self):
         """validation_flags refleja únicamente parámetros realmente pendientes."""
-        flags = BEYONDSIGHT_RUNTIME_PARAMS["validation_flags"]
+        flags = MASSIVE_RUNTIME_PARAMS["validation_flags"]
         self.assertIsInstance(flags, list, "validation_flags debe ser una lista")
         for flag in flags:
             self.assertIn(
@@ -132,7 +132,7 @@ class TestEmpiricalIntegration(unittest.TestCase):
         self.assertAlmostEqual(params["temperature"], 0.424, places=3)
 
     def test_master_dict_has_required_categories(self):
-        """BEYONDSIGHT_EMPIRICAL_MASTER contiene las categorías esperadas."""
+        """MASSIVE_EMPIRICAL_MASTER contiene las categorías esperadas."""
         expected_categories = {
             "meta",
             "network_dynamics",
@@ -147,8 +147,8 @@ class TestEmpiricalIntegration(unittest.TestCase):
         for cat in expected_categories:
             self.assertIn(
                 cat,
-                BEYONDSIGHT_EMPIRICAL_MASTER,
-                f"Categoría '{cat}' falta en BEYONDSIGHT_EMPIRICAL_MASTER",
+                MASSIVE_EMPIRICAL_MASTER,
+                f"Categoría '{cat}' falta en MASSIVE_EMPIRICAL_MASTER",
             )
 
 

@@ -2,8 +2,8 @@ import json
 import unittest
 
 from empirical_calibration import (
-    BEYONDSIGHT_EMPIRICAL_MASTER,
-    BEYONDSIGHT_RUNTIME_PARAMS,
+    MASSIVE_EMPIRICAL_MASTER,
+    MASSIVE_RUNTIME_PARAMS,
     HK_EPSILON_MAX,
     HK_EPSILON_MIN,
     TIPPING_POINT_MEAN,
@@ -17,7 +17,7 @@ from empirical_calibration import (
 class TestEmpiricalMaster(unittest.TestCase):
 
     def test_meta_fields_present(self):
-        meta = BEYONDSIGHT_EMPIRICAL_MASTER["meta"]
+        meta = MASSIVE_EMPIRICAL_MASTER["meta"]
         self.assertIn("version", meta)
         self.assertIn("total_params", meta)
         self.assertIn("coverage_pct", meta)
@@ -27,28 +27,28 @@ class TestEmpiricalMaster(unittest.TestCase):
         """Every empirical value must sit within [-1.0, 1.0]."""
         sections = ["network_dynamics", "temporal", "game_theory"]
         for section in sections:
-            for key, entry in BEYONDSIGHT_EMPIRICAL_MASTER[section].items():
+            for key, entry in MASSIVE_EMPIRICAL_MASTER[section].items():
                 val = entry.get("value")
                 if val is not None:
                     self.assertGreaterEqual(val, -1.0, msg=f"{section}.{key}: {val} < -1.0")
                     self.assertLessEqual(val, 1.0, msg=f"{section}.{key}: {val} > 1.0")
 
     def test_network_dynamics_keys(self):
-        nd = BEYONDSIGHT_EMPIRICAL_MASTER["network_dynamics"]
+        nd = MASSIVE_EMPIRICAL_MASTER["network_dynamics"]
         self.assertIn("DERIVA_ALGORITMICA", nd)
         self.assertIn("INFLUENCIA_PARASOCIAL", nd)
         self.assertIn("HOMOFILIA_RED", nd)
         self.assertIn("AMPLIFICACION_VIRAL", nd)
 
     def test_temporal_keys(self):
-        t = BEYONDSIGHT_EMPIRICAL_MASTER["temporal"]
+        t = MASSIVE_EMPIRICAL_MASTER["temporal"]
         self.assertIn("MEDIA_VIDA_DIGITAL", t)
         self.assertIn("ELASTICIDAD_CONFIANZA", t)
         self.assertIn("CICLO_ATENCION", t)
         self.assertIn("FATIGA_OUTRAGE", t)
 
     def test_game_theory_keys(self):
-        gt = BEYONDSIGHT_EMPIRICAL_MASTER["game_theory"]
+        gt = MASSIVE_EMPIRICAL_MASTER["game_theory"]
         self.assertIn("EQUILIBRIO_NASH_SOCIAL", gt)
         self.assertIn("COSTO_DISIDENCIA", gt)
 
@@ -69,7 +69,7 @@ class TestRuntimeParams(unittest.TestCase):
             "validation_flags",
         ]
         for key in required:
-            self.assertIn(key, BEYONDSIGHT_RUNTIME_PARAMS, msg=f"Missing key: {key}")
+            self.assertIn(key, MASSIVE_RUNTIME_PARAMS, msg=f"Missing key: {key}")
 
     def test_numeric_params_in_range(self):
         numeric_keys = [
@@ -83,15 +83,15 @@ class TestRuntimeParams(unittest.TestCase):
             "saturation_threshold",
         ]
         for key in numeric_keys:
-            val = BEYONDSIGHT_RUNTIME_PARAMS[key]
+            val = MASSIVE_RUNTIME_PARAMS[key]
             self.assertGreaterEqual(val, -1.0, msg=f"{key}={val} < -1.0")
             self.assertLessEqual(val, 1.0, msg=f"{key}={val} > 1.0")
 
     def test_social_lambda_positive(self):
-        self.assertGreater(BEYONDSIGHT_RUNTIME_PARAMS["social_influence_lambda"], 0.0)
+        self.assertGreater(MASSIVE_RUNTIME_PARAMS["social_influence_lambda"], 0.0)
 
     def test_temperature_positive(self):
-        self.assertGreater(BEYONDSIGHT_RUNTIME_PARAMS["temperature"], 0.0)
+        self.assertGreater(MASSIVE_RUNTIME_PARAMS["temperature"], 0.0)
 
 
 class TestApplyEmpiricalProfile(unittest.TestCase):
@@ -152,19 +152,19 @@ class TestApplyEmpiricalProfile(unittest.TestCase):
     def test_payoff_cc_set_from_runtime(self):
         result = apply_empirical_profile({})
         cc = result["strategic"]["payoff_matrix"]["cc"]
-        self.assertAlmostEqual(cc, BEYONDSIGHT_RUNTIME_PARAMS["payoff_coordination"])
+        self.assertAlmostEqual(cc, MASSIVE_RUNTIME_PARAMS["payoff_coordination"])
 
     def test_payoff_dd_set_from_runtime(self):
         result = apply_empirical_profile({})
         dd = result["strategic"]["payoff_matrix"]["dd"]
-        self.assertAlmostEqual(dd, BEYONDSIGHT_RUNTIME_PARAMS["payoff_defection"])
+        self.assertAlmostEqual(dd, MASSIVE_RUNTIME_PARAMS["payoff_defection"])
 
     def test_profile_version_tag(self):
         result = apply_empirical_profile({})
         self.assertIn("_empirical_profile", result)
         self.assertEqual(
             result["_empirical_profile"],
-            BEYONDSIGHT_EMPIRICAL_MASTER["meta"]["version"],
+            MASSIVE_EMPIRICAL_MASTER["meta"]["version"],
         )
 
     def test_preserves_existing_keys(self):

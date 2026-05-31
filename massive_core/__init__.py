@@ -1,9 +1,12 @@
 """massive_core — stable adapter layer over the legacy MASSIVE simulator.
 
-This package is the stable import surface for new backend/frontend code.  New
-scientific helpers are imported directly, while legacy simulator symbols are
-loaded lazily so submodules can be used without triggering the Streamlit-era
-root imports.
+This package acts as the stable import surface for newer backend/frontend code.
+It re-exports the public simulation API without touching the legacy Streamlit
+root modules so that existing runtime behavior and import paths remain stable.
+
+This module is an active compatibility adapter, not a redundant wrapper.
+Its re-exports should only change as part of an explicit migration slice with
+consumer mapping and validation.
 
 Usage::
 
@@ -23,11 +26,19 @@ _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if _ROOT not in sys.path:
     sys.path.insert(0, _ROOT)
 
-from massive_core.config import ScientificRuntimeConfig  # noqa: E402
 from massive_core.benchmarks import run_canonical_benchmarks  # noqa: E402
+from massive_core.config import ScientificRuntimeConfig  # noqa: E402
 from massive_core.data_assimilation import (  # noqa: E402
     AssimilationResult,
     assimilate_history_observations,
+)
+from massive_core.diagnostics import (  # noqa: E402
+    ScientificReport,
+    build_scientific_report,
+    trajectory_from_history,
+)
+from massive_core.metalearning import (
+    build_cfc_regime_dataset_from_history,  # noqa: E402
 )
 from massive_core.scientific_runner import (  # noqa: E402
     ScientificEngineResult,
@@ -35,12 +46,6 @@ from massive_core.scientific_runner import (  # noqa: E402
     run_energy_scientific_simulation,
     run_multilayer_scientific_simulation,
     run_scientific_simulation,
-)
-from massive_core.metalearning import build_cfc_regime_dataset_from_history  # noqa: E402
-from massive_core.diagnostics import (  # noqa: E402
-    ScientificReport,
-    build_scientific_report,
-    trajectory_from_history,
 )
 
 _LEGACY_EXPORTS = {
