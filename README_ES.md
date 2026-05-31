@@ -114,6 +114,20 @@ MASSIVE te permite:
 
 ---
 
+## Paquete del repositorio para IA con Repomix
+
+MASSIVE incluye una configuración de Repomix para que cualquier asistente de IA pueda revisar el repositorio como un único archivo XML estructurado, sin versionar paquetes generados.
+
+```bash
+npx --yes repomix@latest --config repomix.config.json
+```
+
+El comando genera `repomix-output.xml` usando `.gitignore`, `.repomixignore` y `repomix-instruction.md` para excluir secretos locales, cachés, artefactos de compilación, binarios y salidas generadas. Para obtener una vista estructural más compacta, ejecuta:
+
+```bash
+npx --yes repomix@latest --config repomix.config.json --compress -o repomix-output-compressed.xml
+```
+
 ## Arquitectura
 
 ```
