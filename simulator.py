@@ -50,8 +50,8 @@ from schemas import GamePayoff
 from utility_logic import calculate_strategic_force
 from llm_credentials import resolve_provider_api_key
 from empirical_calibration import (
-    BEYONDSIGHT_EMPIRICAL_MASTER,
-    BEYONDSIGHT_RUNTIME_PARAMS,
+    MASSIVE_EMPIRICAL_MASTER,
+    MASSIVE_RUNTIME_PARAMS,
     ENGINE_METADATA_KEYS,
     apply_empirical_profile,
     build_empirical_engine_config,
@@ -83,11 +83,11 @@ except ImportError:
 
 # EMPIRICAL INTEGRATION — importar base empírica si está disponible
 try:
-    from empirical_config import BEYONDSIGHT_RUNTIME_PARAMS, EMPIRICAL_BASE_LOADED
+    from empirical_config import MASSIVE_RUNTIME_PARAMS, EMPIRICAL_BASE_LOADED
     EMPIRICAL_AVAILABLE = True
 except ImportError:
     EMPIRICAL_AVAILABLE = False
-    BEYONDSIGHT_RUNTIME_PARAMS = {}
+    MASSIVE_RUNTIME_PARAMS = {}
 
 # ------------------------------------------------------------
 # LOGGING
@@ -1397,7 +1397,7 @@ def simular(
     cfg         = {**DEFAULT_CONFIG, **(config or {})}
     # EMPIRICAL INTEGRATION — aplicar parámetros empíricos como defaults antes que el usuario los sobreescriba
     # Los parámetros del usuario en config tienen prioridad; los valores 0.0 se tratan como neutralidad activa.
-    if EMPIRICAL_AVAILABLE and BEYONDSIGHT_RUNTIME_PARAMS:
+    if EMPIRICAL_AVAILABLE and MASSIVE_RUNTIME_PARAMS:
         cultural_profile = str((config or {}).get("cultural_profile", "mixed"))
         empirical_defaults = build_empirical_engine_config(cultural_profile)
         # Only set keys NOT already overridden by the caller's config argument

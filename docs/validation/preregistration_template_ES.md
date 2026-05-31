@@ -92,4 +92,4 @@ _Completar tras la corrida si algo difirió del pre-registro:_
 
 ---
 
-_Esta plantilla sigue PVU-BS v1.0 — ver [PVU_BeyondSight_ES.md](PVU_BeyondSight_ES.md)_
+_Esta plantilla sigue PVU-BS v1.0 — ver [PVU_MASSIVE_ES.md](PVU_MASSIVE_ES.md)_
