@@ -1,0 +1,14 @@
+[package]
+name = "massive-rust-core"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+name = "massive_rust_core"
+crate-type = ["cdylib", "rlib"]
+path = "rust_core/src/lib.rs"
+
+[dependencies]
+ndarray = "0.17"
+numpy = "0.28"
+pyo3 = { version = "0.28", features = ["extension-module"] }

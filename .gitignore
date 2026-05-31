@@ -30,3 +30,6 @@ Untitled-1.txt
 
 # MkDocs build output
 site/
+
+# Repomix generated AI bundles
+repomix-output*

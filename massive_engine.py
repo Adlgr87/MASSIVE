@@ -44,6 +44,8 @@ from typing import Any
 
 import numpy as np
 
+from massive_core.rust_core import active_mask_step
+
 log = logging.getLogger("massive")
 
 # ── GPU detection ──────────────────────────────────────────────────────────────
@@ -260,16 +262,7 @@ class ActiveSet:
             x_new:  Estado nuevo (M, K).
             adj:    Matriz de adyacencia (M, M) — se usa para encontrar vecinos.
         """
-        dx = np.abs(x_new - x_prev).max(axis=1)   # (M,) cambio por agente
-        changed = dx > self._threshold
-
-        # Reactivar vecinos de quienes cambiaron
-        if changed.any():
-            neighbor_active = (adj[changed, :].sum(axis=0) > 0)
-        else:
-            neighbor_active = np.zeros(self._M, dtype=bool)
-
-        self._active = changed | neighbor_active
+        self._active = active_mask_step(x_prev, x_new, adj, self._threshold)
         self._history.append(float(self._active.mean()))
 
     @property

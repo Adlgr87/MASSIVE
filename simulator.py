@@ -45,6 +45,7 @@ from scipy.special import erf
 
 from benchmarks.butterfly_diagnostic import run_butterfly_diagnostic_core
 from massive_engine import MassiveEngine
+from massive_core.rust_core import langevin_opinion_update_inplace
 from multilayer_engine import MultilayerEngine
 from schemas import GamePayoff
 from utility_logic import calculate_strategic_force
@@ -1982,10 +1983,7 @@ class IntegratedSimulator:
     def update_agents_with_langevin(self, drift_vector: np.ndarray) -> None:
         agents = self.massive_engine.agents
         n_agents = agents.shape[0]
-        dx_drift = np.asarray(drift_vector, dtype=np.float64) * self.dt
         dW = self.rng.normal(0.0, np.sqrt(self.dt), n_agents)
-        dx_diffusion = self.diffusion_sigma * dW
-
         dx_jump = np.zeros(n_agents, dtype=np.float64)
         if self.enable_levy_jumps:
             jump_occurred = self.rng.poisson(self.levy_lambda, n_agents) > 0
@@ -1993,8 +1991,16 @@ class IntegratedSimulator:
             if n_jumps > 0:
                 dx_jump[jump_occurred] = self._sample_levy_jump_magnitudes(n_jumps)
 
-        updated = agents[:, 0] + dx_drift + dx_diffusion + dx_jump
-        agents[:, 0] = np.clip(updated, -1.0, 1.0)
+        langevin_opinion_update_inplace(
+            agents,
+            drift_vector,
+            dW,
+            dx_jump,
+            self.dt,
+            self.diffusion_sigma,
+            -1.0,
+            1.0,
+        )
         self.massive_engine.agents = agents
 
     def apply_levy_jumps_to_agents(self) -> None:

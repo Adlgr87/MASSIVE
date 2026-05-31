@@ -38,6 +38,20 @@ The guiding principle is backward compatibility: the classic APIs (`simular`, `s
 
 ---
 
+## AI-ready repository bundle with Repomix
+
+MASSIVE includes a Repomix configuration so any AI assistant can inspect the repository as a single, structured XML file without committing generated bundles.
+
+```bash
+npx --yes repomix@latest --config repomix.config.json
+```
+
+The command writes `repomix-output.xml` using `.gitignore`, `.repomixignore`, and `repomix-instruction.md` to keep local secrets, caches, build artifacts, binary assets and generated outputs out of the AI bundle. For a smaller structural snapshot, run:
+
+```bash
+npx --yes repomix@latest --config repomix.config.json --compress -o repomix-output-compressed.xml
+```
+
 ## Installation
 
 ```bash
