@@ -92,4 +92,4 @@ _Fill after the run if anything deviated from the pre-registration:_
 
 ---
 
-_This template follows PVU-BS v1.0 — see [PVU_BeyondSight_EN.md](PVU_BeyondSight_EN.md)_
+_This template follows PVU-BS v1.0 — see [PVU_MASSIVE_EN.md](PVU_MASSIVE_EN.md)_

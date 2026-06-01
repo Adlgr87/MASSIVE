@@ -49,7 +49,7 @@ _MEDIA_VIDA_DIGITAL_VALUE = _normalize_attention_half_life(_ATTENTION_HALF_LIFE_
 # DICCIONARIO MAESTRO EMPÍRICO DE MASSIVE
 # Valores normalizados al rango [-1.0, 1.0]
 # ============================================================
-BEYONDSIGHT_EMPIRICAL_MASTER = {
+MASSIVE_EMPIRICAL_MASTER = {
     "meta": {
         "version": "1.1.0",
         "total_params": 43,
@@ -276,7 +276,7 @@ BEYONDSIGHT_EMPIRICAL_MASTER = {
     "cultural_variables": {
         "INDIVIDUALISMO_COLECTIVISMO": {
             "label": "Eje Individualismo-Colectivismo (Hofstede)",
-            "value": 0.0,  # Neutralidad: varía radicalmente por cultura
+            "value": 0.0,
             "cultural_variance": {
                 "anglosaxon": 0.75,
                 "latin": -0.10,
@@ -423,7 +423,7 @@ BEYONDSIGHT_EMPIRICAL_MASTER = {
 
 def _get_entry(category: str, param_id: str) -> dict:
     """Shortcut to access empirical entries once the master dictionary exists."""
-    return BEYONDSIGHT_EMPIRICAL_MASTER[category][param_id]
+    return MASSIVE_EMPIRICAL_MASTER[category][param_id]
 
 
 def _weighted_mean(refs: list[tuple[str, str]], absolute: bool = False) -> float:
@@ -432,7 +432,7 @@ def _weighted_mean(refs: list[tuple[str, str]], absolute: bool = False) -> float
 
     Args:
         refs: List of ``(category, param_id)`` pairs pointing to entries in
-            ``BEYONDSIGHT_EMPIRICAL_MASTER``.
+            ``MASSIVE_EMPIRICAL_MASTER``.
         absolute: When ``True``, aggregate magnitudes instead of signed values.
 
     The optional `digital_weight` metadata is reused when present; it increases
@@ -455,10 +455,11 @@ def _weighted_mean(refs: list[tuple[str, str]], absolute: bool = False) -> float
         weight_sum += weight
     return _clip_signed(total / weight_sum if weight_sum else 0.0)
 
+
 # ============================================================
 # PARÁMETROS DE EJECUCIÓN DEL MOTOR
 # ============================================================
-BEYONDSIGHT_RUNTIME_PARAMS: dict = {
+MASSIVE_RUNTIME_PARAMS: dict = {
     # Volatilidad basal: deriva algorítmica + pensamiento intuitivo + contagio emocional.
     "temperature": round(_weighted_mean([
         ("network_dynamics", "DERIVA_ALGORITMICA"),
@@ -511,9 +512,9 @@ _NULL_PARAMS: list = []
 
 # Populate validation_flags with pending null params (never use 0.0 as default)
 for _cat, _pid in _NULL_PARAMS:
-    _entry = BEYONDSIGHT_EMPIRICAL_MASTER.get(_cat, {}).get(_pid, {})
+    _entry = MASSIVE_EMPIRICAL_MASTER.get(_cat, {}).get(_pid, {})
     if _entry.get("value") is None:
-        BEYONDSIGHT_RUNTIME_PARAMS["validation_flags"].append(
+        MASSIVE_RUNTIME_PARAMS["validation_flags"].append(
             f"{_cat}.{_pid}: pending_empirical_data"
         )
 
@@ -526,8 +527,8 @@ def get_runtime_params(cultural_profile: str = "mixed") -> dict:
     """
     Returns a complete runtime parameter dictionary with cultural modifiers applied.
 
-    Applies cultural variance modifiers from BEYONDSIGHT_EMPIRICAL_MASTER over
-    the base values in BEYONDSIGHT_RUNTIME_PARAMS.  The ``mixed`` profile uses
+    Applies cultural variance modifiers from MASSIVE_EMPIRICAL_MASTER over
+    the base values in MASSIVE_RUNTIME_PARAMS.  The ``mixed`` profile uses
     the unmodified base values.  Unknown profiles fall back to ``mixed``.
 
     Args:
@@ -540,8 +541,8 @@ def get_runtime_params(cultural_profile: str = "mixed") -> dict:
         are preserved without modification (they represent active neutrality and
         active repellers respectively).
     """
-    params = dict(BEYONDSIGHT_RUNTIME_PARAMS)
-    params["validation_flags"] = list(BEYONDSIGHT_RUNTIME_PARAMS["validation_flags"])
+    params = dict(MASSIVE_RUNTIME_PARAMS)
+    params["validation_flags"] = list(MASSIVE_RUNTIME_PARAMS["validation_flags"])
     params["cultural_profile"] = cultural_profile
 
     if cultural_profile == "mixed":
@@ -549,7 +550,7 @@ def get_runtime_params(cultural_profile: str = "mixed") -> dict:
 
     # Apply known cultural variance to runtime params that have direct mapping
     # DERIVA_ALGORITMICA → temperature (caos social amplificado por algoritmos)
-    deriva = BEYONDSIGHT_EMPIRICAL_MASTER["network_dynamics"]["DERIVA_ALGORITMICA"]
+    deriva = MASSIVE_EMPIRICAL_MASTER["network_dynamics"]["DERIVA_ALGORITMICA"]
     if cultural_profile in deriva.get("cultural_variance", {}):
         cultural_val = deriva["cultural_variance"][cultural_profile]
         base_val = deriva["value"]
@@ -559,7 +560,7 @@ def get_runtime_params(cultural_profile: str = "mixed") -> dict:
         )
 
     # INFLUENCIA_PARASOCIAL → social_influence_lambda
-    parasocial = BEYONDSIGHT_EMPIRICAL_MASTER["network_dynamics"]["INFLUENCIA_PARASOCIAL"]
+    parasocial = MASSIVE_EMPIRICAL_MASTER["network_dynamics"]["INFLUENCIA_PARASOCIAL"]
     if cultural_profile in parasocial.get("cultural_variance", {}):
         cultural_val = parasocial["cultural_variance"][cultural_profile]
         base_val = parasocial["value"]
@@ -573,10 +574,10 @@ def get_runtime_params(cultural_profile: str = "mixed") -> dict:
 
 def get_param(category: str, param_id: str) -> dict:
     """
-    Returns a parameter entry from BEYONDSIGHT_EMPIRICAL_MASTER by category and ID.
+    Returns a parameter entry from MASSIVE_EMPIRICAL_MASTER by category and ID.
 
     Args:
-        category: Top-level key in BEYONDSIGHT_EMPIRICAL_MASTER
+        category: Top-level key in MASSIVE_EMPIRICAL_MASTER
             (e.g. ``"network_dynamics"``).
         param_id: Parameter key within the category
             (e.g. ``"DERIVA_ALGORITMICA"``).
@@ -588,12 +589,12 @@ def get_param(category: str, param_id: str) -> dict:
         KeyError: If ``category`` or ``param_id`` does not exist in the master
             dictionary, with a descriptive message.
     """
-    if category not in BEYONDSIGHT_EMPIRICAL_MASTER:
+    if category not in MASSIVE_EMPIRICAL_MASTER:
         raise KeyError(
-            f"Category '{category}' not found in BEYONDSIGHT_EMPIRICAL_MASTER. "
-            f"Available categories: {list(BEYONDSIGHT_EMPIRICAL_MASTER.keys())}"
+            f"Category '{category}' not found in MASSIVE_EMPIRICAL_MASTER. "
+            f"Available categories: {list(MASSIVE_EMPIRICAL_MASTER.keys())}"
         )
-    category_data = BEYONDSIGHT_EMPIRICAL_MASTER[category]
+    category_data = MASSIVE_EMPIRICAL_MASTER[category]
     if not isinstance(category_data, dict) or param_id not in category_data:
         raise KeyError(
             f"Parameter '{param_id}' not found in category '{category}'. "
@@ -601,6 +602,7 @@ def get_param(category: str, param_id: str) -> dict:
         )
     return category_data[param_id]
 
-# ── Backward-compatible aliases (new preferred names) ─────────────────────────
-MASSIVE_EMPIRICAL_MASTER = BEYONDSIGHT_EMPIRICAL_MASTER
-MASSIVE_RUNTIME_PARAMS   = BEYONDSIGHT_RUNTIME_PARAMS
+
+# ── Backward-compatible aliases ─────────────────────────────
+BEYONDSIGHT_EMPIRICAL_MASTER = MASSIVE_EMPIRICAL_MASTER
+BEYONDSIGHT_RUNTIME_PARAMS = MASSIVE_RUNTIME_PARAMS
