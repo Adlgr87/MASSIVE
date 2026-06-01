@@ -121,4 +121,4 @@ _Resumir los hallazgos principales y si la validación respalda el uso de MASSIV
 
 ---
 
-_Este reporte sigue PVU-BS v1.0 — ver [PVU_BeyondSight_ES.md](PVU_BeyondSight_ES.md)_
+_Este reporte sigue PVU-BS v1.0 — ver [PVU_MASSIVE_ES.md](PVU_MASSIVE_ES.md)_
