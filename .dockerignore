@@ -1,19 +1,49 @@
+# Git
 .git
-.github
-.venv
-venv
-__pycache__
+.gitignore
+
+# Python cache
+__pycache__/
 *.pyc
 *.pyo
-*.pyd
-.pytest_cache
-.mypy_cache
-.vscode
-.kilocode
+.pytest_cache/
+.mypy_cache/
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+
+# Dependencies (huge)
+frontend/node_modules/
+
+# Data and models (large binary files)
+data/
+datasets/
+results/
+models/
+
+# Env files (mounted at runtime, not baked in)
 .env
+.env.local
+
+# CSV data files
+*.csv
+
+# Logs
 *.log
-archive
-reports/validation/ci
-reports/validation/llm_run
-docs
-tests
+logs/
+
+# Reports (CI/LLM outputs are generated at runtime)
+reports/validation/ci/
+reports/validation/llm_run/
+
+# IDE
+.vscode/
+.kilocode/
+
+# Archive files
+archive/
+
+# Test data and outputs
+tests/test_data/
