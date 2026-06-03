@@ -32,10 +32,8 @@ RUN chown -R appuser:appuser /app
 
 USER appuser
 
-# Expose ports
-EXPOSE 8000   # API
-EXPOSE 8501   # Streamlit
-EXPOSE 80     # Nginx (optional)
+# Expose ports (API, Streamlit, Nginx)
+EXPOSE 8000 8501 80
 
 # Healthcheck
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s \
