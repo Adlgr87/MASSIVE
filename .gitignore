@@ -1,3 +1,7 @@
+# Git
+.git
+.gitignore
+
 # Python cache
 __pycache__/
 *.pyc
@@ -24,6 +28,9 @@ archive/
 # Environment files (secrets)
 .env
 .env.local
+
+# Streamlit secrets (API keys - never commit real values)
+.streamlit/secrets.toml
 
 # Jupyter checkpoints
 .ipynb_checkpoints/
