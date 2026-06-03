@@ -1,18 +1,41 @@
+# Git
+.git
+.gitignore
+
+# Python cache
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
 .pytest_cache/
 .mypy_cache/
+
+# Virtual environments
 .venv/
 venv/
+
+# Log files
 beyondsight_run.log
 *.log
+
+# IDE
 .vscode/
 .kilocode/
+
+# Archives
 archive/
+
+# Environment files (secrets)
 .env
+.env.local
+
+# Streamlit secrets (API keys - never commit real values)
+.streamlit/secrets.toml
+
+# Jupyter checkpoints
 .ipynb_checkpoints/
+
+# Data files
 leads.csv
 landscapes_cache.db
 
@@ -24,12 +47,20 @@ reports/validation/llm_run/
 models/*.pt
 models/dataset_*.pt
 
-# Ignore runtime artifacts
-massive_run.log
-Untitled-1.txt
+# Large directories (data, results, datasets)
+data/
+datasets/
+results/
 
-# MkDocs build output
-site/
+# Frontend dependencies
+frontend/node_modules/
 
-# Repomix generated AI bundles
-repomix-output*
+# Docs assets (large binary files)
+docs/assets/
+docs/mockups/
+
+# Docker local files
+.docker/
+
+# Test data
+tests/test_data/
