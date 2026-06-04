@@ -51,12 +51,11 @@ from schemas import GamePayoff
 from utility_logic import calculate_strategic_force
 from llm_credentials import resolve_provider_api_key
 from empirical_calibration import (
-    BEYONDSIGHT_EMPIRICAL_MASTER,
-    BEYONDSIGHT_RUNTIME_PARAMS,
     ENGINE_METADATA_KEYS,
     apply_empirical_profile,
     build_empirical_engine_config,
 )
+from empirical_config import BEYONDSIGHT_EMPIRICAL_MASTER, BEYONDSIGHT_RUNTIME_PARAMS
 
 try:
     from ripser import ripser as ripser_compute

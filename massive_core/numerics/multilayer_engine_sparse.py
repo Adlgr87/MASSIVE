@@ -271,23 +271,30 @@ class SparseMultilayerEngine:
     # ------------------------------------------------------------------
 
     def _update_layer(self, layer_idx: int, layer: LayerState) -> np.ndarray:
-        """Update node features for a single layer."""
+        """Update node features for a single layer.
+
+        Uses a row-normalised adjacency so that the aggregation is the
+        average of neighbour features (not the sum), preventing
+        unbounded exponential growth.
+        """
         adj = layer.graph_adjacency
         features = layer.node_features
 
-        # Get neighbours (sparse)
+        # Build row-normalised adjacency (average over neighbours)
         if self.use_sparse:
-            neighbour_counts = np.array(adj.sum(axis=1)).flatten()
+            degrees = np.array(adj.sum(axis=1)).flatten()
+            degrees = np.maximum(degrees, 1.0)  # avoid div-by-zero
+            degrees_inv = 1.0 / degrees
+            # Create diagonal degree matrix and compute D^{-1} A
+            from scipy.sparse import diags
+            norm_adj = diags(degrees_inv) @ adj
+            aggregated = norm_adj @ features
         else:
-            neighbour_counts = np.array(adj.sum(axis=1)).flatten()
-
-        neighbour_counts = np.maximum(neighbour_counts, 1)  # avoid division by zero
-
-        # Aggregation
-        if self.use_sparse:
-            aggregated = adj @ features
-        else:
-            aggregated = adj.toarray() @ features
+            adj_arr = adj.toarray()
+            degrees = adj_arr.sum(axis=1)
+            degrees = np.maximum(degrees, 1.0)
+            norm_adj = adj_arr / degrees[:, np.newaxis]
+            aggregated = norm_adj @ features
 
         # Update rule: average of neighbours + self
         updated = (aggregated + features) / 2.0
@@ -304,7 +311,11 @@ class SparseMultilayerEngine:
 
     def _apply_inter_layer_coupling(self, layer_idx: int,
                                      layer: LayerState) -> np.ndarray:
-        """Apply inter-layer coupling to node features."""
+        """Apply inter-layer coupling to node features.
+
+        Uses a gentle blending (α=0.05) between self and cross-layer
+        contributions to maintain stability.
+        """
         features = layer.node_features.copy()
         coupling_strength = self.interaction_matrix[layer_idx, :]
 
@@ -313,10 +324,11 @@ class SparseMultilayerEngine:
                 continue
             if j < self.n_layers:
                 other_layer = self.layers[j]
-                # Inter-layer feature transfer
                 n_common = min(features.shape[0], other_layer.node_features.shape[0])
                 if n_common > 0:
-                    features[:n_common] += strength * 0.1 * other_layer.node_features[:n_common]
+                    # Gentle blending: 95% self + 5% from other layer (scaled by strength)
+                    blend = 0.05 * strength
+                    features[:n_common] = (1 - blend) * features[:n_common] + blend * other_layer.node_features[:n_common]
 
         return features
 

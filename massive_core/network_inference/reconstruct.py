@@ -35,12 +35,10 @@ class ReconstructionResult:
     error: float
     iterations: int
     convergence: bool
-    missingness: float = field(init=False)
+    missingness: float = field(default=0.0)  # type: ignore[assignment]
 
     def __post_init__(self) -> None:
-        n_total = self.reconstructed_matrix.size
-        n_observed = n_total - int(n_total * self.missingness)
-        self.missingness = 1.0 - (n_observed / n_total) if n_total else 0.0
+        pass
 
 
 # ---------------------------------------------------------------------------
@@ -48,10 +46,21 @@ class ReconstructionResult:
 # ---------------------------------------------------------------------------
 
 def _squared_penalty(matrix: np.ndarray, indices: np.ndarray,
-                     target_matrix: np.ndarray) -> np.ndarray:
-    """Return squared residuals on observed entries."""
-    error = matrix[indices[:, 0], indices[:, 1]] - target_matrix[indices[:, 0], indices[:, 1]]
-    return error ** 2
+                     target: np.ndarray) -> np.ndarray:
+    """Return squared residuals on observed entries.
+
+    Parameters
+    ----------
+    matrix :
+        Reconstructed sociomatrix *(n, n)*.
+    indices :
+        Observed coordinates *(N, 2)*.
+    target :
+        Observed values *(N,)* or *(N, 1)*.
+    """
+    vals = matrix[indices[:, 0], indices[:, 1]]
+    target = np.asarray(target).ravel()
+    return (vals - target) ** 2
 
 
 def _matrix_flatten(matrix: np.ndarray) -> np.ndarray:
@@ -258,14 +267,14 @@ class NetworkReconstructor:
 
         def objective(flat_matrix: np.ndarray) -> float:
             matrix = _matrix_reshape(flat_matrix, dim)
-            residuals = _squared_penalty(matrix, indices, flat_target.reshape(-1, 1))
+            residuals = _squared_penalty(matrix, indices, flat_target)
             return residuals.sum()
 
         result = differential_evolution(
             objective,
             bounds=[self.bounds for _ in range(dim * dim)],
             seed=42,
-            options=self.de_options,
+            **self.de_options,
         )
 
         reconstructed = _matrix_reshape(result.x, dim)
