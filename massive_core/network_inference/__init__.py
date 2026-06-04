@@ -1,5 +1,5 @@
 """Network reconstruction utilities."""
 
-from .reconstruct import NetworkReconstructor
+from .reconstruct import NetworkReconstructor, ReconstructionResult
 
-__all__ = ["NetworkReconstructor"]
+__all__ = ["NetworkReconstructor", "ReconstructionResult"]

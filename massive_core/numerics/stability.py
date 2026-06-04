@@ -2,10 +2,14 @@
 
 from __future__ import annotations
 
+import logging
 from dataclasses import dataclass
-from typing import Callable
+from typing import Callable, Optional
 
 import numpy as np
+from scipy.sparse.linalg import eigsh
+
+logger = logging.getLogger(__name__)
 
 Array = np.ndarray
 
@@ -35,13 +39,13 @@ class StabilityAnalyzer:
             methods when a method-specific function is not supplied.
     """
 
-    def __init__(self, vector_field: Callable[[Array], Array] | None = None) -> None:
+    def __init__(self, vector_field: Optional[Callable[[Array], Array]] = None) -> None:
         self.vector_field = vector_field
 
     def compute_jacobian(
         self,
         x: Array,
-        vector_field: Callable[[Array], Array] | None = None,
+        vector_field: Optional[Callable[[Array], Array]] = None,
         eps: float = 1e-6,
     ) -> Array:
         """Estimate a dense Jacobian by central finite differences.
@@ -76,7 +80,7 @@ class StabilityAnalyzer:
     def analyze_linear_stability(
         self,
         x: Array,
-        vector_field: Callable[[Array], Array] | None = None,
+        vector_field: Optional[Callable[[Array], Array]] = None,
         tolerance: float = 1e-9,
     ) -> StabilityReport:
         """Classify local linear stability from Jacobian eigenvalues.
@@ -167,3 +171,166 @@ class StabilityAnalyzer:
         data = np.asarray(trajectory, dtype=float)
         flat = data.reshape(data.shape[0], -1)
         return np.array([self.compute_lyapunov_exponent(flat[:, i], dt) for i in range(flat.shape[1])])
+
+
+# ---------------------------------------------------------------------------
+# Extended API: StabilityAnalyzer with equilibrium state (sparse-mode)
+# ---------------------------------------------------------------------------
+
+
+class SparseStabilityAnalyzer:
+    """Extended stability analyzer supporting equilibrium-based scans.
+
+    This class wraps :class:`StabilityAnalyzer` and adds equilibrium-focused
+    diagnostics, random-IC scanning, and optional sparse eigensolvers for
+    large Jacobians.
+
+    Parameters
+    ----------
+    system_fn :
+        Callable ``state → state`` defining the sociodynamic system.
+    equilibrium :
+        The equilibrium state at which to evaluate stability.
+    jacobian_fn :
+        Optional callable ``state → Jacobian``.  If *None*, finite
+        differences are used.
+    n_random_perturbations :
+        Number of random initial conditions to scan for global stability.
+    rng :
+        Numpy random generator (default ``default_rng``).
+    """
+
+    def __init__(
+        self,
+        system_fn: Optional[Callable[[Array], Array]] = None,
+        equilibrium: Optional[Array] = None,
+        jacobian_fn: Optional[Callable[[Array], Array]] = None,
+        n_random_perturbations: int = 5,
+        rng: Optional[np.random.Generator] = None,
+    ) -> None:
+        # Build a wrapper vector field for the legacy StabilityAnalyzer
+        vector_field = system_fn  # type: ignore[assignment]
+        self._legacy = StabilityAnalyzer(vector_field)
+        self.equilibrium = equilibrium
+        self.jacobian_fn = jacobian_fn
+        self.n_random_perturbations = n_random_perturbations
+        self.rng = rng if rng is not None else np.random.default_rng()
+
+    # ------------------------------------------------------------------
+    # Compatibility
+    # ------------------------------------------------------------------
+
+    def compute_jacobian(self, *args, **kwargs) -> Array:
+        """Delegate to :meth:`StabilityAnalyzer.compute_jacobian`."""
+        return self._legacy.compute_jacobian(*args, **kwargs)
+
+    def analyze_linear_stability(self, *args, **kwargs) -> StabilityReport:
+        """Delegate to :meth:`StabilityAnalyzer.analyze_linear_stability`."""
+        return self._legacy.analyze_linear_stability(*args, **kwargs)
+
+    def compute_spectral_radius(self, *args, **kwargs) -> float:
+        """Delegate to :meth:`StabilityAnalyzer.compute_spectral_radius`."""
+        return self._legacy.compute_spectral_radius(*args, **kwargs)
+
+    # ------------------------------------------------------------------
+    # Extended diagnostics
+    # ------------------------------------------------------------------
+
+    def analyze(self, state: Optional[Array] = None,
+                eps: float = 1e-6,
+                sparse: bool = False,
+                k: Optional[int] = None) -> StabilityReport:
+        """Perform a full stability analysis.
+
+        Parameters
+        ----------
+        state :
+            State at which to evaluate stability.  Falls back to
+            :attr:`equilibrium` if *None*.
+        eps :
+            Finite-difference step for Jacobian approximation.
+        sparse :
+            Use sparse eigensolver.
+        k :
+            Number of eigenvalues to compute (sparse mode).
+
+        Returns
+        -------
+        StabilityReport
+            Stability diagnostics (same schema as :class:`StabilityReport`).
+        """
+        state = state if state is not None else self.equilibrium
+        if state is None:
+            raise ValueError("state or equilibrium must be provided")
+
+        # Compute Jacobian (optionally using jacobian_fn)
+        if self.jacobian_fn is not None:
+            jacobian = self.jacobian_fn(np.asarray(state, dtype=float))
+        else:
+            jacobian = self._legacy.compute_jacobian(state, eps=eps)
+
+        # Eigenvalue computation (dense or sparse)
+        if sparse and k is not None and k < jacobian.shape[0]:
+            try:
+                eigenvalues = eigsh(jacobian, k=k, which="LR", return_eigenvectors=False)
+            except Exception:
+                eigenvalues = np.linalg.eigvals(jacobian)
+        else:
+            eigenvalues = np.linalg.eigvals(jacobian)
+
+        spectral_radius = float(np.max(np.abs(eigenvalues))) if eigenvalues.size else 0.0
+        max_real = float(np.max(eigenvalues.real)) if eigenvalues.size else 0.0
+
+        logger.info(
+            "Stability analysis complete. Stable: %s, Dominant eigenvalue: %.4f",
+            max_real < -1e-9, max_real,
+        )
+
+        return StabilityReport(eigenvalues, spectral_radius, max_real, max_real < -1e-9)
+
+    def scan_initial_conditions(self, n_samples: Optional[int] = None,
+                                 eps: float = 1e-6) -> list[StabilityReport]:
+        """Scan multiple initial conditions to assess global stability.
+
+        Parameters
+        ----------
+        n_samples :
+            Number of random initial conditions.  Defaults to
+            :attr:`n_random_perturbations`.
+        eps :
+            Finite-difference step for Jacobian approximation.
+
+        Returns
+        -------
+        list[StabilityReport]
+            Stability reports for each sampled initial condition.
+        """
+        if self.equilibrium is None:
+            raise ValueError("equilibrium must be set for scanning")
+
+        n_samples = n_samples or self.n_random_perturbations
+        state_dim = len(self.equilibrium)
+
+        reports: list[StabilityReport] = []
+        for i in range(n_samples):
+            perturbation = self.rng.standard_normal(state_dim) * 0.1
+            initial_state = self.equilibrium + perturbation
+
+            report = self.analyze(state=initial_state, eps=eps)
+            reports.append(report)
+
+            logger.info(
+                "Scan %d/%d: Stable=%s, Dominant eigenvalue=%.4f",
+                i + 1, n_samples, report.stable, report.max_real_eigenvalue,
+            )
+
+        return reports
+
+    def get_stability_status(self, state: Optional[Array] = None,
+                             eps: float = 1e-6) -> str:
+        """Return a human-readable stability status string."""
+        report = self.analyze(state, eps)
+        if report.stable:
+            return f"Stable (dominant eigenvalue: {report.max_real_eigenvalue:.4f})"
+        else:
+            return f"Unstable (dominant eigenvalue: {report.max_real_eigenvalue:.4f})"
