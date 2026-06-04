@@ -30,7 +30,7 @@ The guiding principle is backward compatibility: the classic APIs (`simular`, `s
 | Physics modules | `massive_core/physics/`, `massive_core/dynamical_systems/` | Statistical mechanics, perturbation, hydrodynamics, bifurcation analysis. |
 | Meta-learning/CfC | `cfc_engine.py`, `cfc_router.py`, `cfc_trainer.py`, `massive_core/metalearning/` | Closed-form continuous-time neural models and training-data adapters. |
 | Energy engine | `energy_engine.py`, `energy_runner.py`, `energy_schemas.py` | Social-energy landscape dynamics and programmatic landscape generation. |
-| Multilayer engine | `multilayer_engine.py`, `massive_engine.py` | Sociodemographic multilayer simulation and scalable super-agent execution. |
+| Multilayer engine | `multilayer_engine.py`, `massive_engine.py`, `massive_core/numerics/multilayer_engine_sparse.py` | Sociodemographic multilayer simulation, sparse-engine optimisation and scalable super-agent execution. |
 | Forecasting | `forecast/` | Analytical and Monte Carlo temporal forecasts and scenario comparison. |
 | Strategy design | `social_architect.py`, `intervention_optimizer.py`, `programmatic_architect.py` | Inverse intervention design and optimization. |
 | Validation | `benchmarks/`, `datasets/pvu_cases/`, `docs/validation/` | PVU-BeyondSight cases, metrics and validation reports. |
@@ -138,6 +138,59 @@ The default is `solver="legacy"`, so existing behavior is preserved unless a sci
 from massive_core import run_canonical_benchmarks
 
 print(run_canonical_benchmarks())
+```
+
+### Sparse multilayer engine
+
+A fully sparse implementation of the multilayer graph engine based on
+``scipy.sparse`` structures for reduced memory and faster iteration on
+large systems:
+
+```python
+from massive_core.numerics import SparseMultilayerEngine, LayerState
+from scipy import sparse
+
+layer = LayerState(
+    node_features=np.random.randn(100, 8),
+    graph_adjacency=sparse.random(100, 100, density=0.05, format="csr"),
+    layer_id="social",
+)
+engine = SparseMultilayerEngine(layers=[layer])
+result = engine.run_simulation()
+```
+
+### Stability and perturbation analysis
+
+``StabilityAnalyzer`` computes the Jacobian at equilibrium and classifies
+local stability via eigenvalue analysis; ``PerturbationTheorySolver``
+provides state perturbations and parameter-sensitivity diagnostics:
+
+```python
+from massive_core.numerics import StabilityAnalyzer
+from massive_core.physics import PerturbationTheorySolver
+
+analyzer = StabilityAnalyzer(system_fn, equilibrium)
+report = analyzer.analyze()
+print(report.is_stable)
+```
+
+### Sparse ensemble Kalman filter
+
+``SparseEnsembleKalmanFilter`` runs EnKF analysis on a subset of observable
+variables, ideal for high-dimensional social systems where only a fraction
+of the state is measured:
+
+```python
+from massive_core.data_assimilation import SparseEnsembleKalmanFilter
+
+ekf = SparseEnsembleKalmanFilter(
+    n_ensemble=50,
+    n_state_dim=200,
+    n_obs_dim=20,
+    observable_indices=list(range(20)),
+    observation_covariance=np.eye(20) * 0.1,
+)
+state_estimate, ensemble = ekf.assimilate_step(model_fn, observations)
 ```
 
 ---

@@ -103,6 +103,61 @@ MASSIVE te permite:
 - **Análisis de Datos Topológicos (TDA)**: homología persistente opcional vía embedding de Takens + filtración Vietoris-Rips (`ripser` + `persim`), detecta cambios de régimen estructural que las métricas escalares pasan por alto.
 - **Métricas de grafo de red**: centralidad de grado/intermediación, densidad e identificación de clústeres vía NetworkX.
 
+### Extensión Científica
+
+#### Motor multicapa disperso (sparse)
+
+Una implementación completamente dispersa del motor multicapa basada en
+``scipy.sparse`` que reduce consumo de memoria y acelera la iteración en
+sistemas grandes:
+
+```python
+from massive_core.numerics import SparseMultilayerEngine, LayerState
+from scipy import sparse
+
+layer = LayerState(
+    node_features=np.random.randn(100, 8),
+    graph_adjacency=sparse.random(100, 100, density=0.05, format="csr"),
+    layer_id="social",
+)
+engine = SparseMultilayerEngine(layers=[layer])
+result = engine.run_simulation()
+```
+
+#### Análisis de estabilidad y perturbación
+
+``StabilityAnalyzer`` y ``PerturbationTheorySolver`` calculan la Jacobiana
+en equilibrio, clasifican estabilidad local mediante análisis espectral y
+proporcionan diagnósticos de sensibilidad de parámetros:
+
+```python
+from massive_core.numerics import StabilityAnalyzer
+from massive_core.physics import PerturbationTheorySolver
+
+analyzer = StabilityAnalyzer(system_fn, equilibrium)
+report = analyzer.analyze()
+print(report.is_stable)
+```
+
+#### Filtro de Kalman de conjunto disperso
+
+``SparseEnsembleKalmanFilter`` ejecuta análisis EnKF sobre un subconjunto de
+variables observables, ideal para sistemas sociales de alta dimensión donde
+solo se mide una fracción del estado:
+
+```python
+from massive_core.data_assimilation import SparseEnsembleKalmanFilter
+
+ekf = SparseEnsembleKalmanFilter(
+    n_ensemble=50,
+    n_state_dim=200,
+    n_obs_dim=20,
+    observable_indices=list(range(20)),
+    observation_covariance=np.eye(20) * 0.1,
+)
+state_estimate, ensemble = ekf.assimilate_step(model_fn, observations)
+```
+
 ### Integración e Infraestructura
 - **Cadenas tipadas LangChain** (`strategy_chain`, `narrative_chain`, `landscape_chain`) con validación de salida JSON y fallback HTTP transparente.
 - **Simulación múltiple paralela con Dask** en todos los núcleos CPU disponibles vía `dask.delayed`.
@@ -513,6 +568,11 @@ MASSIVE/
 ├── docs/validation/              # Protocolo PVU-BS (inglés + español)
 ├── reports/validation/           # Salidas de benchmark auto-generadas
 ├── tests/                        # 200+ pruebas unitarias e de integración
+├── massive_core/                 # Capa científica: solvers, estabilidad, EnKF, perturbación, multicapa disperso, inferencia
+├── massive_core/numerics/        # Steppers adaptativos, Solver de perturbación disperso, Análisis de estabilidad, Motor multicapa disperso
+├── massive_core/data_assimilation/  # EnKF completo, filtro EnKF disperso, workflows de asimilación
+├── massive_core/physics/         # Mecánica estadística, hidro dinámica, teoría de perturbación
+├── massive_core/network_inference/  # Reconstrucción de red (DE, CG, correlación, entropía transferida)
 ├── .env.example                  # Plantilla de variables de entorno
 ├── README.md                     # Documentación en inglés
 └── README_ES.md                  # Este archivo
