@@ -550,7 +550,7 @@ MASSIVE/
 ├── langchain_workflows.py        # Cadenas tipadas LangChain: estrategia, narrativa, paisaje
 ├── programmatic_architect.py     # Librería de arquetipos + caché RAM/SQLite + generador LLM
 ├── social_connectors.py          # Conectores Twitter/X (v2) y Reddit (praw)
-├── empirical_config.py           # Diccionario maestro empírico (BEYONDSIGHT_EMPIRICAL_MASTER, v1.1.0, 88.4%)
+├── empirical_config.py           # Diccionario maestro empírico (MASSIVE_EMPIRICAL_MASTER, v1.1.0, 88.4%)
 ├── empirical_calibration.py      # Traduce la base empírica → defaults nativos del motor
 ├── utility_logic.py              # Calculador de fuerza estratégica de teoría de juegos
 ├── cache_manager.py              # Caché de paisaje en RAM + SQLite
@@ -597,7 +597,7 @@ Las contribuciones son bienvenidas. Por favor:
 1. Haz fork del repositorio y crea una rama de feature.
 2. Sigue el estilo de código existente (docstrings Google-style, type hints, `pytest` para tests).
 3. Agrega o actualiza tests para cualquier comportamiento modificado y ejecuta `pytest tests/` antes de abrir un PR.
-4. Para nuevos parámetros empíricos, incluye referencias de fuente y metadatos de varianza cultural en el mismo formato que `BEYONDSIGHT_EMPIRICAL_MASTER`.
+4. Para nuevos parámetros empíricos, incluye referencias de fuente y metadatos de varianza cultural en el mismo formato que `MASSIVE_EMPIRICAL_MASTER`.
 
 Consulta [CONTRIBUTING.md](CONTRIBUTING.md) para guías completas y [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) para estándares de la comunidad.
 
