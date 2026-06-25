@@ -22,14 +22,17 @@ def compress_agent_states(
     u, s, vt = np.linalg.svd(centered, full_matrices=False)
 
     if s.size == 0:
-        rank = 1
+        rank = 0
     else:
-        energy = np.cumsum(s**2)
-        total = energy[-1]
-        ratio = energy / max(total, 1e-12)
-        rank = int(np.searchsorted(ratio, explained_variance) + 1)
+        total_energy = np.sum(s**2)
+        if total_energy < 1e-12:
+            rank = 0
+        else:
+            energy = np.cumsum(s**2)
+            ratio = energy / total_energy
+            rank = int(np.searchsorted(ratio, explained_variance) + 1)
 
-    rank = max(1, min(rank, int(max_bond_dim), vt.shape[0]))
+    rank = max(0, min(rank, int(max_bond_dim), vt.shape[0]))
 
     left = u[:, :rank] * s[:rank]
     right = vt[:rank, :]

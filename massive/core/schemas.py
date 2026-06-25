@@ -1,6 +1,6 @@
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Literal, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 # ============================================================
 # GAME THEORY — PAYOFF MATRIX & STRATEGIC CONFIG
@@ -29,19 +29,43 @@ class StrategicConfig(BaseModel):
     enabled: bool = False
     payoff_matrix: GamePayoff = Field(default_factory=GamePayoff)
     # ω — how much the payoff matters vs. the physical landscape (0.0–1.0)
-    strategic_weight: float = 0.3
+    strategic_weight: float = Field(0.3, ge=0.0, le=1.0)
+
+
+VALID_MODEL_NAMES = Literal[
+    "lineal",
+    "umbral",
+    "memoria",
+    "backlash",
+    "polarizacion",
+    "hk",
+    "contagio_competitivo",
+    "umbral_heterogeneo",
+    "homofilia",
+    "replicador",
+    "nash",
+    "bayesiano",
+    "sir",
+]
 
 
 class Intervention(BaseModel):
     time_start: int = Field(description="Iteración donde inicia esta fase")
     time_end: int = Field(description="Iteración donde termina esta fase")
-    model_name: str = Field(
+    model_name: VALID_MODEL_NAMES = Field(
         description=(
             "Nombre del modelo: 'lineal', 'umbral', 'memoria', 'backlash', "
             "'polarizacion', 'hk', 'contagio_competitivo', 'umbral_heterogeneo', "
             "'homofilia', 'replicador', 'nash', 'bayesiano' o 'sir'"
         )
     )
+
+    @model_validator(mode="after")
+    def _validate_time_order(self) -> "Intervention":
+        if self.time_start > self.time_end:
+            raise ValueError(
+                f"time_start ({self.time_start}) must be <= time_end ({self.time_end})"
+            )
     parameters: Dict[str, Any] = Field(
         description=(
             "Parámetros numéricos. Ej: {'epsilon': 0.3} o {'umbral': 0.5}. "
