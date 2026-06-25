@@ -37,6 +37,8 @@ from pathlib import Path
 from typing import Any
 
 import networkx as nx
+import copy
+
 import numpy as np
 import requests
 from scipy import stats
@@ -57,7 +59,7 @@ from empirical_calibration import (
     apply_empirical_profile,
     build_empirical_engine_config,
 )
-from empirical_config import BEYONDSIGHT_EMPIRICAL_MASTER, BEYONDSIGHT_RUNTIME_PARAMS
+from empirical_config import MASSIVE_EMPIRICAL_MASTER, MASSIVE_RUNTIME_PARAMS
 
 try:
     from ripser import ripser as ripser_compute
@@ -1508,7 +1510,7 @@ def simular(
         )
 
         # Construir nuevo estado
-        nuevo = estado.copy()
+        nuevo = copy.deepcopy(estado)
         # Si la regla actualizó pertenencia_grupo (homofilia), persiste
         if "pertenencia_grupo" in estado_regla:
             nuevo["pertenencia_grupo"] = estado_regla["pertenencia_grupo"]
@@ -1528,7 +1530,7 @@ def simular(
         nuevo["_rango"]        = cfg["rango"]
 
         estado = nuevo
-        historial.append(estado.copy())
+        historial.append(copy.deepcopy(estado))
 
         # ── EWS: collect opinion, compute CSD metrics ─────────────────
         opinion_history.append(estado["opinion"])
@@ -2179,7 +2181,7 @@ def run_with_schedule(
                 cfg,
             )
 
-            nuevo = estado.copy()
+            nuevo = copy.deepcopy(estado)
             if "pertenencia_grupo" in estado_regla:
                 nuevo["pertenencia_grupo"] = estado_regla["pertenencia_grupo"]
             for k in ("_fraccion_adoptantes", "_sim_grupo_a", "_sim_grupo_b",
