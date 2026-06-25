@@ -130,7 +130,10 @@ class TestApplyEmpiricalProfile(unittest.TestCase):
     def test_profile_version_tag(self):
         result = apply_empirical_profile({})
         self.assertIn("_empirical_profile", result)
-        self.assertEqual(result["_empirical_profile"], MASSIVE_EMPIRICAL_MASTER["meta"]["version"])
+        self.assertEqual(
+            result["_empirical_profile"],
+            MASSIVE_EMPIRICAL_MASTER["meta"]["version"],
+        )
 
     def test_preserves_existing_keys(self):
         cfg = {"rango": "[-1, 1] — Bipolar", "proveedor": "heurístico", "api_key": "xyz"}

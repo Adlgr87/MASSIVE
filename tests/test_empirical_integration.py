@@ -32,20 +32,34 @@ class TestEmpiricalIntegration(unittest.TestCase):
 
     def test_negative_values_preserved(self):
         """repeller_strength y payoff_defection mantienen su signo negativo."""
-        self.assertLess(MASSIVE_RUNTIME_PARAMS["repeller_strength"], 0.0, "repeller_strength debe ser negativo")
-        self.assertLess(MASSIVE_RUNTIME_PARAMS["payoff_defection"], 0.0, "payoff_defection debe ser negativo")
+        self.assertLess(
+            MASSIVE_RUNTIME_PARAMS["repeller_strength"],
+            0.0,
+            "repeller_strength debe ser negativo (repelente activo)",
+        )
+        self.assertLess(
+            MASSIVE_RUNTIME_PARAMS["payoff_defection"],
+            0.0,
+            "payoff_defection debe ser negativo (costo de disidencia)",
+        )
 
     def test_decay_and_saturation_values_active(self):
         """Los parámetros calibrados temporalmente se mantienen numéricos y activos."""
-        self.assertIsNotNone(MASSIVE_RUNTIME_PARAMS["narrative_decay_rate"])
-        self.assertIsNotNone(MASSIVE_RUNTIME_PARAMS["saturation_threshold"])
+        self.assertIsNotNone(
+            MASSIVE_RUNTIME_PARAMS["narrative_decay_rate"],
+            "narrative_decay_rate no debe ser None",
+        )
+        self.assertIsNotNone(
+            MASSIVE_RUNTIME_PARAMS["saturation_threshold"],
+            "saturation_threshold no debe ser None",
+        )
         self.assertGreater(MASSIVE_RUNTIME_PARAMS["narrative_decay_rate"], 0.0)
         self.assertGreater(MASSIVE_RUNTIME_PARAMS["saturation_threshold"], 0.0)
 
     def test_no_null_params_when_calibrated(self):
         """validation_flags refleja únicamente parámetros realmente pendientes."""
         flags = MASSIVE_RUNTIME_PARAMS["validation_flags"]
-        self.assertIsInstance(flags, list)
+        self.assertIsInstance(flags, list, "validation_flags debe ser una lista")
         for flag in flags:
             self.assertIn("pending_empirical_data", flag)
         self.assertEqual(flags, [])
@@ -98,7 +112,11 @@ class TestEmpiricalIntegration(unittest.TestCase):
             "gender", "game_theory",
         }
         for cat in expected_categories:
-            self.assertIn(cat, MASSIVE_EMPIRICAL_MASTER, f"Categoría '{cat}' falta en MASSIVE_EMPIRICAL_MASTER")
+            self.assertIn(
+                cat,
+                MASSIVE_EMPIRICAL_MASTER,
+                f"Categoría '{cat}' falta en MASSIVE_EMPIRICAL_MASTER",
+            )
 
 
 if __name__ == "__main__":
