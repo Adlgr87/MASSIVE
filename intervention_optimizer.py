@@ -1,4 +1,4 @@
-"""Backward-compatible re-export — implementation lives in massive.core.intervention_optimizer."""
+"""@deprecated — re-export only. Use massive.core.intervention_optimizer directly."""
 
 from massive.core.intervention_optimizer import optimize_interventions  # noqa: F401
 

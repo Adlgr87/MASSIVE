@@ -1,4 +1,4 @@
-"""Backward-compatible re-export — implementation lives in massive.core.llm_credentials."""
+"""@deprecated — re-export only. Use massive.core.llm_credentials directly."""
 
 from massive.core.llm_credentials import (  # noqa: F401
     PROVIDER_ENV_KEYS,

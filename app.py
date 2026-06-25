@@ -282,10 +282,9 @@ with st.sidebar:
 
     # Try to get API Key from environment or st.secrets
     env_keys = {
-        "groq": os.getenv("GROQ_API_KEY") or st.secrets.get("GROQ_API_KEY"),
-        "openai": os.getenv("OPENAI_API_KEY") or st.secrets.get("OPENAI_API_KEY"),
-        "openrouter": os.getenv("OPENROUTER_API_KEY")
-        or st.secrets.get("OPENROUTER_API_KEY"),
+        "groq": os.getenv("GROQ_API_KEY"),
+        "openai": os.getenv("OPENAI_API_KEY"),
+        "openrouter": os.getenv("OPENROUTER_API_KEY"),
     }
 
     if proveedor == "ollama":

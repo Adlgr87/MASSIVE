@@ -1,4 +1,4 @@
-"""Backward-compatible re-export — implementation lives in massive.core.empirical_config."""
+"""@deprecated — re-export only. Use massive.core.empirical_config directly."""
 
 from massive.core.empirical_config import (  # noqa: F401
     EMPIRICAL_BASE_LOADED,

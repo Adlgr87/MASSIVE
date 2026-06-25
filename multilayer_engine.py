@@ -286,7 +286,7 @@ def _bimodal_grad(opinion: float) -> float:
 
     El mínimo del pozo está en x = ±0.7 porque ∂U/∂x = 0 cuando x² = 0.49 = 0.7².
     """
-    return 4.0 * opinion * (opinion * opinion - 0.49)
+    return max(-1.0, min(1.0, 4.0 * opinion * (opinion * opinion - 0.49)))
 
 
 @njit
@@ -374,12 +374,7 @@ def multilayer_langevin_step(
     # Fuerza social multicapa: Σ_ℓ w_ℓ · A_ℓ · x[:,0]
     social_force = np.zeros((N, Kdim))
     for ell in range(L):
-        w = layer_weights[ell]
-        for i in range(N):
-            s = 0.0
-            for j in range(N):
-                s += layers_flat[ell, i, j] * x_vec[j, COL_OPINION]
-            social_force[i, COL_OPINION] += coupling * w * s
+        social_force[:, COL_OPINION] += coupling * layer_weights[ell] * (layers_flat[ell] @ x_vec[:, COL_OPINION])
 
     # Gradiente del potencial multidimensional
     grad_U = multi_potential_gradient(x_vec)

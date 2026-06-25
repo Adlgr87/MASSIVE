@@ -1,4 +1,4 @@
-"""Backward-compatible re-export — implementation lives in massive.core.extended_models."""
+"""@deprecated — re-export only. Use massive.core.extended_models directly."""
 
 from massive.core.extended_models import (  # noqa: F401
     regla_bayesiana,

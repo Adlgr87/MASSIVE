@@ -1,4 +1,4 @@
-"""Backward-compatible re-export — implementation lives in massive.core.utility_logic."""
+"""@deprecated — re-export only. Use massive.core.utility_logic directly."""
 
 from massive.core.utility_logic import calculate_strategic_force  # noqa: F401
 

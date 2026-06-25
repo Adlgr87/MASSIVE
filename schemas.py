@@ -1,4 +1,4 @@
-"""Backward-compatible re-export — implementation lives in massive.core.schemas."""
+"""@deprecated — re-export only. Use massive.core.schemas directly."""
 
 from massive.core.schemas import (  # noqa: F401
     GamePayoff,

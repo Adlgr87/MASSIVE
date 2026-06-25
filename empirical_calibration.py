@@ -1,4 +1,4 @@
-"""Backward-compatible re-export — implementation lives in massive.core.empirical_calibration."""
+"""@deprecated — re-export only. Use massive.core.empirical_calibration directly."""
 
 from massive.core.empirical_calibration import (  # noqa: F401
     ALPHA_BLEND_MAX,
