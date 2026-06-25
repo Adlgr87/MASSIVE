@@ -1,13 +1,13 @@
-# BeyondSight — Protocolo de Uso Validado (PVU-BS) — Español
+# MASSIVE — Protocolo de Uso Validado (PVU-BS) — Español
 
 > **Version:** 1.0 · **Estado:** Activo  
-> **Versión en inglés:** [PVU_BeyondSight_EN.md](PVU_BeyondSight_EN.md)
+> **Versión en inglés:** [PVU_MASSIVE_EN.md](PVU_MASSIVE_EN.md)
 
 ---
 
 ## 1. Propósito
 
-El **Protocolo de Uso Validado (PVU-BS)** establece el estándar mínimo de evidencia requerido para afirmar que BeyondSight ofrece desempeño predictivo *validado* sobre datos reales de dinámica de opinión.  
+El **Protocolo de Uso Validado (PVU-BS)** establece el estándar mínimo de evidencia requerido para afirmar que MASSIVE ofrece desempeño predictivo *validado* sobre datos reales de dinámica de opinión.  
 Distingue claramente entre:
 
 - **Casos de muestra** (`datasets/pvu_cases/sample_case_*`): datos sintéticos usados únicamente para verificar que el pipeline funciona correctamente. **No se pueden derivar afirmaciones científicas de ellos.**
@@ -38,7 +38,7 @@ Reglas:
 
 ### 2.3 Variable Objetivo
 
-BeyondSight se valida sobre un **objetivo compuesto** que captura tanto el nivel como la dinámica de la polarización de opinión:
+MASSIVE se valida sobre un **objetivo compuesto** que captura tanto el nivel como la dinámica de la polarización de opinión:
 
 | Componente | Definición | Métrica |
 |-----------|-----------|---------|
@@ -73,12 +73,12 @@ Las siguientes acciones constituyen **filtración del test** e invalidan la corr
 
 ### 4.1 Hipótesis Principal
 
-> BeyondSight produce un MAE significativamente menor en el conjunto de test bloqueado comparado con el baseline naive (persistencia del último valor), tras corrección Holm–Bonferroni.
+> MASSIVE produce un MAE significativamente menor en el conjunto de test bloqueado comparado con el baseline naive (persistencia del último valor), tras corrección Holm–Bonferroni.
 
 ### 4.2 Procedimiento de Test
 
-1. Calcular predicciones de **todos** los baselines y BeyondSight sobre el split de test de **cada** caso.
-2. Para cada caso, ejecutar un **test de Diebold–Mariano (DM)** bilateral de BeyondSight vs cada baseline usando pérdida cuadrática.
+1. Calcular predicciones de **todos** los baselines y MASSIVE sobre el split de test de **cada** caso.
+2. Para cada caso, ejecutar un **test de Diebold–Mariano (DM)** bilateral de MASSIVE vs cada baseline usando pérdida cuadrática.
 3. Recopilar los M p-valores crudos por caso (uno por baseline).
 4. Aplicar **corrección Holm–Bonferroni** sobre las M × N comparaciones (M baselines × N casos). Usar `benchmarks/metrics.py::holm_bonferroni`.
 5. Reportar tanto p-valores crudos como ajustados.
@@ -119,7 +119,7 @@ Implementados en `benchmarks/baselines.py`.
 
 ## 6. Chequeo de Consistencia LLM
 
-Cuando BeyondSight se corre en modo LLM:
+Cuando MASSIVE se corre en modo LLM:
 
 1. Correr el mismo forecast **5 veces** con distintas semillas aleatorias.
 2. Calcular el coeficiente de variación (CV = std / media) del MAE reportado entre corridas.
@@ -199,7 +199,7 @@ sample_case_001/
 
 | Término | Definición |
 |---------|-----------|
-| PVU-BS | Protocolo de Uso Validado — BeyondSight |
+| PVU-BS | Protocolo de Uso Validado — MASSIVE |
 | Test DM | Test de Diebold–Mariano de igual exactitud predictiva |
 | Holm–Bonferroni | Corrección escalonada para comparaciones múltiples |
 | TPS | Habilidad en Puntos de Giro (F1 sobre extremos locales detectados) |

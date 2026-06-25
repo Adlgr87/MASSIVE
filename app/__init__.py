@@ -1,8 +1,13 @@
 """
 MASSIVE — app package
 
-Exposes the core simulation API so that ``import app`` works as a library
-import without triggering Streamlit's runtime context requirements.
+Compatibility wrapper that exposes the core simulation API so that
+``import app`` works as a lightweight library import without triggering
+Streamlit's runtime context requirements.
+
+This module is an active backward-compatibility surface.  Its re-exports
+should not be removed or "simplified" unless an equivalent public import
+path is introduced and verified across the project.
 
 The interactive Streamlit UI lives in ``app.py`` and is launched via::
 

@@ -25,22 +25,27 @@ Columnas de x_i (K=5):
 Autor: MASSIVE Research
 """
 
+import networkx as nx
 import numpy as np
 import pandas as pd
-import networkx as nx
 from scipy import sparse
+
 from llm_credentials import resolve_provider_api_key
 from state_compression import compress_agent_states, decompress_agent_states
 
 try:
     from numba import njit
+
     NUMBA_AVAILABLE = True
 except ImportError:
     NUMBA_AVAILABLE = False
+
     def njit(*args, **kwargs):
         """No-op decorator when Numba is not installed."""
+
         def decorator(fn):
             return fn
+
         return decorator if args and callable(args[0]) else decorator
 
 
@@ -52,11 +57,11 @@ except ImportError:
 #   - Edad/jerarquía (0.4): Alwin & Krosnick (1991), estabilidad actitudinal
 #   - Juventud/ingreso (0.2): volatilidad laboral diferencial por cohorte
 #   - Educación/info (0.4): van Dijk (2005), brecha digital y capital educativo
-_THETA_RELIGION_OPINION:  float = 0.5
-_THETA_EDUCATION_COOP:    float = 0.3
-_THETA_AGE_HIERARCHY:     float = 0.4
-_THETA_YOUTH_INCOME:      float = 0.2
-_THETA_EDUCATION_INFO:    float = 0.4
+_THETA_RELIGION_OPINION: float = 0.5
+_THETA_EDUCATION_COOP: float = 0.3
+_THETA_AGE_HIERARCHY: float = 0.4
+_THETA_YOUTH_INCOME: float = 0.2
+_THETA_EDUCATION_INFO: float = 0.4
 
 # Número de hubs en la red jerárquica: ~10% del total.
 # Una proporción de hubs del 10% equilibra conectividad y jerarquía realista;
@@ -77,18 +82,20 @@ VIRAL_HUB_EDGE_MULTIPLIER = 10
 
 # ── Índices de columnas para claridad ────────────────────────────────────────
 COL_OPINION = 0
-COL_COOP    = 1
-COL_HIER    = 2
-COL_INCOME  = 3
-COL_INFO    = 4
+COL_COOP = 1
+COL_HIER = 2
+COL_INCOME = 3
+COL_INFO = 4
 
 
 # ============================================================
 # GENERADORES DE REDES
 # ============================================================
 
-def generate_watts_strogatz(N: int, k: int = 5, p: float = 0.1,
-                             seed: int = 42) -> np.ndarray:
+
+def generate_watts_strogatz(
+    N: int, k: int = 5, p: float = 0.1, seed: int = 42
+) -> np.ndarray:
     """
     Genera la matriz de adyacencia de una red Watts-Strogatz (mundo pequeño).
 
@@ -169,17 +176,17 @@ def build_layers(N: int, config: dict | None = None) -> dict:
         una matriz numpy (N, N) normalizada.
     """
     cfg = config or {}
-    social_cfg  = cfg.get("social",   {})
-    digital_cfg = cfg.get("digital",  {})
-    econ_cfg    = cfg.get("economic", {})
+    social_cfg = cfg.get("social", {})
+    digital_cfg = cfg.get("digital", {})
+    econ_cfg = cfg.get("economic", {})
 
     return {
-        "social":   generate_watts_strogatz(
+        "social": generate_watts_strogatz(
             N,
             k=social_cfg.get("k", 5),
             p=social_cfg.get("p", 0.1),
         ),
-        "digital":  generate_scale_free(
+        "digital": generate_scale_free(
             N,
             m=digital_cfg.get("m", 2),
         ),
@@ -191,13 +198,14 @@ def build_layers(N: int, config: dict | None = None) -> dict:
 # ATRIBUTOS SOCIODEMOGRÁFICOS
 # ============================================================
 
+
 def generate_attributes(
     N: int,
-    age_dist:        tuple = (0.3, 0.4, 0.3),
-    religion_prob:   float = 0.3,
+    age_dist: tuple = (0.3, 0.4, 0.3),
+    religion_prob: float = 0.3,
     education_scale: float = 1.0,
-    gender_ratio:    float = 0.5,
-    seed:            int   = 42,
+    gender_ratio: float = 0.5,
+    seed: int = 42,
 ) -> pd.DataFrame:
     """
     Genera el DataFrame de atributos sociodemográficos para N agentes.
@@ -218,16 +226,18 @@ def generate_attributes(
     dist /= dist.sum()
 
     age_group = rng.choice([0, 1, 2], size=N, p=dist)
-    religion  = (rng.random(N) < religion_prob).astype(int)
+    religion = (rng.random(N) < religion_prob).astype(int)
     education = np.clip(rng.beta(2, 2, N) * education_scale, 0.0, 1.0)
-    gender    = (rng.random(N) < gender_ratio).astype(int)
+    gender = (rng.random(N) < gender_ratio).astype(int)
 
-    return pd.DataFrame({
-        "age_group": age_group,   # 0=young, 1=middle, 2=old
-        "religion":  religion,    # 0=no, 1=yes
-        "education": education,   # continuous [0, 1]
-        "gender":    gender,      # 0=male, 1=female
-    })
+    return pd.DataFrame(
+        {
+            "age_group": age_group,  # 0=young, 1=middle, 2=old
+            "religion": religion,  # 0=no, 1=yes
+            "education": education,  # continuous [0, 1]
+            "gender": gender,  # 0=male, 1=female
+        }
+    )
 
 
 def compute_theta(attributes_df: pd.DataFrame, K: int = 5) -> np.ndarray:
@@ -254,13 +264,13 @@ def compute_theta(attributes_df: pd.DataFrame, K: int = 5) -> np.ndarray:
     # Opinión: los más religiosos son más sensibles a señales morales
     theta[:, COL_OPINION] *= 1.0 + _THETA_RELIGION_OPINION * rel
     # Cooperación: educación aumenta la disposición a cooperar
-    theta[:, COL_COOP]    *= 1.0 + _THETA_EDUCATION_COOP * edu
+    theta[:, COL_COOP] *= 1.0 + _THETA_EDUCATION_COOP * edu
     # Jerarquía: los de mayor edad tienden a reconocer más la autoridad
-    theta[:, COL_HIER]    *= 1.0 + _THETA_AGE_HIERARCHY * (age / 2.0)
+    theta[:, COL_HIER] *= 1.0 + _THETA_AGE_HIERARCHY * (age / 2.0)
     # Ingreso: jóvenes más volátiles en ingreso
-    theta[:, COL_INCOME]  *= 1.0 + _THETA_YOUTH_INCOME * (1.0 - age / 2.0)
+    theta[:, COL_INCOME] *= 1.0 + _THETA_YOUTH_INCOME * (1.0 - age / 2.0)
     # Acceso a información: educación amplifica el acceso digital
-    theta[:, COL_INFO]    *= 1.0 + _THETA_EDUCATION_INFO * edu
+    theta[:, COL_INFO] *= 1.0 + _THETA_EDUCATION_INFO * edu
 
     return theta
 
@@ -269,13 +279,14 @@ def compute_theta(attributes_df: pd.DataFrame, K: int = 5) -> np.ndarray:
 # POTENCIAL MULTIDIMENSIONAL (JIT)
 # ============================================================
 
+
 @njit
 def _bimodal_grad(opinion: float) -> float:
     """Gradiente del doble pozo U = (x²-0.49)² → attrae hacia ±0.7.
 
     El mínimo del pozo está en x = ±0.7 porque ∂U/∂x = 0 cuando x² = 0.49 = 0.7².
     """
-    return 4.0 * opinion * (opinion * opinion - 0.49)
+    return max(-1.0, min(1.0, 4.0 * opinion * (opinion * opinion - 0.49)))
 
 
 @njit
@@ -296,10 +307,10 @@ def multi_potential_gradient(x: np.ndarray) -> np.ndarray:
     grad = np.zeros_like(x)
 
     for i in range(N):
-        op   = x[i, COL_OPINION]
+        op = x[i, COL_OPINION]
         coop = x[i, COL_COOP]
         hier = x[i, COL_HIER]
-        inc  = x[i, COL_INCOME]
+        inc = x[i, COL_INCOME]
         info = x[i, COL_INFO]
 
         # Opinión: doble pozo → polarización emergente en ±0.7
@@ -326,16 +337,17 @@ def multi_potential_gradient(x: np.ndarray) -> np.ndarray:
 # PASO DE LANGEVIN MULTICAPA (JIT)
 # ============================================================
 
+
 @njit
 def multilayer_langevin_step(
-    x_vec:        np.ndarray,
-    layers_flat:  np.ndarray,
+    x_vec: np.ndarray,
+    layers_flat: np.ndarray,
     layer_weights: np.ndarray,
     theta_matrix: np.ndarray,
-    coupling:     float,
-    dt:           float,
-    x_min:        float,
-    x_max:        float,
+    coupling: float,
+    dt: float,
+    x_min: float,
+    x_max: float,
 ) -> np.ndarray:
     """
     Paso de Euler-Maruyama de la dinámica de Langevin multicapa.
@@ -362,12 +374,7 @@ def multilayer_langevin_step(
     # Fuerza social multicapa: Σ_ℓ w_ℓ · A_ℓ · x[:,0]
     social_force = np.zeros((N, Kdim))
     for ell in range(L):
-        w = layer_weights[ell]
-        for i in range(N):
-            s = 0.0
-            for j in range(N):
-                s += layers_flat[ell, i, j] * x_vec[j, COL_OPINION]
-            social_force[i, COL_OPINION] += coupling * w * s
+        social_force[:, COL_OPINION] += coupling * layer_weights[ell] * (layers_flat[ell] @ x_vec[:, COL_OPINION])
 
     # Gradiente del potencial multidimensional
     grad_U = multi_potential_gradient(x_vec)
@@ -376,7 +383,11 @@ def multilayer_langevin_step(
     noise = np.random.randn(N, Kdim)
 
     # Actualización: Euler-Maruyama
-    x_new = x_vec + dt * (-grad_U + social_force) + theta_matrix * _STOCHASTIC_SCALE * noise * np.sqrt(dt)
+    x_new = (
+        x_vec
+        + dt * (-grad_U + social_force)
+        + theta_matrix * _STOCHASTIC_SCALE * noise * np.sqrt(dt)
+    )
 
     # Recortar al rango válido
     for i in range(N):
@@ -398,12 +409,28 @@ def multilayer_langevin_step(
 # SESGO LLM DIRIGIDO (extensión de llm_oracle)
 # ============================================================
 
+
+def _resolve_provider_base_url(proveedor: str) -> str | None:
+    """Resolve provider base_url through the current compatibility surface.
+
+    The provider registry still lives in ``simulator.PROVEEDORES``.  This
+    helper centralizes that dependency so future migration slices can update a
+    single point without changing call sites.
+    """
+    try:
+        from simulator import PROVEEDORES as _PROVEEDORES
+
+        return _PROVEEDORES[proveedor]["base_url"]
+    except (ImportError, KeyError):
+        return None
+
+
 def targeted_llm_bias(
     layer_target: str = "digital",
-    demographic:  str = "religion=1",
-    proveedor:    str = "heurístico",
-    api_key:      str = "",
-    modelo:       str = "",
+    demographic: str = "religion=1",
+    proveedor: str = "heurístico",
+    api_key: str = "",
+    modelo: str = "",
 ) -> str:
     """
     Genera un argumento narrativo dirigido a un grupo demográfico en una capa específica.
@@ -425,12 +452,15 @@ def targeted_llm_bias(
         "religion=0": "comunidades seculares",
         "age_group=0": "jóvenes (18-35)",
         "age_group=2": "adultos mayores (55+)",
-        "gender=1":   "mujeres",
-        "gender=0":   "hombres",
+        "gender=1": "mujeres",
+        "gender=0": "hombres",
     }
     grupo_label = etiquetas.get(demographic, demographic)
-    layer_label = {"social": "red de contactos sociales", "digital": "redes digitales/social media",
-                   "economic": "red económica/laboral"}.get(layer_target, layer_target)
+    layer_label = {
+        "social": "red de contactos sociales",
+        "digital": "redes digitales/social media",
+        "economic": "red económica/laboral",
+    }.get(layer_target, layer_target)
 
     prompt = (
         f"En el contexto de una simulación de dinámica social, genera un argumento persuasivo "
@@ -450,10 +480,9 @@ def targeted_llm_bias(
 
     try:
         import requests
-        try:
-            from simulator import PROVEEDORES as _PROVEEDORES
-            base_url = _PROVEEDORES[proveedor]["base_url"]
-        except (ImportError, KeyError):
+
+        base_url = _resolve_provider_base_url(proveedor)
+        if not base_url:
             return (
                 f"[Fallback] Narrativa para {grupo_label}: "
                 f"El diálogo y la cooperación construyen comunidades más resilientes."
@@ -465,8 +494,9 @@ def targeted_llm_bias(
             "temperature": 0.7,
             "max_tokens": 100,
         }
-        resp = requests.post(f"{base_url}/chat/completions", json=payload,
-                             headers=headers, timeout=15)
+        resp = requests.post(
+            f"{base_url}/chat/completions", json=payload, headers=headers, timeout=15
+        )
         resp.raise_for_status()
         return resp.json()["choices"][0]["message"]["content"].strip()
     except Exception:
@@ -479,6 +509,7 @@ def targeted_llm_bias(
 # ============================================================
 # CLASE ORQUESTADORA
 # ============================================================
+
 
 class MultilayerEngine:
     """
@@ -497,14 +528,14 @@ class MultilayerEngine:
 
     def __init__(
         self,
-        N:              int   = 100,
-        layer_weights:  tuple = (0.4, 0.3, 0.3),
-        coupling:       float = 0.3,
-        dt:             float = 0.01,
-        range_type:     str   = "bipolar",
-        attr_config:    dict  | None = None,
-        layer_config:   dict  | None = None,
-        seed:           int   = 42,
+        N: int = 100,
+        layer_weights: tuple = (0.4, 0.3, 0.3),
+        coupling: float = 0.3,
+        dt: float = 0.01,
+        range_type: str = "bipolar",
+        attr_config: dict | None = None,
+        layer_config: dict | None = None,
+        seed: int = 42,
         scientific_config: dict | None = None,
     ):
         """
@@ -551,13 +582,20 @@ class MultilayerEngine:
         # CfC INTEGRATION — τ aprendido sustituye la theta manual si está disponible
         try:
             from cfc_router import CfCRouter
+
             _cfc_tau = CfCRouter.get().compute_tau_matrix(
-                np.stack([
-                    self.attributes_df["religion"].to_numpy(dtype=np.float32),
-                    self.attributes_df["education"].to_numpy(dtype=np.float32),
-                    (self.attributes_df["age_group"].to_numpy(dtype=np.float32) / 3.0),
-                    self.attributes_df["gender"].to_numpy(dtype=np.float32),
-                ], axis=1)
+                np.stack(
+                    [
+                        self.attributes_df["religion"].to_numpy(dtype=np.float32),
+                        self.attributes_df["education"].to_numpy(dtype=np.float32),
+                        (
+                            self.attributes_df["age_group"].to_numpy(dtype=np.float32)
+                            / 3.0
+                        ),
+                        self.attributes_df["gender"].to_numpy(dtype=np.float32),
+                    ],
+                    axis=1,
+                )
             )
             if _cfc_tau is not None:
                 # Escalar al rango de la theta manual para compatibilidad
@@ -567,16 +605,19 @@ class MultilayerEngine:
 
         # Capas de red
         self.layers = build_layers(N, layer_config)
-        self._layers_flat = np.stack([
-            self.layers["social"],
-            self.layers["digital"],
-            self.layers["economic"],
-        ], axis=0).astype(np.float64)
+        self._layers_flat = np.stack(
+            [
+                self.layers["social"],
+                self.layers["digital"],
+                self.layers["economic"],
+            ],
+            axis=0,
+        ).astype(np.float64)
 
         # Estado inicial
         rng = np.random.default_rng(seed)
         x0_opinion = rng.uniform(self.x_min * 0.5, self.x_max * 0.5, N)
-        x0_rest    = rng.uniform(0.2, 0.8, (N, K - 1))
+        x0_rest = rng.uniform(0.2, 0.8, (N, K - 1))
         self.x = np.column_stack([x0_opinion, x0_rest]).astype(np.float64)
 
         self._history: list[np.ndarray] = [self.x.copy()]
@@ -595,6 +636,7 @@ class MultilayerEngine:
     def step(self) -> np.ndarray:
         """Advance one integration step and return the updated state."""
         if self._stepper is not None:
+
             def drift(current: np.ndarray) -> np.ndarray:
                 social_force = np.zeros_like(current)
                 for ell, weight in enumerate(self.layer_weights):
@@ -614,7 +656,9 @@ class MultilayerEngine:
                 noise=noise,
             )
             self.x = result.state
-            self.x[:, COL_OPINION] = np.clip(self.x[:, COL_OPINION], self.x_min, self.x_max)
+            self.x[:, COL_OPINION] = np.clip(
+                self.x[:, COL_OPINION], self.x_min, self.x_max
+            )
             self.x[:, 1:] = np.clip(self.x[:, 1:], 0.0, 1.0)
             self.last_numerical_diagnostics = result.diagnostics
         else:
@@ -660,11 +704,11 @@ class MultilayerEngine:
         x = self.x
         opinions = x[:, COL_OPINION]
         return {
-            "mean_opinion":    float(np.mean(opinions)),
-            "std_opinion":     float(np.std(opinions)),
-            "polarization":    float(np.mean(np.abs(opinions))),
+            "mean_opinion": float(np.mean(opinions)),
+            "std_opinion": float(np.std(opinions)),
+            "polarization": float(np.mean(np.abs(opinions))),
             "mean_cooperation": float(np.mean(x[:, COL_COOP])),
-            "mean_hierarchy":   float(np.mean(x[:, COL_HIER])),
+            "mean_hierarchy": float(np.mean(x[:, COL_HIER])),
         }
 
     def trajectories_by_attribute(self, attribute: str = "age_group") -> pd.DataFrame:
@@ -682,8 +726,9 @@ class MultilayerEngine:
             for group_val in self.attributes_df[attribute].unique():
                 mask = self.attributes_df[attribute].to_numpy() == group_val
                 mean_op = float(x_snap[mask, COL_OPINION].mean())
-                records.append({"step": step_idx, attribute: group_val,
-                                 "mean_opinion": mean_op})
+                records.append(
+                    {"step": step_idx, attribute: group_val, "mean_opinion": mean_op}
+                )
         return pd.DataFrame(records)
 
     def update_opinions(self, new_opinions: np.ndarray) -> None:
@@ -794,8 +839,8 @@ class MultilayerEngine:
         """
         return {
             "trajectories_df": self.trajectories_by_attribute("age_group"),
-            "corr_matrix":     self.behavior_correlation_matrix(),
-            "landscape":       self.get_landscape(),
+            "corr_matrix": self.behavior_correlation_matrix(),
+            "landscape": self.get_landscape(),
         }
 
 

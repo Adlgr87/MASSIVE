@@ -64,3 +64,9 @@ docs/mockups/
 
 # Test data
 tests/test_data/
+
+# Repomix generated AI bundles
+repomix-output*
+
+# Generic secrets pattern (catches *.secrets.toml anywhere)
+*.secrets.toml
