@@ -169,6 +169,79 @@ state_estimate, ensemble = ekf.assimilate_step(model_fn, observations)
 
 ---
 
+## 🌍 Integración con CIA World Factbook
+
+MASSIVE ahora soporta simulaciones realistas basadas en datos de países específicos utilizando el **CIA World Factbook**. Esta integración permite inicializar agentes con distribuciones demográficas reales, calcular presión social usando diversidad étnica/religiosa real, y ajustar restricciones económicas basadas en datos verdaderos de PIB e índice Gini.
+
+### 5 Puntos de Integración Implementados:
+
+1. **🎯 Inicialización de Agentes** - Número de agentes escalado desde población real (máx. 100,000), matriz demográfica 5D basada en estructura de edad real, distribución de grupos étnicos, religiosos y lingüísticos
+
+2. **⚖️ Presión Social** - Cálculo de presión social basado en diversidad real: mayor diversidad = menor presión social (sociedades más homogéneas ejercen más presión)
+
+3. **⚡ Motor de Energía** - El índice Gini modula la fuerza de atractores y repulsores en el paisaje social (mayor desigualdad = polarización más probable)
+
+4. **💰 Optimizador de Intervenciones** - Costos de intervención escalados por PIB per cápita, restricciones fiscales basadas en balance presupuestario real
+
+5. **✅ Marco de Validación** - Comparación de resultados de simulación contra métricas reales del Factbook (población, Gini, PIB, desempleo, etc.)
+
+### Ejemplo de Uso Rápido:
+
+```python
+from massive.core.factbook import FactbookContext
+from massive_engine import MassiveEngine
+from energy_engine import SocialEnergyEngine
+
+# 1. Cargar contexto de país
+context = FactbookContext()
+context.load_country("US")  # También soporta: "China", "GM" (Alemania), ISO2, ISO3
+
+# 2. Obtener parámetros MASSIVE
+params = context.get_massive_params("US")
+print(f"Agentes: {params['n_agents']}")
+print(f"Índice Gini: {params['gini_index']}")
+print(f"Diversidad Étnica: {params['ethnic_diversity']:.3f}")
+
+# 3. Inicializar simulación con datos reales
+engine = MassiveEngine(config={"n_agents": params["n_agents"]})
+
+# 4. Configurar motor de energía con Gini
+energy_engine = SocialEnergyEngine(
+    gini_coefficient=params["gini_coefficient"],
+    inequality_factor=params["inequality_factor"],
+    economic_potential=params["economic_potential"]
+)
+
+# 5. Usar pesos de presión social
+social_weights = params["social_pressure_weights"]
+# social_weights = {"ethnic": 0.4, "religious": 0.6, "language": 0.2}
+```
+
+### Países Soportados:
+
+- **Datos de muestra incluidos**: Estados Unidos (US), China (CH), Alemania (GM)
+- **Dataset completo disponible**: 260+ países desde [wmccaffrey/cia_world_factbook](https://github.com/wmccaffrey/cia_world_factbook)
+- **Formatos soportados**: Código CIA (US, CH, GM), ISO2 (US, CN, DE), ISO3 (USA, CHN, DEU), nombres completos
+
+### Campos de Datos Disponibles:
+
+| Categoría | Campos Incluidos |
+|-----------|-----------------|
+| **Demografía** | Población, estructura de edad (5 grupos), grupos étnicos, religiones, idiomas, alfabetismo, urbanización, esperanza de vida, tasa de fertilidad |
+| **Economía** | PIB (PPP), PIB per cápita, índice Gini, distribución del PIB por sector, fuerza laboral, tasa de desempleo, presupuesto (ingresos/egresos) |
+| **Política** | Tipo de gobierno, partidos políticos |
+| **Social** | Migración, sufragio |
+
+### Documentación Completa:
+
+Consulta `FACTBOOK_INTEGRATION_COMPLETE.md` para:
+- Arquitectura técnica detallada
+- Guía de implementación paso a paso
+- Ejemplos avanzados de uso
+- Test suite completo (7/7 pruebas pasadas)
+
+---
+
 ## Paquete del repositorio para IA con Repomix
 
 MASSIVE incluye una configuración de Repomix para que cualquier asistente de IA pueda revisar el repositorio como un único archivo XML estructurado, sin versionar paquetes generados.
@@ -389,6 +462,28 @@ print(f"Pasos/segundo:     {result['steps_per_second']:.0f}")
 
 # Aplicar un shock de noticias al 20% de la red
 engine.apply_shock(shock_value=0.4, fraction=0.2)
+
+# Simulación con datos reales del CIA World Factbook
+from massive.core.factbook import FactbookContext
+from massive_engine import MassiveEngine
+from energy_engine import SocialEnergyEngine
+
+context = FactbookContext()
+context.load_country("US")
+params = context.get_massive_params("US")
+
+# Inicializar con población real (escalada)
+engine = MassiveEngine(config={"n_agents": params["n_agents"]})
+
+# Motor de energía con desigualdad real
+energy_engine = SocialEnergyEngine(
+    gini_coefficient=params["gini_coefficient"],
+    inequality_factor=params["inequality_factor"],
+)
+
+# Obtener pesos de presión social
+social_weights = params["social_pressure_weights"]
+# Usar en cálculos: calculate_social_pressure(..., social_pressure_weights=social_weights)
 ```
 
 ---
@@ -565,6 +660,13 @@ MASSIVE/
 │   ├── multilayer.yaml           # Configuración de capas y atributos demográficos
 │   └── pvu.yaml                  # Configuración del ejecutor PVU
 ├── datasets/pvu_cases/           # Carpetas de casos de benchmark (actualmente sintéticos)
+├── data/factbook/                # Datos del CIA World Factbook para integración realista
+│   └── factbook_sample.json      # Muestra con US, China, Alemania (260+ países disponibles)
+├── massive/core/factbook/        # Integración CIA World Factbook
+│   ├── context.py                # FactbookContext - gestor principal de datos por país
+│   ├── loader.py                 # Cargador y cache de datasets del Factbook
+│   ├── mappings.py               # Mapeo Factbook → parámetros MASSIVE
+│   └── validator.py              # Validación de simulaciones vs datos reales
 ├── docs/validation/              # Protocolo PVU-BS (inglés + español)
 ├── reports/validation/           # Salidas de benchmark auto-generadas
 ├── tests/                        # 200+ pruebas unitarias e de integración
