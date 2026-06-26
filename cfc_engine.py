@@ -19,6 +19,7 @@ Autor: MASSIVE Research
 
 import torch
 import torch.nn as nn
+import numpy as np
 
 # Número de regímenes (reglas 0–12 definidas en simulator.py → NOMBRES_REGLAS)
 NUM_REGIMES: int = 13
@@ -206,3 +207,16 @@ class CfCArchitectPolicy(nn.Module):
             "durations": torch.softmax(self.duration_h(h), dim=-1),
             "params": self.param_h(h).view(-1, self.n_phases, 4),
         }
+
+
+def select_regime(features, history):
+    """Pick regime from {stable, oscillatory, critical, collapse}."""
+    energy = np.dot(features.ravel(), features.ravel()) / features.size
+    if energy < 0.1:
+        return 'stable'
+    elif energy < 0.5:
+        return 'oscillatory'
+    elif energy < 1.0:
+        return 'critical'
+    else:
+        return 'collapse'
