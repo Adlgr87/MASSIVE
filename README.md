@@ -18,6 +18,34 @@ The guiding principle is backward compatibility: the classic APIs (`simular`, `s
 
 ---
 
+## 🌍 CIA World Factbook Integration
+
+MASSIVE now supports realistic country-specific simulations using data from the CIA World Factbook. This integration enables agents to be initialized with real demographic data, social pressure to be calculated using actual ethnic and religious diversity, and economic constraints to be based on real GDP and Gini index values.
+
+**5 Integration Points:**
+1. **Agent Initialization** - Scale agent counts and demographics from real population data
+2. **Social Pressure** - Use ethnic/religious/linguistic diversity for realistic group dynamics  
+3. **Energy Engine** - Gini index modulates attractor/repeller strengths in social landscapes
+4. **Intervention Optimizer** - Economic constraints based on real GDP and budget data
+5. **Validation Framework** - Compare simulation results against Factbook metrics
+
+**Quick Start:**
+```python
+from massive.core.factbook import FactbookContext
+
+# Load country data
+context = FactbookContext()
+context.load_country("US")
+
+# Get MASSIVE parameters
+params = context.get_massive_params("US")
+print(f"Agents: {params['n_agents']}, Gini: {params['gini_coefficient']:.3f}")
+```
+
+Sample data includes US, China, Germany. Full dataset (260+ countries) can be loaded from [wmccaffrey/cia_world_factbook](https://github.com/wmccaffrey/cia_world_factbook). See `FACTBOOK_INTEGRATION_COMPLETE.md` for full documentation.
+
+---
+
 ## Repository map
 
 | Area | Files | Purpose |
@@ -34,6 +62,7 @@ The guiding principle is backward compatibility: the classic APIs (`simular`, `s
 | Forecasting | `forecast/` | Analytical and Monte Carlo temporal forecasts and scenario comparison. |
 | Strategy design | `social_architect.py`, `intervention_optimizer.py`, `programmatic_architect.py` | Inverse intervention design and optimization. |
 | Validation | `benchmarks/`, `datasets/pvu_cases/`, `docs/validation/` | PVU-BeyondSight cases, metrics and validation reports. |
+| **CIA World Factbook** | `massive/core/factbook/`, `data/factbook/` | Country-specific demographic, economic, social data integration for realistic simulations. |
 | UI/API contract | `app.py`, `backend/app/models/`, `frontend/src/types/` | Streamlit app, DTOs and generated TypeScript types. |
 
 ---
@@ -131,6 +160,28 @@ engine = SocialEnergyEngine(
 ```
 
 The default is `solver="legacy"`, so existing behavior is preserved unless a scientific solver is explicitly selected.
+
+### Run with CIA World Factbook data
+
+```python
+from massive.core.factbook import FactbookContext
+from massive_engine import MassiveEngine
+from energy_engine import SocialEnergyEngine
+
+# Initialize with country-specific data
+context = FactbookContext()
+context.load_country("US")
+params = context.get_massive_params("US")
+
+# Create engine with real demographic data
+engine = MassiveEngine(config={"n_agents": params["n_agents"]})
+
+# Use Gini index in energy landscape
+energy_engine = SocialEnergyEngine(
+    gini_coefficient=params["gini_coefficient"],
+    inequality_factor=params["inequality_factor"],
+)
+```
 
 ### Run canonical scientific benchmarks
 
