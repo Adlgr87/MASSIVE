@@ -1,0 +1,74 @@
+[
+  {
+    "test": "simular_campana_10steps",
+    "motor": "simulator.py",
+    "status": "PASS",
+    "detail": "11 steps, opinion_final=0.7405",
+    "elapsed_ms": 2.9,
+    "reproducible": true
+  },
+  {
+    "test": "simular_propaganda_07",
+    "motor": "simulator.py",
+    "status": "PASS",
+    "detail": "opinion_final=0.8937",
+    "elapsed_ms": 1.8,
+    "reproducible": null
+  },
+  {
+    "test": "resumen_historial",
+    "motor": "simulator.py",
+    "status": "PASS",
+    "detail": "delta=0.2405",
+    "elapsed_ms": 0,
+    "reproducible": null
+  },
+  {
+    "test": "massive_N1000_10steps",
+    "motor": "massive_engine.py",
+    "status": "PASS",
+    "detail": "mean_opinion=0.051888 (v\u00eda np.random.seed global)",
+    "elapsed_ms": 2125.5,
+    "reproducible": true
+  },
+  {
+    "test": "massive_N5000_quant_events",
+    "motor": "massive_engine.py",
+    "status": "PASS",
+    "detail": "mean_opinion=0.027862, mem_savings=99.825",
+    "elapsed_ms": 3.6,
+    "reproducible": null
+  },
+  {
+    "test": "energy_langevin_50agents",
+    "motor": "energy_engine.py",
+    "status": "PASS",
+    "detail": "mean=-0.0989, std=0.5551",
+    "elapsed_ms": 388.7,
+    "reproducible": true
+  },
+  {
+    "test": "energy_system_metrics",
+    "motor": "energy_engine.py",
+    "status": "PASS",
+    "detail": "keys=['mean_opinion', 'std_opinion', 'polarizacion', 'energia_total', 'energia_media']",
+    "elapsed_ms": 0,
+    "reproducible": null
+  },
+  {
+    "test": "multilayer_N50_20steps",
+    "motor": "multilayer_engine.py",
+    "status": "PASS",
+    "detail": "shape=(50, 5), mean=0.4005",
+    "elapsed_ms": 6.7,
+    "reproducible": true
+  },
+  {
+    "test": "all_13_rules_selector",
+    "motor": "simulator.py",
+    "status": "PASS",
+    "detail": "reglas observadas en 30 pasos: ['homofilia', 'lineal', 'memoria', 'polarizacion']",
+    "elapsed_ms": 0,
+    "reproducible": null
+  }
+]

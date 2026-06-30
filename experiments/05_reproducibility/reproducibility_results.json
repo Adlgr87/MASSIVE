@@ -1,0 +1,44 @@
+[
+  {
+    "test": "Reproducibilidad simulator (3 runs, seed=42)",
+    "status": "PASS",
+    "detail": "max_delta=0.00e+00",
+    "deltas": [
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "test": "Reproducibilidad MassiveSimEngine (3 runs, seed=42)",
+    "status": "PASS",
+    "detail": "max_delta=0.00e+00 (v\u00eda np.random.seed global)",
+    "deltas": [
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "test": "Reproducibilidad MultilayerEngine (3 runs, seed=42)",
+    "status": "PASS",
+    "detail": "max_delta=0.00e+00",
+    "deltas": [
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "test": "Reproducibilidad SocialEnergyEngine (3 runs, seed=42)",
+    "status": "PASS",
+    "detail": "max_delta=0.00e+00",
+    "deltas": [
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "test": "PYTHONHASHSEED=42 consistencia cross-proceso",
+    "status": "PASS",
+    "detail": "hash=-5445771446356760158 (consistente entre 2 subprocess)",
+    "deltas": []
+  }
+]

@@ -29,7 +29,7 @@ import numpy as np
 import pandas as pd
 import networkx as nx
 from llm_credentials import resolve_provider_api_key
-from quantum.integration import compress_agent_states, decompress_agent_states
+from massive.core.state_compression import compress_agent_states, decompress_agent_states
 
 try:
     from numba import njit
@@ -336,6 +336,7 @@ def multilayer_langevin_step(
     dt:           float,
     x_min:        float,
     x_max:        float,
+    rng:          np.random.Generator | None = None,
 ) -> np.ndarray:
     """
     Paso de Euler-Maruyama de la dinámica de Langevin multicapa.
@@ -373,7 +374,7 @@ def multilayer_langevin_step(
     grad_U = multi_potential_gradient(x_vec)
 
     # Ruido gaussiano modulado por theta
-    noise = np.random.randn(N, Kdim)
+    noise = rng.standard_normal((N, Kdim)) if rng is not None else np.random.randn(N, Kdim)
 
     # Actualización: Euler-Maruyama
     x_new = x_vec + dt * (-grad_U + social_force) + theta_matrix * _STOCHASTIC_SCALE * noise * np.sqrt(dt)
@@ -505,6 +506,7 @@ class MultilayerEngine:
         attr_config:    dict  | None = None,
         layer_config:   dict  | None = None,
         seed:           int   = 42,
+        scientific_config: dict | None = None,
     ):
         """
         Inicializa el motor multicapa.
@@ -526,9 +528,21 @@ class MultilayerEngine:
         self.coupling = float(coupling)
         self.dt = float(dt)
         self.seed = seed
+        self.rng = np.random.default_rng(seed)
         self.range_type = range_type
         self.x_min = -1.0 if range_type == "bipolar" else 0.0
         self.x_max = 1.0
+
+        # Scientific mode (opt-in)
+        if scientific_config is not None:
+            from massive_core.config import ScientificRuntimeConfig
+            from massive_core.numerics import create_stepper, NumericalDiagnostics
+            self.scientific_config = ScientificRuntimeConfig.from_dict(scientific_config)
+            self._stepper = create_stepper(self.scientific_config.solver)
+        else:
+            self.scientific_config = None
+            self._stepper = None
+        self.last_numerical_diagnostics = None
 
         # Pesos de capas normalizados
         w = np.array(layer_weights, dtype=np.float64)
@@ -594,7 +608,14 @@ class MultilayerEngine:
             self.dt,
             self.x_min,
             self.x_max,
+            rng=self.rng,
         )
+        if self._stepper is not None:
+            from massive_core.numerics import NumericalDiagnostics
+            self.last_numerical_diagnostics = NumericalDiagnostics(
+                method=self.scientific_config.solver,
+                dt_next=self.dt,
+            )
         self._history.append(self.x.copy())
         self._refresh_mps_state()
         return self.x

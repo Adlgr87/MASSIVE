@@ -19,8 +19,8 @@ from social_architect import buscar_estrategia_inversa
 from visualizations import generate_social_network_viz
 from micro_ui import render_micro_tab
 from simulator import (
-    BEYONDSIGHT_EMPIRICAL_MASTER,
-    BEYONDSIGHT_RUNTIME_PARAMS,
+    MASSIVE_EMPIRICAL_MASTER,
+    MASSIVE_RUNTIME_PARAMS,
     DEFAULT_CONFIG,
     DEFAULT_PAYOFF_MATRIX,
     DESCRIPCIONES_REGLAS,
@@ -43,7 +43,7 @@ PROJECT_LOGO_URL = "https://github.com/user-attachments/assets/04c5860f-36d4-433
 
 # EMPIRICAL INTEGRATION — importar indicadores de base empírica si disponibles
 try:
-    from empirical_config import BEYONDSIGHT_RUNTIME_PARAMS as _EMPIRICAL_RUNTIME
+    from empirical_config import MASSIVE_RUNTIME_PARAMS as _EMPIRICAL_RUNTIME
     _EMPIRICAL_VALIDATION_FLAGS = _EMPIRICAL_RUNTIME.get("validation_flags", [])
 except ImportError:
     _EMPIRICAL_VALIDATION_FLAGS = []
@@ -472,9 +472,9 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("#### 🧪 Perfil Empírico" if lang == "es" else "#### 🧪 Empirical Profile")
     activar_empirico = st.toggle(
-        "Aplicar calibración empírica (v{})".format(BEYONDSIGHT_EMPIRICAL_MASTER["meta"]["version"])
+        "Aplicar calibración empírica (v{})".format(MASSIVE_EMPIRICAL_MASTER["meta"]["version"])
         if lang == "es"
-        else "Apply empirical calibration (v{})".format(BEYONDSIGHT_EMPIRICAL_MASTER["meta"]["version"]),
+        else "Apply empirical calibration (v{})".format(MASSIVE_EMPIRICAL_MASTER["meta"]["version"]),
         value=False,
         help=(
             "Aplica los índices de calibración empírica consolidados (redes, temporales, "
@@ -485,7 +485,7 @@ with st.sidebar:
         ),
     )
     if activar_empirico:
-        rp = BEYONDSIGHT_RUNTIME_PARAMS
+        rp = MASSIVE_RUNTIME_PARAMS
         st.caption(
             f"λ social={rp['social_influence_lambda']} · "
             f"T caos={rp['temperature']} · "

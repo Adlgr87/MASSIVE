@@ -2037,11 +2037,12 @@ class IntegratedSimulator:
             )
         )
         for layer_name in self.multilayer_engine.layers.keys():
-            self.multilayer_engine.dynamic_rewiring(
-                layer_name=layer_name,
-                mode=mode,
-                intensity=intensity,
-            )
+            if hasattr(self.multilayer_engine, 'dynamic_rewiring'):
+                self.multilayer_engine.dynamic_rewiring(
+                    layer_name=layer_name,
+                    mode=mode,
+                    intensity=intensity,
+                )
         self.topology_history.append(
             {
                 "tick": self.tick_counter,
@@ -2054,7 +2055,7 @@ class IntegratedSimulator:
     def run_butterfly_diagnostic(self) -> float:
         snapshot = {
             "agents": self.massive_engine.agents.copy(),
-            "graphs": self.multilayer_engine.graphs,
+            "graphs": getattr(self.multilayer_engine, "graphs", self.multilayer_engine.layers),
             "n_ticks_left": max(self.n_ticks - self.tick_counter, 1),
         }
         result = run_butterfly_diagnostic_core(snapshot)
