@@ -19,7 +19,7 @@ Este guide te da todo lo necesario para integrar el CIA World Factbook en MASSIV
 | **Empirical Grounding** | Simulaciones basadas en datos reales de 260+ países |
 | **Validation** | Compara resultados con métricas reales del mundo |
 | **Cross-Country Analysis** | Ejecuta la misma intervención en diferentes países |
-| **Credibility** | Mayor credibilidad académica y política |
+| **Credibility** | Cada parámetro documentado con su fuente empírica |
 
 ---
 

@@ -843,10 +843,10 @@ Para validación, combinar con:
 
 ### 10.2 Practical Benefits
 
-1. **Credibility**: Mayor credibilidad académica y política
+1. **Trazabilidad**: Cada parámetro documentado con su fuente empírica
 2. **Accuracy**: Mejores predicciones al usar datos reales
 3. **Insights**: Descubrimiento de patrones cross-country
-4. **Impact**: Mayor impacto en policy-making
+4. **Reproducibilidad**: Cada simulación reproducible con `seed=` + `PYTHONHASHSEED`
 
 ### 10.3 Competitive Advantages
 
@@ -906,7 +906,8 @@ La integración del World Factbook en MASSIVE representa un **salto cualitativo*
 3. **Comparar países** sistemáticamente
 4. **Generar insights** basados en evidencia empírica
 
-Esta integración posiciona a MASSIVE como el **framework de ABM más empíricamente fundamentado** disponible, con ventajas competitivas significativas en credibilidad académica y utilidad práctica.
+Esta integración posiciona a MASSIVE como un ABM con parámetros trazables a fuentes
+documentadas y validación empírica con 12 casos reales.
 
 **Recomendación**: Proceder con la implementación según el plan detallado en este documento.
 

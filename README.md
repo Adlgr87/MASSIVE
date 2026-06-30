@@ -290,6 +290,17 @@ python -m mkdocs build --strict
 - Scientific roadmap in Spanish: `docs/math_physics_extension_plan_ES.md`
 - PVU-MASSIVE validation protocol: `docs/validation/`
 - Spanish overview: `README_ES.md`
+- Real-world validation report: `experiments/real_validation/EMPIRICAL_VALIDATION_REPORT.md`
+
+---
+
+## Project history
+
+MASSIVE was previously developed under the name `BeyondSight` (visible in older git
+history). The codebase was renamed to `MASSIVE` in 2026-06-29 to better reflect
+the multi-engine architecture (`Multilayer + Architecture for Scalable Social
+Interaction & Virtual Engine`). All current source uses the `massive*` namespace;
+the rename is preserved in git history for traceability.
 
 ---
 
