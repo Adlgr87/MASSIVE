@@ -17,3 +17,6 @@ reports/benchmarks/baseline_v*/
 landscapes_cache.db
 massive_run.log
 *.log
+
+# SOTA roadmap artifacts (regenerated on each run)
+reports/sota_v0_seed*/

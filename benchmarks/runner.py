@@ -1,8 +1,12 @@
 """PVU-BS benchmark runner — CLI entry point.
 
-Usage (offline mode, no LLM required):
+Usage (offline mode, no LLM required, AR(1) proxy):
     python -m benchmarks.runner --cases datasets/pvu_cases --offline \\
            --out reports/validation/ci --seed 42
+
+Usage (real MASSIVE engine, heurístico mode, no LLM):
+    python -m benchmarks.runner --cases datasets/real_cases --real \\
+           --out reports/sota_v0 --seed 42
 
 Usage (LLM mode, requires OPENROUTER_API_KEY or equivalent):
     python -m benchmarks.runner --cases datasets/pvu_cases --llm \\
@@ -14,6 +18,7 @@ Design principles
 - Fast: default CI run completes in seconds (no network calls in offline mode).
 - No heavy new dependencies: uses stdlib + numpy + scipy (already required).
 - LLM mode gracefully skips and warns when secrets are absent.
+- Real mode: actual MASSIVE simulator with 2-param linear calibration on train.
 """
 from __future__ import annotations
 
@@ -123,6 +128,54 @@ def _massive_llm_forecast(
         return None
 
 
+def _massive_real_forecast(
+    train: np.ndarray,
+    horizon: int,
+    case: dict,
+    seed: int,
+) -> np.ndarray | None:
+    """Run the real MASSIVE engine in heurístico mode (no LLM required).
+
+    This is the *actual* MASSIVE simulator (`simulator.simular`), as opposed
+    to the offline AR(1)-based proxy. It uses the heurístico rule selector
+    (deterministic given a fixed seed) and a 2-parameter linear calibration
+    on the train split to map MASSIVE's `opinion` field to the polarization
+    scale of the data.
+
+    See `benchmarks/massive_real.py` for details on the calibration.
+
+    Returns None if the simulator cannot be imported (e.g. on minimal CI).
+    """
+    try:
+        from benchmarks.massive_real import (
+            massive_real_forecast_with_calibration,
+        )  # type: ignore[import]
+    except ImportError as exc:
+        log.warning("Cannot import benchmarks.massive_real — skipping real forecast: %s", exc)
+        return None
+
+    meta = case.get("meta", {}) or {}
+    cultural = meta.get("cultural_profile", "mixed")
+    # network_type in MASSIVE: barabasi_albert / watts_strogatz / erdos_renyi
+    net = meta.get("network_type", "watts_strogatz")
+
+    try:
+        pred = massive_real_forecast_with_calibration(
+            train=train.tolist(),
+            horizon=horizon,
+            cultural_profile=cultural,
+            red_type=net,
+            seed=seed,
+        )
+        return np.asarray(pred, dtype=float)
+    except Exception as exc:  # noqa: BLE001
+        log.warning(
+            "Real MASSIVE forecast failed for '%s': %s",
+            case.get("name", "?"), exc,
+        )
+        return None
+
+
 # ── Per-case evaluation ───────────────────────────────────────────────────────
 
 def evaluate_case(
@@ -157,6 +210,14 @@ def evaluate_case(
     # ── MASSIVE forecast ──────────────────────────────────────────────────
     if mode == "llm":
         bs_pred = _massive_llm_forecast(train, horizon, case)
+    elif mode == "real":
+        bs_pred = _massive_real_forecast(train, horizon, case, seed=42)
+        if bs_pred is None:
+            log.warning(
+                "Real MASSIVE forecast unavailable for '%s' — falling back to offline proxy.",
+                case.get("name", "?"),
+            )
+            bs_pred = _massive_offline_forecast(train, horizon, rng)
     else:
         bs_pred = _massive_offline_forecast(train, horizon, rng)
 
@@ -321,13 +382,23 @@ def _parse_args(argv=None) -> argparse.Namespace:
         "--offline",
         action="store_true",
         default=True,
-        help="Run in offline mode (no LLM, default).",
+        help="Run in offline mode (AR(1) proxy, no LLM, default).",
     )
     mode_group.add_argument(
         "--llm",
         action="store_true",
         default=False,
         help="Run MASSIVE in LLM mode (requires API key).",
+    )
+    mode_group.add_argument(
+        "--real",
+        action="store_true",
+        default=False,
+        help=(
+            "Run the real MASSIVE engine in heurístico mode "
+            "(no LLM required, 2-param linear calibration on train). "
+            "This replaces the AR(1) proxy with the actual simulator."
+        ),
     )
     parser.add_argument(
         "--out",
@@ -345,7 +416,12 @@ def _parse_args(argv=None) -> argparse.Namespace:
 
 def main(argv=None) -> int:
     args = _parse_args(argv)
-    mode = "llm" if args.llm else "offline"
+    if args.llm:
+        mode = "llm"
+    elif args.real:
+        mode = "real"
+    else:
+        mode = "offline"
     seed = args.seed
 
     # Determinism
