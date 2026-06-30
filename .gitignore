@@ -12,3 +12,8 @@ __pycache__/
 # Reports generados en runtime
 reports/validation/run_*/
 reports/benchmarks/baseline_v*/
+
+# Runtime artifacts (no commit)
+landscapes_cache.db
+massive_run.log
+*.log

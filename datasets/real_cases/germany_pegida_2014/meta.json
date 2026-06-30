@@ -1,0 +1,21 @@
+{
+  "case_id": "germany_pegida_2014",
+  "title": "Germany — PEGIDA Movement 2014-16",
+  "country": "DEU",
+  "cultural_profile": "anglosaxon",
+  "scenario_type": "polarization_escalation",
+  "description": "Movimiento anti-islamización. Marchas semanales en Dresde. Polarización moderada pero persistente. Pico: 25k personas Feb 2015.",
+  "sources": [
+    "DiW (Deutsches Institut für Wirtschaftsforschung): polarization data",
+    "Allensbach Institute: PEGIDA support surveys",
+    "Vorländer et al. (2016): PEGIDA analysis",
+    "Die Zeit: march attendance data"
+  ],
+  "is_synthetic": false,
+  "data_type": "empirical_estimated",
+  "data_confidence": "medium-high",
+  "data_notes": "Polarization values estimated from published surveys and research. Values normalized to [0,1] where 0=consensus, 0.5=moderate division, 1.0=max polarization. For SIR-type cases, P represents protest participation rate rather than polarization.",
+  "network_type": "watts_strogatz",
+  "n_timesteps": 15,
+  "pvu_level_target": "bronze"
+}

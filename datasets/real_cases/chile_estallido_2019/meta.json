@@ -1,0 +1,21 @@
+{
+  "case_id": "chile_estallido_2019",
+  "title": "Chile — Estallido Social 2019",
+  "country": "CHL",
+  "cultural_profile": "latin",
+  "scenario_type": "polarization_spike",
+  "description": "Protestas masivas iniciadas el 18-Oct-2019 por alza de tarifa metro. 1.2M personas marcharon el 25-Oct. Polarización política se duplicó.",
+  "sources": [
+    "Latinobarómetro 2019 (Corporación Latinobarómetro)",
+    "CEP Survey #85 (Nov-2019): aprobación presidencial cayó de 52% a 14%",
+    "Twitter analysis: Garretón et al. (2021) — polarización en RRSS",
+    "Protest attendance: Indignados/Paz Ciudadana estimates"
+  ],
+  "is_synthetic": false,
+  "data_type": "empirical_estimated",
+  "data_confidence": "medium-high",
+  "data_notes": "Polarization values estimated from published surveys and research. Values normalized to [0,1] where 0=consensus, 0.5=moderate division, 1.0=max polarization. For SIR-type cases, P represents protest participation rate rather than polarization.",
+  "network_type": "watts_strogatz",
+  "n_timesteps": 15,
+  "pvu_level_target": "bronze"
+}

@@ -1,0 +1,21 @@
+{
+  "case_id": "myanmar_coup_cdm_2021",
+  "title": "Myanmar — Coup & Civil Disobedience 2021",
+  "country": "MMR",
+  "cultural_profile": "east_asian",
+  "scenario_type": "contagion_sir",
+  "description": "Golpe militar Feb 1. Movimiento de Desobediencia Civil (CDM) se propagó como contagio. Empleados públicos, médicos, ferroviarios. Respuesta militar violenta. CDM fue resistencia principal.",
+  "sources": [
+    "AAPP (Assistance Association for Political Prisoners): data",
+    "Myanmar Now: protest tracking",
+    "UN OCHA: humanitarian update Myanmar",
+    "Henshall & Johnson (2021): CDM analysis"
+  ],
+  "is_synthetic": false,
+  "data_type": "empirical_estimated",
+  "data_confidence": "medium-high",
+  "data_notes": "Polarization values estimated from published surveys and research. Values normalized to [0,1] where 0=consensus, 0.5=moderate division, 1.0=max polarization. For SIR-type cases, P represents protest participation rate rather than polarization.",
+  "network_type": "watts_strogatz",
+  "n_timesteps": 15,
+  "pvu_level_target": "bronze"
+}

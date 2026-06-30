@@ -1,0 +1,21 @@
+{
+  "case_id": "france_gilets_jaunes_2018",
+  "title": "France — Gilets Jaunes 2018-19",
+  "country": "FRA",
+  "cultural_profile": "latin",
+  "scenario_type": "polarization_spike",
+  "description": "Movimiento de protesta espontáneo contra alza de combustibles. Sin líderes formales, organización via Facebook. 300k manifestantes semana 1.",
+  "sources": [
+    "IFOP polling: soutien aux Gilets Jaunes (Nov 2018)",
+    "Ouest-France: protest count data",
+    "Chemetov & Goujard (2019): social media analysis",
+    "V-Dem: France polarization index"
+  ],
+  "is_synthetic": false,
+  "data_type": "empirical_estimated",
+  "data_confidence": "medium-high",
+  "data_notes": "Polarization values estimated from published surveys and research. Values normalized to [0,1] where 0=consensus, 0.5=moderate division, 1.0=max polarization. For SIR-type cases, P represents protest participation rate rather than polarization.",
+  "network_type": "watts_strogatz",
+  "n_timesteps": 15,
+  "pvu_level_target": "bronze"
+}

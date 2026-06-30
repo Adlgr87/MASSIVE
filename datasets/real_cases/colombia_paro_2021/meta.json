@@ -1,0 +1,21 @@
+{
+  "case_id": "colombia_paro_2021",
+  "title": "Colombia — Paro Nacional 2021",
+  "country": "COL",
+  "cultural_profile": "latin",
+  "scenario_type": "polarization_spike",
+  "description": "Protestas contra reforma tributaria. Violencia policial sin precedentes. 43 muertos durante protestas. Polarización sin precedentes.",
+  "sources": [
+    "Invamer poll (May 2021): 78% apoyo al paro",
+    "Gallup Colombia (2021): respaldo presidencial cayó",
+    "Human Rights Watch: report on deaths",
+    "Templeton et al. (2021): social media analysis"
+  ],
+  "is_synthetic": false,
+  "data_type": "empirical_estimated",
+  "data_confidence": "medium-high",
+  "data_notes": "Polarization values estimated from published surveys and research. Values normalized to [0,1] where 0=consensus, 0.5=moderate division, 1.0=max polarization. For SIR-type cases, P represents protest participation rate rather than polarization.",
+  "network_type": "watts_strogatz",
+  "n_timesteps": 15,
+  "pvu_level_target": "bronze"
+}
