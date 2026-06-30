@@ -1,0 +1,21 @@
+{
+  "case_id": "iran_mahsa_amini_2022",
+  "title": "Iran — Mahsa Amini Protests 2022",
+  "country": "IRN",
+  "cultural_profile": "middle_east",
+  "scenario_type": "contagion_sir",
+  "description": "Protestas tras muerte de Mahsa Amini en custodia policial. Contagio rápido vía redes sociales a pesar de internet shutdown. Movimiento 'Woman, Life, Freedom'.",
+  "sources": [
+    "Iran Human Rights (IHR): protest casualty data",
+    "Carnegie Endowment: Iran protest analysis 2022",
+    "OSS/DISCO social media analysis",
+    "Article19: Internet shutdown documentation"
+  ],
+  "is_synthetic": false,
+  "data_type": "empirical_estimated",
+  "data_confidence": "medium-high",
+  "data_notes": "Polarization values estimated from published surveys and research. Values normalized to [0,1] where 0=consensus, 0.5=moderate division, 1.0=max polarization. For SIR-type cases, P represents protest participation rate rather than polarization.",
+  "network_type": "watts_strogatz",
+  "n_timesteps": 14,
+  "pvu_level_target": "bronze"
+}

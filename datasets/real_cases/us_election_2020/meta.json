@@ -1,0 +1,21 @@
+{
+  "case_id": "us_election_2020",
+  "title": "USA — Presidential Election 2020",
+  "country": "USA",
+  "cultural_profile": "anglosaxon",
+  "scenario_type": "polarization_escalation",
+  "description": "Elecciones presidenciales con alta polarización, protestas BLM, pandemia COVID y questionamiento de resultados electorales.",
+  "sources": [
+    "Pew Research Center (2020): Political Polarization in America",
+    "Gallup: Presidential Approval Ratings 2020",
+    "V-Dem Institute: Democratic Backsliding metrics",
+    "FiveThirtyEight: polling aggregation"
+  ],
+  "is_synthetic": false,
+  "data_type": "empirical_estimated",
+  "data_confidence": "medium-high",
+  "data_notes": "Polarization values estimated from published surveys and research. Values normalized to [0,1] where 0=consensus, 0.5=moderate division, 1.0=max polarization. For SIR-type cases, P represents protest participation rate rather than polarization.",
+  "network_type": "watts_strogatz",
+  "n_timesteps": 14,
+  "pvu_level_target": "bronze"
+}

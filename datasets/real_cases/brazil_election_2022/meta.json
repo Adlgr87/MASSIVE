@@ -1,0 +1,21 @@
+{
+  "case_id": "brazil_election_2022",
+  "title": "Brazil — Presidential Election 2022",
+  "country": "BRA",
+  "cultural_profile": "latin",
+  "scenario_type": "polarization_spike",
+  "description": "Elección Lula vs Bolsonaro, segunda vuelta con altísima polarización. Cuestionamiento de resultado por incumbent.",
+  "sources": [
+    "Datafolha polling 2022",
+    "AtlasPol polarization index Brazil",
+    "V-Dem: Brazil polarization metrics",
+    "TSE (Tribunal Superior Eleitoral) results"
+  ],
+  "is_synthetic": false,
+  "data_type": "empirical_estimated",
+  "data_confidence": "medium-high",
+  "data_notes": "Polarization values estimated from published surveys and research. Values normalized to [0,1] where 0=consensus, 0.5=moderate division, 1.0=max polarization. For SIR-type cases, P represents protest participation rate rather than polarization.",
+  "network_type": "watts_strogatz",
+  "n_timesteps": 12,
+  "pvu_level_target": "bronze"
+}

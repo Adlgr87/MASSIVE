@@ -108,6 +108,35 @@ Barrido sistemático de 6 parámetros críticos × 5 seeds + factorial 2³:
 ### 7. pytest Suite Original
 **Resultado:** 334 passed, 2 skipped, 0 failed
 
+### 8. Validación Empírica con Casos Reales (`experiments/real_validation/`)
+**Script:** `generate_real_cases.py` + `benchmarks.runner` (modo offline)
+**Resultado:** 12 casos reales ejecutados contra MASSIVE + 3 baselines (naive, linear, persistence)
+**Artefactos:** `EMPIRICAL_VALIDATION_REPORT.md` + `reports/real_validation/`
+
+Comparación MASSIVE vs mundo real en 12 fenómenos sociales documentados con datos empíricos
+(Latinobarómetro, Pew, Gallup, Datafolha, IFOP, HKU POP, LAPOP, etc.):
+
+| # | Caso | Periodo | Tipo de dinámica |
+|---|---|---|---|
+| 1 | Chile Estallido Social 2019 | 18-Oct → 12-Dic | polarization_spike |
+| 2 | USA Elección 2020 | Ene 2020 → Ene 2021 | polarization_escalation |
+| 3 | Brexit Referendum 2016 | Ene → Dic 2016 | polarization_spike |
+| 4 | Brasil Elección 2022 | Ene → Oct 2022 | polarization_spike |
+| 5 | Hong Kong Protests 2019 | Mar → Dic 2019 | polarization_spike |
+| 6 | France Gilets Jaunes 2018 | Nov 2017 → Sep 2019 | polarization_spike |
+| 7 | Colombia Paro Nacional 2021 | Abr → Jul 2021 | polarization_spike |
+| 8 | Egypt Arab Spring 2011 | Ene → Ago 2011 | contagion_sir |
+| 9 | Iran Mahsa Amini 2022 | Sep → Dic 2022 | contagion_sir |
+| 10 | South Korea Candlelight 2016 | Ene → Dic 2016 | consensus_cascade |
+| 11 | Germany PEGIDA 2014 | Ene 2014 → Jun 2015 | polarization_escalation |
+| 12 | Myanmar Coup CDM 2021 | Feb → Sep 2021 | contagion_sir |
+
+**Hallazgos clave:**
+- 1/12 victorias en MAE bruto (USA 2020: 0.0291)
+- 3/12 casos con Diebold-Mariano significativo (Colombia, Egipto, Corea del Sur)
+- MASSIVE supera a baselines en **directional accuracy** (7/12 casos)
+- Conclusión: MASSIVE es **competitivo** con baselines naïve; destaca en capturar dirección de cambio
+
 ---
 
 ## Parámetros Calibrados
@@ -149,6 +178,9 @@ experiments/
 ├── 05_reproducibility/
 │   ├── run_reproducibility.py
 │   └── reproducibility_results.json
+├── real_validation/
+│   ├── generate_real_cases.py
+│   └── EMPIRICAL_VALIDATION_REPORT.md
 ├── configs/
 │   ├── env_base.sh
 │   └── baseline_offline.json
@@ -177,4 +209,9 @@ python3 experiments/05_reproducibility/run_reproducibility.py
 
 # Suite pytest original
 python3 -m pytest tests/ --tb=short -q
+
+# Validación empírica (12 casos reales)
+python3 experiments/real_validation/generate_real_cases.py
+python3 -m benchmarks.runner --cases datasets/real_cases --offline \
+    --out reports/real_validation --seed 42
 ```

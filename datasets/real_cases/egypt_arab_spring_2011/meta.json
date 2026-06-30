@@ -1,0 +1,21 @@
+{
+  "case_id": "egypt_arab_spring_2011",
+  "title": "Egypt — Arab Spring 2011",
+  "country": "EGY",
+  "cultural_profile": "middle_east",
+  "scenario_type": "contagion_sir",
+  "description": "Protestas en Plaza Tahrir. Contagio de protesta tipo SIR. Internet apagado el 28-Ene. Mubarak renunció el 11-Feb.",
+  "sources": [
+    "Tahrir Square data: Ghonim (2012) Revolution 2.0",
+    "Twitter analysis: Lotan et al. (2011)",
+    "ACLED conflict data Egypt",
+    "Al Jazeera timeline"
+  ],
+  "is_synthetic": false,
+  "data_type": "empirical_estimated",
+  "data_confidence": "medium-high",
+  "data_notes": "Polarization values estimated from published surveys and research. Values normalized to [0,1] where 0=consensus, 0.5=moderate division, 1.0=max polarization. For SIR-type cases, P represents protest participation rate rather than polarization.",
+  "network_type": "watts_strogatz",
+  "n_timesteps": 14,
+  "pvu_level_target": "bronze"
+}

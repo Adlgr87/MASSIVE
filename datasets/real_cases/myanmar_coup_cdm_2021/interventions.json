@@ -1,0 +1,27 @@
+[
+  {
+    "date": "2021-W05",
+    "label": "Feb 1: Military coup",
+    "source": "AAPP/UN"
+  },
+  {
+    "date": "2021-W06",
+    "label": "Feb 3-5: Doctors start CDM",
+    "source": "Myanmar Now"
+  },
+  {
+    "date": "2021-W09",
+    "label": "Feb 15-22: Peak CDM participation",
+    "source": "AAPP"
+  },
+  {
+    "date": "2021-W10",
+    "label": "Feb 28: First major crackdown",
+    "source": "UN OCHA"
+  },
+  {
+    "date": "2021-W14",
+    "label": "Mobile internet shutdown",
+    "source": "NetBlocks"
+  }
+]

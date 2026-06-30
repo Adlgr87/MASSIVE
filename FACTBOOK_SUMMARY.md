@@ -302,7 +302,7 @@ MASSIVE/
 
 This integration transforms MASSIVE from a **theoretical framework** into an **empirically-validated tool** for social simulation, with direct applications in:
 
-- **Academic research** - Publishable with empirical validation
+- **Academic research** - Validación empírica con 12 casos reales documentados
 - **Policy analysis** - Credible recommendations for governments
 - **Scenario planning** - Realistic projections for organizations
 - **Cross-cultural studies** - Systematic country comparisons
