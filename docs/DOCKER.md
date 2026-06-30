@@ -34,7 +34,7 @@ The container runs three processes via **supervisord**:
 | Service       | Port  | Description                          |
 | ------------- | ----- | ------------------------------------ |
 | FastAPI API   | 8000  | REST API with OpenAPI docs at `/docs` |
-| Streamlit UI  | 8501  | Web interface for BeyondSight       |
+| Streamlit UI  | 8501  | Web interface for MASSIVE           |
 | Nginx         | 80    | Reverse proxy (optional)            |
 
 ## Commands

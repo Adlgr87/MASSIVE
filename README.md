@@ -13,7 +13,7 @@ The guiding principle is backward compatibility: the classic APIs (`simular`, `s
 - **Hybrid regime reasoning:** heuristic, LLM-compatible and optional CfC neural regime selection paths coexist with safe fallbacks.
 - **Scientific opt-in layer:** adaptive steppers, stability diagnostics, EnKF assimilation, bifurcation tools, statistical mechanics, network reconstruction and scientific reports are available without changing default simulation behavior.
 - **Multi-engine architecture:** legacy scalar simulation, social-energy Langevin dynamics, multilayer sociodemographic dynamics and large-scale super-agent simulation are all present.
-- **Validation-first design:** PVU-BeyondSight offline validation, canonical scientific benchmarks and a broad pytest suite support reproducibility.
+- **Validation-first design:** PVU-MASSIVE offline validation, canonical scientific benchmarks and a broad pytest suite support reproducibility.
 - **Typed backend/frontend contract:** Pydantic DTOs generate TypeScript interfaces through `scripts/gen_ts_types.py`.
 
 ---
@@ -61,7 +61,7 @@ Sample data includes US, China, Germany. Full dataset (260+ countries) can be lo
 | Multilayer engine | `multilayer_engine.py`, `massive_engine.py`, `massive_core/numerics/multilayer_engine_sparse.py` | Sociodemographic multilayer simulation, sparse-engine optimisation and scalable super-agent execution. |
 | Forecasting | `forecast/` | Analytical and Monte Carlo temporal forecasts and scenario comparison. |
 | Strategy design | `social_architect.py`, `intervention_optimizer.py`, `programmatic_architect.py` | Inverse intervention design and optimization. |
-| Validation | `benchmarks/`, `datasets/pvu_cases/`, `docs/validation/` | PVU-BeyondSight cases, metrics and validation reports. |
+| Validation | `benchmarks/`, `datasets/pvu_cases/`, `docs/validation/` | PVU-MASSIVE cases, metrics and validation reports. |
 | **CIA World Factbook** | `massive/core/factbook/`, `data/factbook/` | Country-specific demographic, economic, social data integration for realistic simulations. |
 | UI/API contract | `app.py`, `backend/app/models/`, `frontend/src/types/` | Streamlit app, DTOs and generated TypeScript types. |
 
@@ -271,7 +271,7 @@ dataset = build_cfc_regime_dataset_from_history(historial, window_size=6)
 # Unit/integration suite
 python -m pytest tests/
 
-# PVU-BeyondSight offline validation
+# PVU-MASSIVE offline validation
 python -m benchmarks.runner --cases datasets/pvu_cases --offline --out reports/validation/local --seed 42
 
 # Regenerate frontend TypeScript contracts
@@ -288,7 +288,7 @@ python -m mkdocs build --strict
 - MkDocs site: `docs/`
 - API reference: `docs/api.md`
 - Scientific roadmap in Spanish: `docs/math_physics_extension_plan_ES.md`
-- PVU-BeyondSight validation protocol: `docs/validation/`
+- PVU-MASSIVE validation protocol: `docs/validation/`
 - Spanish overview: `README_ES.md`
 
 ---

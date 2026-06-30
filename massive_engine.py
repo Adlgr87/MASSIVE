@@ -381,6 +381,7 @@ def _langevin_step_masked(
     coupling: float,
     dt: float,
     active_mask: np.ndarray,
+    rng: np.random.Generator | None = None,
 ) -> np.ndarray:
     """
     Paso de Euler-Maruyama de Langevin procesando solo los super-agentes activos.
@@ -424,7 +425,7 @@ def _langevin_step_masked(
     drift[:, _COL_OPINION] += social_op
 
     # Ruido gaussiano modulado por theta
-    noise = np.random.randn(M_active, K)
+    noise = rng.standard_normal((M_active, K)) if rng is not None else np.random.randn(M_active, K)
 
     # Actualización Euler-Maruyama
     x_new = x.copy()
@@ -452,6 +453,7 @@ def _langevin_step_gpu(
     theta: np.ndarray,
     coupling: float,
     dt: float,
+    rng: np.random.Generator | None = None,
 ) -> np.ndarray:
     """
     Paso de Langevin usando CuPy (GPU). Fallback a NumPy si CuPy no disponible.
@@ -513,7 +515,7 @@ def _langevin_step_gpu(
     for ell, w in enumerate(layer_weights):
         social_force[:, _COL_OPINION] += coupling * w * (layers_flat[ell] @ x[:, _COL_OPINION])
     grad_U = multi_potential_gradient(x)
-    noise = np.random.randn(M, K)
+    noise = rng.standard_normal((M, K)) if rng is not None else np.random.randn(M, K)
     x_new = (
         x
         + dt * (-grad_U + social_force)
@@ -592,6 +594,7 @@ class MassiveSimEngine:
         self.coupling = float(coupling)
         self.dt = float(dt)
         self.seed = seed
+        self.rng = np.random.default_rng(seed)
 
         # Pesos de capa normalizados
         w = np.array(layer_weights, dtype=np.float64)
@@ -673,6 +676,7 @@ class MassiveSimEngine:
                     self._theta,
                     self.coupling,
                     self.dt,
+                    rng=self.rng,
                 )
                 active_frac = 1.0
 
@@ -686,6 +690,7 @@ class MassiveSimEngine:
                     self.coupling,
                     self.dt,
                     self._active_set.mask,
+                    rng=self.rng,
                 )
                 self._active_set.step(x_prev, self._x, self._layers_flat[0])
                 active_frac = float(self._active_set.mask.mean())
@@ -701,6 +706,7 @@ class MassiveSimEngine:
                     self.dt,
                     _OPINION_MIN,
                     _OPINION_MAX,
+                    rng=self.rng,
                 )
                 active_frac = 1.0
 
