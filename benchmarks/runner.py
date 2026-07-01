@@ -158,6 +158,7 @@ def _massive_real_forecast(
     cultural = meta.get("cultural_profile", "mixed")
     # network_type in MASSIVE: barabasi_albert / watts_strogatz / erdos_renyi
     net = meta.get("network_type", "watts_strogatz")
+    cluster = meta.get("cluster_id")
 
     try:
         pred = massive_real_forecast_with_calibration(
@@ -166,6 +167,7 @@ def _massive_real_forecast(
             cultural_profile=cultural,
             red_type=net,
             seed=seed,
+            cluster_id=cluster,
         )
         return np.asarray(pred, dtype=float)
     except Exception as exc:  # noqa: BLE001

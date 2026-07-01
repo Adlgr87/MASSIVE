@@ -60,29 +60,19 @@ def _build_initial_state(
     train_horizon: int,
     cultural_profile: str = "mixed",
     red_type: str = "watts_strogatz",
+    cluster_id: str | None = None,
 ) -> Dict[str, float]:
     """Build MASSIVE initial state from a polarization training window.
 
-    Parameters
-    ----------
-    train : sequence of float
-        Polarization values from the training split.
-    train_horizon : int
-        Number of timesteps the train split represents.
-    cultural_profile : str
-        One of: mixed, latin, anglosaxon, east_asian, middle_east,
-        south_asian, subsaharan_africa.
-    red_type : str
-        Network topology hint for MASSIVE.
-
-    Returns
-    -------
-    dict
-        Initial state for `simular()`.
+    Optionally conditions initial parameters on cluster_id (regime):
+    - consensus_cascade: high confianza, high pertenencia, low propaganda
+    - contagion_sir: medium confianza, medium pertenencia, medium propaganda
+    - polarization_spike: high propaganda, larger initial group gap
+    - polarization_escalation: medium-high propaganda, medium pertenencia
     """
     train = list(train[:train_horizon])
     if not train:
-        return {
+        base = {
             "opinion": 0.5,
             "propaganda": 0.5,
             "confianza": 0.5,
@@ -91,22 +81,44 @@ def _build_initial_state(
             "pertenencia_grupo": 0.5,
             "red_type": red_type,
         }
-    last_pol = float(np.clip(train[-1], 0.0, 1.0))
-    mean_pol = float(np.mean(train))
-    var_pol = float(np.var(train)) if len(train) > 1 else 0.0
-    # Polarization -> group opinions: split symmetrically around last value
-    op_a = float(np.clip(0.5 + 0.5 * last_pol, 0.0, 1.0))
-    op_b = float(np.clip(0.5 - 0.5 * last_pol, 0.0, 1.0))
-    return {
-        "opinion": last_pol,
-        "propaganda": float(np.clip(0.5 + (last_pol - 0.5) * 0.6, 0.0, 1.0)),
-        "confianza": float(np.clip(0.6 - 0.3 * var_pol, 0.0, 1.0)),
-        "opinion_grupo_a": op_a,
-        "opinion_grupo_b": op_b,
-        "pertenencia_grupo": float(np.clip(0.5 + 0.3 * (mean_pol - 0.5), 0.0, 1.0)),
-        "red_type": red_type,
-        "cultural_profile": cultural_profile,
-    }
+    else:
+        last_pol = float(np.clip(train[-1], 0.0, 1.0))
+        mean_pol = float(np.mean(train))
+        var_pol = float(np.var(train)) if len(train) > 1 else 0.0
+        # Polarization -> group opinions: split symmetrically around 0.5
+        gap = 0.5 * last_pol
+        op_a = float(np.clip(0.5 + gap, 0.0, 1.0))
+        op_b = float(np.clip(0.5 - gap, 0.0, 1.0))
+        base = {
+            "opinion": last_pol,
+            "propaganda": float(np.clip(0.5 + (last_pol - 0.5) * 0.6, 0.0, 1.0)),
+            "confianza": float(np.clip(0.6 - 0.3 * var_pol, 0.0, 1.0)),
+            "opinion_grupo_a": op_a,
+            "opinion_grupo_b": op_b,
+            "pertenencia_grupo": float(np.clip(0.5 + 0.3 * (mean_pol - 0.5), 0.0, 1.0)),
+            "red_type": red_type,
+        }
+
+    # Regime conditioning (light-touch)
+    if cluster_id == "consensus_cascade":
+        base["confianza"] = float(np.clip(base["confianza"] + 0.2, 0.0, 1.0))
+        base["pertenencia_grupo"] = float(np.clip(base["pertenencia_grupo"] + 0.2, 0.0, 1.0))
+        base["propaganda"] = float(np.clip(base["propaganda"] - 0.2, 0.0, 1.0))
+    elif cluster_id == "contagion_sir":
+        base["confianza"] = float(np.clip(0.55, 0.0, 1.0))
+        base["pertenencia_grupo"] = float(np.clip(0.55, 0.0, 1.0))
+        base["propaganda"] = float(np.clip(0.50, 0.0, 1.0))
+    elif cluster_id == "polarization_spike":
+        base["propaganda"] = float(np.clip(base["propaganda"] + 0.25, 0.0, 1.0))
+        # widen initial group gap slightly
+        base["opinion_grupo_a"] = float(np.clip(base["opinion_grupo_a"] + 0.05, 0.0, 1.0))
+        base["opinion_grupo_b"] = float(np.clip(base["opinion_grupo_b"] - 0.05, 0.0, 1.0))
+    elif cluster_id == "polarization_escalation":
+        base["propaganda"] = float(np.clip(base["propaganda"] + 0.10, 0.0, 1.0))
+        base["pertenencia_grupo"] = float(np.clip(base["pertenencia_grupo"] + 0.05, 0.0, 1.0))
+
+    base["cultural_profile"] = cultural_profile
+    return base
 
 
 def massive_real_forecast(
@@ -118,6 +130,7 @@ def massive_real_forecast(
     steps_per_step: int = 1,
     cada_n_pasos: int = 1,
     seed: int = SEED,
+    cluster_id: str | None = None,
 ) -> np.ndarray:
     """Run the real MASSIVE engine to produce a polarization forecast.
 
@@ -137,6 +150,9 @@ def massive_real_forecast(
         Sampling interval passed to `simular()`.
     seed : int
         RNG seed (must be fixed for reproducibility).
+    cluster_id : Optional[str]
+        Regime label to condition initial state (consensus_cascade, contagion_sir,
+        polarization_spike, polarization_escalation).
 
     Returns
     -------
@@ -154,6 +170,7 @@ def massive_real_forecast(
         train_horizon=len(train),
         cultural_profile=cultural_profile,
         red_type=red_type,
+        cluster_id=cluster_id,
     )
 
     n_steps = horizon * max(1, steps_per_step)
@@ -200,6 +217,7 @@ def massive_real_forecast_with_calibration(
     cultural_profile: str = "mixed",
     red_type: str = "watts_strogatz",
     seed: int = SEED,
+    cluster_id: str | None = None,
 ) -> np.ndarray:
     """Forecast with linear calibration fit on train split.
 
@@ -211,6 +229,10 @@ def massive_real_forecast_with_calibration(
 
     This gives MASSIVE a fair comparison vs AR(1) and naive: the mapping
     is 2 parameters, calibrated only on the training window.
+
+    If `cluster_id` is provided, the initial state is lightly conditioned
+    on the regime (consensus_cascade, contagion_sir, polarization_spike,
+    polarization_escalation).
     """
     from simulator import simular
 
@@ -226,6 +248,7 @@ def massive_real_forecast_with_calibration(
         train_horizon=n_train,
         cultural_profile=cultural_profile,
         red_type=red_type,
+        cluster_id=cluster_id,
     )
 
     try:
