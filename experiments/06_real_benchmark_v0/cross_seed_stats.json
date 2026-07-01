@@ -1,0 +1,86 @@
+{
+  "brazil_election_2022": {
+    "massive_mae_mean": 0.04251370971017698,
+    "massive_mae_std": 0.0,
+    "naive_mae_mean": 0.085,
+    "massive_dir_acc": 0.6666666666666666,
+    "naive_dir_acc": 0.0
+  },
+  "brexit_referendum_2016": {
+    "massive_mae_mean": 0.03137159740309289,
+    "massive_mae_std": 0.0,
+    "naive_mae_mean": 0.03249999999999997,
+    "massive_dir_acc": 0.6666666666666666,
+    "naive_dir_acc": 0.0
+  },
+  "chile_estallido_2019": {
+    "massive_mae_mean": 0.08530592871972281,
+    "massive_mae_std": 0.0,
+    "naive_mae_mean": 0.11799999999999995,
+    "massive_dir_acc": 0.75,
+    "naive_dir_acc": 0.0
+  },
+  "colombia_paro_2021": {
+    "massive_mae_mean": 0.06399404186860824,
+    "massive_mae_std": 0.0,
+    "naive_mae_mean": 0.09400000000000001,
+    "massive_dir_acc": 0.75,
+    "naive_dir_acc": 0.0
+  },
+  "egypt_arab_spring_2011": {
+    "massive_mae_mean": 0.2266230536200644,
+    "massive_mae_std": 0.0,
+    "naive_mae_mean": 0.254,
+    "massive_dir_acc": 0.5,
+    "naive_dir_acc": 0.0
+  },
+  "france_gilets_jaunes_2018": {
+    "massive_mae_mean": 0.06766593685703826,
+    "massive_mae_std": 0.0,
+    "naive_mae_mean": 0.09600000000000004,
+    "massive_dir_acc": 0.75,
+    "naive_dir_acc": 0.0
+  },
+  "germany_pegida_2014": {
+    "massive_mae_mean": 0.012294707940331393,
+    "massive_mae_std": 1.734723475976807e-18,
+    "naive_mae_mean": 0.027999999999999987,
+    "massive_dir_acc": 0.75,
+    "naive_dir_acc": 0.0
+  },
+  "hong_kong_protests_2019": {
+    "massive_mae_mean": 0.16097657255834225,
+    "massive_mae_std": 0.0,
+    "naive_mae_mean": 0.09600000000000004,
+    "massive_dir_acc": 0.75,
+    "naive_dir_acc": 0.0
+  },
+  "iran_mahsa_amini_2022": {
+    "massive_mae_mean": 0.07016144611182577,
+    "massive_mae_std": 0.0,
+    "naive_mae_mean": 0.13999999999999999,
+    "massive_dir_acc": 0.75,
+    "naive_dir_acc": 0.0
+  },
+  "myanmar_coup_cdm_2021": {
+    "massive_mae_mean": 0.09731629817489966,
+    "massive_mae_std": 0.0,
+    "naive_mae_mean": 0.11600000000000003,
+    "massive_dir_acc": 0.75,
+    "naive_dir_acc": 0.0
+  },
+  "south_korea_candlelight_2016": {
+    "massive_mae_mean": 0.13494516957870067,
+    "massive_mae_std": 0.0,
+    "naive_mae_mean": 0.07399999999999998,
+    "massive_dir_acc": 0.5,
+    "naive_dir_acc": 0.0
+  },
+  "us_election_2020": {
+    "massive_mae_mean": 0.1211817839767323,
+    "massive_mae_std": 0.0,
+    "naive_mae_mean": 0.03200000000000003,
+    "massive_dir_acc": 0.5,
+    "naive_dir_acc": 0.0
+  }
+}

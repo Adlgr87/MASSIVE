@@ -1,0 +1,74 @@
+[
+  {
+    "case": "brazil_election_2022",
+    "mae": 0.004919509640779862,
+    "rmse": 0.006003938219137146,
+    "directional_accuracy": 0.0
+  },
+  {
+    "case": "brexit_referendum_2016",
+    "mae": 0.0012937119545171905,
+    "rmse": 0.0013690995649506751,
+    "directional_accuracy": 0.0
+  },
+  {
+    "case": "chile_estallido_2019",
+    "mae": 0.003174895178061271,
+    "rmse": -0.0023582635258400375,
+    "directional_accuracy": 0.0
+  },
+  {
+    "case": "colombia_paro_2021",
+    "mae": -0.001804957326040274,
+    "rmse": -0.0041519001745678324,
+    "directional_accuracy": 0.0
+  },
+  {
+    "case": "egypt_arab_spring_2011",
+    "mae": 0.0330724887246886,
+    "rmse": 0.030104327074406717,
+    "directional_accuracy": 0.0
+  },
+  {
+    "case": "france_gilets_jaunes_2018",
+    "mae": 0.0037081828039131903,
+    "rmse": 0.0022520415007398348,
+    "directional_accuracy": 0.0
+  },
+  {
+    "case": "germany_pegida_2014",
+    "mae": 0.00048039315575707474,
+    "rmse": 0.0011529138684731079,
+    "directional_accuracy": 0.0
+  },
+  {
+    "case": "hong_kong_protests_2019",
+    "mae": 0.004776854692504051,
+    "rmse": 0.004633522787015176,
+    "directional_accuracy": 0.0
+  },
+  {
+    "case": "iran_mahsa_amini_2022",
+    "mae": 0.002629992755493707,
+    "rmse": 0.0016351943554930443,
+    "directional_accuracy": 0.0
+  },
+  {
+    "case": "myanmar_coup_cdm_2021",
+    "mae": 0.010771916041052848,
+    "rmse": 0.012046873775320224,
+    "directional_accuracy": 0.0
+  },
+  {
+    "case": "south_korea_candlelight_2016",
+    "mae": 0.0013557369606161385,
+    "rmse": 0.001456984851159332,
+    "directional_accuracy": 0.0
+  },
+  {
+    "case": "us_election_2020",
+    "mae": 0.010655243867814607,
+    "rmse": 0.010805106757547894,
+    "directional_accuracy": 0.0
+  }
+]
