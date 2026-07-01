@@ -290,7 +290,8 @@ python -m mkdocs build --strict
 - Scientific roadmap in Spanish: `docs/math_physics_extension_plan_ES.md`
 - PVU-MASSIVE validation protocol: `docs/validation/`
 - Spanish overview: `README_ES.md`
-- Real-world validation report: `experiments/real_validation/EMPIRICAL_VALIDATION_REPORT.md`
+- Benchmark card: docs/cards/BENCHMARK.md
+- Reproducibility card: docs/cards/REPRODUCIBILITY.md
 
 ---
 
