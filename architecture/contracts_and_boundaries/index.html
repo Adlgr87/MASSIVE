@@ -1,0 +1,1600 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="MASSIVE — Hybrid social dynamics simulator. Numerical core + LLM as regime selector.">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>MASSIVE — Contratos y fronteras entre dominios - MASSIVE Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#massive-contratos-y-fronteras-entre-dominios" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="MASSIVE Documentation" class="md-header__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MASSIVE Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              MASSIVE — Contratos y fronteras entre dominios
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="MASSIVE Documentation" class="md-nav__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    MASSIVE Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../README_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spanish Version
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation (PVU-BS)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Validation (PVU-BS)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/PVU_MASSIVE_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/PVU_MASSIVE_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocolo (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/preregistration_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registration (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/preregistration_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registro (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/validation_report_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report template (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/validation_report_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plantilla de reporte (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#proposito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Propósito
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-principio-rector" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Principio rector
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-frontera-a-nucleo-de-simulacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Frontera A — Núcleo de simulación
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Frontera A — Núcleo de simulación">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#owner-conceptual" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Owner conceptual
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#contrato-observable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contrato observable
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#consumidores-criticos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consumidores críticos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regla-de-frontera" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regla de frontera
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-frontera-b-wrappers-de-compatibilidad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Frontera B — Wrappers de compatibilidad
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Frontera B — Wrappers de compatibilidad">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#owners-conceptuales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Owners conceptuales
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#contrato-observable_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contrato observable
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tipo-de-contrato" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tipo de contrato
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regla-de-frontera_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regla de frontera
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-frontera-c-forecast-temporal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Frontera C — Forecast temporal
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Frontera C — Forecast temporal">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#owner-conceptual_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Owner conceptual
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#contratos-observables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contratos observables
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Contratos observables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#api-publica-de-paquete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        API pública de paquete
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuracion-temporal-tipada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuración temporal tipada
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dependencia-contractual-hacia-simulacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependencia contractual hacia simulación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regla-de-frontera_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regla de frontera
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-frontera-d-social-architect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Frontera D — Social Architect
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Frontera D — Social Architect">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#owner-conceptual_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Owner conceptual
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#contratos-observables_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contratos observables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#contrato-de-datos-relevante" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contrato de datos relevante
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regla-de-frontera_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regla de frontera
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-frontera-e-motores-especializados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Frontera E — Motores especializados
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Frontera E — Motores especializados">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#owners-conceptuales_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Owners conceptuales
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#contratos-observables_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contratos observables
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Contratos observables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#massive-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Massive engine
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#multilayer-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Multilayer engine
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#energy-engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Energy engine
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regla-de-frontera_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regla de frontera
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-frontera-f-ia-cfc-llm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Frontera F — IA / CfC / LLM
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Frontera F — IA / CfC / LLM">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#owners-conceptuales_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Owners conceptuales
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#contratos-observables_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contratos observables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#frontera-debil-detectada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frontera débil detectada
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regla-de-frontera_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regla de frontera
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-frontera-g-contrato-backendfrontend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Frontera G — Contrato backend/frontend
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Frontera G — Contrato backend/frontend">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#owner-conceptual_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Owner conceptual
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#contratos-observables_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contratos observables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evidencia-contractual-fuerte" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidencia contractual fuerte
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regla-de-frontera_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regla de frontera
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-frontera-h-schemas-de-dominio-python" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Frontera H — Schemas de dominio Python
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Frontera H — Schemas de dominio Python">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#owner-conceptual_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Owner conceptual
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#contratos-observables_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contratos observables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#papel-arquitectonico" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Papel arquitectónico
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regla-de-frontera_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regla de frontera
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-frontera-i-validacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Frontera I — Validación
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Frontera I — Validación">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#owners-conceptuales_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Owners conceptuales
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#contratos-observables_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contratos observables
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regla-de-frontera_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regla de frontera
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-cruces-que-deben-considerarse-sensibles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Cruces que deben considerarse sensibles
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="11. Cruces que deben considerarse sensibles">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cruce-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cruce 1
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cruce-2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cruce 2
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cruce-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cruce 3
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cruce-4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cruce 4
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cruce-5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cruce 5
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-reglas-derivadas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Reglas derivadas
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#13-conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        13. Conclusión
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="massive-contratos-y-fronteras-entre-dominios">MASSIVE — Contratos y fronteras entre dominios</h1>
+<h2 id="proposito">Propósito</h2>
+<p>Definir qué intercambia cada dominio del sistema, cuáles son sus fronteras observables y qué cruces deben considerarse contractuales durante la consolidación.</p>
+<p>Este documento no redefine la arquitectura ideal. Describe las <strong>fronteras reales</strong> del sistema actual para evitar refactors que rompan sinergias invisibles.</p>
+<hr />
+<h2 id="1-principio-rector">1. Principio rector</h2>
+<p>En MASSIVE, una frontera no se define solo por carpeta o paquete. Se define por una combinación de:
+- imports públicos,
+- estructuras de datos compartidas,
+- constantes y defaults consumidos por varios subsistemas,
+- y tests que fijan comportamiento observable.</p>
+<p>Por tanto, un contrato puede vivir en:
+- una API Python,
+- un DTO Pydantic,
+- una convención de dict,
+- un alias backward-compatible,
+- o una surface <code>__init__.py</code>.</p>
+<hr />
+<h2 id="2-frontera-a-nucleo-de-simulacion">2. Frontera A — Núcleo de simulación</h2>
+<h3 id="owner-conceptual">Owner conceptual</h3>
+<p><code>simulator.py</code></p>
+<h3 id="contrato-observable">Contrato observable</h3>
+<ul>
+<li>funciones públicas:</li>
+<li><code>simular</code></li>
+<li><code>simular_multiples</code></li>
+<li><code>run_with_schedule</code></li>
+<li><code>resumen_historial</code></li>
+<li>configuración compartida:</li>
+<li><code>DEFAULT_CONFIG</code></li>
+<li><code>PROVEEDORES</code></li>
+<li><code>RANGOS_DISPONIBLES</code></li>
+<li>shape implícito del historial de simulación:</li>
+<li>lista de dicts</li>
+<li>cada estado contiene al menos <code>opinion</code></li>
+<li>muchos flujos esperan además <code>_regla</code>, <code>_regla_nombre</code>, <code>_razon</code>, <code>_paso</code>, etc.</li>
+</ul>
+<h3 id="consumidores-criticos">Consumidores críticos</h3>
+<ul>
+<li><code>app.py</code></li>
+<li><code>app/__init__.py</code></li>
+<li><code>massive_core/__init__.py</code></li>
+<li><code>social_architect.py</code></li>
+<li><code>forecast/engine.py</code></li>
+<li><code>forecast/scenarios.py</code></li>
+<li><code>cfc_trainer.py</code></li>
+<li><code>benchmarks/runner.py</code></li>
+<li>tests</li>
+</ul>
+<h3 id="regla-de-frontera">Regla de frontera</h3>
+<p>No cambiar firmas, nombres exportados ni estructura básica del historial sin slice dedicado y validación transversal.</p>
+<hr />
+<h2 id="3-frontera-b-wrappers-de-compatibilidad">3. Frontera B — Wrappers de compatibilidad</h2>
+<h3 id="owners-conceptuales">Owners conceptuales</h3>
+<ul>
+<li><code>app/__init__.py</code></li>
+<li><code>massive_core/__init__.py</code></li>
+</ul>
+<h3 id="contrato-observable_1">Contrato observable</h3>
+<p>Permiten importar la API principal sin depender del runtime completo de UI.</p>
+<h3 id="tipo-de-contrato">Tipo de contrato</h3>
+<ul>
+<li>reexport de símbolos</li>
+<li>superficie pública estable</li>
+<li>compatibilidad de import path</li>
+</ul>
+<h3 id="regla-de-frontera_1">Regla de frontera</h3>
+<p>No eliminar ni adelgazar estos wrappers hasta demostrar:
+1. quién los consume,
+2. cuál será su reemplazo,
+3. y que la compatibilidad ya está cubierta.</p>
+<hr />
+<h2 id="4-frontera-c-forecast-temporal">4. Frontera C — Forecast temporal</h2>
+<h3 id="owner-conceptual_1">Owner conceptual</h3>
+<p><code>forecast/</code></p>
+<h3 id="contratos-observables">Contratos observables</h3>
+<h4 id="api-publica-de-paquete">API pública de paquete</h4>
+<p>Desde <code>forecast/__init__.py</code>:
+- <code>TemporalConfig</code>
+- <code>ForecastResult</code>
+- <code>forecast</code>
+- <code>ScenarioReport</code>
+- <code>compare_scenarios</code>
+- <code>apply_intervention</code></p>
+<h4 id="configuracion-temporal-tipada">Configuración temporal tipada</h4>
+<p><code>TemporalConfig</code> fija:
+- <code>event_type</code>
+- <code>step_duration_days</code>
+- <code>time_horizon_days</code>
+- <code>n_steps</code></p>
+<h4 id="dependencia-contractual-hacia-simulacion">Dependencia contractual hacia simulación</h4>
+<p><code>forecast/scenarios.py</code> depende de <code>run_with_schedule</code>.
+<code>forecast/engine.py</code> depende de <code>DEFAULT_CONFIG</code>.</p>
+<h3 id="regla-de-frontera_2">Regla de frontera</h3>
+<p>La capa forecast puede evolucionar internamente, pero su surface pública y su dependencia con el núcleo deben tratarse como contrato explícito.</p>
+<hr />
+<h2 id="5-frontera-d-social-architect">5. Frontera D — Social Architect</h2>
+<h3 id="owner-conceptual_2">Owner conceptual</h3>
+<p><code>social_architect.py</code></p>
+<h3 id="contratos-observables_1">Contratos observables</h3>
+<ul>
+<li>consume <code>run_with_schedule</code></li>
+<li>consume <code>resumen_historial</code></li>
+<li>consume <code>DEFAULT_CONFIG</code></li>
+<li>consume forecast temporal</li>
+<li>opera con estrategias que siguen la estructura de <code>StrategyMatrix</code> / <code>Intervention</code></li>
+</ul>
+<h3 id="contrato-de-datos-relevante">Contrato de datos relevante</h3>
+<p>En <code>schemas.py</code>:
+- <code>Intervention</code>
+- <code>StrategyMatrix</code></p>
+<p>Estos modelos fijan la forma de:
+- fases
+- parámetros
+- target nodes
+- rationale</p>
+<h3 id="regla-de-frontera_3">Regla de frontera</h3>
+<p>No alterar shape de estrategias o intervención sin validar:
+- architect
+- forecast scenarios
+- app.py
+- tests asociados</p>
+<hr />
+<h2 id="6-frontera-e-motores-especializados">6. Frontera E — Motores especializados</h2>
+<h3 id="owners-conceptuales_1">Owners conceptuales</h3>
+<ul>
+<li><code>massive_engine.py</code></li>
+<li><code>multilayer_engine.py</code></li>
+<li><code>energy_engine.py</code></li>
+</ul>
+<h3 id="contratos-observables_2">Contratos observables</h3>
+<h4 id="massive-engine">Massive engine</h4>
+<ul>
+<li>consumido por tests</li>
+<li>consumido por <code>simulator.py</code></li>
+<li>depende de <code>multilayer_engine</code> para partes de la dinámica</li>
+</ul>
+<h4 id="multilayer-engine">Multilayer engine</h4>
+<ul>
+<li>consumido por tests</li>
+<li>consumido por <code>simulator.py</code></li>
+<li>depende parcialmente de <code>simulator</code> para <code>PROVEEDORES</code> en un fallback</li>
+<li>puede consumir CfC (<code>tau_matrix</code>)</li>
+</ul>
+<h4 id="energy-engine">Energy engine</h4>
+<ul>
+<li>validado por tests y usado desde su runner/capa asociada</li>
+</ul>
+<h3 id="regla-de-frontera_4">Regla de frontera</h3>
+<p>No intervenir un engine suponiendo independencia total del resto. Validar siempre interacciones con simulador, tests y UI cuando aplique.</p>
+<hr />
+<h2 id="7-frontera-f-ia-cfc-llm">7. Frontera F — IA / CfC / LLM</h2>
+<h3 id="owners-conceptuales_2">Owners conceptuales</h3>
+<ul>
+<li><code>cfc_router.py</code></li>
+<li><code>cfc_engine.py</code></li>
+<li><code>cfc_trainer.py</code></li>
+<li><code>llm_credentials.py</code></li>
+<li><code>langchain_workflows.py</code></li>
+</ul>
+<h3 id="contratos-observables_3">Contratos observables</h3>
+<ul>
+<li><code>CfCRouter.get()</code> y <code>status</code></li>
+<li>generación de datasets basada en <code>simular</code></li>
+<li>configuración de proveedores basada en <code>PROVEEDORES</code> y resolución de credenciales</li>
+</ul>
+<h3 id="frontera-debil-detectada">Frontera débil detectada</h3>
+<p><code>multilayer_engine.py</code> consulta <code>PROVEEDORES</code> desde <code>simulator</code>, lo que crea un cruce no ideal pero real.</p>
+<h3 id="regla-de-frontera_5">Regla de frontera</h3>
+<p>No separar configuración de proveedores o paths CfC sin mapear consumidores indirectos.</p>
+<hr />
+<h2 id="8-frontera-g-contrato-backendfrontend">8. Frontera G — Contrato backend/frontend</h2>
+<h3 id="owner-conceptual_3">Owner conceptual</h3>
+<p><code>backend/app/models/__init__.py</code></p>
+<h3 id="contratos-observables_4">Contratos observables</h3>
+<p>DTOs Pydantic con <code>extra="forbid"</code>:
+- simulación live (<code>dto_simulation.py</code>)
+- snapshots históricos (<code>dto_snapshot.py</code>)
+- forecast (<code>dto_forecast.py</code>)
+- architect (<code>dto_architect.py</code>)</p>
+<h3 id="evidencia-contractual-fuerte">Evidencia contractual fuerte</h3>
+<ul>
+<li><code>scripts/gen_ts_types.py</code> consume el namespace público de DTOs</li>
+<li><code>frontend/src/types/api.generated.ts</code> se genera desde ese contrato</li>
+<li><code>tests/test_dto_models.py</code> valida shape, límites y generación</li>
+</ul>
+<h3 id="regla-de-frontera_6">Regla de frontera</h3>
+<p>Cualquier cambio aquí es contractual. No modificar DTOs sin actualizar generación TS y tests.</p>
+<hr />
+<h2 id="9-frontera-h-schemas-de-dominio-python">9. Frontera H — Schemas de dominio Python</h2>
+<h3 id="owner-conceptual_4">Owner conceptual</h3>
+<p><code>schemas.py</code></p>
+<h3 id="contratos-observables_5">Contratos observables</h3>
+<p>Modelos como:
+- <code>GamePayoff</code>
+- <code>StrategicConfig</code>
+- <code>Intervention</code>
+- <code>StrategyMatrix</code></p>
+<h3 id="papel-arquitectonico">Papel arquitectónico</h3>
+<p>Actúan como contrato Python interno entre:
+- simulador
+- architect
+- forecast scenarios
+- teoría de juegos</p>
+<h3 id="regla-de-frontera_7">Regla de frontera</h3>
+<p>Tratar <code>schemas.py</code> como punto de contrato interno, no como simple utilitario.</p>
+<hr />
+<h2 id="10-frontera-i-validacion">10. Frontera I — Validación</h2>
+<h3 id="owners-conceptuales_3">Owners conceptuales</h3>
+<ul>
+<li><code>tests/</code></li>
+<li><code>benchmarks/</code></li>
+<li>scripts de validación descritos en <code>CLAUDE.md</code></li>
+</ul>
+<h3 id="contratos-observables_6">Contratos observables</h3>
+<p>No solo validan outputs; también fijan:
+- qué módulos deben poder importarse,
+- qué tipos deben mantenerse,
+- qué campos deben existir,
+- y qué surfaces públicas siguen vivas.</p>
+<h3 id="regla-de-frontera_8">Regla de frontera</h3>
+<p>Si un refactor rompe tests de importación, contrato o generación, probablemente rompió una frontera arquitectónica real.</p>
+<hr />
+<h2 id="11-cruces-que-deben-considerarse-sensibles">11. Cruces que deben considerarse sensibles</h2>
+<h3 id="cruce-1">Cruce 1</h3>
+<p><code>simulator.py</code> ↔ <code>social_architect.py</code> ↔ <code>forecast/</code></p>
+<h3 id="cruce-2">Cruce 2</h3>
+<p><code>simulator.py</code> ↔ <code>multilayer_engine.py</code></p>
+<h3 id="cruce-3">Cruce 3</h3>
+<p><code>simulator.py</code> ↔ <code>app.py</code></p>
+<h3 id="cruce-4">Cruce 4</h3>
+<p><code>backend/app/models</code> ↔ <code>scripts/gen_ts_types.py</code> ↔ <code>frontend/src/types</code></p>
+<h3 id="cruce-5">Cruce 5</h3>
+<p><code>simulator.py</code> ↔ <code>cfc_trainer.py</code> / <code>cfc_router.py</code></p>
+<p>Estos cruces no deben tocarse de forma oportunista.</p>
+<hr />
+<h2 id="12-reglas-derivadas">12. Reglas derivadas</h2>
+<ol>
+<li>Una frontera con tests y surface pública se trata como contrato.</li>
+<li>Una convención de dict ampliamente consumida también se trata como contrato.</li>
+<li>Los paquetes con <code>__all__</code> y reexports públicos no son simples atajos; son fronteras.</li>
+<li><code>schemas.py</code> y DTOs deben considerarse partes contractuales, no detalles internos.</li>
+<li>Si una intervención cambia más de una frontera a la vez, el slice está mal definido.</li>
+</ol>
+<hr />
+<h2 id="13-conclusion">13. Conclusión</h2>
+<p>La consolidación de MASSIVE no puede guiarse solo por mover archivos “a donde deberían estar”. Debe respetar fronteras reales:
+- APIs públicas,
+- wrappers de compatibilidad,
+- contratos Python,
+- contratos backend/frontend,
+- y shapes de datos usados en múltiples capas.</p>
+<p>Consolidar bien significa fortalecer esas fronteras, no ignorarlas.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.expand", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
