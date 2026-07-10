@@ -10,6 +10,8 @@ Soporta dos modos:
 import json
 import logging
 import os
+from datetime import datetime
+from pathlib import Path
 from openai import OpenAI
 from pydantic import ValidationError
 
@@ -47,6 +49,67 @@ def find_optimal_interventions(evaluate_fn, n_agents, n_phases, max_iter=100):
         n_phases=n_phases,
         max_iter=max_iter,
     )
+
+
+# ============================================================
+# TELEMETRY & LOGGING — Architects Attempts
+# ============================================================
+
+def _ensure_architect_attempts_dir() -> Path:
+    """Ensures reports/architect_attempts/ exists for telemetry."""
+    path = Path("reports/architect_attempts")
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
+
+def _log_attempt(
+    attempt_num: int,
+    estado_5d: dict,
+    strategy: dict,
+    score: float,
+    objetivo: str,
+    modo: str,
+    timestamp: str | None = None,
+) -> None:
+    """
+    Logs an architect attempt for meta-optimizer training.
+
+    Args:
+        attempt_num: Attempt number in the search loop.
+        estado_5d: 5D state vector summary (opinion, cooperation, etc.).
+        strategy: Generated strategy JSON.
+        score: Evaluation score (0-100).
+        objetivo: User objective description.
+        modo: Simulation mode (macro/corporativo).
+        timestamp: ISO datetime string (auto-generated if None).
+    """
+    try:
+        ts = timestamp or datetime.utcnow().isoformat()
+        attempt_record = {
+            "timestamp": ts,
+            "attempt": attempt_num,
+            "objetivo": objetivo,
+            "modo": modo,
+            "estado_5d": estado_5d,
+            "strategy": strategy,
+            "score": score,
+            "_metadata": {
+                "cfc_available": CFC_AVAILABLE,
+                "version": "1.0",
+            },
+        }
+        
+        attempts_dir = _ensure_architect_attempts_dir()
+        # Filename: run_{timestamp}.jsonl — append-only for session
+        run_id = ts.split("T")[0] + "_" + ts.split("T")[1][:8].replace(":", "")
+        logfile = attempts_dir / f"run_{run_id}.jsonl"
+        
+        with open(logfile, "a", encoding="utf-8") as f:
+            f.write(json.dumps(attempt_record, ensure_ascii=False) + "\n")
+        
+        log.debug(f"[Architect Telemetry] Logged attempt {attempt_num} → {logfile.name}")
+    except Exception as e:
+        log.warning(f"[Architect Telemetry] Failed to log attempt: {e}")
 
 
 # ============================================================
@@ -385,43 +448,120 @@ def _encode_goal(objetivo: str) -> list:
 def _decode_strategy(propuesta: dict, total_pasos: int = 60) -> dict:
     """
     Convierte la salida de CfCArchitectPolicy en un StrategyMatrix válido.
+    
+    Versión mejorada que:
+    - Soporta tanto regime_logits (n_regimes,) como (n_phases, n_regimes)
+    - Extrae parámetros por fase en lugar de descartarlos
+    - Mantiene compatibilidad hacia atrás con modelos CfC antiguos
+    - Aplica validación defensiva de formas
 
     Args:
-        propuesta:    Diccionario de salida del modelo CfC.
+        propuesta:    Diccionario de salida del modelo CfC con keys:
+                      - "regime_logits": np.ndarray, forma (n_regimes,) o (n_phases, n_regimes)
+                      - "durations": np.ndarray, forma (n_phases,)
+                      - "parameters" (opcional): list[dict] o np.ndarray con parámetros por fase
         total_pasos:  Número total de pasos de la simulación.
 
     Returns:
         Diccionario con estructura {"interventions": [...]} compatible con
         run_with_schedule().
+
+    Example:
+        >>> propuesta = {
+        ...     "regime_logits": np.array([[1.0, 0.5], [0.2, 0.8]]),  # 2 fases, 2 regímenes
+        ...     "durations": np.array([0.5, 0.5]),  # 50% tiempo cada fase
+        ...     "parameters": [{"epsilon": 0.3}, {"epsilon": 0.5}],  # params por fase
+        ... }
+        >>> strategy = _decode_strategy(propuesta, total_pasos=60)
+        >>> # Resultado: 2 intervenciones, fases 1-30 y 31-60, con parámetros distintos
     """
     import numpy as np
     from simulator import NOMBRES_REGLAS
 
-    regime_logits = propuesta["regime_logits"][0]          # (n_regimes,)
-    durations = propuesta["durations"][0]                   # (n_phases,)
+    # ── Extraer logits de régimen (manejo robusto de formas) ──────────────────
+    regime_logits = np.asarray(propuesta.get("regime_logits", []))
+    if regime_logits.size == 0:
+        log.warning("[CfC Decode] regime_logits vacío, usando default lineal")
+        regime_logits = np.array([1.0])
+    
+    # Aplanar si es batch (CfC puede retornar [batch, regimes] por error)
+    if regime_logits.ndim > 2:
+        regime_logits = regime_logits.squeeze()
+    
+    # ── Extraer duraciones (normalización) ──────────────────────────────────
+    durations = np.asarray(propuesta.get("durations", []))
+    if durations.size == 0:
+        log.warning("[CfC Decode] durations vacío, usando una fase única")
+        durations = np.array([1.0])
+    
+    # Normalizar duraciones para que sumen 1.0
+    dur_sum = np.sum(durations)
+    if dur_sum > 0:
+        durations = durations / dur_sum
+    else:
+        durations = np.ones_like(durations) / len(durations)
+    
     n_phases = len(durations)
+    
+    # ── Extraer parámetros por fase (nuevo: no descartar) ────────────────────
+    params_per_phase = propuesta.get("parameters", None)
+    if params_per_phase is not None:
+        params_per_phase = np.asarray(params_per_phase)
+        # Si es lista de dicts o array, convertir a lista de dicts
+        if params_per_phase.dtype == object:
+            # Ya es lista de objetos (dicts)
+            params_per_phase = list(params_per_phase)
+        else:
+            # Es array numérico → convertir a lista vacía (sin parámetros numéricos extraíbles)
+            params_per_phase = [{} for _ in range(n_phases)]
+    else:
+        params_per_phase = [{} for _ in range(n_phases)]
+    
+    # Asegurar que tenemos exactamente n_phases parámetros
+    while len(params_per_phase) < n_phases:
+        params_per_phase.append({})
+    params_per_phase = params_per_phase[:n_phases]
 
-    # Régimen más probable (único, compartido entre fases por simplicidad)
-    rid = int(np.argmax(regime_logits))
-    regla_nombre = NOMBRES_REGLAS.get(rid, "lineal")
-
+    # ── Construir intervenciones ─────────────────────────────────────────────
     interventions = []
     t = 1
+    
     for i in range(n_phases):
         dur = max(1, int(round(float(durations[i]) * total_pasos)))
         end = min(t + dur - 1, total_pasos)
+        
+        # Seleccionar régimen: por fase si es 2D, global si es 1D
+        if regime_logits.ndim == 2 and i < regime_logits.shape[0]:
+            rid = int(np.argmax(regime_logits[i, :]))
+        else:
+            # Fallback: usar argmax global (compatibilidad con CfC 1D)
+            rid = int(np.argmax(regime_logits)) if regime_logits.ndim == 1 else 0
+        
+        regla_nombre = NOMBRES_REGLAS.get(rid, "lineal")
+        
+        # Extraer parámetros de esta fase
+        phase_params = params_per_phase[i] if isinstance(params_per_phase[i], dict) else {}
+        
         interventions.append({
             "time_start": t,
             "time_end": end,
             "model_name": regla_nombre,
-            "parameters": {},
-            "fase_rationale": f"CfC fase {i + 1}: régimen {regla_nombre}",
+            "parameters": phase_params,  # ← MEJORADO: ahora contiene datos reales
+            "fase_rationale": (
+                f"CfC fase {i + 1}/{n_phases}: régimen {regla_nombre}, "
+                f"duración {dur:d} pasos, params={phase_params}"
+            ),
             "target_nodes": None,
         })
         t = end + 1
         if t > total_pasos:
             break
 
+    log.info(
+        f"[CfC Decode] Estrategia generada: {len(interventions)} fases, "
+        f"regime_logits shape={regime_logits.shape}, params_extracted={sum(1 for p in params_per_phase if p)}"
+    )
+    
     return {"interventions": interventions}
 
 
@@ -476,6 +616,23 @@ def buscar_estrategia_inversa(
                     historial_cfc, objetivo_usuario, cfg
                 )
                 log.info(f"[CfC Architect] Intento 0: score={score_cfc:.1f}")
+                
+                # ── Telemetría: registrar intento 0 ──────────────────────
+                if historial_cfc:
+                    estado_5d_summary = {
+                        "mean_opinion": float(sum(h.get("opinion", 0.0) for h in historial_cfc) / len(historial_cfc)),
+                        "final_opinion": float(historial_cfc[-1].get("opinion", 0.0)),
+                        "polarization": float(historial_cfc[-1].get("polarizacion_media", 0.0)),
+                    }
+                    _log_attempt(
+                        attempt_num=0,
+                        estado_5d=estado_5d_summary,
+                        strategy=estrategia_cfc,
+                        score=score_cfc,
+                        objetivo=objetivo_usuario,
+                        modo=modo_simulacion,
+                    )
+                
                 if score_cfc >= 90:
                     temporal = _build_temporal_forecast(historial_cfc, cfg, estado_inicial)
                     estrategia_cfc = dict(estrategia_cfc)
@@ -491,7 +648,7 @@ def buscar_estrategia_inversa(
         except Exception as exc:
             log.debug(f"[CfC Architect] Intento 0 fallido: {exc}")
 
-    # ── LangChain path ────────────────────────────────────────────────────────
+    # ── LangChain path ───────────────────────────────────────────────────────
     if use_langchain:
         try:
             from langchain_workflows import build_llm, LangChainSocialArchitect, LANGCHAIN_AVAILABLE
@@ -608,6 +765,22 @@ def buscar_estrategia_inversa(
             mejor_score = score
             mejor_estrategia = estrategia_json
             mejor_historial = historial_sim
+
+        # ── Telemetría: registrar intento LLM ────────────────────────
+        if historial_sim:
+            estado_5d_summary = {
+                "mean_opinion": float(sum(h.get("opinion", 0.0) for h in historial_sim) / len(historial_sim)),
+                "final_opinion": float(historial_sim[-1].get("opinion", 0.0)),
+                "polarization": float(historial_sim[-1].get("polarizacion_media", 0.0)),
+            }
+            _log_attempt(
+                attempt_num=intento + 1,
+                estado_5d=estado_5d_summary,
+                strategy=estrategia_json,
+                score=score,
+                objetivo=objetivo_usuario,
+                modo=modo_simulacion,
+            )
 
         if score >= 90:
             temporal = _build_temporal_forecast(historial_sim, cfg, estado_inicial)
