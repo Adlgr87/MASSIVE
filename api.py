@@ -59,7 +59,7 @@ async def api_extract(file: UploadFile = File(...)):
 @app.post("/api/wizard")
 async def api_wizard(payload: dict):
     """Accepts JSON {"description": "..."} and returns a generated config."""
-    desc = payload.get("description") if isinstance(payload, dict) else None
+    desc = payload.get("description")
     if not desc:
         raise HTTPException(status_code=400, detail="'description' field required")
     try:

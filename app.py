@@ -1858,8 +1858,9 @@ if _UIL_AVAILABLE and tab_uil is not None:
             if not config_from_uil:
                 st.warning("Primero carga un documento o describe un escenario")
             else:
-                # Merge with defaults
-                final_config = {**DEFAULT_CONFIG, **config_from_uil}
+                # Merge with defaults, filtering None UIL values
+                filtered_uil = {k: v for k, v in config_from_uil.items() if v is not None}
+                final_config = {**DEFAULT_CONFIG, **filtered_uil}
 
                 with st.spinner(f"Simulando con parámetros UIL ({n_pasos} pasos)..."):
                     try:

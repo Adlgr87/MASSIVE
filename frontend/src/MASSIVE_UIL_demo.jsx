@@ -147,9 +147,14 @@ Recomendación: Simulación con modelo Hegselmann-Krause (epsilon=0.15).`,
 
 // ── Llamada a Anthropic API ───────────────────────────────────────────────
 async function callClaude(systemPrompt, userMessage, onChunk) {
+  const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY || "";
   const res = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      "x-api-key": apiKey,
+      "anthropic-version": "2023-06-01",
+    },
     body: JSON.stringify({
       model: "claude-sonnet-4-20250514",
       max_tokens: 1000,
