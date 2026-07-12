@@ -419,6 +419,11 @@ def _decode_strategy(propuesta: dict, total_pasos: int = 60) -> dict:
     rangos = _RANGOS_PARAMS.get(regla_nombre, {})
     param_keys = list(rangos.keys())
 
+    def _sigmoid(x: np.ndarray) -> np.ndarray:
+        """Sigmoid numéricamente estable: clip para evitar overflow en exp."""
+        x = np.clip(np.asarray(x, dtype=float), -500.0, 500.0)
+        return 1.0 / (1.0 + np.exp(-x))
+
     interventions = []
     t = 1
     for i in range(n_phases):
@@ -430,8 +435,13 @@ def _decode_strategy(propuesta: dict, total_pasos: int = 60) -> dict:
         # para normalizarlos a [0, 1] y luego se escalan a [lo, hi] de cada param.
         phase_parameters: dict = {}
         if raw_params is not None and param_keys:
+            if i >= len(raw_params):
+                log.debug(
+                    f"[_decode_strategy] fase {i} fuera del rango de raw_params "
+                    f"(shape {raw_params.shape}) — usando última fila disponible."
+                )
             raw_i = raw_params[i] if i < len(raw_params) else raw_params[-1]
-            norm = 1.0 / (1.0 + np.exp(-np.asarray(raw_i, dtype=float)))  # sigmoid → [0,1]
+            norm = _sigmoid(raw_i)
             for j, key in enumerate(param_keys[:4]):
                 lo, hi = rangos[key]
                 phase_parameters[key] = float(lo + norm[j] * (hi - lo))

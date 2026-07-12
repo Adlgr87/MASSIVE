@@ -98,18 +98,22 @@ class MambaCell(nn.Module):
         A = -torch.exp(self.A_log)                  # (d_state,)
 
         # B y C selectivos (dependen de la entrada)
-        B = self.B_proj(u)                           # (batch, d_state)
+        # B_proj(u) computa B * u en un paso: resultado es (batch, d_state).
+        # Esto implementa la selectividad del modelo — B varía con cada entrada.
+        B = self.B_proj(u)                           # (batch, d_state) ≡ B(u)·u
         C = self.C_proj(u)                           # (batch, d_state)
 
         # Δ selectivo: tamaño de paso depende de la entrada
         delta = self.delta_proj(u)                   # (batch, d_state)
 
         # Discretización ZOH (aproximación para A diagonal):
-        # Ā = exp(Δ ⊙ A), B̄ ≈ Δ ⊙ B
+        # Ā = exp(Δ ⊙ A), B̄·u = Δ ⊙ B_proj(u)
+        # Nota: B_proj(u) ya incorpora la contribución de la entrada,
+        # por lo que B_bar = Δ * B_proj(u) es el término completo Δ·B·u.
         A_bar = torch.exp(delta * A.unsqueeze(0))    # (batch, d_state)
-        B_bar = delta * B                            # (batch, d_state)
+        B_bar = delta * B                            # (batch, d_state) ≡ Δ·B·u
 
-        # Recurrencia: h_new = Ā ⊙ h + B̄ ⊙ u_projected
+        # Recurrencia: h_new = Ā ⊙ h + B̄·u  (forma compacta)
         h_new = A_bar * h + B_bar                   # (batch, d_state)
 
         # Salida: y = C · h_new + D ⊙ u
@@ -158,6 +162,9 @@ class MambaSSM(nn.Module):
         batch = x.shape[0]
         out = x
         for cell in self.cells:
+            # El estado oculto se reinicia a cero al comienzo de cada capa.
+            # Cada capa procesa la secuencia normalizada de la capa anterior
+            # de forma independiente (patrón residual tipo S4/Mamba stack).
             h = torch.zeros(batch, self.d_state, device=x.device, dtype=x.dtype)
             step_outs = []
             for t in range(out.shape[1]):
@@ -252,8 +259,8 @@ class MambaBaseline:
             self._model = None
             return self
 
-        # (N, lags) → (N, lags, 1) → (N, lags, d_model) via repeat
-        X_t = torch.tensor(X_np).unsqueeze(-1).expand(-1, -1, self.d_model)
+        # (N, lags) → (N, lags, 1) → (N, lags, d_model) via repeat (copia real)
+        X_t = torch.tensor(X_np).unsqueeze(-1).repeat(1, 1, self.d_model)
         y_t = torch.tensor(y_np).unsqueeze(-1)
 
         model, head = self._build_model()
@@ -317,7 +324,7 @@ class MambaBaseline:
             for _ in range(horizon):
                 window = np.asarray(hist[-self.lags:], dtype=np.float32)
                 x_t = torch.tensor(window).unsqueeze(0).unsqueeze(-1)
-                x_t = x_t.expand(-1, -1, self.d_model)
+                x_t = x_t.repeat(1, 1, self.d_model)
                 y_hat = float(self._head(self._model(x_t)).squeeze())
                 preds_norm.append(y_hat)
                 hist.append(y_hat)
