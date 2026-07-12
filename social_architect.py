@@ -386,35 +386,61 @@ def _decode_strategy(propuesta: dict, total_pasos: int = 60) -> dict:
     """
     Convierte la salida de CfCArchitectPolicy en un StrategyMatrix válido.
 
+    Utiliza los tres tensores de salida del modelo:
+    - ``regime_logits``: selecciona el régimen más probable (compartido entre fases).
+    - ``durations``: distribución temporal de cada fase (suman 1, escaladas a ``total_pasos``).
+    - ``params``: 4 floats por fase, mapeados a los parámetros del régimen activo.
+
     Args:
-        propuesta:    Diccionario de salida del modelo CfC.
+        propuesta:    Diccionario de salida del modelo CfC (con claves
+                      ``regime_logits``, ``durations``, ``params``).
         total_pasos:  Número total de pasos de la simulación.
 
     Returns:
-        Diccionario con estructura {"interventions": [...]} compatible con
-        run_with_schedule().
+        Diccionario con estructura ``{"interventions": [...]}`` compatible con
+        ``run_with_schedule()``.
     """
     import numpy as np
-    from simulator import NOMBRES_REGLAS
+    from simulator import NOMBRES_REGLAS, _RANGOS_PARAMS
 
     regime_logits = propuesta["regime_logits"][0]          # (n_regimes,)
     durations = propuesta["durations"][0]                   # (n_phases,)
+    # params shape: (n_phases, 4) — 4 floats per phase from the model
+    raw_params = propuesta.get("params")
+    if raw_params is not None:
+        raw_params = np.asarray(raw_params[0])             # (n_phases, 4)
     n_phases = len(durations)
 
-    # Régimen más probable (único, compartido entre fases por simplicidad)
+    # Régimen más probable (compartido entre fases — arquitectura CfCArchitectPolicy)
     rid = int(np.argmax(regime_logits))
     regla_nombre = NOMBRES_REGLAS.get(rid, "lineal")
+
+    # Parámetros válidos del régimen según _RANGOS_PARAMS
+    rangos = _RANGOS_PARAMS.get(regla_nombre, {})
+    param_keys = list(rangos.keys())
 
     interventions = []
     t = 1
     for i in range(n_phases):
         dur = max(1, int(round(float(durations[i]) * total_pasos)))
         end = min(t + dur - 1, total_pasos)
+
+        # Mapear los 4 floats del modelo a los parámetros del régimen.
+        # Los floats son valores "crudos" de la red — se les aplica sigmoid
+        # para normalizarlos a [0, 1] y luego se escalan a [lo, hi] de cada param.
+        phase_parameters: dict = {}
+        if raw_params is not None and param_keys:
+            raw_i = raw_params[i] if i < len(raw_params) else raw_params[-1]
+            norm = 1.0 / (1.0 + np.exp(-np.asarray(raw_i, dtype=float)))  # sigmoid → [0,1]
+            for j, key in enumerate(param_keys[:4]):
+                lo, hi = rangos[key]
+                phase_parameters[key] = float(lo + norm[j] * (hi - lo))
+
         interventions.append({
             "time_start": t,
             "time_end": end,
             "model_name": regla_nombre,
-            "parameters": {},
+            "parameters": phase_parameters,
             "fase_rationale": f"CfC fase {i + 1}: régimen {regla_nombre}",
             "target_nodes": None,
         })
