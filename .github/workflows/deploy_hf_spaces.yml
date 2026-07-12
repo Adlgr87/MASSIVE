@@ -22,4 +22,4 @@ jobs:
           # Nombre del Space en Hugging Face: usuario/nombre-del-space
           SPACE_ID: "Adlgr87/MASSIVE"
         run: |
-          git push -f https://Adlgr87:$HF_TOKEN@huggingface.co/spaces/$SPACE_ID main
+          git push https://Adlgr87:$HF_TOKEN@huggingface.co/spaces/$SPACE_ID main

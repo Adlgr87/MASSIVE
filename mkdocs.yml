@@ -23,8 +23,8 @@ nav:
   - Spanish Version: README_ES.md
   - Validation (PVU-BS):
       - Overview: validation/README.md
-      - Protocol (EN): validation/PVU_BeyondSight_EN.md
-      - Protocolo (ES): validation/PVU_BeyondSight_ES.md
+      - Protocol (EN): validation/PVU_MASSIVE_EN.md
+      - Protocolo (ES): validation/PVU_MASSIVE_ES.md
       - Pre-registration (EN): validation/preregistration_template_EN.md
       - Pre-registro (ES): validation/preregistration_template_ES.md
       - Report template (EN): validation/validation_report_template_EN.md

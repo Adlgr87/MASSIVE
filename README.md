@@ -1,769 +1,350 @@
----
-title: MASSIVE
-emoji: 🌊
-colorFrom: blue
-colorTo: indigo
-sdk: streamlit
-app_file: app.py
-pinned: false
----
-
 # MASSIVE
-### Mathematical Architecture for Scalable Social Interaction & Virtual Engine
 
-> *"Many behaving as One"*
+**Mathematical Architecture for Scalable Social Interaction & Virtual Engine**
 
-<p align="center">
-  <img src="https://github.com/user-attachments/assets/04c5860f-36d4-433c-a142-5761d0f16824" alt="MASSIVE Social Simulator" width="260"/>
-</p>
+MASSIVE is a hybrid social-dynamics platform for simulating opinion formation, polarization, intervention strategies, temporal risk and scientific diagnostics over complex social systems. It combines a stable legacy simulator with newer opt-in scientific layers for adaptive numerics, stability analysis, data assimilation, physics-inspired observables, CfC neural routing, optional Rust acceleration and validation workflows.
 
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://www.apache.org/licenses/LICENSE-2.0)
-[![tests](https://github.com/Adlgr87/MASSIVE/actions/workflows/pytest.yml/badge.svg)](https://github.com/Adlgr87/MASSIVE/actions/workflows/pytest.yml)
-[![docs](https://github.com/Adlgr87/MASSIVE/actions/workflows/mkdocs.yml/badge.svg)](https://github.com/Adlgr87/MASSIVE/actions/workflows/mkdocs.yml)
-[![PVU Validation](https://github.com/Adlgr87/MASSIVE/actions/workflows/pvu-validation.yml/badge.svg)](https://github.com/Adlgr87/MASSIVE/actions/workflows/pvu-validation.yml)
-
-![MASSIVE UI Demo](docs/massive_ui_mockup.png)
-
-
-MASSIVE is a hybrid social dynamics simulator that combines a rigorous mathematical core with the contextual reasoning of Large Language Models. It models how opinions, behaviors, and social structures form and evolve — from small groups to populations of millions.
-
-Traditional simulators ask *"what will happen?"*. MASSIVE also answers: **"what sequence of interventions gets us where we want to go?"** — via the reverse-engineering Social Architect agent.
+The guiding principle is backward compatibility: the classic APIs (`simular`, `simular_multiples`, `run_with_schedule`) remain stable, while advanced capabilities live behind explicit configuration flags and new `massive_core` modules.
 
 ---
 
-## Contents
+## Why MASSIVE is different
 
-- [What it does](#what-it-does)
-- [Key Features](#key-features)
-- [Architecture](#architecture)
-- [Temporal Forecast Engine (Design v1.0)](#temporal-forecast-engine-design-v10)
-- [CfC Neural Engine](#cfc-neural-engine)
-- [Simulation Rules](#simulation-rules)
-- [Installation](#installation)
-- [Running the App](#running-the-app)
-- [Programmatic API](#programmatic-api)
-- [Configuration](#configuration)
-- [Performance at Scale](#performance-at-scale)
-- [Social Media Integration](#social-media-integration)
-- [Validation Protocol (PVU-BS)](#validation-protocol-pvu-bs)
-- [Design Decisions](#design-decisions)
-- [Limitations](#limitations)
-- [Project Structure](#project-structure)
-- [Testing](#testing)
-- [Contributing](#contributing)
-- [License](#license)
+- **Hybrid regime reasoning:** heuristic, LLM-compatible and optional CfC neural regime selection paths coexist with safe fallbacks.
+- **Scientific opt-in layer:** adaptive steppers, stability diagnostics, EnKF assimilation, bifurcation tools, statistical mechanics, network reconstruction and scientific reports are available without changing default simulation behavior.
+- **Multi-engine architecture:** legacy scalar simulation, social-energy Langevin dynamics, multilayer sociodemographic dynamics and large-scale super-agent simulation are all present.
+- **Optional Rust acceleration:** selected numerical kernels can use the `massive_rust_core` extension through `massive_core.rust_core`, while keeping Python fallbacks.
+- **Validation-first design:** PVU-MASSIVE offline validation, canonical scientific benchmarks and a broad pytest suite support reproducibility.
+- **Typed backend/frontend contract:** Pydantic DTOs generate TypeScript interfaces through `scripts/gen_ts_types.py`.
 
 ---
 
-## What it does
+## 🌍 CIA World Factbook Integration
 
-MASSIVE lets you:
+MASSIVE now supports realistic country-specific simulations using data from the CIA World Factbook. This integration enables agents to be initialized with real demographic data, social pressure to be calculated using actual ethnic and religious diversity, and economic constraints to be based on real GDP and Gini index values.
 
-1. **Run forward simulations** — pick one of 13 mathematical rules, configure opinion, propaganda, trust, and group composition, and watch a social network evolve step by step with live charts and early warning signals.
-2. **Reverse-engineer outcomes** — describe a desired social state in plain language; the Social Architect uses an LLM in an iterative propose-simulate-score-refine loop to find the intervention sequence that gets you there.
-3. **Model structural complexity** — each agent carries a 5-dimensional state vector `(opinion, cooperation, hierarchy, income, info_access)` across three superimposed network layers (social, digital, economic), modulated by demographic attributes.
-4. **Scale to millions** — population-scale simulation on a laptop, combining super-agent clustering, uint8 quantization, event-driven updates, and optional GPU offloading.
-5. **Seed from real data** — fetch live sentiment from Twitter/X or Reddit to initialize simulations from actual public opinion distributions.
+**5 Integration Points:**
+1. **Agent Initialization** - Scale agent counts and demographics from real population data
+2. **Social Pressure** - Use ethnic/religious/linguistic diversity for realistic group dynamics  
+3. **Energy Engine** - Gini index modulates attractor/repeller strengths in social landscapes
+4. **Intervention Optimizer** - Economic constraints based on real GDP and budget data
+5. **Validation Framework** - Compare simulation results against Factbook metrics
 
----
-
-## Key Features
-
-### Simulation Core
-- **13 simulation rules** rooted in peer-reviewed opinion dynamics literature (DeGroot, Friedkin-Johnsen, Hegselmann-Krause, Granovetter, Axelrod, Nash, Pearl, Kermack-McKendrick, and more).
-- **LLM as regime selector** — instead of hard-coding which model runs when, the LLM reads the current network state and selects the most sociologically coherent rule at each step.
-- **Two opinion ranges** — probabilistic `[0, 1]` (neutral = 0.5) and bipolar `[-1, 1]` (neutral = 0.0), selectable per run. All values are clipped to range after every update.
-- **Three cross-cutting mechanisms** applied on top of every rule: Confirmation Bias, Dynamic Homophily, and a Game-Theoretic Strategic Force.
-
-### Social Architect
-- Iterative LLM agent that **reverse-engineers intervention sequences** to reach a user-defined social outcome.
-- Closed feedback loop: LLM proposes a `StrategyMatrix` → Langevin simulation executes it → score computed (0–100) → LLM refines until score ≥ 90 or attempts exhausted.
-- Two operational modes: **Macro** (public opinion, elections, social movements) and **Corporate** (organizational change, team alignment, informal leadership).
-- Outputs a structured schedule with sociological rationale + a consultant-quality narrative in plain language.
-
-### Multilayer Sociodemographic Engine
-- Each agent is a **5D state vector** `(opinion, cooperation, hierarchy, income, info_access)` evolving simultaneously.
-- **Three superimposed network layers**: Watts-Strogatz (social), Barabási-Albert (digital), hierarchical star+hubs (economic).
-- **Demographic modulation (θ-matrix)**: religion, education, age, and gender adjust each agent's noise sensitivity per behavioral dimension, producing realistic heterogeneity without per-agent hand-tuning.
-- **Multidimensional social potential** with independent but coupled gradients: double-well polarization (opinion), cooperation clustering, hierarchy bifurcation, income centering, and info-access decay.
-
-### Energy Landscape Engine
-- **Langevin stochastic dynamics** on a configurable landscape of Gaussian attractors and repellers.
-- **Numba JIT-compiled** inner loop (`@njit`) — compiled once, runs at native speed for all subsequent calls.
-- **8 pre-built social archetypes** (`polarizacion_extrema`, `consenso_moderado`, `radicalizacion_progresiva`, …) for instant scenario setup.
-- **Resolution pipeline** for free-text goals: exact archetype match → RAM cache → SQLite cache (persists across restarts) → LLM one-shot → fallback.
-
-### Massive Scale Engine
-- **Sociological LOD (super-agents)**: N agents collapse to M clusters; matrix size drops from O(N²) to O(M²).
-- **uint8 state quantization**: 87.5% RAM reduction per parameter with resolution ≈ 0.008 per opinion unit.
-- **Event-driven active sets**: sleeping agents (in stable consensus) consume zero CPU until a neighbor change wakes them.
-- **GPU offloading**: CuPy → PyTorch+CUDA → NumPy, selected automatically at startup — no configuration required.
-
-### Analytics & Monitoring
-- **Early Warning Signals (EWS)**: sliding-window variance, lag-1 autocorrelation, and skewness — flags ⚠️ proximity to social tipping points.
-- **Topological Data Analysis (TDA)**: optional persistent homology via Takens delay-embedding + Vietoris-Rips filtration (`ripser` + `persim`), detecting structural regime changes that scalar metrics miss.
-- **Network graph metrics**: degree/betweenness centrality, density, and cluster identification via NetworkX.
-
-### Integration & Infrastructure
-- **CfC Neural Engine** (optional, additive) — Closed-form Continuous-time networks replace the LLM in the hot path when pre-trained models are present in `models/`. Zero-config fallback to heuristic/LLM if models are absent.
-- **LangChain typed chains** (`strategy_chain`, `narrative_chain`, `landscape_chain`) with JSON output validation and transparent HTTP fallback.
-- **Dask parallel multi-simulation** across all available CPU cores via `dask.delayed`.
-- **Quantum module**: QAOA-inspired intervention optimizer (Qiskit or classical fallback) + MPS tensor-network compression for agent-state matrices. **This is currently a proof of concept and is not 100% functional.**
-- **43-parameter empirical calibration base** (v1.1.0, 88.4% coverage), cross-validated from 40+ peer-reviewed sources, with cultural variance per block. All parameters are complete as of v1.1.0. **Reminder: society is more complex than 43 variables, so this area must stay under continuous evaluation, expansion, and evolution.**
-- **PVU-BS formal validation protocol** with Diebold-Mariano significance tests and Holm-Bonferroni correction.
-- **Bilingual Streamlit UI** (English / Spanish) with runtime language toggle.
-- **Social media connectors**: Twitter/X (v2 Recent Search API) and Reddit (praw) for live sentiment seeding.
-
----
-
-## Architecture
-
-```
-┌──────────────────────────────────────────────────────────────┐
-│                    Streamlit UI  (app.py)                     │
-│  Tab 1: Simulation │ Tab 2: Architect │ Tab 3: Multilayer │ Tab 4: Massive │
-└─────┬───────────────────┬──────────────────┬────────────────-┘
-      │                   │                  │
-┌─────▼──────┐  ┌─────────▼────────┐  ┌──────▼──────────────┐
-│ simulator  │  │ social_architect  │  │ multilayer_engine    │
-│ (13 rules) │  │ (CfC Attempt 0 + │  │ (5D × 3 layers +    │
-│ EWS / TDA  │  │  LLM loop)        │  │  CfC τ-matrix +     │
-│ CfC fast   │  │                  │  │  Numba JIT)         │
-│ path ⚡    │  └─────────┬────────┘  └──────┬──────────────-┘
-└─────┬──────┘            │                  │
-      │         ┌─────────▼──────────────────▼────────────────┐
-      │         │        cfc_router.py  (singleton)            │
-      │         │   CfCRegimeSelector │ CfCTauMatrix │         │
-      │         │   CfCArchitectPolicy                         │
-      │         │   ↳ models/cfc_*.pt  (generados localmente) │
-      │         │   ↳ fallback automático si no hay modelos   │
-      │         └──────────────────────────────────────────────┘
-      │                   │
-      └──────────┬─────────┘
-                 ▼
-    ┌────────────────────────────────────────────────┐
-    │   energy_engine (Langevin / Numba JIT)         │
-    │   massive_engine (LOD / uint8 / event-driven / GPU)│
-    └───────────────────────────────────────────────-┘
-                 │
-    ┌────────────▼────────────────────────────────────┐
-    │  LLM providers (via llm_credentials.py):         │
-    │  heuristic │ Ollama │ Groq │ OpenAI │ OpenRouter │
-    │  (LangChain chains en langchain_workflows.py)    │
-    │  ↳ sólo se invoca si CfC no tiene alta confianza│
-    └──────────────────────────────────────────────────┘
-```
-
-### The Langevin equation at each step
-
-```
-x(t + Δt) = f(x(t), r(t)) · α  +  b(x(t)) · (1 − α)  +  G(x(t))  +  η(t)
-```
-
-| Term | Meaning |
-|------|---------|
-| `f(x(t), r(t))` | Output of the active dynamical rule `r` (HK, threshold, replicator, …) |
-| `α` | Blend weight between LLM-selected model and base tendency (default 0.80) |
-| `b(x(t))` | Base tendency: `0.92 · opinion + 0.08 · propaganda` |
-| `G(x(t))` | Group polarization: weighted cluster A/B influence |
-| `η(t) ~ 𝒩(0, σ²)` | Stochastic Wiener increment |
-
-Noise adapts to institutional trust: `σ(t) = σ_base + σ_distrust · (1 − trust(t))`. As trust erodes, the diffusion coefficient grows — making the system harder to steer and producing wider opinion swings.
-
-### Social Architect loop
-
-```
-User goal (free text) + initial network state
-        │
-        ▼
-[CfC Attempt 0] CfCArchitectPolicy proposes strategy (no API call)
-        │
-   Score ≥ 90? ──YES──► generar_narrativa_final() ──► Done (0 LLM calls)
-        │
-       NO (or CfC not available)
-        │
-        ▼
-LLM proposes StrategyMatrix (JSON schedule, enriched with CfC feedback)
-        │
-        ▼
-run_with_schedule() → Langevin engine executes each phase
-        │
-        ▼
-evaluar_resultado() → score 0–100 (polarization, opinion delta, variance)
-        │
-   Score ≥ 90? ──YES──► generar_narrativa_final() ──► Done
-        │
-       NO
-        │
-inject feedback into LLM context → repeat (up to max_attempts)
-```
-
-### Multilayer equation
-
-```
-dx_i/dt = −∇U(x_i) + Σ_ℓ w_ℓ · (A_ℓ · G(x))_i + θ(a_i) · η_i
-```
-
-Three differentiated network layers run simultaneously:
-
-| Layer | Topology | Phenomenon captured |
-|-------|----------|---------------------|
-| Social | Watts-Strogatz (small-world) | Face-to-face contacts, local community |
-| Digital | Barabási-Albert (scale-free) | Social media, echo chambers, viral content |
-| Economic | Hierarchical (star + hubs) | Authority flow, wages, organizational power |
-
-Demographic attributes modulate noise sensitivity per behavioral dimension (calibrated from social-psychology literature):
-
+**Quick Start:**
 ```python
-theta[i, opinion]     *= 1 + 0.5 * religion_i    # Altemeyer (1988)
-theta[i, cooperation] *= 1 + 0.3 * education_i   # Putnam (2000)
-theta[i, hierarchy]   *= 1 + 0.4 * (age_i / 2)  # Alwin & Krosnick (1991)
-theta[i, income]      *= 1 + 0.2 * youth_i       # labor-market volatility
-theta[i, info_access] *= 1 + 0.4 * education_i   # van Dijk (2005)
+from massive.core.factbook import FactbookContext
+
+# Load country data
+context = FactbookContext()
+context.load_country("US")
+
+# Get MASSIVE parameters
+params = context.get_massive_params("US")
+print(f"Agents: {params['n_agents']}, Gini: {params['gini_coefficient']:.3f}")
 ```
+
+The repository ships sample data for the CIA country codes `US`, `CH` (China) and `GM` (Germany) in `data/factbook/factbook_sample.json`. A full dataset (260+ countries) can be loaded from [wmccaffrey/cia_world_factbook](https://github.com/wmccaffrey/cia_world_factbook). See `FACTBOOK_INTEGRATION_COMPLETE.md` for full documentation.
 
 ---
 
-## Temporal Forecast Engine (Design v1.0)
+## Repository map
 
-MASSIVE now incorporates an explicit **time factor** for early-warning decisions: not only *if* a tipping event is likely, but also *when* and with what uncertainty under each intervention scenario.
-
-### What this adds
-
-- **Temporal calibration layer** (`temporal.step_duration_days`, `temporal.time_horizon_days`, `temporal.event_type`) to map simulation steps to real days.
-- **Probabilistic forecast engine** with two modes:
-  - **Analytical** (fast estimate using trajectory velocity + EWS strength)
-  - **Monte Carlo** (multiple stochastic runs for more robust uncertainty)
-- **Scenario comparison runner** to evaluate `P(event | scenario)` and rank intervention plans.
-- **Social Architect enriched output** with:
-  - probability without intervention,
-  - probability with best plan,
-  - minimum expected effect time,
-  - feasibility against the selected deadline.
-
-### Temporal config example (`engine_config.json`)
-
-```json
-{
-  "temporal": {
-    "step_duration_days": 7,
-    "time_horizon_days": 90,
-    "event_type": "labor_conflict",
-    "calendar_start": "2024-01-15",
-    "notes": "1 step = 1 calendar week"
-  }
-}
-```
-
-### Supported event types
-
-| event_type | Typical use case | Recommended step duration |
-|---|---|---|
-| `viral_online` | Social media trends | 1 day |
-| `protest_campaign` | Mobilization/protest waves | 1–3 days |
-| `labor_conflict` | Labor conflict / strike risk | 7 days |
-| `electoral_campaign` | Electoral campaign dynamics | 7 days |
-| `policy_adoption` | Public policy adoption | 30 days |
-| `cultural_shift` | Long-term cultural attitude change | 30–90 days |
-
-### Planned module layout
-
-```text
-forecast/
-├── __init__.py
-├── temporal_config.py     # TemporalConfig dataclass
-├── engine.py              # Analytical + Monte Carlo probability forecast
-├── scenarios.py           # Scenario runner and probability comparison
-└── intervention_map.py    # Intervention-to-parameter mapping
-```
+| Area | Files | Purpose |
+| --- | --- | --- |
+| Legacy simulator | `simulator.py` | Stable public API, regime rules, LLM/heuristic selection, schedule execution. |
+| Scientific adapter | `massive_core/` | Stable import surface and opt-in scientific modules. |
+| Numerical integration | `massive_core/numerics/` | `DynamicsStepper`, Euler-Maruyama baseline, adaptive solver, stability tools. |
+| Diagnostics | `massive_core/diagnostics/`, `massive_core/benchmarks/` | `ScientificReport`, canonical fixed-point/tipping/network benchmarks. |
+| Data assimilation | `massive_core/data_assimilation/` | Ensemble Kalman Filter and sparse observation assimilation workflows. |
+| Physics modules | `massive_core/physics/`, `massive_core/dynamical_systems/` | Statistical mechanics, perturbation, hydrodynamics, bifurcation analysis. |
+| Meta-learning/CfC | `cfc_engine.py`, `cfc_router.py`, `cfc_trainer.py`, `massive_core/metalearning/` | Closed-form continuous-time neural models and training-data adapters. |
+| Rust acceleration | `rust_core/`, `massive_core/rust_core.py` | Optional compiled kernels with Python-compatible fallbacks for selected numerical routines. |
+| Energy engine | `energy_engine.py`, `energy_runner.py`, `energy_schemas.py` | Social-energy landscape dynamics and programmatic landscape generation. |
+| Multilayer engine | `multilayer_engine.py`, `massive_engine.py`, `massive_core/numerics/multilayer_engine_sparse.py` | Sociodemographic multilayer simulation, sparse-engine optimisation and scalable super-agent execution. |
+| Forecasting | `forecast/` | Analytical and Monte Carlo temporal forecasts and scenario comparison. |
+| Strategy design | `social_architect.py`, `intervention_optimizer.py`, `programmatic_architect.py` | Inverse intervention design and optimization. |
+| Validation | `benchmarks/`, `datasets/pvu_cases/`, `docs/validation/` | PVU-MASSIVE cases, metrics and validation reports. |
+| **CIA World Factbook** | `massive/core/factbook/`, `data/factbook/` | Country-specific demographic, economic, social data integration for realistic simulations. |
+| UI/API contract | `app.py`, `backend/app/models/`, `frontend/src/types/` | Streamlit app, DTOs and generated TypeScript types. |
 
 ---
 
-## CfC Neural Engine
+## AI-ready repository bundle with Repomix
 
-MASSIVE includes an optional **Closed-form Continuous-time (CfC)** neural layer that replaces the LLM in the hot path of three key operations. The integration is **fully additive**: without trained models, MASSIVE works exactly as before.
-
-### What are CfC networks?
-
-CfC networks solve a continuous-time ODE per step:
-
-```
-dx/dt = −x/τ + B(u) + C · tanh(Wx·x + Wu·u)
-```
-
-where τ is learned dynamically from the current state and input — making the network *inherently adaptive* to temporal scale. This makes them ideal for social dynamics, where regime timescales vary widely (slow consensus formation vs. rapid polarization cascades).
-
-### The three CfC components
-
-| Component | Replaces | File |
-|-----------|----------|------|
-| `CfCRegimeSelector` | LLM call in `simulator.py` hot path | `cfc_engine.py` |
-| `CfCTauMatrix` | Fixed θ-matrix in `multilayer_engine.py` | `cfc_engine.py` |
-| `CfCArchitectPolicy` | Attempt 0 in `social_architect.py` (no API call) | `cfc_engine.py` |
-
-### Decision flow in `simulator.py`
-
-```
-Each simulation step
-        │
-    CfC available AND history ≥ 6 steps?
-        │               │
-       YES              NO
-        │               └──► LLM / heuristic (unchanged)
-        ▼
- CfCRegimeSelector → confidence?
-        │               │
-    conf ≥ 0.75        conf < 0.75
-        │               └──► LLM / heuristic fallback
-        ▼
- Use CfC regime (no API call, ~0.1 ms)
-```
-
-### Training your own models
+MASSIVE includes a Repomix configuration so any AI assistant can inspect the repository as a single, structured XML file without committing generated bundles.
 
 ```bash
-# Install PyTorch (CPU is enough):
-pip install torch>=2.2.0
-
-# Generate datasets and train all components (≈ 10 min on CPU with defaults):
-python cfc_trainer.py --component all --n-sims 10000 --n-samples 5000
-
-# Or train selectively:
-python cfc_trainer.py --component selector --n-sims 5000 --epochs-selector 20
-python cfc_trainer.py --component tau      --n-samples 2000 --epochs-tau 30
+npx --yes repomix@latest --config repomix.config.json
 ```
 
-Trained models are saved to `models/` (gitignored) and loaded automatically at startup. The sidebar shows which components are active: **⚡ CfC activo: selector, τ-matrix, architect**.
+The command writes `repomix-output.xml` using `.gitignore`, `.repomixignore`, and `repomix-instruction.md` to keep local secrets, caches, build artifacts, binary assets and generated outputs out of the AI bundle. For a smaller structural snapshot, run:
 
-### Programmatic CfC API
-
-```python
-from cfc_router import CfCRouter
-
-router = CfCRouter.get()  # singleton
-
-# Check status
-print(router.status)
-# {'regime_selector': True, 'tau_matrix': True, 'architect_policy': False}
-
-# Direct regime prediction
-rid, source, confidence = router.select_regime(
-    history=[0.5, 0.52, 0.54, 0.55, 0.53, 0.51],
-    state={"opinion": 0.51, "propaganda": 0.7, "confianza": 0.4, ...}
-)
-# ('cfc', 5, 0.88)  → chose rule 5 (HK) with 88% confidence
-
-# Tau matrix for multilayer engine
-import numpy as np
-attrs = np.stack([religion, education, age_norm, gender], axis=1)  # (N, 4)
-tau = router.compute_tau_matrix(attrs)  # (N, 5) — always ≥ 0.1
-
-# Social Architect strategy proposal (no LLM call)
-proposal = router.propose_strategy(
-    initial_state={"opinion": 0.5, "propaganda": 0.7, ...},
-    goal_embedding=[1.0, 0.0, -0.5, 0.0, 0.0],  # consensus goal
-)
+```bash
+npx --yes repomix@latest --config repomix.config.json --compress -o repomix-output-compressed.xml
 ```
-
-### Key invariants
-
-- **CfC never blocks.** Without `models/*.pt`, without PyTorch, or with low confidence → MASSIVE works exactly as today.
-- **Confidence threshold:** `0.75` by default. Below this, the LLM/heuristic takes over.
-- **13 regimes:** CfCRegimeSelector covers all rules 0–12, including extended models (Nash, Bayesian, SIR).
-- **Zero new required dependencies** to run MASSIVE: `torch` and `torchdiffeq` are optional.
-
----
-
-## Simulation Rules
-
-| # | Rule | Theoretical basis |
-|---|------|-------------------|
-| 0 | `lineal` | Proportional smooth change |
-| 1 | `umbral` | Threshold jump at critical point |
-| 2 | `memoria` | Past-state inertia |
-| 3 | `backlash` | Propaganda reinforces opposing position |
-| 4 | `polarizacion` | Echo-chamber attractor |
-| 5 | `hk` | Hegselmann-Krause (2002) bounded confidence |
-| 6 | `contagio_competitivo` | Two narratives competing simultaneously — Beutel et al. (2012) |
-| 7 | `umbral_heterogeneo` | Granovetter (1978) threshold distribution — social cascades |
-| 8 | `homofilia` | Co-evolutionary network weights — Axelrod (1997) |
-| 9 | `replicador` | Replicator ODE integrated with RK45 — Taylor & Jonker (1978) |
-| 10 | `nash` | Nash equilibrium coordination game (1950) — via `nashpy` |
-| 11 | `bayesiano` | Bayesian opinion network — Pearl (1988), built with `pgmpy` |
-| 12 | `sir` | SIR epidemiological contagion — Kermack & McKendrick (1927) |
-
-**Cross-cutting mechanisms** (applied on top of every rule at every step):
-- **Confirmation Bias** (Sunstein 2009, Nickerson 1998) — incoming counter-information is attenuated proportionally to the agent's current position.
-- **Dynamic Homophily** (Axelrod 1997, Flache et al. 2017) — group influence weights update each step based on opinion similarity.
-- **Strategic Game-Theory Force** (`utility_logic.py`) — payoff-based bias toward cooperation or defection based on neighbors' average position.
-
----
 
 ## Installation
 
-**Requirements:** Python 3.9+
-
 ```bash
-git clone https://github.com/Adlgr87/MASSIVE.git
-cd MASSIVE
+python -m pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-**Optional accelerators** (installed separately):
-
-```bash
-pip install numba             # JIT-compiled Langevin engine (~10–50× speedup on loops)
-pip install cupy-cuda12x      # GPU offloading via CUDA (auto-detected; falls back to CPU)
-pip install dask              # Parallel multi-simulation runs
-pip install ripser persim     # Topological Data Analysis (persistent homology)
-pip install qiskit qiskit-aer # Quantum-inspired optimizer (falls back to classical)
-```
-
-> **Note:** `torch>=2.2.0` and `torchdiffeq>=0.2.3` are listed in `requirements.txt` for the CfC engine. If you only want to run MASSIVE without training CfC models, these packages are still installed but remain dormant — no model files means pure heuristic/LLM mode, same as before.
+Optional environment variables are documented in `.env.example`. For local Ollama runs, set `OLLAMA_HOST` if different from `http://localhost:11434`.
 
 ---
 
-## Running the App
+## Quick start
 
-### Local (Streamlit)
+### Run the Streamlit app
 
 ```bash
 streamlit run app.py
 ```
 
-### Docker
-
-```bash
-docker build -t massive:latest .
-docker run --rm -p 8501:8501 --env-file .env massive:latest
-```
-
-`--env-file .env` reads variables from your local host file and injects them into the container (the `.env` file is not copied into the image).
-
-Then open: `http://localhost:8501`
-
-The interface has five tabs:
-
-| Tab | What it does |
-|-----|-------------|
-| **Simulation** | Configure and run forward simulations with any of the 13 rules; view opinion trajectories, EWS alerts, TDA, and network graph |
-| **Social Architect** | Describe a target outcome in plain language; the LLM agent reverse-engineers the intervention schedule |
-| **Multilayer** | Run the 5D sociodemographic engine across three network layers with demographic breakdowns |
-| **Massive** | Simulate millions of agents using the LOD/uint8/event-driven/GPU engine |
-| **Analytics Center** | Run post-simulation analytics workflows and consolidated visual summaries |
-
-Language toggle (English ↔ Spanish) is available at the top of the sidebar.
-
-### Hugging Face Spaces
-
-This repository is ready to deploy as a Streamlit Space. Connect the repo and set your API keys as Secrets.
-
----
-
-## Programmatic API
+### Run the legacy simulator
 
 ```python
-# Forward simulation — 13 rules, LLM selector, EWS
-from simulator import simular
+from simulator import simular, resumen_historial
 
-result = simular(
-    opinion_inicial=0.5,
-    regla="hk",                  # Hegselmann-Krause bounded confidence
-    pasos=100,
-    propaganda=0.3,
-    provider="groq",             # heuristic | ollama | groq | openai | openrouter
-)
+estado = {
+    "opinion": 0.5,
+    "propaganda": 0.7,
+    "confianza": 0.4,
+    "opinion_grupo_a": 0.72,
+    "opinion_grupo_b": 0.28,
+    "pertenencia_grupo": 0.65,
+}
 
-# Multilayer engine — 5D vectors, three network layers
-from multilayer_engine import MultilayerEngine
-
-engine = MultilayerEngine(
-    N=200,
-    layer_weights=(0.4, 0.3, 0.3),   # social, digital, economic
-    coupling=0.3,
-    attr_config={"religion_prob": 0.35, "age_dist": (0.25, 0.45, 0.30)},
-)
-history  = engine.run(steps=500)
-traj_df  = engine.trajectories_by_attribute("age_group")
-corr     = engine.behavior_correlation_matrix()
-landscape = engine.get_landscape()
-
-# Massive-scale engine — millions of agents, all optimizations
-from massive_engine import MassiveSimEngine
-
-engine = MassiveSimEngine(
-    N=1_000_000,
-    quantize=True,
-    event_driven=True,
-    layer_weights=(0.4, 0.3, 0.3),
-    seed=42,
-)
-result = engine.run(steps=300)
-print(f"Memory savings: {result['memory_savings_pct']:.1f}%")  # ≈ 99.99%
-print(f"Steps/second:   {result['steps_per_second']:.0f}")
-
-# Apply a news shock to 20% of the network
-engine.apply_shock(shock_value=0.4, fraction=0.2)
-result2 = engine.run(steps=100)
-
-# Memory breakdown
-print(engine.memory_report)
-# {'n_agents': 1000000, 'n_clusters': 1000, 'float64_MB': 40.0,
-#  'lod_MB': 0.04, 'final_MB': 0.005, 'savings_pct': 99.99,
-#  'strategies': ['LOD', 'uint8', 'Event-Driven'], 'gpu_backend': 'numpy'}
+historial = simular(estado, pasos=30, cada_n_pasos=5, verbose=False)
+print(resumen_historial(historial))
 ```
 
----
-
-## Configuration
-
-### Environment variables
-
-Copy `.env.example` to `.env`:
-
-```env
-# LLM providers (at least one required for non-heuristic mode)
-GROQ_API_KEY=your_key
-OPENAI_API_KEY=your_key
-OPENROUTER_API_KEY=your_key
-
-# Social media connectors (optional)
-TWITTER_BEARER_TOKEN=your_token
-REDDIT_CLIENT_ID=your_id
-REDDIT_CLIENT_SECRET=your_secret
-```
-
-All five LLM providers resolve credentials through `llm_credentials.py`. In Hugging Face Spaces, set these as Secrets instead of a `.env` file.
-
-### Multilayer configuration
-
-Layer weights, network parameters, and demographic attribute distributions can be changed without touching code via `configs/multilayer.yaml`.
-
-### Empirical calibration
-
-`empirical_config.py` is the single source of truth for all 43 empirical parameters (v1.1.0, 88.4% coverage, cross-validated from 40+ peer-reviewed sources). `empirical_calibration.py` translates this base into engine-safe simulator defaults via `build_empirical_engine_config(cultural_profile)`. Runtime values are derived from weighted aggregates: social influence → `efecto_vecinos_peso`, homophily → `hk_epsilon` / `homofilia_tasa`, collective-attention decay → adaptive noise, social tipping evidence → `umbral_media = 0.25 ± 0.05` (Centola et al. 2018; Everall et al. 2025). Seven cultural profiles are supported at runtime: `"mixed"` (default), `"latin"`, `"anglosaxon"`, `"east_asian"`, `"middle_east"`, `"south_asian"`, `"subsaharan_africa"`. Apply them via `apply_empirical_profile(cfg)` in the UI or `get_runtime_params(cultural_profile)` programmatically. All 43 parameters are complete in v1.1.0 — no `pending_empirical_data` flags are active. Reminder: society is more complex than 43 variables, and this area should remain in continuous evaluation, expansion, and evolution.
-
----
-
-## Performance at Scale
-
-`massive_engine.py` combines four strategies to make population-scale simulation tractable on standard hardware:
-
-### 1 — Sociological LOD (super-agents)
-
-Inspired by Level-of-Detail rendering: N agents collapse to M statistical clusters. Only M << N cluster representatives are evolved; the rest are reconstructed at query time.
-
-| N agents | M clusters (auto) | Matrix size | RAM (float64) |
-|----------|-------------------|-------------|---------------|
-| 10 000 | 100 | 100 × 100 | ~0.08 MB |
-| 100 000 | 316 | 316 × 316 | ~0.8 MB |
-| 1 000 000 | 1 000 | 1 000 × 1 000 | ~8 MB |
-
-### 2 — uint8 state quantization
-
-Agent parameters stored as unsigned 8-bit integers instead of float64: **87.5% RAM reduction** per parameter with resolution ≈ 0.008 per opinion unit.
+### Run with scientific reporting
 
 ```python
-opinion_float64 = 0.857432   # 8 bytes
-opinion_uint8   = 219         # 1 byte  → dequantize → 0.856...
+from massive_core import run_scientific_simulation
+
+result = run_scientific_simulation(
+    estado,
+    pasos=30,
+    scientific_config={"enable_scientific_report": True},
+    verbose=False,
+)
+
+print(result.scientific_report.to_dict())
 ```
 
-### 3 — Event-driven active sets
+### Assimilate observations with EnKF
 
-Only super-agents whose state changed by more than `sleep_threshold` are updated. Agents in stable consensus are frozen — zero CPU cost until a neighbor wakes them.
+```python
+result = run_scientific_simulation(
+    estado,
+    pasos=30,
+    scientific_config={"enable_data_assimilation": True},
+    observations={30: 0.82},
+    verbose=False,
+)
 
-### 4 — GPU offloading
+print(result.assimilation_result.to_dict())
+```
 
-Matrix operations auto-delegate to GPU when CuPy or PyTorch+CUDA are detected. Falls back to NumPy automatically — no configuration required.
+### Use opt-in steppers in engines
 
-**Combined effect at N = 1 M agents:** >99.99% RAM reduction vs. a naive float64 implementation.
+```python
+from energy_engine import SocialEnergyEngine
+
+engine = SocialEnergyEngine(
+    range_type="bipolar",
+    temperature=0.0,
+    scientific_config={"solver": "euler_maruyama"},
+)
+```
+
+The default is `solver="legacy"`, so existing behavior is preserved unless a scientific solver is explicitly selected.
+
+### Run with CIA World Factbook data
+
+```python
+from massive.core.factbook import FactbookContext
+from massive_engine import MassiveEngine
+from energy_engine import SocialEnergyEngine
+
+# Initialize with country-specific data
+context = FactbookContext()
+context.load_country("US")
+params = context.get_massive_params("US")
+
+# Create engine with real demographic data
+engine = MassiveEngine(config={"n_agents": params["n_agents"]})
+
+# Use Gini index in energy landscape
+energy_engine = SocialEnergyEngine(
+    gini_coefficient=params["gini_coefficient"],
+    inequality_factor=params["inequality_factor"],
+)
+```
+
+### Run canonical scientific benchmarks
+
+```python
+from massive_core import run_canonical_benchmarks
+
+print(run_canonical_benchmarks())
+```
+
+### Sparse multilayer engine
+
+A fully sparse implementation of the multilayer graph engine based on
+``scipy.sparse`` structures for reduced memory and faster iteration on
+large systems:
+
+```python
+import numpy as np
+
+from massive_core.numerics import SparseMultilayerEngine, LayerState
+from scipy import sparse
+
+layer = LayerState(
+    node_features=np.random.randn(100, 8),
+    graph_adjacency=sparse.random(100, 100, density=0.05, format="csr"),
+    layer_id="social",
+)
+engine = SparseMultilayerEngine(layers=[layer])
+result = engine.run_simulation()
+```
+
+### Stability and perturbation analysis
+
+``StabilityAnalyzer`` computes the Jacobian at equilibrium and classifies
+local stability via eigenvalue analysis; ``PerturbationTheorySolver``
+provides state perturbations and parameter-sensitivity diagnostics:
+
+```python
+from massive_core.numerics import StabilityAnalyzer
+from massive_core.physics import PerturbationTheorySolver
+
+analyzer = StabilityAnalyzer(system_fn, equilibrium)
+report = analyzer.analyze()
+print(report.is_stable)
+```
+
+### Sparse ensemble Kalman filter
+
+``SparseEnsembleKalmanFilter`` runs EnKF analysis on a subset of observable
+variables, ideal for high-dimensional social systems where only a fraction
+of the state is measured:
+
+```python
+import numpy as np
+
+from massive_core.data_assimilation import SparseEnsembleKalmanFilter
+
+ekf = SparseEnsembleKalmanFilter(
+    n_ensemble=50,
+    n_state_dim=200,
+    n_obs_dim=20,
+    observable_indices=list(range(20)),
+    observation_covariance=np.eye(20) * 0.1,
+)
+state_estimate, ensemble = ekf.assimilate_step(model_fn, observations)
+```
 
 ---
 
-## Social Media Integration
+## CfC neural reasoning support
 
-Seed simulations with live opinion data from real platforms:
+MASSIVE includes Closed-form Continuous-time (CfC) components:
 
-### Twitter / X
+- `CfCRegimeSelector` for fast regime selection.
+- `CfCTauMatrix` for sociodemographic noise modulation.
+- `CfCArchitectPolicy` for intervention proposals.
+- `massive_core.metalearning.cfc_training_data` to transform MASSIVE histories into tensors compatible with the CfC trainer.
 
-Requires a Bearer Token from the [Twitter Developer Portal](https://developer.twitter.com). The connector queries the v2 Recent Search API, applies keyword-based sentiment scoring, and returns a weighted opinion distribution.
+Training remains optional and model files are loaded from `models/` by `CfCRouter` when available.
 
-### Reddit
+```python
+from massive_core import build_cfc_regime_dataset_from_history
 
-Requires a script-type app at [reddit.com/prefs/apps](https://www.reddit.com/prefs/apps) (Client ID + Secret). Uses `praw` to score post titles and bodies by sentiment, weighted by Reddit vote score.
-
-Both connectors support bipolar `[-1, 1]` and unipolar `[0, 1]` ranges and can be configured via the sidebar under **🌐 Social Media Data** or via environment variables.
+dataset = build_cfc_regime_dataset_from_history(historial, window_size=6)
+```
 
 ---
 
-## Validation Protocol (PVU-BS)
+## Mamba SSM benchmark support
 
-MASSIVE ships with a formal **Protocol of Validated Use (PVU-BS)** that defines the minimum evidence standard for claiming validated predictive performance on real-world data.
+MASSIVE includes a selective State Space Model (Mamba/SSM) implemented in pure PyTorch as a **complementary baseline** to the existing CfC layer:
 
-| Concept | Description |
-|---------|-------------|
-| **Independent case** | A `{network, time_series, interventions, metadata}` tuple — cases sharing confounds get a `cluster_id` |
-| **Target variable** | Compound: Polarization Index P(t) + Turning-Point Skill (F1 on regime transitions) |
-| **Anti-leakage** | Test metrics must never be seen before model config is frozen |
-| **Statistics** | Diebold-Mariano test + Holm-Bonferroni correction; effect sizes (ΔMAE, ΔRMSE, TPS F1) required alongside p-values |
+- `MambaCell` — one-step selective SSM cell with input-dependent discretisation step Δ.
+- `MambaSSM` — multi-layer recurrent SSM over arbitrary-length sequences.
+- `MambaBaseline` — drop-in PVU-BS baseline following the same `predict(train, horizon)` interface as `AR1Baseline`, `ETSBaseline`, etc.
+
+The Mamba baseline is evaluated automatically under the Diebold-Mariano + Holm-Bonferroni protocol when `enable_mamba=True` in `ScientificRuntimeConfig` or when `torch` is available and `get_all_baselines()` is called.
+
+> **Note on series length:** The architectural advantage of SSM (selective context compression) is most visible on long multivariate sequences. On the short univariate social series typical of PVU cases, Mamba may not outperform AR(1)/ETS with statistical significance — the Holm-Bonferroni test will reflect this honestly. For a fairer comparison, consider cross-episode pretraining across all PVU cases.
+
+```python
+from mamba_engine import MambaBaseline
+import numpy as np
+
+baseline = MambaBaseline(d_model=8, d_state=16, lags=4, epochs=50)
+forecast = baseline.predict(train_series, horizon=10)
+```
+
+**Key difference from CfC:** Mamba does not participate in regime selection or social architect proposals — those remain CfC's responsibility. Mamba operates exclusively as a time-series forecasting baseline in the benchmark layer.
+
+---
+
+## Validation and checks
 
 ```bash
-# Offline (no API key required — default in CI):
-PYTHONHASHSEED=42 python -m benchmarks.runner \
-    --cases datasets/pvu_cases --offline \
-    --out reports/validation/ci --seed 42
+# Unit/integration suite
+python -m pytest tests/
 
-# LLM mode (requires OPENROUTER_API_KEY or OPENAI_API_KEY):
-PYTHONHASHSEED=42 python -m benchmarks.runner \
-    --cases datasets/pvu_cases --llm \
-    --out reports/validation/llm_run --seed 42
-```
+# PVU-MASSIVE offline validation
+python -m benchmarks.runner --cases datasets/pvu_cases --offline --out reports/validation/local --seed 42
 
-Full protocol docs: [English](docs/validation/PVU_BeyondSight_EN.md) · [Español](docs/validation/PVU_BeyondSight_ES.md)
+# Regenerate frontend TypeScript contracts
+python scripts/gen_ts_types.py
 
-> **Note:** `datasets/pvu_cases/` currently contains synthetic cases for pipeline testing only. Real PVU-BS validation requires N ≥ 10 independent real-world cases.
-
----
-
-## Design Decisions
-
-A few architectural choices that shape how MASSIVE works:
-
-**CfC as fast-path, not replacement.** The CfC layer is not designed to outperform a frontier LLM at creative reasoning. It is designed to handle the easy, repetitive, high-confidence regime selections at near-zero latency and zero API cost — freeing the LLM for genuinely ambiguous situations. The confidence threshold (0.75) makes this boundary explicit and tunable.
-
-**Opinion as a physical system.** Langevin dynamics brings tools from statistical physics — energy wells, stochastic diffusion, tipping-point theory — into social modeling, while remaining anchored to sociological literature rather than physics metaphors.
-
-**LLM as regime selector, not oracle.** The LLM does not predict outcomes. It selects which mathematical model is most appropriate for the current social context at each step. This keeps outputs interpretable: every prediction traces back to a defined mathematical rule and its peer-reviewed basis.
-
-**Inverse before forward.** The Social Architect was designed alongside the simulator, not bolted on afterward. The propose-simulate-score-refine feedback loop is a first-class architectural feature, not a wrapper.
-
-**Empirical accountability by default.** Every calibration parameter has a source citation and a cultural variance estimate. Gaps are flagged explicitly — the simulator surfaces what it doesn't know rather than filling gaps with defaults silently.
-
-**Scale without a cluster.** The LOD + uint8 + event-driven combination degrades gracefully: a laptop runs meaningful simulations, a GPU cluster runs proportionally faster. No infrastructure requirement.
-
----
-
-## Limitations
-
-- **CfC models not pre-trained:** The repository ships without `models/*.pt` files. CfC components activate only after you run `python cfc_trainer.py`. Until then, MASSIVE operates identically to previous versions.
-- **Quantum module:** Uses classical simulation of quantum-inspired algorithms (QAOA structure via Qiskit Aer or NumPy fallback, MPS-style compression). No real quantum hardware required or used. It is currently presented as a proof of concept and is not 100% functional.
-- **Empirical base coverage:** All 43 parameters are complete as of v1.1.0 (88.4% coverage; no active `pending_empirical_data` flags). Additional cultural calibration blocks (Nordic, South Asian) are planned for future releases. Reminder: society is more complex than 43 variables, so this block should be reviewed, expanded, and evolved continuously.
-- **Real-world validation:** Current PVU-BS benchmark cases are synthetic (for pipeline testing). Real-world opinion dynamics validation (N ≥ 10 independent cases) is in progress.
-- **LLM dependence:** The Social Architect and regime selector work best with a cloud LLM when CfC models are not trained. A heuristic fallback is always available but produces less contextually coherent strategies.
-- **Social media connectors:** Twitter/X v2 API access requires a developer account with appropriate tier; throughput depends on third-party rate limits.
-
----
-
-## Roadmap
-
-- [ ] Pre-trained CfC model weights published as a GitHub Release asset
-- [ ] CfC training via Hugging Face Datasets (real opinion survey data)
-- [ ] Real PVU-BS validation cases from public opinion datasets
-- [ ] Additional cultural calibration blocks (Nordic, South Asian, Middle Eastern)
-- [ ] LangChain agent executors with tool access (web search, real-time data retrieval)
-- [ ] Node-targeted Social Architect (betweenness-centrality-guided intervention scheduling)
-- [ ] Export simulation runs to standard formats (NetLogo, GEXF, CSV)
-
----
-
-## Project Structure
-
-```
-MASSIVE/
-├── app.py                        # Streamlit UI — 5 tabs (Simulation, Architect, Multilayer, Massive, Analytics)
-│                                 # ⚡ CfC status badge + regime source shown in sidebar and metrics
-├── simulator.py                  # Core: 13 rules, CfC fast path, LLM selector, EWS, TDA, Dask parallel
-├── social_architect.py           # Social Architect: CfC Attempt 0 + iterative LLM reverse-engineering
-├── multilayer_engine.py          # 5D × 3-layer engine: CfC τ-matrix + Numba JIT + θ-matrix fallback
-├── cfc_engine.py                 # ⚡ NEW — CfC neural architectures (pure PyTorch, no MASSIVE deps)
-│   ├── CfCCell                   #    ODE base cell (Euler step, dynamic τ)
-│   ├── CfCRegimeSelector         #    13-class regime selector (replaces LLM in hot path)
-│   ├── CfCTauMatrix              #    Sociodemographic τ-matrix generator
-│   └── CfCArchitectPolicy        #    Strategy proposer (Social Architect Attempt 0)
-├── cfc_router.py                 # ⚡ NEW — Singleton router: CfC vs LLM decision at runtime
-│                                 #    Loads models/*.pt; graceful fallback if absent
-├── cfc_trainer.py                # ⚡ NEW — Dataset generation + training pipeline (CLI + API)
-│                                 #    Uses heuristic selector as teacher (knowledge distillation)
-├── models/                       # ⚡ NEW — Trained model weights (gitignored, generate locally)
-│   ├── .gitkeep
-│   ├── cfc_selector.pt           #    (generated) Regime selector weights
-│   ├── cfc_tau.pt                #    (generated) Tau matrix weights
-│   └── cfc_architect.pt          #    (generated) Architect policy weights
-├── energy_engine.py              # Langevin engine (Numba JIT-compiled)
-├── energy_runner.py              # Langevin simulation orchestrator
-├── energy_schemas.py             # Pydantic v2 schemas for EnergyConfig
-├── massive_engine.py             # Scale engine: LOD, uint8, event-driven, GPU offload
-├── extended_models.py            # Rules 10–12: Nash, Bayesian BN (pgmpy), SIR
-├── langchain_workflows.py        # LangChain typed chains: strategy, narrative, landscape
-├── programmatic_architect.py     # Archetype library + RAM/SQLite cache + LLM landscape gen
-├── social_connectors.py          # Twitter/X (v2) and Reddit (praw) live data connectors
-├── empirical_config.py           # 43-parameter empirical master (v1.1.0, 88.4% coverage)
-├── empirical_calibration.py      # Translates empirical base → engine-safe simulator defaults
-├── utility_logic.py              # Game-theoretic strategic force calculator
-├── cache_manager.py              # RAM + SQLite landscape cache
-├── llm_credentials.py            # Centralized API key resolution for all providers
-├── schemas.py                    # Pydantic schemas: StrategyMatrix, GamePayoff
-├── visualizations.py             # Network visualization helpers (Plotly + NetworkX)
-├── i18n.py                       # Internationalization helpers (English / Spanish)
-├── quantum/
-│   ├── quantum_optimizer.py      # QAOA-inspired optimizer (Qiskit or classical fallback)
-│   ├── tensor_network.py         # MPS-style compression for agent-state matrices
-│   └── integration.py            # Drop-in helpers used by multilayer_engine and social_architect
-├── benchmarks/                   # PVU-BS offline benchmark runner
-│   ├── runner.py                 # CLI entry point (python -m benchmarks.runner)
-│   ├── baselines.py              # Naive, MA, AR(1), Random regime baselines
-│   ├── metrics.py                # MAE/RMSE/MAPE, Diebold-Mariano, Holm-Bonferroni
-│   ├── turning_points.py         # Turning-point detection and F1 scoring
-│   └── io.py                     # PVU case loader
-├── configs/
-│   ├── multilayer.yaml           # Layer weights and demographic attribute configuration
-│   └── pvu.yaml                  # PVU runner configuration (split ratios, thresholds, seeds)
-├── datasets/pvu_cases/           # Benchmark case folders (currently synthetic)
-├── docs/validation/              # PVU-BS protocol (English + Spanish)
-├── reports/validation/           # Auto-generated benchmark outputs (metrics.json, report.md)
-├── tests/                        # 200+ unit and integration tests
-│   ├── test_cfc_engine.py        # ⚡ NEW — CfC architecture unit tests
-│   ├── test_cfc_router.py        # ⚡ NEW — Router fallback and integration tests
-│   └── [existing tests]
-├── .env.example                  # Environment variable template
-├── README.md                     # This file (English)
-└── README_ES.md                  # Spanish documentation
+# Build documentation
+python -m mkdocs build --strict
 ```
 
 ---
 
-## Testing
+## Documentation
 
-```bash
-pytest tests/
-```
-
-The test suite covers: simulator core (including CfC fast path), CfC engine architecture, CfC router fallback and integration, energy engine, multilayer engine (including CfC τ-matrix), massive-scale engine, game-theory layer, social architect, empirical calibration, PVU benchmark runner, visualizations, and LLM integration. Tests run in CI on every push.
-
-CfC model tests that require PyTorch are automatically skipped if the library is not installed (`pytest.mark.skipif`), so CI never breaks due to missing weights or optional dependencies.
+- MkDocs site: `docs/`
+- API reference: `docs/api.md`
+- Scientific roadmap in Spanish: `docs/math_physics_extension_plan_ES.md`
+- PVU-MASSIVE validation protocol: `docs/validation/`
+- Spanish overview: `README_ES.md`
+- Benchmark card: docs/cards/BENCHMARK.md
+- Reproducibility card: docs/cards/REPRODUCIBILITY.md
+- Real-engine benchmark report: `experiments/06_real_benchmark_v0/REPORT.md`
+- Historical empirical validation report: `experiments/real_validation/EMPIRICAL_VALIDATION_REPORT.md`
 
 ---
 
-## Contributing
+## Project history
 
-Contributions are welcome. Please:
+MASSIVE was previously developed under the name `BeyondSight` (visible in older git
+history). The codebase was renamed to `MASSIVE` in 2026-06-29 to better reflect
+the multi-engine architecture (`Multilayer + Architecture for Scalable Social
+Interaction & Virtual Engine`). All current source uses the `massive*` namespace;
+the rename is preserved in git history for traceability.
 
-1. Fork the repository and create a feature branch.
-2. Follow the existing code style (Google-style docstrings, type hints, `pytest` for tests).
-3. Add or update tests for any changed behavior and run `pytest tests/` before opening a PR.
-4. For new empirical parameters, include source references and cultural variance metadata matching the format in `BEYONDSIGHT_EMPIRICAL_MASTER`.
+---
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for full guidelines and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) for community standards.
+## Deployment notes
+
+- CI deploy no longer uses force-push to Hugging Face Spaces.
+- Configure `HF_TOKEN` in repository secrets for Hugging Face sync.
+- Optional analytics in the Streamlit app can be injected with `MASSIVE_ANALYTICS_SNIPPET`; no placeholder script is emitted by default.
 
 ---
 
 ## License
 
-[Apache License 2.0](LICENSE) — free for personal, academic, and commercial use with attribution.
-
-Design, architecture, and system logic by [Adlgr87](https://github.com/Adlgr87).  
-For consulting or collaboration inquiries, contact via [GitHub](https://github.com/Adlgr87).
-
----
-
-*Many behaving as One.*
+Apache License 2.0. See `LICENSE`.

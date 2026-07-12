@@ -9,6 +9,9 @@ Welcome to the **MASSIVE** documentation. This project is a hybrid social dynami
 - **Multi-Range Support:** Works with both [0, 1] probabilistic and [-1, 1] bipolar ranges.
 - **Interactive UI:** Built with Streamlit for real-time visualization and exports.
 - **Security First:** Management of API keys via environment variables.
+- **Scientific Extension Plan:** Roadmap for adaptive solvers, stability diagnostics, data assimilation, bifurcations, and physics-informed modules.
+
+For the scientific roadmap, see the [Spanish mathematical and physical extension plan](math_physics_extension_plan_ES.md).
 
 ## Getting Started
 

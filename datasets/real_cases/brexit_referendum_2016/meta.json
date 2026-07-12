@@ -1,0 +1,21 @@
+{
+  "case_id": "brexit_referendum_2016",
+  "title": "UK — Brexit Referendum 2016",
+  "country": "GBR",
+  "cultural_profile": "anglosaxon",
+  "scenario_type": "polarization_spike",
+  "description": "Referéndum sobre salida de UE. Polarización aumentó dramáticamente durante campaña. Resultado 52% Leave vs 48% Remain.",
+  "sources": [
+    "British Election Study (BES) 2016 wave",
+    "YouGov polling data 2016",
+    "V-Dem: UK polarization metrics",
+    "Hobolt (2018): Brexit campaign analysis"
+  ],
+  "is_synthetic": false,
+  "data_type": "empirical_estimated",
+  "data_confidence": "medium-high",
+  "data_notes": "Polarization values estimated from published surveys and research. Values normalized to [0,1] where 0=consensus, 0.5=moderate division, 1.0=max polarization. For SIR-type cases, P represents protest participation rate rather than polarization.",
+  "network_type": "watts_strogatz",
+  "n_timesteps": 11,
+  "pvu_level_target": "bronze"
+}

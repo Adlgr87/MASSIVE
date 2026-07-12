@@ -1,0 +1,13 @@
+{
+  "provider": "heurístico",
+  "alpha_blend": 0.80,
+  "sigma_base": 0.05,
+  "hk_epsilon": 0.15,
+  "homofilia_tasa": 0.45,
+  "umbral_media": 0.25,
+  "layer_weights": [0.4, 0.3, 0.3],
+  "sleep_threshold": 0.005,
+  "n_clusters_lod": "auto",
+  "cultural_profile": "mixed",
+  "seed": 42
+}

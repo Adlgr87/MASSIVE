@@ -17,10 +17,10 @@ from i18n import t
 from llm_credentials import persist_provider_api_key
 from social_architect import buscar_estrategia_inversa
 from visualizations import generate_social_network_viz
-from forecast import TemporalConfig, forecast
+from micro_ui import render_micro_tab
 from simulator import (
-    BEYONDSIGHT_EMPIRICAL_MASTER,
-    BEYONDSIGHT_RUNTIME_PARAMS,
+    MASSIVE_EMPIRICAL_MASTER,
+    MASSIVE_RUNTIME_PARAMS,
     DEFAULT_CONFIG,
     DEFAULT_PAYOFF_MATRIX,
     DESCRIPCIONES_REGLAS,
@@ -43,7 +43,7 @@ PROJECT_LOGO_URL = "https://github.com/user-attachments/assets/04c5860f-36d4-433
 
 # EMPIRICAL INTEGRATION — importar indicadores de base empírica si disponibles
 try:
-    from empirical_config import BEYONDSIGHT_RUNTIME_PARAMS as _EMPIRICAL_RUNTIME
+    from empirical_config import MASSIVE_RUNTIME_PARAMS as _EMPIRICAL_RUNTIME
     _EMPIRICAL_VALIDATION_FLAGS = _EMPIRICAL_RUNTIME.get("validation_flags", [])
 except ImportError:
     _EMPIRICAL_VALIDATION_FLAGS = []
@@ -54,6 +54,15 @@ try:
     _CFC_STATUS = CfCRouter.get().status
 except ImportError:
     _CFC_STATUS = {"regime_selector": False, "tau_matrix": False, "architect_policy": False}
+
+# UIL INTEGRATION — Document Intelligence + Interpreter Layer
+try:
+    from interpreter_layer import InterpreterLayer
+    from document_intelligence import DocumentIntelligence
+
+    _UIL_AVAILABLE = True
+except ImportError:
+    _UIL_AVAILABLE = False
 
 # Load environment variables from .env
 load_dotenv()
@@ -472,9 +481,9 @@ with st.sidebar:
     st.markdown("---")
     st.markdown("#### 🧪 Perfil Empírico" if lang == "es" else "#### 🧪 Empirical Profile")
     activar_empirico = st.toggle(
-        "Aplicar calibración empírica (v{})".format(BEYONDSIGHT_EMPIRICAL_MASTER["meta"]["version"])
+        "Aplicar calibración empírica (v{})".format(MASSIVE_EMPIRICAL_MASTER["meta"]["version"])
         if lang == "es"
-        else "Apply empirical calibration (v{})".format(BEYONDSIGHT_EMPIRICAL_MASTER["meta"]["version"]),
+        else "Apply empirical calibration (v{})".format(MASSIVE_EMPIRICAL_MASTER["meta"]["version"]),
         value=False,
         help=(
             "Aplica los índices de calibración empírica consolidados (redes, temporales, "
@@ -485,7 +494,7 @@ with st.sidebar:
         ),
     )
     if activar_empirico:
-        rp = BEYONDSIGHT_RUNTIME_PARAMS
+        rp = MASSIVE_RUNTIME_PARAMS
         st.caption(
             f"λ social={rp['social_influence_lambda']} · "
             f"T caos={rp['temperature']} · "
@@ -501,13 +510,26 @@ with st.sidebar:
 # ------------------------------------------------------------
 # LÓGICA PRINCIPAL
 # ------------------------------------------------------------
-tab1, tab2, tab3, tab4, tab5 = st.tabs([
-    '📊 Simulación Tradicional',
-    '🧠 Arquitecto Social (Modo Inverso)',
-    '🌐 Simulación Multicapa',
-    '⚡ Simulación Masiva',
-    '🎬 Centro Analítico',
-])
+if _UIL_AVAILABLE:
+    tab1, tab2, tab3, tab4, tab5, tab6, tab_uil = st.tabs([
+        '📊 Simulación Tradicional',
+        '🧠 Arquitecto Social (Modo Inverso)',
+        '🌐 Simulación Multicapa',
+        '⚡ Simulación Masiva',
+        '🎬 Centro Analítico',
+        '🔬 Micro — Familias de Futuros',
+        '📄 Document Intelligence',
+    ])
+else:
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+        '📊 Simulación Tradicional',
+        '🧠 Arquitecto Social (Modo Inverso)',
+        '🌐 Simulación Multicapa',
+        '⚡ Simulación Masiva',
+        '🎬 Centro Analítico',
+        '🔬 Micro — Familias de Futuros',
+    ])
+    tab_uil = None
 
 with tab1:
     if correr:
@@ -658,81 +680,6 @@ with tab1:
                 <div class="metric-value" style="font-size:1.0rem">{regla_dom}</div>
                 <div class="metric-delta-neu">{n_dom}/{pasos} · {selector_label}</div>
             </div>""", unsafe_allow_html=True)
-
-        # ── TEMPORAL FORECAST ───────────────────────────────────
-        with st.expander(t("temporal_forecast_section", lang), expanded=False):
-            event_labels = {
-                "viral_online": "Viral online",
-                "protest_campaign": "Protest campaign",
-                "labor_conflict": "Labor conflict",
-                "electoral_campaign": "Electoral campaign",
-                "policy_adoption": "Policy adoption",
-                "cultural_shift": "Cultural shift",
-            }
-            tf_c1, tf_c2, tf_c3 = st.columns(3)
-            with tf_c1:
-                temporal_event_type = st.selectbox(
-                    t("temporal_event_type", lang),
-                    options=list(event_labels.keys()),
-                    format_func=lambda key: event_labels.get(key, key),
-                    key="tab1_temporal_event_type",
-                )
-            with tf_c2:
-                temporal_horizon_days = st.slider(
-                    t("temporal_horizon_days", lang),
-                    min_value=7,
-                    max_value=720,
-                    value=90,
-                    step=1,
-                    key="tab1_temporal_horizon_days",
-                )
-            with tf_c3:
-                temporal_step_days = st.slider(
-                    t("temporal_step_days", lang),
-                    min_value=1,
-                    max_value=90,
-                    value=7,
-                    step=1,
-                    key="tab1_temporal_step_days",
-                )
-
-            temporal_cfg = TemporalConfig(
-                event_type=temporal_event_type,
-                time_horizon_days=temporal_horizon_days,
-                step_duration_days=temporal_step_days,
-            )
-            temporal_state = dict(historial[-1])
-            temporal_state["historial"] = historial
-            temporal_state["config"] = config_run
-            temporal_analytical = forecast(temporal_state, temporal_cfg, mode="analytical")
-            st.markdown(f"**{t('temporal_analytical_result', lang)}**")
-            tfm1, tfm2, tfm3 = st.columns(3)
-            with tfm1:
-                st.metric(t("temporal_p_event", lang), f"{temporal_analytical.p_event:.1%}")
-            with tfm2:
-                st.metric(
-                    t("temporal_days_to_event", lang),
-                    temporal_analytical.days_to_event if temporal_analytical.days_to_event is not None else "—",
-                )
-            with tfm3:
-                st.metric(
-                    t("temporal_confidence", lang),
-                    temporal_analytical.confidence or "—",
-                )
-
-            if st.button(t("temporal_run_mc", lang), key="tab1_temporal_run_mc"):
-                with st.spinner(t("simulating", lang)):
-                    temporal_mc = forecast(
-                        temporal_state,
-                        temporal_cfg,
-                        mode="monte_carlo",
-                        n_runs=100,
-                    )
-                st.markdown(f"**{t('temporal_mc_result', lang)}**")
-                st.write(
-                    f"{t('temporal_p_event', lang)}: {temporal_mc.p_event:.1%} | "
-                    f"{t('temporal_ci', lang)}: [{(temporal_mc.p_ci_low or 0.0):.1%}, {(temporal_mc.p_ci_high or 0.0):.1%}]"
-                )
 
         st.markdown("<br>", unsafe_allow_html=True)
 
@@ -966,9 +913,6 @@ with tab2:
                 "homofilia_tasa":     homofilia_tasa,
                 # Pasar tamaño del grafo para el cálculo de proporciones target_nodes
                 "_n_nodos": grafo_org.number_of_nodes() if grafo_org else 20,
-                "forecast_event_type": "labor_conflict",
-                "forecast_time_horizon_days": 90,
-                "forecast_step_duration_days": 7,
             }
             if activar_replicador:
                 config_run["modelo_matematico"] = "Replicator"
@@ -1052,24 +996,6 @@ with tab2:
             )
             st.subheader(titulo_narrativa)
             st.write(data_inv["narrativa"])
-
-            temporal_arch = data_inv.get("estrategia", {}).get("temporal_forecast", {})
-            if temporal_arch:
-                st.markdown(f"**{t('social_temporal_metrics', lang)}**")
-                ta1, ta2, ta3 = st.columns(3)
-                with ta1:
-                    st.metric(
-                        t("social_p_no_action", lang),
-                        f"{float(temporal_arch.get('p_event_no_intervention', 0.0)):.1%}",
-                    )
-                with ta2:
-                    st.metric(
-                        t("social_p_best_plan", lang),
-                        f"{float(temporal_arch.get('p_event_best_plan', temporal_arch.get('p_event', 0.0))):.1%}",
-                    )
-                with ta3:
-                    days_effect = temporal_arch.get("min_effect_time_days", temporal_arch.get("days_to_event"))
-                    st.metric(t("social_days_to_effect", lang), days_effect if days_effect is not None else "—")
 
             if data_inv["hist_inverso"]:
                 st.markdown("**Trayectoria de opinión (Estrategia Aplicada)** — *MASSIVE AI*")
@@ -1849,3 +1775,150 @@ with tab5:
             st.dataframe(pd.DataFrame(regime_changes), use_container_width=True, hide_index=True)
         else:
             st.caption("No se detectaron cambios de régimen en la simulación actual.")
+
+
+with tab6:
+    render_micro_tab()
+
+
+# ────────────────────────────────────────────────────────────────────────────
+# UIL INTEGRATION TAB — Document Intelligence + Interpreter Layer
+# ────────────────────────────────────────────────────────────────────────────
+if _UIL_AVAILABLE and tab_uil is not None:
+    with tab_uil:
+        st.markdown("### 📄 Inteligencia Documental & Interpretación Natural")
+        st.caption(
+            "Carga un documento o describe tu escenario en lenguaje natural. "
+            "Los módulos extraerán parámetros MASSIVE automáticamente."
+        )
+
+        # Input options
+        uil_mode = st.radio(
+            "Modo de entrada",
+            ["📝 Documento", "💬 Descripción natural", "🔀 Ambos"],
+            horizontal=True,
+        )
+
+        config_from_uil = {}
+
+        # Mode 1: Document only
+        if uil_mode in ["📝 Documento", "🔀 Ambos"]:
+            st.subheader("📄 Carga de Documento")
+            uploaded_file = st.file_uploader(
+                "Sube un PDF, JSON, CSV o XLSX",
+                type=["pdf", "json", "csv", "xlsx"],
+                key="uil_file",
+            )
+            if uploaded_file:
+                # Save to temp
+                import tempfile
+
+                with tempfile.NamedTemporaryFile(delete=False, suffix="." + uploaded_file.name.split(".")[-1]) as tmp:
+                    tmp.write(uploaded_file.getbuffer())
+                    tmp_path = tmp.name
+
+                st.success(f"✓ Archivo cargado: {uploaded_file.name}")
+                with st.spinner("Extrayendo parámetros del documento..."):
+                    try:
+                        from uil_adapter import create_uil_adapter
+
+                        adapter = create_uil_adapter(llm_provider=proveedor, llm_api_key=api_key)
+                        config_from_uil = adapter.from_document(tmp_path)
+                        st.success(f"✓ Extraídos {len(config_from_uil)} parámetros del documento")
+                        with st.expander("Ver parámetros extraídos"):
+                            st.json(config_from_uil)
+                    except Exception as e:
+                        st.error(f"Error extrayendo documento: {e}")
+
+        # Mode 2: Natural language only
+        if uil_mode in ["💬 Descripción natural", "🔀 Ambos"]:
+            st.subheader("💬 Descripción del Escenario")
+            description = st.text_area(
+                "Describe tu escenario en lenguaje natural (ej: 'Alta polarización, desconfianza institucional')",
+                height=100,
+                key="uil_description",
+            )
+            if description:
+                with st.spinner("Interpretando descripción..."):
+                    try:
+                        from uil_adapter import create_uil_adapter
+
+                        adapter = create_uil_adapter(llm_provider=proveedor, llm_api_key=api_key)
+                        config_from_uil = adapter.from_natural_language(description)
+                        st.success(f"✓ Interpretados {len(config_from_uil)} parámetros")
+                        with st.expander("Ver parámetros interpretados"):
+                            st.json(config_from_uil)
+                    except Exception as e:
+                        st.error(f"Error interpretando: {e}")
+
+        st.markdown("---")
+
+        # Simulate with UIL config
+        if st.button("🚀 Simular con parámetros UIL", key="uil_simulate"):
+            if not config_from_uil:
+                st.warning("Primero carga un documento o describe un escenario")
+            else:
+                # Merge with defaults, filtering None UIL values
+                filtered_uil = {k: v for k, v in config_from_uil.items() if v is not None}
+                final_config = {**DEFAULT_CONFIG, **filtered_uil}
+
+                with st.spinner(f"Simulando con parámetros UIL ({n_pasos} pasos)..."):
+                    try:
+                        historial = simular(pasos=n_pasos, **final_config)
+                        st.success(f"✓ Simulación completada ({len(historial)} pasos)")
+
+                        # Show results
+                        st.subheader("Resultados de la Simulación UIL")
+
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            opinion_final = historial[-1].get("opinion", 0)
+                            st.metric("Opinión Final", f"{opinion_final:.3f}")
+
+                        with col2:
+                            conf_final = historial[-1].get("confianza", 0.5)
+                            st.metric("Confianza Final", f"{conf_final:.3f}")
+
+                        # Narrative summary
+                        with st.expander("📖 Resumen Narrativo"):
+                            try:
+                                from uil_adapter import create_uil_adapter
+
+                                adapter = create_uil_adapter(llm_provider=proveedor, llm_api_key=api_key)
+                                narrative = adapter.interpreter.narrate(historial)
+                                st.write(
+                                    narrative.narrative
+                                    if hasattr(narrative, "narrative")
+                                    else str(narrative)
+                                )
+                            except Exception as e:
+                                st.caption(f"No se pudo generar narrativa: {e}")
+
+                        # Timeline chart
+                        st.subheader("Evolución de la Opinión")
+                        df = pd.DataFrame(historial)
+                        if "opinion" in df.columns:
+                            fig = go.Figure()
+                            fig.add_trace(
+                                go.Scatter(
+                                    x=df.index,
+                                    y=df["opinion"],
+                                    mode="lines+markers",
+                                    name="Opinión",
+                                    line=dict(color="#5ccfe6", width=2),
+                                )
+                            )
+                            fig.update_layout(
+                                template="plotly_dark",
+                                paper_bgcolor="#0a0e14",
+                                plot_bgcolor="#0d1520",
+                                title="Trayectoria de Opinión",
+                                xaxis_title="Paso",
+                                yaxis_title="Opinión",
+                            )
+                            st.plotly_chart(fig, use_container_width=True)
+
+                    except Exception as e:
+                        st.error(f"Error en la simulación: {e}")
+else:
+    st.caption("📄 Pestaña Document Intelligence no disponible (módulos UIL no instalados)")

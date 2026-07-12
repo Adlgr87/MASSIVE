@@ -1,0 +1,49 @@
+# Repomix generated bundles
+repomix-output*
+
+# Local secrets and environment files
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Python and test caches
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Virtual environments and local tool state
+.venv/
+venv/
+.vscode/
+.kilocode/
+
+# Rust/PyO3 build artifacts
+target/
+*.so
+*.dylib
+*.dll
+*.pyd
+
+# Generated/runtime artifacts
+site/
+archive/
+reports/validation/ci/
+reports/validation/llm_run/
+models/*.pt
+models/dataset_*.pt
+*.log
+*.sqlite
+*.db
+
+# Binary/static assets that do not help text-only AI review
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.webp
+*.ico

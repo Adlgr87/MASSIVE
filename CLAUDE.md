@@ -73,3 +73,23 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 ---
 
 **These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
+
+---
+## RECOVERY RECORD — MASSIVE Recovery Plan (autogenerado)
+
+- Backup branch created (local): backup/pre-recovery-20260527
+- HEAD SHA at backup: 23b4bf3692f7c9985ea57c35fcdc02164107d486
+- Fecha inicio: 2026-05-27T00:26:44-04:00
+
+Fases ejecutadas:
+1) Fase 1 — Análisis: detección de línea truncada en requirements.txt y necesidad de registro en CLAUDE.md.
+2) Fase 2 — Reparación: (en progreso) aplicar cambios atómicos y ejecutar tests.
+
+Reglas de seguridad aplicadas:
+- No se usa push --force ni reescritura de historial.
+- Todas las reparaciones serán atómicas y documentadas aquí.
+
+Checklist post-repair:
+- Ejecutar: pip install -r requirements.txt
+- Ejecutar tests: pytest tests/
+- Registrar resultados aquí con SHA del commit.

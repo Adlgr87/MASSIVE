@@ -1,0 +1,14 @@
+{
+  "mcpServers": {
+    "zapier": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@zapier/zapier-mcp"
+      ],
+      "env": {
+        "ZAPIER_MCP_TOKEN": "MzYxY2Y0MWEtYjU4Ny00ZjBmLTk2YjgtZWQwMDQ5YzE1NGIzOklSN2RxZUF1YTBlQTVRQlRoS3l6Z0RSUDd3cm1ZWWpwbUMrN05FOUMxUm89"
+      }
+    }
+  }
+}

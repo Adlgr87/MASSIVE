@@ -1,0 +1,20 @@
+[
+  {
+    "case": "hong_kong_protests_2019",
+    "mae": 0.16097657255834225,
+    "rmse": 0.21604480373246954,
+    "directional_accuracy": 0.75
+  },
+  {
+    "case": "south_korea_candlelight_2016",
+    "mae": 0.13494516957870067,
+    "rmse": 0.13941799227829557,
+    "directional_accuracy": 0.5
+  },
+  {
+    "case": "us_election_2020",
+    "mae": 0.1211817839767323,
+    "rmse": 0.12495220772422687,
+    "directional_accuracy": 0.5
+  }
+]

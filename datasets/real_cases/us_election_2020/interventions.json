@@ -1,0 +1,22 @@
+[
+  {
+    "date": "2020-W12",
+    "label": "COVID national emergency declared",
+    "source": "White House"
+  },
+  {
+    "date": "2020-W20",
+    "label": "George Floyd death + BLM protests",
+    "source": "CNN/Gallup"
+  },
+  {
+    "date": "2020-W40",
+    "label": "Presidential election",
+    "source": "AP/Fox/NBC"
+  },
+  {
+    "date": "2020-W44",
+    "label": "Election results contested",
+    "source": "Multiple sources"
+  }
+]

@@ -6,6 +6,7 @@ FLUJO: Arquetipo → Caché (RAM+SQLite) → LLM One-Shot → Fallback
 import json
 import os
 import time
+import numpy as np
 import requests
 from typing import Optional
 from cache_manager import LandscapeCache
@@ -200,3 +201,11 @@ class ProgrammaticArchitect:
         except Exception as e:
             print(f"[Architect] ❌ Validación fallida: {e}")
             return False
+
+
+def design_intervention(state_vector, history, constraints):
+    candidates = state_vector + np.outer(np.linspace(0.0, 1.0, 20), [-1.0, 1.0]).reshape(-1, *np.asarray(state_vector).shape)
+    for c in candidates:
+        if constraints.is_valid(c):
+            return c
+    return state_vector

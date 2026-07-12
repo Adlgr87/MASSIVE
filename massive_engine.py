@@ -44,6 +44,8 @@ from typing import Any
 
 import numpy as np
 
+from massive_core.rust_core import active_mask_step
+
 log = logging.getLogger("massive")
 
 # ── GPU detection ──────────────────────────────────────────────────────────────
@@ -97,6 +99,72 @@ _COL_OPINION: int = 0
 # Opinión: rango bipolar [-1, 1] por defecto (igual que MultilayerEngine)
 _OPINION_MIN: float = -1.0
 _OPINION_MAX: float = 1.0
+_PARETO_SHOCK_PERCENTILE: float = 95.0
+_PARETO_SHOCK_AMPLIFICATION: float = 5.0
+
+
+class MassiveEngine:
+    """Motor base de agentes completos con shock manual exógeno."""
+
+    def __init__(self, config: dict | None = None) -> None:
+        cfg = config or {}
+        self.agents = self.initialize_agents(cfg)
+
+    def initialize_agents(self, config: dict) -> np.ndarray:
+        n_agents = int(config.get("n_agents", 100))
+        seed = config.get("seed")
+        rng = np.random.default_rng(seed)
+        agents = rng.uniform(-0.5, 0.5, (n_agents, 5))
+        agents[:, 1:] = np.clip(agents[:, 1:], 0.0, 1.0)
+        return agents.astype(np.float64)
+
+    def apply_shock(
+        self,
+        magnitude: float = 0.1,
+        distribution: str = "uniform",
+        target_layer: int = 0,
+        alpha_pareto: float = 1.5,
+        affected_fraction: float = 0.1,
+        seed: int | None = None,
+    ) -> None:
+        """
+        Aplica manualmente un shock exógeno (Cisne Negro) a una fracción de agentes.
+        """
+        n_agents, n_layers = self.agents.shape
+        if n_layers < 1:
+            return
+
+        target = int(np.clip(target_layer, 0, n_layers - 1))
+        frac = float(np.clip(affected_fraction, 0.0, 1.0))
+        n_affected = int(n_agents * frac)
+        if n_affected <= 0:
+            return
+
+        rng = np.random.default_rng(seed)
+        affected_indices = rng.choice(n_agents, n_affected, replace=False)
+
+        if distribution == "uniform":
+            shock_values = rng.uniform(-magnitude, magnitude, n_affected)
+        elif distribution == "normal":
+            shock_values = rng.normal(0.0, magnitude, n_affected)
+        elif distribution == "pareto":
+            raw = rng.pareto(alpha_pareto, n_affected)
+            centered = (raw - np.mean(raw)) * magnitude
+            threshold = np.percentile(np.abs(centered), _PARETO_SHOCK_PERCENTILE)
+            mask = np.abs(centered) > threshold
+            affected_indices = affected_indices[mask]
+            shock_values = centered[mask] * _PARETO_SHOCK_AMPLIFICATION
+        else:
+            raise ValueError("distribution must be one of: uniform, normal, pareto")
+
+        if shock_values.size == 0:
+            return
+
+        self.agents[affected_indices, target] += shock_values
+        if target == _COL_OPINION:
+            self.agents[:, target] = np.clip(self.agents[:, target], _OPINION_MIN, _OPINION_MAX)
+        else:
+            self.agents[:, target] = np.clip(self.agents[:, target], 0.0, 1.0)
 
 
 # ============================================================
@@ -194,16 +262,7 @@ class ActiveSet:
             x_new:  Estado nuevo (M, K).
             adj:    Matriz de adyacencia (M, M) — se usa para encontrar vecinos.
         """
-        dx = np.abs(x_new - x_prev).max(axis=1)   # (M,) cambio por agente
-        changed = dx > self._threshold
-
-        # Reactivar vecinos de quienes cambiaron
-        if changed.any():
-            neighbor_active = (adj[changed, :].sum(axis=0) > 0)
-        else:
-            neighbor_active = np.zeros(self._M, dtype=bool)
-
-        self._active = changed | neighbor_active
+        self._active = active_mask_step(x_prev, x_new, adj, self._threshold)
         self._history.append(float(self._active.mean()))
 
     @property
@@ -322,6 +381,7 @@ def _langevin_step_masked(
     coupling: float,
     dt: float,
     active_mask: np.ndarray,
+    rng: np.random.Generator | None = None,
 ) -> np.ndarray:
     """
     Paso de Euler-Maruyama de Langevin procesando solo los super-agentes activos.
@@ -365,7 +425,7 @@ def _langevin_step_masked(
     drift[:, _COL_OPINION] += social_op
 
     # Ruido gaussiano modulado por theta
-    noise = np.random.randn(M_active, K)
+    noise = rng.standard_normal((M_active, K)) if rng is not None else np.random.randn(M_active, K)
 
     # Actualización Euler-Maruyama
     x_new = x.copy()
@@ -393,6 +453,7 @@ def _langevin_step_gpu(
     theta: np.ndarray,
     coupling: float,
     dt: float,
+    rng: np.random.Generator | None = None,
 ) -> np.ndarray:
     """
     Paso de Langevin usando CuPy (GPU). Fallback a NumPy si CuPy no disponible.
@@ -454,7 +515,7 @@ def _langevin_step_gpu(
     for ell, w in enumerate(layer_weights):
         social_force[:, _COL_OPINION] += coupling * w * (layers_flat[ell] @ x[:, _COL_OPINION])
     grad_U = multi_potential_gradient(x)
-    noise = np.random.randn(M, K)
+    noise = rng.standard_normal((M, K)) if rng is not None else np.random.randn(M, K)
     x_new = (
         x
         + dt * (-grad_U + social_force)
@@ -533,6 +594,7 @@ class MassiveSimEngine:
         self.coupling = float(coupling)
         self.dt = float(dt)
         self.seed = seed
+        self.rng = np.random.default_rng(seed)
 
         # Pesos de capa normalizados
         w = np.array(layer_weights, dtype=np.float64)
@@ -614,6 +676,7 @@ class MassiveSimEngine:
                     self._theta,
                     self.coupling,
                     self.dt,
+                    rng=self.rng,
                 )
                 active_frac = 1.0
 
@@ -627,6 +690,7 @@ class MassiveSimEngine:
                     self.coupling,
                     self.dt,
                     self._active_set.mask,
+                    rng=self.rng,
                 )
                 self._active_set.step(x_prev, self._x, self._layers_flat[0])
                 active_frac = float(self._active_set.mask.mean())
@@ -642,6 +706,7 @@ class MassiveSimEngine:
                     self.dt,
                     _OPINION_MIN,
                     _OPINION_MAX,
+                    rng=self.rng,
                 )
                 active_frac = 1.0
 

@@ -1,0 +1,21 @@
+{
+  "case_id": "south_korea_candlelight_2016",
+  "title": "South Korea — Candlelight Protests 2016-17",
+  "country": "KOR",
+  "cultural_profile": "east_asian",
+  "scenario_type": "consensus_cascade",
+  "description": "Protestas pacíficas con velas contra presidenta Park Geun-hye. Record Guinness: 2M personas. Terminó con impeachment exitoso. Ejemplo de cascada de consenso exitosa.",
+  "sources": [
+    "Gallup Korea (2016-2017): approval ratings",
+    "V-Dem: South Korea polarization metrics",
+    "Shin (2017): candlelight revolution analysis",
+    "Korean National Election Commission"
+  ],
+  "is_synthetic": false,
+  "data_type": "empirical_estimated",
+  "data_confidence": "medium-high",
+  "data_notes": "Polarization values estimated from published surveys and research. Values normalized to [0,1] where 0=consensus, 0.5=moderate division, 1.0=max polarization. For SIR-type cases, P represents protest participation rate rather than polarization.",
+  "network_type": "watts_strogatz",
+  "n_timesteps": 14,
+  "pvu_level_target": "bronze"
+}

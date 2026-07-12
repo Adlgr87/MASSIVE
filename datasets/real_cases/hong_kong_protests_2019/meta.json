@@ -1,0 +1,21 @@
+{
+  "case_id": "hong_kong_protests_2019",
+  "title": "Hong Kong — Anti-Extradition Protests 2019",
+  "country": "HKG",
+  "cultural_profile": "east_asian",
+  "scenario_type": "polarization_spike",
+  "description": "Protestas masivas contra ley de extradición. 2M personas marcharon. Elecciones de distrito mostraron dividedo polarizado.",
+  "sources": [
+    "HKU POP (Hong Kong University Public Opinion Programme)",
+    "District Council Election results Nov 2019",
+    "Cheng & Yip (2020): Hong Kong protest dynamics",
+    "Reuters/CUHK social media analysis"
+  ],
+  "is_synthetic": false,
+  "data_type": "empirical_estimated",
+  "data_confidence": "medium-high",
+  "data_notes": "Polarization values estimated from published surveys and research. Values normalized to [0,1] where 0=consensus, 0.5=moderate division, 1.0=max polarization. For SIR-type cases, P represents protest participation rate rather than polarization.",
+  "network_type": "watts_strogatz",
+  "n_timesteps": 15,
+  "pvu_level_target": "bronze"
+}
