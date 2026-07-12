@@ -1,0 +1,1765 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="MASSIVE — Hybrid social dynamics simulator. Numerical core + LLM as regime selector.">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>MASSIVE — Mapa de dependencias transversales de simulator.py - MASSIVE Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#massive-mapa-de-dependencias-transversales-de-simulatorpy" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="MASSIVE Documentation" class="md-header__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MASSIVE Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              MASSIVE — Mapa de dependencias transversales de simulator.py
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="MASSIVE Documentation" class="md-nav__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    MASSIVE Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../README_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spanish Version
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation (PVU-BS)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Validation (PVU-BS)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/PVU_MASSIVE_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/PVU_MASSIVE_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocolo (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/preregistration_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registration (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/preregistration_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registro (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/validation_report_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report template (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/validation_report_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plantilla de reporte (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#proposito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Propósito
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-tesis-central" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Tesis central
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-superficies-publicas-observadas-en-simulatorpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Superficies públicas observadas en simulator.py
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-dependencias-entrantes-hacia-simulatorpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Dependencias entrantes hacia simulator.py
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#31-ui-principal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1. UI principal
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.1. UI principal">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#consumer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consumer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uso-observado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Uso observado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implicacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implicación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#32-wrappers-de-compatibilidad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2. Wrappers de compatibilidad
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.2. Wrappers de compatibilidad">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#consumers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consumers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uso-observado_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Uso observado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implicacion_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implicación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#33-social-architect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3. Social Architect
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.3. Social Architect">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#consumer_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consumer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uso-observado_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Uso observado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implicacion_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implicación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#34-forecast-temporal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4. Forecast temporal
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.4. Forecast temporal">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#consumers_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consumers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uso-observado_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Uso observado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implicacion_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implicación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#35-entrenamiento-cfc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5. Entrenamiento CfC
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.5. Entrenamiento CfC">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#consumer_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consumer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uso-observado_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Uso observado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implicacion_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implicación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#36-benchmarks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6. Benchmarks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.6. Benchmarks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#consumer_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consumer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uso-observado_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Uso observado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implicacion_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implicación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#37-motores-y-modulos-auxiliares-con-dependencia-puntual" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.7. Motores y módulos auxiliares con dependencia puntual
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.7. Motores y módulos auxiliares con dependencia puntual">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#consumer_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consumer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uso-observado_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Uso observado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implicacion_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implicación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-dependencias-salientes-desde-simulatorpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Dependencias salientes desde simulator.py
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#41-motores-internos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1. Motores internos
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.1. Motores internos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#imports-observados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Imports observados
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implicacion_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implicación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#42-diagnostico-y-benchmark-interno" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2. Diagnóstico y benchmark interno
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.2. Diagnóstico y benchmark interno">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#import-observado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Import observado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implicacion_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implicación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#43-capa-empirica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3. Capa empírica
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.3. Capa empírica">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#imports-observados_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Imports observados
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implicacion_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implicación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#44-capa-llm-credenciales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4. Capa LLM / credenciales
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.4. Capa LLM / credenciales">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#import-observado_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Import observado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implicacion_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implicación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#45-capa-cfc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5. Capa CfC
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.5. Capa CfC">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#import-observado_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Import observado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implicacion_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implicación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#46-capa-de-modelos-extendidos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6. Capa de modelos extendidos
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.6. Capa de modelos extendidos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#import-observado_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Import observado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implicacion_12" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implicación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#47-utilidades-matematicas-y-de-dominio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.7. Utilidades matemáticas y de dominio
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.7. Utilidades matemáticas y de dominio">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#imports-observados_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Imports observados
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implicacion_13" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implicación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-integratedsimulator-como-subcentro-sistemico" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. IntegratedSimulator como subcentro sistémico
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. IntegratedSimulator como subcentro sistémico">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#responsabilidad-observada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Responsabilidad observada
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implicacion_14" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implicación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-tipos-de-acoplamiento-detectados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Tipos de acoplamiento detectados
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#61-acoplamiento-por-api-publica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1. Acoplamiento por API pública
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#62-acoplamiento-por-configuracion-compartida" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2. Acoplamiento por configuración compartida
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#63-acoplamiento-por-ejecucion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3. Acoplamiento por ejecución
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#64-acoplamiento-por-fallback" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4. Acoplamiento por fallback
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#65-acoplamiento-bidireccional-parcial" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.5. Acoplamiento bidireccional parcial
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-riesgos-estructurales-especificos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Riesgos estructurales específicos
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Riesgos estructurales específicos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#riesgo-1-tratar-simulatorpy-como-mero-modulo-legacy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Riesgo 1 — Tratar simulator.py como mero módulo legacy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#riesgo-2-extraer-piezas-sin-mapa-de-consumidores" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Riesgo 2 — Extraer piezas sin mapa de consumidores
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#riesgo-3-cambiar-defaultsconfig-compartida-sin-considerar-efectos-sistemicos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Riesgo 3 — Cambiar defaults/config compartida sin considerar efectos sistémicos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#riesgo-4-romper-flujos-indirectos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Riesgo 4 — Romper flujos indirectos
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-reglas-derivadas-para-consolidacion-futura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Reglas derivadas para consolidación futura
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Conclusión
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="massive-mapa-de-dependencias-transversales-de-simulatorpy">MASSIVE — Mapa de dependencias transversales de <code>simulator.py</code></h1>
+<h2 id="proposito">Propósito</h2>
+<p>Documentar, con base en evidencia del código local, cómo <code>simulator.py</code> articula el sistema MASSIVE y por qué debe tratarse como un nodo central de alto riesgo estructural.</p>
+<p>Este documento corresponde al backlog recomendado como:
+- <strong>Slice D — Dependencias transversales del simulador</strong></p>
+<hr />
+<h2 id="1-tesis-central">1. Tesis central</h2>
+<p><code>simulator.py</code> no es solo un módulo de simulación. En el estado actual del proyecto funciona como:</p>
+<ul>
+<li>API pública principal,</li>
+<li>orquestador de reglas y dinámicas,</li>
+<li>puente con LLM/CfC,</li>
+<li>punto de integración con motores internos,</li>
+<li>fuente de configuración compartida,</li>
+<li>proveedor de compatibilidad para wrappers,</li>
+<li>y dependencia transversal de múltiples subsistemas.</li>
+</ul>
+<p>En otras palabras:</p>
+<blockquote>
+<p><code>simulator.py</code> es actualmente uno de los principales núcleos sistémicos de MASSIVE.</p>
+</blockquote>
+<hr />
+<h2 id="2-superficies-publicas-observadas-en-simulatorpy">2. Superficies públicas observadas en <code>simulator.py</code></h2>
+<p>Funciones/clases clave observadas:
+- <code>llamar_llm</code>
+- <code>llamar_llm_heuristico</code>
+- <code>simular</code>
+- <code>simular_multiples</code>
+- <code>simular_multiples_dask</code>
+- <code>IntegratedSimulator</code>
+- <code>run_with_schedule</code></p>
+<p>Estas superficies no solo sirven al propio módulo, sino que son consumidas desde varias capas del sistema.</p>
+<hr />
+<h2 id="3-dependencias-entrantes-hacia-simulatorpy">3. Dependencias entrantes hacia <code>simulator.py</code></h2>
+<h2 id="31-ui-principal">3.1. UI principal</h2>
+<h3 id="consumer">Consumer</h3>
+<p><code>app.py</code></p>
+<h3 id="uso-observado">Uso observado</h3>
+<p>Importa desde <code>simulator</code>:
+- configuración (<code>DEFAULT_CONFIG</code>, <code>PROVEEDORES</code>, rangos)
+- datos empíricos
+- API principal de simulación
+- métricas y helpers</p>
+<h3 id="implicacion">Implicación</h3>
+<p>La UI depende directamente del simulador como backend operativo principal.</p>
+<hr />
+<h2 id="32-wrappers-de-compatibilidad">3.2. Wrappers de compatibilidad</h2>
+<h3 id="consumers">Consumers</h3>
+<ul>
+<li><code>app/__init__.py</code></li>
+<li><code>massive_core/__init__.py</code></li>
+</ul>
+<h3 id="uso-observado_1">Uso observado</h3>
+<p>Reexportan la API pública del simulador.</p>
+<h3 id="implicacion_1">Implicación</h3>
+<p>Cambiar <code>simulator.py</code> impacta no solo a consumidores directos, sino a dos superficies de compatibilidad adicionales.</p>
+<hr />
+<h2 id="33-social-architect">3.3. Social Architect</h2>
+<h3 id="consumer_1">Consumer</h3>
+<p><code>social_architect.py</code></p>
+<h3 id="uso-observado_2">Uso observado</h3>
+<p>Importa:
+- <code>run_with_schedule</code>
+- <code>resumen_historial</code>
+- <code>DEFAULT_CONFIG</code></p>
+<h3 id="implicacion_2">Implicación</h3>
+<p>El arquitecto social depende del simulador para:
+- ejecutar planes de intervención,
+- evaluar resultados,
+- y compartir configuración base.</p>
+<hr />
+<h2 id="34-forecast-temporal">3.4. Forecast temporal</h2>
+<h3 id="consumers_1">Consumers</h3>
+<ul>
+<li><code>forecast/engine.py</code></li>
+<li><code>forecast/scenarios.py</code></li>
+</ul>
+<h3 id="uso-observado_3">Uso observado</h3>
+<ul>
+<li><code>forecast/engine.py</code> importa <code>DEFAULT_CONFIG</code></li>
+<li><code>forecast/scenarios.py</code> importa <code>run_with_schedule</code></li>
+</ul>
+<h3 id="implicacion_3">Implicación</h3>
+<p>El forecast no es completamente autónomo: usa al simulador como fuente de config y como ejecutor de estrategias.</p>
+<hr />
+<h2 id="35-entrenamiento-cfc">3.5. Entrenamiento CfC</h2>
+<h3 id="consumer_2">Consumer</h3>
+<p><code>cfc_trainer.py</code></p>
+<h3 id="uso-observado_4">Uso observado</h3>
+<p>Importa:
+- <code>simular</code>
+- <code>DEFAULT_CONFIG</code></p>
+<h3 id="implicacion_4">Implicación</h3>
+<p>El pipeline de entrenamiento CfC depende del simulador como profesor o generador de dataset.</p>
+<hr />
+<h2 id="36-benchmarks">3.6. Benchmarks</h2>
+<h3 id="consumer_3">Consumer</h3>
+<p><code>benchmarks/runner.py</code></p>
+<h3 id="uso-observado_5">Uso observado</h3>
+<p>En modo LLM intenta importar <code>simular</code>.</p>
+<h3 id="implicacion_5">Implicación</h3>
+<p>El benchmark runner considera al simulador como implementación real o proxy del comportamiento MASSIVE.</p>
+<hr />
+<h2 id="37-motores-y-modulos-auxiliares-con-dependencia-puntual">3.7. Motores y módulos auxiliares con dependencia puntual</h2>
+<h3 id="consumer_4">Consumer</h3>
+<p><code>multilayer_engine.py</code></p>
+<h3 id="uso-observado_6">Uso observado</h3>
+<p>Consulta <code>PROVEEDORES</code> desde <code>simulator</code> dentro de <code>targeted_llm_bias</code>.</p>
+<h3 id="implicacion_6">Implicación</h3>
+<p>Existe acoplamiento inverso: no solo <code>simulator</code> depende de motores; al menos un motor depende también de datos del simulador.</p>
+<hr />
+<h2 id="4-dependencias-salientes-desde-simulatorpy">4. Dependencias salientes desde <code>simulator.py</code></h2>
+<h2 id="41-motores-internos">4.1. Motores internos</h2>
+<h3 id="imports-observados">Imports observados</h3>
+<ul>
+<li><code>from massive_engine import MassiveEngine</code></li>
+<li><code>from multilayer_engine import MultilayerEngine</code></li>
+</ul>
+<h3 id="implicacion_7">Implicación</h3>
+<p><code>simulator.py</code> coordina o integra motores especializados dentro del sistema global.</p>
+<hr />
+<h2 id="42-diagnostico-y-benchmark-interno">4.2. Diagnóstico y benchmark interno</h2>
+<h3 id="import-observado">Import observado</h3>
+<ul>
+<li><code>from benchmarks.butterfly_diagnostic import run_butterfly_diagnostic_core</code></li>
+</ul>
+<h3 id="implicacion_8">Implicación</h3>
+<p>El simulador consume capacidades de benchmark/diagnóstico, no vive aislado de ellas.</p>
+<hr />
+<h2 id="43-capa-empirica">4.3. Capa empírica</h2>
+<h3 id="imports-observados_1">Imports observados</h3>
+<p>Desde <code>empirical_calibration</code>:
+- maestros empíricos
+- runtime params
+- metadata keys
+- profile application helpers</p>
+<h3 id="implicacion_9">Implicación</h3>
+<p>La calibración empírica es parte estructural del simulador, no addon periférico.</p>
+<hr />
+<h2 id="44-capa-llm-credenciales">4.4. Capa LLM / credenciales</h2>
+<h3 id="import-observado_1">Import observado</h3>
+<ul>
+<li><code>from llm_credentials import resolve_provider_api_key</code></li>
+</ul>
+<h3 id="implicacion_10">Implicación</h3>
+<p>El simulador contiene acceso directo a la infraestructura de proveedores LLM.</p>
+<hr />
+<h2 id="45-capa-cfc">4.5. Capa CfC</h2>
+<h3 id="import-observado_2">Import observado</h3>
+<ul>
+<li><code>from cfc_router import CfCRouter</code> (opcional)</li>
+</ul>
+<h3 id="implicacion_11">Implicación</h3>
+<p>El simulador puede elegir rutas neuronales rápidas además del selector heurístico/LLM.</p>
+<hr />
+<h2 id="46-capa-de-modelos-extendidos">4.6. Capa de modelos extendidos</h2>
+<h3 id="import-observado_3">Import observado</h3>
+<ul>
+<li><code>from extended_models import regla_nash, regla_bayesiana, regla_sir</code> (opcional)</li>
+</ul>
+<h3 id="implicacion_12">Implicación</h3>
+<p><code>simulator.py</code> concentra la ampliación del espacio de reglas dinámicas.</p>
+<hr />
+<h2 id="47-utilidades-matematicas-y-de-dominio">4.7. Utilidades matemáticas y de dominio</h2>
+<h3 id="imports-observados_2">Imports observados</h3>
+<ul>
+<li><code>schemas.GamePayoff</code></li>
+<li><code>utility_logic.calculate_strategic_force</code></li>
+</ul>
+<h3 id="implicacion_13">Implicación</h3>
+<p>El simulador también es punto de composición de lógica matemática de teoría de juegos.</p>
+<hr />
+<h2 id="5-integratedsimulator-como-subcentro-sistemico">5. <code>IntegratedSimulator</code> como subcentro sistémico</h2>
+<p>La clase <code>IntegratedSimulator</code> merece atención especial.</p>
+<h3 id="responsabilidad-observada">Responsabilidad observada</h3>
+<ul>
+<li>crea <code>MassiveEngine</code></li>
+<li>crea <code>MultilayerEngine</code></li>
+<li>maneja drift, Lévy jumps y topology updates</li>
+<li>ejecuta butterfly diagnostics</li>
+<li>expone hooks contextuales</li>
+<li>emite runtime context reutilizable</li>
+</ul>
+<h3 id="implicacion_14">Implicación</h3>
+<p>Dentro de <code>simulator.py</code> ya existe un segundo nivel de orquestación de alto acoplamiento.</p>
+<p>Conclusión:
+- el archivo no solo contiene la simulación legacy “simple”
+- también contiene un coordinador de dinámica integrada de orden superior</p>
+<hr />
+<h2 id="6-tipos-de-acoplamiento-detectados">6. Tipos de acoplamiento detectados</h2>
+<h2 id="61-acoplamiento-por-api-publica">6.1. Acoplamiento por API pública</h2>
+<p>Casos:
+- <code>simular</code>
+- <code>simular_multiples</code>
+- <code>run_with_schedule</code>
+- <code>DEFAULT_CONFIG</code></p>
+<h2 id="62-acoplamiento-por-configuracion-compartida">6.2. Acoplamiento por configuración compartida</h2>
+<p>Casos:
+- <code>PROVEEDORES</code>
+- parámetros empíricos
+- defaults usados por UI, forecast y training</p>
+<h2 id="63-acoplamiento-por-ejecucion">6.3. Acoplamiento por ejecución</h2>
+<p>Casos:
+- social architect ejecuta schedules vía simulador
+- benchmark runner usa simulador
+- trainer CfC usa simulador</p>
+<h2 id="64-acoplamiento-por-fallback">6.4. Acoplamiento por fallback</h2>
+<p>Casos:
+- CfC opcional
+- LLM opcional
+- modelos extendidos opcionales
+- Dask opcional
+- TDA opcional</p>
+<h2 id="65-acoplamiento-bidireccional-parcial">6.5. Acoplamiento bidireccional parcial</h2>
+<p>Caso observado:
+- <code>simulator.py</code> importa <code>multilayer_engine</code>
+- <code>multilayer_engine.py</code> consulta <code>PROVEEDORES</code> desde <code>simulator</code></p>
+<p>Esto sugiere vigilancia especial: esa frontera puede ser frágil en un refactor estructural.</p>
+<hr />
+<h2 id="7-riesgos-estructurales-especificos">7. Riesgos estructurales específicos</h2>
+<h3 id="riesgo-1-tratar-simulatorpy-como-mero-modulo-legacy">Riesgo 1 — Tratar <code>simulator.py</code> como mero módulo legacy</h3>
+<p>Sería incorrecto. Hoy sigue actuando como centro de integración.</p>
+<h3 id="riesgo-2-extraer-piezas-sin-mapa-de-consumidores">Riesgo 2 — Extraer piezas sin mapa de consumidores</h3>
+<p>Hay múltiples consumidores transversales con expectativas distintas:
+- UI
+- forecast
+- architect
+- trainer
+- benchmark
+- tests
+- wrappers</p>
+<h3 id="riesgo-3-cambiar-defaultsconfig-compartida-sin-considerar-efectos-sistemicos">Riesgo 3 — Cambiar defaults/config compartida sin considerar efectos sistémicos</h3>
+<p><code>DEFAULT_CONFIG</code> y símbolos asociados son consumidos desde varias áreas.</p>
+<h3 id="riesgo-4-romper-flujos-indirectos">Riesgo 4 — Romper flujos indirectos</h3>
+<p>Un cambio en <code>run_with_schedule</code>, <code>DEFAULT_CONFIG</code> o <code>PROVEEDORES</code> puede no romper el simulador principal, pero sí forecast, architect, training o UI.</p>
+<hr />
+<h2 id="8-reglas-derivadas-para-consolidacion-futura">8. Reglas derivadas para consolidación futura</h2>
+<ol>
+<li>No mover <code>simulator.py</code> en bloque como primer paso.</li>
+<li>No separar <code>DEFAULT_CONFIG</code> ni <code>PROVEEDORES</code> sin mapa de consumers.</li>
+<li>Cualquier extracción interna desde <code>simulator.py</code> debe mantener wrapper estable.</li>
+<li><code>IntegratedSimulator</code> requiere slice propio si se toca.</li>
+<li>La frontera <code>simulator.py</code> ↔ <code>multilayer_engine.py</code> debe analizarse con cuidado por el acoplamiento bidireccional parcial.</li>
+<li>Cualquier cambio en <code>run_with_schedule</code> debe validar también <code>forecast/scenarios.py</code> y <code>social_architect.py</code>.</li>
+</ol>
+<hr />
+<h2 id="9-conclusion">9. Conclusión</h2>
+<p>El análisis confirma que <code>simulator.py</code> es hoy un <strong>hub arquitectónico</strong> de MASSIVE.</p>
+<p>No es únicamente:
+- un archivo legacy,
+- ni un simple motor 1D,
+- ni una API vieja pendiente de ser reemplazada.</p>
+<p>Es, en la práctica, un nodo que enlaza:
+- UI,
+- engines,
+- forecast,
+- architect,
+- benchmarks,
+- entrenamiento CfC,
+- compatibilidad pública,
+- y configuración compartida.</p>
+<p>Por ello, toda consolidación seria del proyecto debe diseñarse alrededor de este hecho y no contra él.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.expand", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

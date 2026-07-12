@@ -2,7 +2,7 @@
 
 **Mathematical Architecture for Scalable Social Interaction & Virtual Engine**
 
-MASSIVE is a hybrid social-dynamics platform for simulating opinion formation, polarization, intervention strategies, temporal risk and scientific diagnostics over complex social systems. It combines a stable legacy simulator with newer opt-in scientific layers for adaptive numerics, stability analysis, data assimilation, physics-inspired observables, CfC neural routing and validation workflows.
+MASSIVE is a hybrid social-dynamics platform for simulating opinion formation, polarization, intervention strategies, temporal risk and scientific diagnostics over complex social systems. It combines a stable legacy simulator with newer opt-in scientific layers for adaptive numerics, stability analysis, data assimilation, physics-inspired observables, CfC neural routing, optional Rust acceleration and validation workflows.
 
 The guiding principle is backward compatibility: the classic APIs (`simular`, `simular_multiples`, `run_with_schedule`) remain stable, while advanced capabilities live behind explicit configuration flags and new `massive_core` modules.
 
@@ -13,6 +13,7 @@ The guiding principle is backward compatibility: the classic APIs (`simular`, `s
 - **Hybrid regime reasoning:** heuristic, LLM-compatible and optional CfC neural regime selection paths coexist with safe fallbacks.
 - **Scientific opt-in layer:** adaptive steppers, stability diagnostics, EnKF assimilation, bifurcation tools, statistical mechanics, network reconstruction and scientific reports are available without changing default simulation behavior.
 - **Multi-engine architecture:** legacy scalar simulation, social-energy Langevin dynamics, multilayer sociodemographic dynamics and large-scale super-agent simulation are all present.
+- **Optional Rust acceleration:** selected numerical kernels can use the `massive_rust_core` extension through `massive_core.rust_core`, while keeping Python fallbacks.
 - **Validation-first design:** PVU-MASSIVE offline validation, canonical scientific benchmarks and a broad pytest suite support reproducibility.
 - **Typed backend/frontend contract:** Pydantic DTOs generate TypeScript interfaces through `scripts/gen_ts_types.py`.
 
@@ -42,7 +43,7 @@ params = context.get_massive_params("US")
 print(f"Agents: {params['n_agents']}, Gini: {params['gini_coefficient']:.3f}")
 ```
 
-Sample data includes US, China, Germany. Full dataset (260+ countries) can be loaded from [wmccaffrey/cia_world_factbook](https://github.com/wmccaffrey/cia_world_factbook). See `FACTBOOK_INTEGRATION_COMPLETE.md` for full documentation.
+The repository ships sample data for the CIA country codes `US`, `CH` (China) and `GM` (Germany) in `data/factbook/factbook_sample.json`. A full dataset (260+ countries) can be loaded from [wmccaffrey/cia_world_factbook](https://github.com/wmccaffrey/cia_world_factbook). See `FACTBOOK_INTEGRATION_COMPLETE.md` for full documentation.
 
 ---
 
@@ -57,6 +58,7 @@ Sample data includes US, China, Germany. Full dataset (260+ countries) can be lo
 | Data assimilation | `massive_core/data_assimilation/` | Ensemble Kalman Filter and sparse observation assimilation workflows. |
 | Physics modules | `massive_core/physics/`, `massive_core/dynamical_systems/` | Statistical mechanics, perturbation, hydrodynamics, bifurcation analysis. |
 | Meta-learning/CfC | `cfc_engine.py`, `cfc_router.py`, `cfc_trainer.py`, `massive_core/metalearning/` | Closed-form continuous-time neural models and training-data adapters. |
+| Rust acceleration | `rust_core/`, `massive_core/rust_core.py` | Optional compiled kernels with Python-compatible fallbacks for selected numerical routines. |
 | Energy engine | `energy_engine.py`, `energy_runner.py`, `energy_schemas.py` | Social-energy landscape dynamics and programmatic landscape generation. |
 | Multilayer engine | `multilayer_engine.py`, `massive_engine.py`, `massive_core/numerics/multilayer_engine_sparse.py` | Sociodemographic multilayer simulation, sparse-engine optimisation and scalable super-agent execution. |
 | Forecasting | `forecast/` | Analytical and Monte Carlo temporal forecasts and scenario comparison. |
@@ -198,6 +200,8 @@ A fully sparse implementation of the multilayer graph engine based on
 large systems:
 
 ```python
+import numpy as np
+
 from massive_core.numerics import SparseMultilayerEngine, LayerState
 from scipy import sparse
 
@@ -232,6 +236,8 @@ variables, ideal for high-dimensional social systems where only a fraction
 of the state is measured:
 
 ```python
+import numpy as np
+
 from massive_core.data_assimilation import SparseEnsembleKalmanFilter
 
 ekf = SparseEnsembleKalmanFilter(
@@ -316,6 +322,8 @@ python -m mkdocs build --strict
 - Spanish overview: `README_ES.md`
 - Benchmark card: docs/cards/BENCHMARK.md
 - Reproducibility card: docs/cards/REPRODUCIBILITY.md
+- Real-engine benchmark report: `experiments/06_real_benchmark_v0/REPORT.md`
+- Historical empirical validation report: `experiments/real_validation/EMPIRICAL_VALIDATION_REPORT.md`
 
 ---
 
