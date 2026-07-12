@@ -141,6 +141,28 @@ python3 -m benchmarks.runner --cases datasets/real_cases --offline \
 
 ---
 
+## Mamba SSM — baseline de pronóstico (complementario a CfC)
+
+MASSIVE incluye un modelo SSM selectivo (inspirado en Mamba) implementado en PyTorch puro como **baseline complementario** a la capa CfC:
+
+- `MambaCell` — celda SSM selectiva con paso de discretización Δ dependiente de la entrada.
+- `MambaSSM` — red SSM multicapa sobre secuencias de longitud arbitraria.
+- `MambaBaseline` — baseline plug-in para PVU-BS con la misma interfaz `predict(train, horizon)` que `AR1Baseline`, `ETSBaseline`, etc.
+
+**Rol diferenciado vs CfC:** Mamba no participa en la selección de régimen ni en las propuestas del Arquitecto Social — esas funciones las cubre CfC. Mamba opera exclusivamente como baseline de pronóstico de series temporales en la capa de benchmarks.
+
+```python
+from mamba_engine import MambaBaseline
+import numpy as np
+
+baseline = MambaBaseline(d_model=8, d_state=16, lags=4, epochs=50)
+forecast = baseline.predict(train_series, horizon=10)
+```
+
+> **Nota:** En series cortas univariadas (típicas de los casos PVU), la ventaja de SSM sobre AR(1)/ETS puede ser marginal. El test Holm-Bonferroni lo reflejará objetivamente.
+
+---
+
 ## Mapa del repositorio
 
 | Área | Archivos | Propósito |
@@ -152,6 +174,7 @@ python3 -m benchmarks.runner --cases datasets/real_cases --offline \
 | Asimilación de datos | `massive_core/data_assimilation/` | EnKF, observaciones dispersas. |
 | Módulos físicos | `massive_core/physics/`, `massive_core/dynamical_systems/` | Mecánica estadística, perturbación, bifurcación. |
 | CfC / meta-learning | `cfc_engine.py`, `cfc_router.py`, `cfc_trainer.py` | Modelos neuronales de tiempo continuo. |
+| Mamba SSM | `mamba_engine.py` | Baseline SSM selectivo puro PyTorch para benchmarks. |
 | Motor de energía | `energy_engine.py`, `energy_runner.py` | Paisajes de energía social. |
 | Motor multicapa | `multilayer_engine.py`, `massive_engine.py` | Dinámica sociodemográfica y masiva. |
 | Forecasting | `forecast/` | Pronósticos analíticos y Monte Carlo. |
