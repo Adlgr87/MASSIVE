@@ -16,12 +16,16 @@ class ScientificRuntimeConfig:
             diagnostics when implemented by a caller.
         enable_data_assimilation: Whether data assimilation hooks are enabled.
         enable_scientific_report: Whether callers should produce reports.
+        enable_mamba: Whether the Mamba SSM baseline is included in benchmark
+            runs. Requires PyTorch. Has no effect on regime selection (handled
+            by CfC). Defaults to ``False`` to keep benchmark runs lightweight.
     """
 
     solver: str = "legacy"
     enable_stability_diagnostics: bool = False
     enable_data_assimilation: bool = False
     enable_scientific_report: bool = False
+    enable_mamba: bool = False
 
     @classmethod
     def from_dict(cls, config: dict[str, Any] | None) -> "ScientificRuntimeConfig":
@@ -41,4 +45,5 @@ class ScientificRuntimeConfig:
             enable_stability_diagnostics=bool(config.get("enable_stability_diagnostics", False)),
             enable_data_assimilation=bool(config.get("enable_data_assimilation", False)),
             enable_scientific_report=bool(config.get("enable_scientific_report", False)),
+            enable_mamba=bool(config.get("enable_mamba", False)),
         )

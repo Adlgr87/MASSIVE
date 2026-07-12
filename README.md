@@ -265,6 +265,30 @@ dataset = build_cfc_regime_dataset_from_history(historial, window_size=6)
 
 ---
 
+## Mamba SSM benchmark support
+
+MASSIVE includes a selective State Space Model (Mamba/SSM) implemented in pure PyTorch as a **complementary baseline** to the existing CfC layer:
+
+- `MambaCell` — one-step selective SSM cell with input-dependent discretisation step Δ.
+- `MambaSSM` — multi-layer recurrent SSM over arbitrary-length sequences.
+- `MambaBaseline` — drop-in PVU-BS baseline following the same `predict(train, horizon)` interface as `AR1Baseline`, `ETSBaseline`, etc.
+
+The Mamba baseline is evaluated automatically under the Diebold-Mariano + Holm-Bonferroni protocol when `enable_mamba=True` in `ScientificRuntimeConfig` or when `torch` is available and `get_all_baselines()` is called.
+
+> **Note on series length:** The architectural advantage of SSM (selective context compression) is most visible on long multivariate sequences. On the short univariate social series typical of PVU cases, Mamba may not outperform AR(1)/ETS with statistical significance — the Holm-Bonferroni test will reflect this honestly. For a fairer comparison, consider cross-episode pretraining across all PVU cases.
+
+```python
+from mamba_engine import MambaBaseline
+import numpy as np
+
+baseline = MambaBaseline(d_model=8, d_state=16, lags=4, epochs=50)
+forecast = baseline.predict(train_series, horizon=10)
+```
+
+**Key difference from CfC:** Mamba does not participate in regime selection or social architect proposals — those remain CfC's responsibility. Mamba operates exclusively as a time-series forecasting baseline in the benchmark layer.
+
+---
+
 ## Validation and checks
 
 ```bash
