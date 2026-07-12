@@ -261,7 +261,7 @@ docker run --rm -p 8501:8501 --env-file .env massive:latest
 
 Luego, abre: `http://localhost:8501`
 
-La interfaz tiene cuatro pestañas:
+La interfaz tiene cinco pestañas:
 
 | Pestaña | Función |
 |---------|---------|
@@ -269,6 +269,7 @@ La interfaz tiene cuatro pestañas:
 | **Arquitecto Social** | Describe un resultado objetivo en lenguaje natural; el agente LLM ingeniería inversa el cronograma de intervención |
 | **Multicapa** | Ejecuta el motor sociodemográfico 5D sobre tres capas de red con desglose demográfico |
 | **Masiva** | Simula millones de agentes usando el motor LOD/uint8/eventos/GPU |
+| **Centro Analítico** | Ejecuta flujos de análisis posteriores a la simulación y visualizaciones consolidadas |
 
 El selector de idioma (inglés ↔ español) está disponible en la parte superior de la barra lateral.
 
@@ -470,9 +471,13 @@ Modernized assets joined overlays, refreshed interface tuning yielded reliable e
 
 ```
 MASSIVE/
-├── app.py                        # UI Streamlit — 4 pestañas
-├── simulator.py                  # Núcleo: 13 reglas, selector LLM, EWS, TDA, paralelo Dask
-├── social_architect.py           # Arquitecto Social: agente LLM de ingeniería inversa
+├── app.py                        # UI Streamlit — 5 pestañas (incluye Centro Analítico)
+├── simulator.py                  # Núcleo: 13 reglas, ruta rápida CfC, selector LLM, EWS, TDA, paralelo Dask
+├── social_architect.py           # Arquitecto Social: intento 0 con CfC + bucle LLM iterativo
+├── cfc_engine.py                 # Arquitecturas neuronales CfC (selector de régimen, τ-matriz, política)
+├── cfc_router.py                 # Router singleton CfC vs LLM con fallback transparente
+├── cfc_trainer.py                # Pipeline de generación de datos y entrenamiento CfC
+├── models/                       # Pesos entrenados CfC (gitignored, se generan localmente)
 ├── energy_engine.py              # Motor Langevin (JIT compilado con Numba)
 ├── energy_runner.py              # Orquestador de simulación Langevin
 ├── energy_schemas.py             # Esquemas Pydantic v2 para EnergyConfig
@@ -515,7 +520,7 @@ MASSIVE/
 pytest tests/
 ```
 
-La suite cubre: núcleo del simulador, motor de energía, motor multicapa, motor de escala masiva, capa de teoría de juegos, arquitecto social, calibración empírica, ejecutor PVU, visualizaciones e integración LLM. Los tests se ejecutan en CI en cada push.
+La suite cubre: núcleo del simulador (incluida la ruta rápida CfC), arquitectura del motor CfC, fallback/integración del router CfC, motor de energía, motor multicapa (incluida τ-matriz CfC), motor de escala masiva, capa de teoría de juegos, arquitecto social, calibración empírica, ejecutor PVU, visualizaciones e integración LLM. Los tests se ejecutan en CI en cada push.
 
 ---
 

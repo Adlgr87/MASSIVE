@@ -442,7 +442,7 @@ docker run --rm -p 8501:8501 --env-file .env massive:latest
 
 Then open: `http://localhost:8501`
 
-The interface has four tabs:
+The interface has five tabs:
 
 | Tab | What it does |
 |-----|-------------|
@@ -450,6 +450,7 @@ The interface has four tabs:
 | **Social Architect** | Describe a target outcome in plain language; the LLM agent reverse-engineers the intervention schedule |
 | **Multilayer** | Run the 5D sociodemographic engine across three network layers with demographic breakdowns |
 | **Massive** | Simulate millions of agents using the LOD/uint8/event-driven/GPU engine |
+| **Analytics Center** | Run post-simulation analytics workflows and consolidated visual summaries |
 
 Language toggle (English ↔ Spanish) is available at the top of the sidebar.
 
