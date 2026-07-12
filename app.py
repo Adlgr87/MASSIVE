@@ -55,6 +55,15 @@ try:
 except ImportError:
     _CFC_STATUS = {"regime_selector": False, "tau_matrix": False, "architect_policy": False}
 
+# UIL INTEGRATION — Document Intelligence + Interpreter Layer
+try:
+    from interpreter_layer import InterpreterLayer
+    from document_intelligence import DocumentIntelligence
+
+    _UIL_AVAILABLE = True
+except ImportError:
+    _UIL_AVAILABLE = False
+
 # Load environment variables from .env
 load_dotenv()
 
@@ -501,14 +510,26 @@ with st.sidebar:
 # ------------------------------------------------------------
 # LÓGICA PRINCIPAL
 # ------------------------------------------------------------
-tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
-    '📊 Simulación Tradicional',
-    '🧠 Arquitecto Social (Modo Inverso)',
-    '🌐 Simulación Multicapa',
-    '⚡ Simulación Masiva',
-    '🎬 Centro Analítico',
-    '🔬 Micro — Familias de Futuros',
-])
+if _UIL_AVAILABLE:
+    tab1, tab2, tab3, tab4, tab5, tab6, tab_uil = st.tabs([
+        '📊 Simulación Tradicional',
+        '🧠 Arquitecto Social (Modo Inverso)',
+        '🌐 Simulación Multicapa',
+        '⚡ Simulación Masiva',
+        '🎬 Centro Analítico',
+        '🔬 Micro — Familias de Futuros',
+        '📄 Document Intelligence',
+    ])
+else:
+    tab1, tab2, tab3, tab4, tab5, tab6 = st.tabs([
+        '📊 Simulación Tradicional',
+        '🧠 Arquitecto Social (Modo Inverso)',
+        '🌐 Simulación Multicapa',
+        '⚡ Simulación Masiva',
+        '🎬 Centro Analítico',
+        '🔬 Micro — Familias de Futuros',
+    ])
+    tab_uil = None
 
 with tab1:
     if correr:
@@ -1758,3 +1779,145 @@ with tab5:
 
 with tab6:
     render_micro_tab()
+
+
+# ────────────────────────────────────────────────────────────────────────────
+# UIL INTEGRATION TAB — Document Intelligence + Interpreter Layer
+# ────────────────────────────────────────────────────────────────────────────
+if _UIL_AVAILABLE and tab_uil is not None:
+    with tab_uil:
+        st.markdown("### 📄 Inteligencia Documental & Interpretación Natural")
+        st.caption(
+            "Carga un documento o describe tu escenario en lenguaje natural. "
+            "Los módulos extraerán parámetros MASSIVE automáticamente."
+        )
+
+        # Input options
+        uil_mode = st.radio(
+            "Modo de entrada",
+            ["📝 Documento", "💬 Descripción natural", "🔀 Ambos"],
+            horizontal=True,
+        )
+
+        config_from_uil = {}
+
+        # Mode 1: Document only
+        if uil_mode in ["📝 Documento", "🔀 Ambos"]:
+            st.subheader("📄 Carga de Documento")
+            uploaded_file = st.file_uploader(
+                "Sube un PDF, JSON, CSV o XLSX",
+                type=["pdf", "json", "csv", "xlsx"],
+                key="uil_file",
+            )
+            if uploaded_file:
+                # Save to temp
+                import tempfile
+
+                with tempfile.NamedTemporaryFile(delete=False, suffix="." + uploaded_file.name.split(".")[-1]) as tmp:
+                    tmp.write(uploaded_file.getbuffer())
+                    tmp_path = tmp.name
+
+                st.success(f"✓ Archivo cargado: {uploaded_file.name}")
+                with st.spinner("Extrayendo parámetros del documento..."):
+                    try:
+                        from uil_adapter import create_uil_adapter
+
+                        adapter = create_uil_adapter(llm_provider=proveedor, llm_api_key=api_key)
+                        config_from_uil = adapter.from_document(tmp_path)
+                        st.success(f"✓ Extraídos {len(config_from_uil)} parámetros del documento")
+                        with st.expander("Ver parámetros extraídos"):
+                            st.json(config_from_uil)
+                    except Exception as e:
+                        st.error(f"Error extrayendo documento: {e}")
+
+        # Mode 2: Natural language only
+        if uil_mode in ["💬 Descripción natural", "🔀 Ambos"]:
+            st.subheader("💬 Descripción del Escenario")
+            description = st.text_area(
+                "Describe tu escenario en lenguaje natural (ej: 'Alta polarización, desconfianza institucional')",
+                height=100,
+                key="uil_description",
+            )
+            if description:
+                with st.spinner("Interpretando descripción..."):
+                    try:
+                        from uil_adapter import create_uil_adapter
+
+                        adapter = create_uil_adapter(llm_provider=proveedor, llm_api_key=api_key)
+                        config_from_uil = adapter.from_natural_language(description)
+                        st.success(f"✓ Interpretados {len(config_from_uil)} parámetros")
+                        with st.expander("Ver parámetros interpretados"):
+                            st.json(config_from_uil)
+                    except Exception as e:
+                        st.error(f"Error interpretando: {e}")
+
+        st.markdown("---")
+
+        # Simulate with UIL config
+        if st.button("🚀 Simular con parámetros UIL", key="uil_simulate"):
+            if not config_from_uil:
+                st.warning("Primero carga un documento o describe un escenario")
+            else:
+                # Merge with defaults
+                final_config = {**DEFAULT_CONFIG, **config_from_uil}
+
+                with st.spinner(f"Simulando con parámetros UIL ({n_pasos} pasos)..."):
+                    try:
+                        historial = simular(pasos=n_pasos, **final_config)
+                        st.success(f"✓ Simulación completada ({len(historial)} pasos)")
+
+                        # Show results
+                        st.subheader("Resultados de la Simulación UIL")
+
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            opinion_final = historial[-1].get("opinion", 0)
+                            st.metric("Opinión Final", f"{opinion_final:.3f}")
+
+                        with col2:
+                            conf_final = historial[-1].get("confianza", 0.5)
+                            st.metric("Confianza Final", f"{conf_final:.3f}")
+
+                        # Narrative summary
+                        with st.expander("📖 Resumen Narrativo"):
+                            try:
+                                from uil_adapter import create_uil_adapter
+
+                                adapter = create_uil_adapter(llm_provider=proveedor, llm_api_key=api_key)
+                                narrative = adapter.interpreter.narrate(historial)
+                                st.write(
+                                    narrative.narrative
+                                    if hasattr(narrative, "narrative")
+                                    else str(narrative)
+                                )
+                            except Exception as e:
+                                st.caption(f"No se pudo generar narrativa: {e}")
+
+                        # Timeline chart
+                        st.subheader("Evolución de la Opinión")
+                        df = pd.DataFrame(historial)
+                        if "opinion" in df.columns:
+                            fig = go.Figure()
+                            fig.add_trace(
+                                go.Scatter(
+                                    x=df.index,
+                                    y=df["opinion"],
+                                    mode="lines+markers",
+                                    name="Opinión",
+                                    line=dict(color="#5ccfe6", width=2),
+                                )
+                            )
+                            fig.update_layout(
+                                template="plotly_dark",
+                                paper_bgcolor="#0a0e14",
+                                plot_bgcolor="#0d1520",
+                                title="Trayectoria de Opinión",
+                                xaxis_title="Paso",
+                                yaxis_title="Opinión",
+                            )
+                            st.plotly_chart(fig, use_container_width=True)
+
+                    except Exception as e:
+                        st.error(f"Error en la simulación: {e}")
+else:
+    st.caption("📄 Pestaña Document Intelligence no disponible (módulos UIL no instalados)")
