@@ -679,6 +679,8 @@ class SparseEnKF:
         observable_indices: List[int],
         observation_covariance: np.ndarray,
         inflation: float = 1.0,
+        seed: Optional[int] = None,
+        rng: Optional[np.random.Generator] = None,
     ):
         """
         Initialize the Sparse EnKF.
@@ -690,6 +692,8 @@ class SparseEnKF:
             observable_indices: Indices of observable state variables
             observation_covariance: Observation noise covariance matrix
             inflation: Inflation factor
+            seed: Optional seed for reproducibility
+            rng: Optional random number generator
         """
         self.n_ensemble = n_ensemble
         self.n_state_dim = n_state_dim
@@ -698,8 +702,16 @@ class SparseEnKF:
         self.observation_covariance = observation_covariance
         self.inflation = inflation
         
+        # Initialize RNG
+        if rng is not None:
+            self.rng = rng
+        elif seed is not None:
+            self.rng = np.random.default_rng(seed)
+        else:
+            self.rng = np.random.default_rng()
+        
         # Initialize ensemble
-        self.ensemble = np.random.randn(n_ensemble, n_state_dim)
+        self.ensemble = self.rng.randn(n_ensemble, n_state_dim)
         self.weights = np.ones(n_ensemble) / n_ensemble
     
     def predict(self, model_function, dt: float = 0.01) -> None:
@@ -713,7 +725,7 @@ class SparseEnKF:
         for i in range(self.n_ensemble):
             self.ensemble[i] = model_function(self.ensemble[i], dt)
             # Add process noise
-            self.ensemble[i] += np.random.randn(self.n_state_dim) * np.sqrt(0.1 * dt)
+            self.ensemble[i] += self.rng.randn(self.n_state_dim) * np.sqrt(0.1 * dt)
     
     def update(self, observations: np.ndarray, observation_matrix: spmatrix) -> None:
         """
