@@ -28,6 +28,17 @@ if _ROOT not in sys.path:
 
 from massive_core.benchmarks import run_canonical_benchmarks  # noqa: E402
 from massive_core.config import ScientificRuntimeConfig  # noqa: E402
+from massive_core.contracts import (  # noqa: E402
+    EngineProtocol,
+    SimulationConfig,
+    SimulationResult,
+    SimulationState,
+    StepperProtocol,
+    legacy_config_to_simulation_config,
+    legacy_dict_to_simulation_state,
+    simulation_config_to_legacy_dict,
+    simulation_state_to_legacy_dict,
+)
 from massive_core.data_assimilation import (  # noqa: E402
     AssimilationResult,
     assimilate_history_observations,
@@ -97,6 +108,16 @@ __all__ = [
     "ScientificReport",
     "build_scientific_report",
     "trajectory_from_history",
+    # Contracts
+    "SimulationState",
+    "SimulationConfig",
+    "SimulationResult",
+    "EngineProtocol",
+    "StepperProtocol",
+    "legacy_dict_to_simulation_state",
+    "simulation_state_to_legacy_dict",
+    "legacy_config_to_simulation_config",
+    "simulation_config_to_legacy_dict",
     "DEFAULT_CONFIG",
     "DEFAULT_PAYOFF_MATRIX",
     "DESCRIPCIONES_REGLAS",
