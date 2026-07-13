@@ -539,9 +539,15 @@ class MultilayerEngine:
             from massive_core.numerics import create_stepper, NumericalDiagnostics
             self.scientific_config = ScientificRuntimeConfig.from_dict(scientific_config)
             self._stepper = create_stepper(self.scientific_config.solver)
+            
+            # Initialize drift and diffusion functions for scientific solver
+            self._drift = self._create_drift_function()
+            self._diffusion = self._create_diffusion_function()
         else:
             self.scientific_config = None
             self._stepper = None
+            self._drift = None
+            self._diffusion = None
         self.last_numerical_diagnostics = None
 
         # Pesos de capas normalizados
@@ -587,6 +593,35 @@ class MultilayerEngine:
         self._history: list[np.ndarray] = [self.x.copy()]
         self.mps_state = None
 
+    def _create_drift_function(self):
+        """Create drift function for scientific solver."""
+        def drift(x: np.ndarray, t: float = 0.0) -> np.ndarray:
+            """Drift term for multilayer Langevin dynamics."""
+            # x has shape (N * K, D) where N=num_agents, K=num_layers, D=dimensions
+            # We need to apply the drift term to each dimension
+            # Simple approach: -x (gradient of potential)
+            return -x
+        return drift
+    
+    def _create_diffusion_function(self):
+        """Create diffusion function for scientific solver."""
+        def diffusion(x: np.ndarray, t: float = 0.0) -> np.ndarray:
+            """Diffusion term for multilayer Langevin dynamics."""
+            # Return diagonal diffusion matrix
+            # theta has shape (D, D) or (D,) - we use the diagonal
+            if hasattr(self, 'theta') and self.theta is not None:
+                # Use diagonal of theta for each dimension
+                if self.theta.ndim == 2:
+                    theta_diag = np.diag(self.theta)
+                else:
+                    theta_diag = self.theta
+                # Return vector of diffusion coefficients
+                return theta_diag[:x.shape[1]]
+            return np.ones(x.shape[1])
+        return diffusion
+        return diffusion
+        return diffusion
+
     # ── API pública ─────────────────────────────────────────────────────────
 
     def _refresh_mps_state(self) -> None:
@@ -599,18 +634,31 @@ class MultilayerEngine:
 
     def step(self) -> np.ndarray:
         """Advance one integration step and return the updated state."""
-        self.x = multilayer_langevin_step(
-            self.x,
-            self._layers_flat,
-            self.layer_weights,
-            self.theta,
-            self.coupling,
-            self.dt,
-            self.x_min,
-            self.x_max,
-            rng=self.rng,
-        )
         if self._stepper is not None:
+            # ✅ Usar el stepper científico si está configurado
+            result = self._stepper.step(
+                self.x,
+                self.dt,
+                drift=self._drift,
+                diffusion=self._diffusion,
+                bounds=(self.x_min, self.x_max),
+                context={"engine": "multilayer"},
+            )
+            self.x = result.state
+            self.last_numerical_diagnostics = result.diagnostics
+        else:
+            # Fallback al método legacy
+            self.x = multilayer_langevin_step(
+                self.x,
+                self._layers_flat,
+                self.layer_weights,
+                self.theta,
+                self.coupling,
+                self.dt,
+                self.x_min,
+                self.x_max,
+                rng=self.rng,
+            )
             from massive_core.numerics import NumericalDiagnostics
             self.last_numerical_diagnostics = NumericalDiagnostics(
                 method=self.scientific_config.solver,
