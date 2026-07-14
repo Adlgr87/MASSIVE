@@ -9,14 +9,14 @@ Tracks completion of `MASSIVE_REMEDIATION_WORKFLOW.md` against `main`.
 | 3 | Factbook | **Done** | re-derive params; `MassiveEngine.from_factbook` + provenance |
 | 4 | Scientific solvers | **Done** | stepper wired; AdaptiveStepper reuses solver |
 | 5 | Sparse engine | **Done** | safe inter-layer init; `remove_layer` via `np.ix_` |
-| 6 | Scalability | **Done** | param validation; aggregated LOD; memory breakdown; CSR events |
+| 6 | Scalability | **Done** | validation; aggregated LOD; memory breakdown; CSR events; **fidelity harness** |
 | 7 | RNG / reproducibility | **Done** | `massive_core/utils/rng.py`; runner seeds |
-| 8 | PVU validation | **Done** | cluster_id; walk-forward helper; seasonal naive + ETS/ARIMA/Ridge |
-| 9 | Forecast targets | **Done** | `forecast/targets.py` TargetDefinition |
+| 8 | PVU validation | **Done** | cluster_id; **walk-forward in runner**; seasonal/ETS/ARIMA/Ridge/**RF/GBM** |
+| 9 | Forecast targets | **Done** | `TargetDefinition` **wired into runner results** |
 | 10 | Intervention / UIL | **Done** | multiobjective optimizer; UIL mappings |
-| 11 | API / UI services | **Done** | secure API; `services/simulation_service.py` |
-| 12 | Final test protocol | **Partial** | broad pytest green; Docker e2e job still optional |
-| 13 | MutaLambda | **Done** | `adapters/mutalambda/` thin adapter |
+| 11 | API / UI services | **Done** | secure API; `simulation` / `llm` / `factbook` / `forecast` services |
+| 12 | Final test protocol | **Done** | pytest green + **Docker e2e health workflow** |
+| 13 | MutaLambda | **Done** (core adapter) | nested adapter benches left to operator if desired |
 
 ## Verify
 
@@ -24,8 +24,10 @@ Tracks completion of `MASSIVE_REMEDIATION_WORKFLOW.md` against `main`.
 PYTHONHASHSEED=42 python -m pytest tests/ -q
 ```
 
-## Remaining optional hardening
+## Literal closeout (P5)
 
-- Docker compose health e2e job in CI
-- Expand real_cases series length for stronger walk-forward stats
-- GPU-resident Langevin path without host sync per step
+- `benchmarks/fidelity.py` — quant vs float64 + aggregated LOD consistency
+- `benchmarks/runner.py` — `target`, `walk_forward`, JSON NaN→null
+- `benchmarks/baselines.py` — RandomForest + GradientBoosting
+- `services/{llm,factbook,forecast}_service.py`
+- `.github/workflows/docker-e2e.yml` — compose build + `/docs` or `/health`
