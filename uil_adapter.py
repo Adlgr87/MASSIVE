@@ -77,7 +77,8 @@ class UILAdapter:
         log.info(f"UIL Document: parsing '{file_path}'")
         ctx = self.doc_intel.parse_file(file_path)
         extracted = self.doc_intel.extract_massive_params(ctx)
-        config = extracted.config_dict
+        # Prefer explicit to_simular_kwargs (config_dict is a legacy alias).
+        config = extracted.to_simular_kwargs()
         log.info(f"UIL Document: extracted {len(config)} parameters")
         return config
 
@@ -144,15 +145,47 @@ class UILAdapter:
         else:  # description only
             config = self.from_natural_language(description)
 
-        # Ensure defaults for missing keys
-        for key, val in DEFAULT_CONFIG.items():
-            if key not in config:
-                config[key] = val
+        # Split flat wizard/doc keys into simular(estado, escenario, config=...)
+        estado_keys = {
+            "opinion", "propaganda", "confianza",
+            "opinion_grupo_a", "opinion_grupo_b", "identidad_grupo",
+            "pertenencia_grupo",
+        }
+        estado_inicial = {
+            k: config[k] for k in estado_keys if k in config
+        }
+        # Sensible defaults for required state fields
+        if "opinion" not in estado_inicial:
+            estado_inicial["opinion"] = 0.0
+        if "propaganda" not in estado_inicial:
+            estado_inicial["propaganda"] = 0.0
 
-        log.info(f"UIL Pipeline: config ready, starting simulation ({simulation_steps} steps)")
+        escenario = str(config.get("escenario", "campana"))
+        pasos = int(config.get("pasos", simulation_steps))
 
-        # Step 2: Simulate
-        history = simular(pasos=simulation_steps, **config)
+        sim_config = {**DEFAULT_CONFIG}
+        for key, val in config.items():
+            if key in estado_keys or key in {"escenario", "pasos", "regla_sugerida"}:
+                continue
+            if key in DEFAULT_CONFIG or key in {
+                "homofilia_tasa", "sesgo_confirmacion", "cultural_profile",
+            }:
+                sim_config[key] = val
+
+        log.info(
+            "UIL Pipeline: config ready, starting simulation (%s steps, escenario=%s)",
+            pasos,
+            escenario,
+        )
+
+        # Step 2: Simulate with the real simular signature
+        history = simular(
+            estado_inicial,
+            escenario=escenario,
+            pasos=pasos,
+            config=sim_config,
+            verbose=False,
+        )
 
         # Step 3: Narrative summary
         narrative = self.interpreter.narrate(history)
@@ -160,9 +193,19 @@ class UILAdapter:
         log.info("UIL Pipeline: complete")
 
         return {
-            "config": config,
+            "config": {
+                "estado_inicial": estado_inicial,
+                "escenario": escenario,
+                "pasos": pasos,
+                "config": sim_config,
+                "raw": config,
+            },
             "history": history,
-            "summary": narrative.narrative if hasattr(narrative, "narrative") else str(narrative),
+            "summary": (
+                narrative.narrative
+                if hasattr(narrative, "narrative")
+                else str(narrative)
+            ),
         }
 
 

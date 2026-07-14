@@ -21,6 +21,7 @@ from massive_engine import (
     MassiveSimEngine,
     _OPINION_MAX,
     _OPINION_MIN,
+    build_aggregated_super_agents,
     build_super_agents,
     dequantize_state,
     quantize_state,
@@ -212,6 +213,52 @@ class TestMassiveSimEngine:
     def test_invalid_N_raises(self):
         with pytest.raises(ValueError, match="N must be"):
             MassiveSimEngine(N=0)
+
+    def test_aggregated_lod_from_real_agents(self):
+        """LOD agregado: centros son medias de micro-agentes, counts suman N."""
+        rng = np.random.default_rng(0)
+        agents = rng.uniform(-1, 1, size=(200, 5))
+        agents[:, 1:] = np.clip(agents[:, 1:], 0, 1)
+        centers, counts, labels = build_aggregated_super_agents(agents, M=10, seed=0)
+        assert centers.shape == (10, 5)
+        assert counts.shape == (10,)
+        assert int(counts.sum()) == 200
+        assert labels.shape == (200,)
+        # Each center should match the mean of its members (within tol)
+        for j in range(10):
+            if counts[j] == 0:
+                continue
+            expected = agents[labels == j].mean(axis=0)
+            np.testing.assert_allclose(centers[j], expected, atol=1e-9)
+
+    def test_aggregated_lod_reproducible(self):
+        rng = np.random.default_rng(1)
+        agents = rng.normal(size=(100, 5))
+        a = build_aggregated_super_agents(agents, M=8, seed=7)
+        b = build_aggregated_super_agents(agents, M=8, seed=7)
+        np.testing.assert_array_equal(a[2], b[2])
+        np.testing.assert_allclose(a[0], b[0])
+
+    def test_massive_sim_engine_aggregated_mode(self):
+        rng = np.random.default_rng(2)
+        agents = rng.uniform(-0.5, 0.5, size=(80, 5))
+        agents[:, 1:] = np.clip(agents[:, 1:], 0, 1)
+        engine = MassiveSimEngine(
+            lod_mode="aggregated",
+            agent_states=agents,
+            M=8,
+            seed=2,
+        )
+        assert engine.lod_mode == "aggregated"
+        assert engine.N == 80
+        assert engine.M == 8
+        assert engine._cluster_labels is not None
+        result = engine.run(steps=3)
+        assert result["n_agents"] == 80
+
+    def test_aggregated_mode_requires_agent_states(self):
+        with pytest.raises(ValueError, match="agent_states"):
+            MassiveSimEngine(lod_mode="aggregated", N=50, M=5)
 
     def test_run_returns_dict(self):
         engine = MassiveSimEngine(N=500, M=20, seed=1)

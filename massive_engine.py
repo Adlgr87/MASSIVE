@@ -309,11 +309,13 @@ def build_super_agents(
     seed: int = 42,
 ) -> tuple[np.ndarray, np.ndarray]:
     """
-    Genera M super-agentes (clústeres) que representan N agentes reales.
+    **LOD sintético** — genera M super-agentes sin agentes micro reales.
 
     En lugar de inicializar y almacenar N vectores de estado (caro para N grande),
     se generan directamente M centros de clúster con distribuciones realistas.
     Cada clúster "representa" un grupo de agentes con perfil sociológico similar.
+
+    Para agregación desde agentes reales use :func:`build_aggregated_super_agents`.
 
     La distribución inicial refleja heterogeneidad social:
       - Opiniones: distribuidas uniformemente en [-1, 1] para reproducir
@@ -367,6 +369,121 @@ def build_super_agents(
             counts[i] = max(1, counts[i] - 1)
 
     return centers, counts
+
+
+def _kmeans_labels(
+    features: np.ndarray,
+    M: int,
+    rng: np.random.Generator,
+    max_iter: int = 25,
+) -> np.ndarray:
+    """Mini k-means (numpy-only) returning labels of shape (N,)."""
+    n = features.shape[0]
+    if M >= n:
+        return np.arange(n, dtype=np.int64)
+
+    mu = features.mean(axis=0)
+    sigma = features.std(axis=0)
+    sigma = np.where(sigma < 1e-12, 1.0, sigma)
+    x = (features - mu) / sigma
+
+    centers = np.empty((M, x.shape[1]), dtype=np.float64)
+    centers[0] = x[rng.integers(0, n)]
+    closest_dist_sq = np.full(n, np.inf)
+    for i in range(1, M):
+        d = ((x - centers[i - 1]) ** 2).sum(axis=1)
+        closest_dist_sq = np.minimum(closest_dist_sq, d)
+        probs = closest_dist_sq / closest_dist_sq.sum()
+        centers[i] = x[rng.choice(n, p=probs)]
+
+    labels = np.zeros(n, dtype=np.int64)
+    for _ in range(max_iter):
+        dists = ((x[:, None, :] - centers[None, :, :]) ** 2).sum(axis=2)
+        new_labels = dists.argmin(axis=1).astype(np.int64)
+        if np.array_equal(new_labels, labels):
+            break
+        labels = new_labels
+        for j in range(M):
+            members = x[labels == j]
+            if members.shape[0] == 0:
+                centers[j] = x[rng.integers(0, n)]
+            else:
+                centers[j] = members.mean(axis=0)
+    return labels
+
+
+def build_aggregated_super_agents(
+    agent_states: np.ndarray,
+    M: int,
+    feature_matrix: np.ndarray | None = None,
+    seed: int = 42,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """
+    **LOD agregado** — construye M super-agentes desde agentes reales.
+
+    Cada super-agente es el promedio de los micro-agentes de un clúster
+    reproducible (k-means sobre estado y/o atributos demográficos).
+
+    Args:
+        agent_states: Matriz (N, K) de estados micro.
+        M: Número de super-agentes deseados (1 <= M <= N).
+        feature_matrix: Opcional (N, F) atributos extra para clustering.
+            Si None, se clusteriza solo con ``agent_states``.
+        seed: Semilla para k-means.
+
+    Returns:
+        centers: Centros de clúster (M, K) float64 (media de estados).
+        counts: Tamaño de cada clúster (M,) int64, suman N.
+        labels: Asignación agente→clúster (N,) int64.
+    """
+    states = np.asarray(agent_states, dtype=np.float64)
+    if states.ndim != 2:
+        raise ValueError("agent_states must be a 2D array of shape (N, K)")
+    n, k = states.shape
+    if n < 1:
+        raise ValueError("agent_states must contain at least one agent")
+    if not 1 <= M <= n:
+        raise ValueError(f"M must satisfy 1 <= M <= N (got M={M}, N={n})")
+
+    if feature_matrix is None:
+        features = states
+    else:
+        feats = np.asarray(feature_matrix, dtype=np.float64)
+        if feats.shape[0] != n:
+            raise ValueError(
+                f"feature_matrix rows ({feats.shape[0]}) must match N={n}"
+            )
+        features = np.concatenate([states, feats], axis=1)
+
+    rng = np.random.default_rng(seed)
+    labels = _kmeans_labels(features, M, rng)
+
+    centers = np.zeros((M, k), dtype=np.float64)
+    for j in range(M):
+        mask = labels == j
+        if not np.any(mask):
+            idx = int(rng.integers(0, n))
+            centers[j] = states[idx]
+            labels[idx] = j
+        else:
+            centers[j] = states[mask].mean(axis=0)
+
+    counts = np.bincount(labels, minlength=M).astype(np.int64)
+    empty = np.where(counts == 0)[0]
+    for j in empty:
+        donor = int(np.argmax(counts))
+        if counts[donor] <= 1:
+            continue
+        member = int(np.flatnonzero(labels == donor)[0])
+        labels[member] = j
+        counts[donor] -= 1
+        counts[j] += 1
+        centers[j] = states[member]
+        centers[donor] = states[labels == donor].mean(axis=0)
+
+    if int(counts.sum()) != n:
+        raise RuntimeError("aggregated cluster counts do not sum to N")
+    return centers, counts, labels
 
 
 # ============================================================
@@ -568,6 +685,9 @@ class MassiveSimEngine:
         coupling:        Intensidad del acoplamiento social λ.
         dt:              Paso de tiempo Δt para integración Euler-Maruyama.
         seed:            Semilla aleatoria para reproducibilidad.
+        lod_mode:        ``"synthetic"`` (default) o ``"aggregated"``.
+        agent_states:    Requerido si ``lod_mode="aggregated"``: matriz (N, K).
+        feature_matrix:  Atributos opcionales (N, F) para clustering agregado.
     """
 
     def __init__(
@@ -583,7 +703,22 @@ class MassiveSimEngine:
         coupling: float = 0.3,
         dt: float = 0.01,
         seed: int = 42,
+        lod_mode: str = "synthetic",
+        agent_states: np.ndarray | None = None,
+        feature_matrix: np.ndarray | None = None,
     ) -> None:
+        if lod_mode not in {"synthetic", "aggregated"}:
+            raise ValueError("lod_mode must be 'synthetic' or 'aggregated'")
+
+        if lod_mode == "aggregated":
+            if agent_states is None:
+                raise ValueError("agent_states is required when lod_mode='aggregated'")
+            agent_states = np.asarray(agent_states, dtype=np.float64)
+            if agent_states.ndim != 2:
+                raise ValueError("agent_states must have shape (N, K)")
+            N = int(agent_states.shape[0])
+            K = int(agent_states.shape[1])
+
         if N < 1:
             raise ValueError(f"N must be >= 1, got {N}")
         if K < 1:
@@ -612,13 +747,23 @@ class MassiveSimEngine:
         self.coupling = float(coupling)
         self.dt = float(dt)
         self.seed = seed
+        self.lod_mode = lod_mode
         self.rng = np.random.default_rng(seed)
+        self._cluster_labels: np.ndarray | None = None
 
         # Pesos de capa normalizados
         self.layer_weights: np.ndarray = w / w.sum()
 
-        # ── Estrategia 1: generar super-agentes ──────────────────────
-        self._x, self._counts = build_super_agents(N, self.M, K, seed)
+        # ── Estrategia 1: super-agentes (sintéticos o agregados) ─────
+        if lod_mode == "aggregated":
+            self._x, self._counts, self._cluster_labels = build_aggregated_super_agents(
+                agent_states,
+                self.M,
+                feature_matrix=feature_matrix,
+                seed=seed,
+            )
+        else:
+            self._x, self._counts = build_super_agents(N, self.M, K, seed)
 
         # ── Red de M super-agentes (capas social, digital, económica) ─
         from multilayer_engine import (
