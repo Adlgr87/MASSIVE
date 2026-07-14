@@ -1,0 +1,26 @@
+name: massive_social_dynamics
+version: "1.0.0"
+decision_dim: 8
+bounds:
+  - [-1.0, 1.0]
+  - [0.0, 1.0]
+  - [0.0, 1.0]
+  - [0.0, 1.0]
+  - [0.0, 1.0]
+  - [-1.0, 1.0]
+  - [-1.0, 1.0]
+  - [-1.0, 1.0]
+targets:
+  - name: polarization_index
+    range: [0.0, 1.0]
+    unit: index
+    semantics: Mean absolute opinion (polarization)
+    source: multilayer_engine.get_landscape().polarization
+  - name: opinion_mean
+    range: [-1.0, 1.0]
+    unit: bipolar_score
+    semantics: Mean agent opinion
+    source: multilayer_engine.get_landscape().mean_opinion
+notes: >
+  Adapter is MASSIVE-owned. External optimizers (e.g. MutaLambda) call
+  adapters.mutalambda.make_objective() without importing MASSIVE internals.

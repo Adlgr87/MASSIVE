@@ -1,5 +1,5 @@
 [build-system]
-requires = ["maturin>=1.7,<2.0"]
+requires = ["maturin>=1.7,<2.0", "setuptools>=68"]
 build-backend = "maturin"
 
 [project]
@@ -7,7 +7,45 @@ name = "massive"
 version = "0.1.0"
 description = "MASSIVE simulation toolkit with optional Rust acceleration"
 requires-python = ">=3.10"
+readme = "README.md"
+license = { text = "Apache-2.0" }
+authors = [{ name = "MASSIVE Research" }]
+dependencies = [
+  "numpy>=1.26",
+  "scipy>=1.12",
+  "pandas>=2.2",
+  "networkx>=3.0",
+  "pydantic>=2.0",
+  "pyyaml>=6.0",
+  "python-dotenv>=1.0.1",
+  "requests>=2.31",
+]
+
+[project.optional-dependencies]
+core = [
+  "numpy>=1.26",
+  "scipy>=1.12",
+  "pandas>=2.2",
+  "networkx>=3.0",
+  "pydantic>=2.0",
+  "pyyaml>=6.0",
+]
+api = ["fastapi>=0.110", "uvicorn[standard]>=0.27", "python-multipart>=0.0.6"]
+ui = ["streamlit>=1.35", "plotly>=5.18"]
+llm = ["openai>=1.14", "langchain>=1.2.0", "langchain-openai>=1.2.0", "langchain-groq>=1.1.0"]
+ml = ["torch>=2.2", "torchdiffeq>=0.2.3", "scikit-learn>=1.4"]
+scientific = ["numba>=0.65", "statsmodels>=0.14", "scikit-learn>=1.4"]
+docs = ["mkdocs>=1.5.3", "mkdocs-material>=9.5.0", "mkdocstrings[python]>=0.24.0"]
+dev = ["pytest>=8.0.0"]
+full = [
+  "massive[core,api,ui,llm,ml,scientific,docs,dev]",
+]
 
 [tool.maturin]
 module-name = "massive_rust_core"
 features = ["pyo3/extension-module"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = "-q"

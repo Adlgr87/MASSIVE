@@ -1,35 +1,44 @@
+# Core (see pyproject.toml optional-dependencies for extras)
 numpy>=1.26
 scipy>=1.12
-requests>=2.31
-streamlit>=1.35
 pandas>=2.2
-python-dotenv>=1.0.1
-fastapi>=0.104.0
-uvicorn[standard]>=0.24.0
-python-multipart>=0.0.6
-mkdocs>=1.5.3
-mkdocs-material>=9.5.0
-mkdocstrings[python]>=0.24.0
-pytest>=8.0.0
-pydantic>=2.0
-mkdocs-material>=9.5.0
-mkdocstrings[python]>=0.24.0
-pytest>=8.0.0
-pydantic>=2.0
-openai>=1.14
-plotly>=5.18.0
 networkx>=3.0
+pydantic>=2.0
+pyyaml>=6.0
+python-dotenv>=1.0.1
+requests>=2.31
+pytest>=8.0.0
+
+# API
+fastapi>=0.110
+uvicorn[standard]>=0.27
+python-multipart>=0.0.6
+
+# UI
+streamlit>=1.35
+plotly>=5.18.0
+
+# LLM (optional in production)
+openai>=1.14
+langchain>=1.2.0
+langchain-openai>=1.2.0
+langchain-groq>=1.1.0
+
+# Scientific / ML
+numba>=0.65.0
+statsmodels>=0.14.0
+scikit-learn>=1.4.0
+torch>=2.2.0
+torchdiffeq>=0.2.3
+dask>=2024.0.0
+
+# Domain extras
 nashpy>=0.0.43
 pgmpy>=1.1.0
 tweepy>=4.16.0
 praw>=7.8.1
-dask>=2024.0.0
-numba>=0.65.0
-langchain>=1.2.0
-langchain-openai>=1.2.0
-langchain-groq>=1.1.0
-pyyaml>=6.0
-torch>=2.2.0
-torchdiffeq>=0.2.3
-statsmodels>=0.14.0
-scikit-learn>=1.4.0
+
+# Docs
+mkdocs>=1.5.3
+mkdocs-material>=9.5.0
+mkdocstrings[python]>=0.24.0
