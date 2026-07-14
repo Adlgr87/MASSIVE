@@ -341,30 +341,23 @@ class SparseMultilayerEngine:
         del self._current_states[layer_idx]
         self.n_layers = len(self.layers)
         
-        # Update interaction matrix
-        old_size = self.interaction_matrix.shape[0]
-        new_matrix = np.eye(self.n_layers)
-        
-        # Copy old values, skipping the removed layer
-        for i in range(self.n_layers):
-            for j in range(self.n_layers):
-                old_i = i if i < layer_idx else i + 1
-                old_j = j if j < layer_idx else j + 1
-                new_matrix[i, j] = self.interaction_matrix[old_i, old_j]
-        
-        self.interaction_matrix = new_matrix
-        
+        # Update interaction matrix with np.ix_ on kept indices
+        keep = [i for i in range(self.interaction_matrix.shape[0]) if i != layer_idx]
+        if keep:
+            self.interaction_matrix = self.interaction_matrix[np.ix_(keep, keep)].copy()
+        else:
+            self.interaction_matrix = np.eye(0)
+
         # Update inter-layer edges to remove references to deleted layer
         if self.inter_layer_edges.size > 0:
             mask = (
-                (self.inter_layer_edges[:, 0] != layer_idx) &  # src_layer != deleted
-                (self.inter_layer_edges[:, 2] != layer_idx)    # dst_layer != deleted
+                (self.inter_layer_edges[:, 0] != layer_idx)
+                & (self.inter_layer_edges[:, 2] != layer_idx)
             )
-            self.inter_layer_edges = self.inter_layer_edges[mask]
-            
-            # Adjust indices for layers after the deleted one
-            self.inter_layer_edges[self.inter_layer_edges[:, 0] > layer_idx, 0] -= 1
-            self.inter_layer_edges[self.inter_layer_edges[:, 2] > layer_idx, 2] -= 1
+            edges = self.inter_layer_edges[mask].copy()
+            edges[edges[:, 0] > layer_idx, 0] -= 1
+            edges[edges[:, 2] > layer_idx, 2] -= 1
+            self.inter_layer_edges = edges
     
     def add_inter_layer_edge(self, src_layer: int, src_node: int, dst_layer: int, dst_node: int) -> None:
         """

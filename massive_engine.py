@@ -40,7 +40,7 @@ from __future__ import annotations
 
 import logging
 import time
-from typing import Any
+from typing import Any, Optional
 
 import numpy as np
 
@@ -110,13 +110,76 @@ class MassiveEngine:
 
     def __init__(self, config: dict | None = None) -> None:
         cfg = config or {}
+        self.config = dict(cfg)
+        self.param_provenance: dict[str, str] = dict(cfg.get("_provenance", {}))
         self.agents = self.initialize_agents(cfg)
+
+    @classmethod
+    def from_factbook(
+        cls,
+        country: str,
+        context: Any = None,
+        *,
+        n_agents: int | None = None,
+        seed: int = 42,
+        **overrides: Any,
+    ) -> "MassiveEngine":
+        """
+        Construct a MassiveEngine from CIA World Factbook-derived params.
+
+        Applies scaled population, demographics, Gini, and social groups when
+        available. Provenance tags distinguish derived vs default parameters.
+        """
+        if context is None:
+            from massive.core.factbook import get_factbook_context
+            context = get_factbook_context()
+        params = context.get_massive_params(country) or {}
+        provenance: dict[str, str] = {}
+
+        if n_agents is None:
+            n_agents = int(params.get("n_agents", 1000))
+            provenance["n_agents"] = (
+                "derived_parameter" if "n_agents" in params else "internal_default"
+            )
+        else:
+            provenance["n_agents"] = "caller_override"
+
+        gini = float(params.get("gini_coefficient", 0.35))
+        provenance["gini_coefficient"] = (
+            "derived_parameter" if "gini_coefficient" in params else "literature_prior"
+        )
+        social_groups = params.get("social_groups", {})
+        provenance["social_groups"] = (
+            "raw_factbook" if social_groups else "internal_default"
+        )
+        economic = params.get("economic_potential", {})
+        provenance["economic_potential"] = (
+            "derived_parameter" if economic else "internal_default"
+        )
+
+        config = {
+            "n_agents": int(n_agents),
+            "seed": seed,
+            "country": country,
+            "gini_coefficient": gini,
+            "social_groups": social_groups,
+            "economic_potential": economic,
+            "demographic_matrix": params.get("demographic_matrix"),
+            "social_pressure_weights": params.get("social_pressure_weights", {}),
+            "_provenance": provenance,
+            **overrides,
+        }
+        return cls(config)
 
     def initialize_agents(self, config: dict) -> np.ndarray:
         n_agents = int(config.get("n_agents", 100))
         seed = config.get("seed")
         rng = np.random.default_rng(seed)
         agents = rng.uniform(-0.5, 0.5, (n_agents, 5))
+        # Optional demographic conditioning via Gini → income dispersion
+        gini = float(config.get("gini_coefficient", 0.35))
+        income = rng.beta(max(0.5, 2.0 * (1.0 - gini)), max(0.5, 2.0 * gini), n_agents)
+        agents[:, 3] = income  # income column
         agents[:, 1:] = np.clip(agents[:, 1:], 0.0, 1.0)
         return agents.astype(np.float64)
 

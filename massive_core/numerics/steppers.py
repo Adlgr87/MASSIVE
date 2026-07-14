@@ -121,9 +121,19 @@ class EulerMaruyamaStepper:
 
 
 class AdaptiveStepper:
-    """Adapter exposing ``AdaptiveODESolver`` through ``DynamicsStepper``."""
+    """Adapter exposing ``AdaptiveODESolver`` through ``DynamicsStepper``.
+
+    Persists a single ``AdaptiveODESolver`` instance across steps and only
+    refreshes drift/diffusion/bounds when they change identity.
+    """
 
     method = "adaptive"
+
+    def __init__(self) -> None:
+        self._solver: AdaptiveODESolver | None = None
+        self._bound_drift: DriftFunction | None = None
+        self._bound_diffusion: Any = None
+        self._bound_bounds: tuple[float, float] | None = None
 
     def step(
         self,
@@ -151,13 +161,26 @@ class AdaptiveStepper:
         """
 
         del noise, context
-        solver = AdaptiveODESolver(drift=drift, diffusion=diffusion, bounds=bounds)
-        next_state, dt_next = solver.step(np.asarray(state, dtype=float), dt)
+        needs_new = (
+            self._solver is None
+            or drift is not self._bound_drift
+            or diffusion is not self._bound_diffusion
+            or bounds != self._bound_bounds
+        )
+        if needs_new:
+            self._solver = AdaptiveODESolver(
+                drift=drift, diffusion=diffusion, bounds=bounds
+            )
+            self._bound_drift = drift
+            self._bound_diffusion = diffusion
+            self._bound_bounds = bounds
+        assert self._solver is not None
+        next_state, dt_next = self._solver.step(np.asarray(state, dtype=float), dt)
         metadata: dict[str, Any] = {}
         method = self.method
-        if solver.last_diagnostics is not None:
-            method = solver.last_diagnostics.method
-            metadata["stiffness_ratio"] = solver.last_diagnostics.stiffness_ratio
+        if self._solver.last_diagnostics is not None:
+            method = self._solver.last_diagnostics.method
+            metadata["stiffness_ratio"] = self._solver.last_diagnostics.stiffness_ratio
         return StepperResult(
             state=next_state,
             diagnostics=NumericalDiagnostics(method=method, dt_next=dt_next, metadata=metadata),

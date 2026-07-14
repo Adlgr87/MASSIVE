@@ -25,6 +25,31 @@ class NaiveBaseline:
         return np.full(horizon, last)
 
 
+class SeasonalNaiveBaseline:
+    """Seasonal naive: repeat the value from ``season`` steps ago.
+
+    Falls back to last-value naive when the series is shorter than season+1.
+    """
+
+    name = "seasonal_naive"
+
+    def __init__(self, season: int = 4):
+        self.season = max(1, int(season))
+
+    def predict(self, train: np.ndarray, horizon: int) -> np.ndarray:
+        y = np.asarray(train, dtype=float).ravel()
+        if len(y) <= self.season:
+            return np.full(horizon, float(y[-1]))
+        preds = np.empty(horizon, dtype=float)
+        for h in range(horizon):
+            idx = len(y) - self.season + (h % self.season)
+            if idx < 0:
+                preds[h] = float(y[-1])
+            else:
+                preds[h] = float(y[idx])
+        return preds
+
+
 class MovingAverageBaseline:
     """Mean of the last *window* training observations."""
 
@@ -223,6 +248,7 @@ def get_all_baselines() -> list:
     """
     baselines = [
         NaiveBaseline(),
+        SeasonalNaiveBaseline(season=4),
         MovingAverageBaseline(window=4),
         AR1Baseline(),
         RandomRegimeBaseline(),
