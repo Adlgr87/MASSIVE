@@ -165,6 +165,8 @@ class SocialEnergyEngine:
         gini_coefficient: Optional[float] = None,
         inequality_factor: Optional[float] = None,
         economic_potential: Optional[Dict[str, Any]] = None,
+        seed: Optional[int] = None,
+        rng: Optional[np.random.Generator] = None,
     ):
         self.range_type = range_type
         self.temperature = float(temperature)
@@ -193,6 +195,14 @@ class SocialEnergyEngine:
         self.scientific_config = ScientificRuntimeConfig.from_dict(scientific_config)
         self._stepper = create_stepper(self.scientific_config.solver)
         self.last_numerical_diagnostics = None
+        
+        # Initialize RNG
+        if rng is not None:
+            self.rng = rng
+        elif seed is not None:
+            self.rng = np.random.default_rng(seed)
+        else:
+            self.rng = None
 
     def step(
         self,
@@ -223,7 +233,8 @@ class SocialEnergyEngine:
         neighbor_mean = (adj @ opinions) / row_sums
 
         # ── Ruido estocástico (una muestra por agente) ─────────────────────────
-        noise = np.sqrt(2.0 * eta * self.temperature) * np.random.randn(n)
+        rng = self.rng if self.rng is not None else np.random
+        noise = np.sqrt(2.0 * eta * self.temperature) * rng.randn(n)
 
         # ── Extract arrays for JIT-compiled hot path ───────────────────────────
         sigma2 = _SIGMA ** 2
@@ -253,7 +264,8 @@ class SocialEnergyEngine:
                 return local_drift
 
             diffusion = np.sqrt(2.0 * self.temperature) if self.temperature > 0.0 else None
-            step_noise = np.random.randn(n) if diffusion is not None else None
+            rng = self.rng if self.rng is not None else np.random
+            step_noise = rng.randn(n) if diffusion is not None else None
             result = self._stepper.step(
                 opinions.astype(np.float64),
                 eta,

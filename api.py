@@ -1,13 +1,24 @@
 from __future__ import annotations
 
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, HTTPException, Depends, Header
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.security import APIKeyHeader
 import os
 import tempfile
 import shutil
 from typing import Optional
 
 app = FastAPI(title="MASSIVE UIL API")
+
+# API Key authentication
+api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
+
+async def get_api_key(api_key: Optional[str] = Header(None)):
+    """Validate API key from header."""
+    valid_key = os.getenv("MASSIVE_API_KEY", "default-secret-key")
+    if api_key != valid_key:
+        raise HTTPException(status_code=401, detail="Invalid API Key")
+    return api_key
 
 # Allow CORS from local frontend dev origins
 app.add_middleware(
@@ -36,7 +47,7 @@ def get_adapter():
 
 
 @app.post("/api/extract")
-async def api_extract(file: UploadFile = File(...)):
+async def api_extract(file: UploadFile = File(...), api_key: Optional[str] = Depends(get_api_key)):
     """Upload a file (pdf/json/csv/xlsx) and return extracted MASSIVE config."""
     adapter = get_adapter()
     suffix = "." + (file.filename.split(".")[-1] if file.filename and "." in file.filename else "tmp")
@@ -57,7 +68,7 @@ async def api_extract(file: UploadFile = File(...)):
 
 
 @app.post("/api/wizard")
-async def api_wizard(payload: dict):
+async def api_wizard(payload: dict, api_key: Optional[str] = Depends(get_api_key)):
     """Accepts JSON {"description": "..."} and returns a generated config."""
     desc = payload.get("description")
     if not desc:
@@ -71,7 +82,7 @@ async def api_wizard(payload: dict):
 
 
 @app.post("/api/simulate-uil")
-async def api_simulate(payload: dict):
+async def api_simulate(payload: dict, api_key: Optional[str] = Depends(get_api_key)):
     """Optional endpoint that runs full_pipeline. Payload may include 'description' and/or 'file' (path not supported via JSON).
     Prefer /api/extract + separate simulate call. This is a convenience wrapper for quick testing.
     """
@@ -84,3 +95,24 @@ async def api_simulate(payload: dict):
         return result
     except Exception as exc:
         raise HTTPException(status_code=500, detail=str(exc))
+
+
+@app.get("/")
+async def root():
+    """Root endpoint - health check."""
+    return {
+        "status": "ok",
+        "service": "MASSIVE UIL API",
+        "version": "1.0.0",
+        "docs": "/docs",
+    }
+
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint."""
+    return {
+        "status": "healthy",
+        "service": "MASSIVE UIL API",
+        "version": "1.0.0",
+    }

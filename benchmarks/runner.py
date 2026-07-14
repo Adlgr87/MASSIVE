@@ -213,7 +213,9 @@ def evaluate_case(
     if mode == "llm":
         bs_pred = _massive_llm_forecast(train, horizon, case)
     elif mode == "real":
-        bs_pred = _massive_real_forecast(train, horizon, case, seed=42)
+        # Generate a unique seed for this case from the global RNG
+        case_seed = rng.integers(0, 2**31 - 1)
+        bs_pred = _massive_real_forecast(train, horizon, case, seed=case_seed)
         if bs_pred is None:
             log.warning(
                 "Real MASSIVE forecast unavailable for '%s' — falling back to offline proxy.",

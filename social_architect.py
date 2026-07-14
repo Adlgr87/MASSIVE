@@ -10,7 +10,6 @@ Soporta dos modos:
 import json
 import logging
 import os
-from openai import OpenAI
 from pydantic import ValidationError
 
 from schemas import StrategyMatrix
@@ -54,7 +53,18 @@ def find_optimal_interventions(evaluate_fn, n_agents, n_phases, max_iter=100):
 # ============================================================
 
 def setup_client():
-    """Inicializa el cliente OpenAI-compatible con la key disponible."""
+    """Inicializa el cliente OpenAI-compatible con la key disponible.
+
+    Lazy-import openai so heuristic/offline modes work without the package.
+    """
+    try:
+        from openai import OpenAI
+    except ImportError as exc:
+        raise ImportError(
+            "openai package is required for LLM Social Architect mode. "
+            "Install with: pip install openai"
+        ) from exc
+
     api_key = os.getenv("OPENAI_API_KEY")
     base_url = os.getenv("OPENAI_BASE_URL")
 
