@@ -166,6 +166,28 @@ class TestActiveSet:
         aset.step(x0, x1, adj)
         assert aset.mask[1]   # vecino del agente que cambió
 
+    def test_sparse_csr_only_real_neighbors_wake(self):
+        """CSR reactivation wakes graph neighbors, not dense n_common slices."""
+        from scipy import sparse
+        from massive_engine import active_mask_step_sparse
+
+        M = 6
+        # Only 0—1 and 0—2 connected; 3,4,5 isolated
+        adj = np.zeros((M, M))
+        adj[0, 1] = adj[1, 0] = 1.0
+        adj[0, 2] = adj[2, 0] = 1.0
+        csr = sparse.csr_matrix(adj)
+        x0 = np.zeros((M, 5))
+        x1 = x0.copy()
+        x1[0, 0] = 1.0
+        mask = active_mask_step_sparse(x0, x1, csr, 0.01)
+        assert mask[0] and mask[1] and mask[2]
+        assert not mask[3] and not mask[4] and not mask[5]
+
+        aset = ActiveSet(M, sleep_threshold=0.01)
+        aset.step(x0, x1, csr)
+        assert aset.mask[1] and not aset.mask[5]
+
     def test_history_grows(self):
         aset = ActiveSet(M=5)
         adj = np.eye(5)
@@ -374,19 +396,41 @@ class TestMemoryReport:
         rep = engine.memory_report
         for key in ("n_agents", "n_clusters", "float64_MB",
                     "lod_MB", "final_MB", "savings_pct",
-                    "strategies", "gpu_backend"):
-            assert key in rep
+                    "strategies", "gpu_backend",
+                    "state_bytes", "adjacency_dense_bytes",
+                    "adjacency_csr_bytes", "theta_bytes",
+                    "history_bytes", "total_bytes", "total_MB",
+                    "savings_vs_state_pct", "savings_vs_full_network_pct"):
+            assert key in rep, f"missing key {key}"
+
+    def test_component_bytes_sum_to_total(self):
+        engine = MassiveSimEngine(N=5_000, M=80, quantize=True, event_driven=True)
+        rep = engine.memory_report
+        parts = (
+            rep["state_bytes"]
+            + rep["adjacency_dense_bytes"]
+            + rep["adjacency_csr_bytes"]
+            + rep["theta_bytes"]
+            + rep["counts_bytes"]
+            + rep["history_bytes"]
+            + rep["active_mask_bytes"]
+        )
+        assert parts == rep["total_bytes"]
+        assert rep["total_bytes"] > rep["state_bytes"]  # not state-only
 
     def test_savings_positive(self):
         engine = MassiveSimEngine(N=10_000, M=100, quantize=True)
         rep = engine.memory_report
         assert rep["savings_pct"] > 0.0
+        assert rep["savings_vs_full_network_pct"] > 0.0
 
     def test_savings_over_99pct_large_N(self):
-        """Con N=1M y M=300 y cuantización, el ahorro supera el 99%."""
+        """Con N=1M y M=300 y cuantización, el ahorro de *estado* supera el 99%."""
         engine = MassiveSimEngine(N=1_000_000, M=300, quantize=True)
         rep = engine.memory_report
         assert rep["savings_pct"] > 99.0
+        # Full-network comparison is also strongly positive at this scale
+        assert rep["savings_vs_full_network_pct"] > 99.0
 
     def test_lod_strategy_always_present(self):
         engine = MassiveSimEngine(N=1000, M=50)
@@ -398,7 +442,9 @@ class TestMemoryReport:
 
     def test_event_driven_strategy_when_enabled(self):
         engine = MassiveSimEngine(N=1000, M=50, event_driven=True)
-        assert "Event-Driven" in engine.memory_report["strategies"]
+        assert any("Event-Driven" in s for s in engine.memory_report["strategies"])
+        assert engine.memory_report["n_csr_edges"] > 0
+        assert engine.memory_report["adjacency_csr_bytes"] > 0
 
 
 # ============================================================
