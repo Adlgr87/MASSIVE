@@ -44,6 +44,8 @@ from typing import Any
 
 import numpy as np
 
+from scipy import sparse
+
 from massive_core.rust_core import active_mask_step
 
 log = logging.getLogger("massive")
@@ -224,6 +226,43 @@ def dequantize_state(q: np.ndarray) -> np.ndarray:
 # ESTRATEGIA 3 — COLA DE EVENTOS (Active Set)
 # ============================================================
 
+def active_mask_step_sparse(
+    x_prev: np.ndarray,
+    x_new: np.ndarray,
+    adj_csr: sparse.csr_matrix,
+    threshold: float,
+) -> np.ndarray:
+    """
+    Event-driven active mask using CSR neighbor lists only.
+
+    Changed agents stay active; only *true* graph neighbors (CSR indices)
+    are reactivated — no dense O(M²) adjacency scan.
+    """
+    prev = np.asarray(x_prev, dtype=np.float64)
+    new = np.asarray(x_new, dtype=np.float64)
+    changed = np.abs(new - prev).max(axis=1) > float(threshold)
+    active = changed.copy()
+    if not changed.any():
+        return active
+
+    indptr = adj_csr.indptr
+    indices = adj_csr.indices
+    for i in np.flatnonzero(changed):
+        start = indptr[i]
+        end = indptr[i + 1]
+        if end > start:
+            active[indices[start:end]] = True
+    return active
+
+
+def combine_layers_csr(layers_flat: np.ndarray) -> sparse.csr_matrix:
+    """Union of multilayer edges as a single CSR adjacency (binary)."""
+    combined = np.abs(np.asarray(layers_flat, dtype=np.float64)).sum(axis=0)
+    binary = (combined > 0).astype(np.float64)
+    np.fill_diagonal(binary, 0.0)
+    return sparse.csr_matrix(binary)
+
+
 class ActiveSet:
     """
     Rastrea qué super-agentes están "despiertos" (activos) en cada paso.
@@ -232,6 +271,8 @@ class ActiveSet:
     no recibe actualización hasta que un vecino cambie significativamente.
     Esto concentra el cómputo donde hay "acción" social, reduciendo la
     carga de CPU cuando la mayoría del sistema ha convergido.
+
+    Supports dense adjacency or ``scipy.sparse`` CSR for O(degree) wake-ups.
 
     Args:
         M: Número total de super-agentes.
@@ -249,7 +290,7 @@ class ActiveSet:
         self,
         x_prev: np.ndarray,
         x_new: np.ndarray,
-        adj: np.ndarray,
+        adj: np.ndarray | sparse.spmatrix,
     ) -> None:
         """
         Actualiza la máscara de activos tras un paso de simulación.
@@ -260,9 +301,17 @@ class ActiveSet:
         Args:
             x_prev: Estado anterior (M, K).
             x_new:  Estado nuevo (M, K).
-            adj:    Matriz de adyacencia (M, M) — se usa para encontrar vecinos.
+            adj:    Dense (M, M) or CSR adjacency for neighbor lookup.
         """
-        self._active = active_mask_step(x_prev, x_new, adj, self._threshold)
+        if sparse.issparse(adj):
+            csr = adj.tocsr()
+            self._active = active_mask_step_sparse(
+                x_prev, x_new, csr, self._threshold
+            )
+        else:
+            self._active = active_mask_step(
+                x_prev, x_new, np.asarray(adj), self._threshold
+            )
         self._history.append(float(self._active.mean()))
 
     @property
@@ -776,6 +825,11 @@ class MassiveSimEngine:
         A_d = generate_scale_free(M_, m=min(2, M_ - 1), seed=seed)
         A_e = generate_hierarchical(M_, seed=seed)
         self._layers_flat: np.ndarray = np.stack([A_s, A_d, A_e])   # (3, M, M)
+        # CSR union for sparse event-driven neighbor reactivation
+        self._adj_csr: sparse.csr_matrix = combine_layers_csr(self._layers_flat)
+        self._layers_csr: list[sparse.csr_matrix] = [
+            sparse.csr_matrix(self._layers_flat[i]) for i in range(self._layers_flat.shape[0])
+        ]
 
         # Theta: modulación de ruido — uniforme (sin datos demográficos individuales)
         self._theta: np.ndarray = np.ones((self.M, K), dtype=np.float64)
@@ -843,7 +897,7 @@ class MassiveSimEngine:
                 active_frac = 1.0
 
             elif self.event_driven and self._active_set is not None:
-                # Estrategia 3: solo agentes activos
+                # Estrategia 3: solo agentes activos; reactivación por CSR
                 self._x = _langevin_step_masked(
                     self._x,
                     self._layers_flat,
@@ -854,7 +908,8 @@ class MassiveSimEngine:
                     self._active_set.mask,
                     rng=self.rng,
                 )
-                self._active_set.step(x_prev, self._x, self._layers_flat[0])
+                # Use sparse multi-layer union — only real neighbors wake up
+                self._active_set.step(x_prev, self._x, self._adj_csr)
                 active_frac = float(self._active_set.mask.mean())
 
             else:
@@ -929,38 +984,106 @@ class MassiveSimEngine:
         """
         Reporte detallado de uso y ahorro de memoria.
 
+        Breaks down real structures (state, adjacency, theta, history, …).
+        ``savings_pct`` remains the *state-array* savings for backward
+        compatibility; use ``savings_vs_full_network_pct`` for an honest
+        total comparison against a dense N-agent multilayer network.
+
         Returns:
-            Diccionario con campos:
-              - n_agents: agentes reales N.
-              - n_clusters: super-agentes M.
-              - float64_MB: RAM que usarían N agentes en float64.
-              - lod_MB: RAM de M clusters en float64 (ahorro LOD).
-              - final_MB: RAM real usada (LOD + cuantización).
-              - savings_pct: porcentaje total de ahorro.
-              - strategies: lista de estrategias activas.
-              - gpu_backend: nombre del backend GPU detectado.
+            Dict with legacy keys plus detailed byte breakdowns.
         """
-        float64_bytes = self.N * self.K * 8
-        lod_bytes = self.M * self.K * 8
-        final_bytes = self.M * self.K * 1 if self.quantize else lod_bytes
+        n_layers = int(self._layers_flat.shape[0]) if hasattr(self, "_layers_flat") else 3
+
+        # ── Component bytes (actual engine structures) ──────────────
+        state_bytes = (
+            self.M * self.K * 1 if self.quantize else self.M * self.K * 8
+        )
+        # Dense layer stack held for Langevin step (float64)
+        adjacency_dense_bytes = self.M * self.M * n_layers * 8
+        # CSR union used for event reactivation
+        if hasattr(self, "_adj_csr") and self._adj_csr is not None:
+            adjacency_csr_bytes = (
+                self._adj_csr.data.nbytes
+                + self._adj_csr.indices.nbytes
+                + self._adj_csr.indptr.nbytes
+            )
+        else:
+            adjacency_csr_bytes = 0
+        theta_bytes = self.M * self.K * 8
+        counts_bytes = self.M * 8  # int64
+        history_bytes = (
+            len(self._opinion_history) * 8
+            + len(self._active_fraction_history) * 8
+        )
+        active_mask_bytes = self.M if self.event_driven else 0
+        temporary_bytes = self.M * self.K * 8  # one scratch copy in run()
+
+        total_bytes = (
+            state_bytes
+            + adjacency_dense_bytes
+            + adjacency_csr_bytes
+            + theta_bytes
+            + counts_bytes
+            + history_bytes
+            + active_mask_bytes
+        )
+
+        # ── Baselines ───────────────────────────────────────────────
+        baseline_state_bytes = self.N * self.K * 8
+        # Theoretical dense multilayer graph on N agents (what LOD avoids)
+        baseline_full_bytes = baseline_state_bytes + self.N * self.N * n_layers * 8
+
+        # Legacy state-only figures
+        lod_state_bytes = self.M * self.K * 8
+        final_state_bytes = state_bytes
 
         strategies = ["LOD (Super-Agentes)"]
         if self.quantize:
             strategies.append("Cuantización uint8")
         if self.event_driven:
-            strategies.append("Event-Driven")
+            strategies.append("Event-Driven (CSR neighbors)")
         if self.use_gpu:
             strategies.append(f"GPU ({_GPU_BACKEND})")
+        if getattr(self, "lod_mode", "synthetic") == "aggregated":
+            strategies.append("LOD agregado (k-means)")
+
+        savings_state = (
+            (1.0 - final_state_bytes / baseline_state_bytes) * 100.0
+            if baseline_state_bytes > 0
+            else 0.0
+        )
+        savings_full = (
+            (1.0 - total_bytes / baseline_full_bytes) * 100.0
+            if baseline_full_bytes > 0
+            else 0.0
+        )
 
         return {
-            "n_agents":    self.N,
-            "n_clusters":  self.M,
-            "float64_MB":  float64_bytes / 1e6,
-            "lod_MB":      lod_bytes / 1e6,
-            "final_MB":    final_bytes / 1e6,
-            "savings_pct": (1.0 - final_bytes / float64_bytes) * 100.0,
-            "strategies":  strategies,
+            # Legacy keys (state-array view)
+            "n_agents": self.N,
+            "n_clusters": self.M,
+            "float64_MB": baseline_state_bytes / 1e6,
+            "lod_MB": lod_state_bytes / 1e6,
+            "final_MB": final_state_bytes / 1e6,
+            "savings_pct": savings_state,  # state-only (compat)
+            "strategies": strategies,
             "gpu_backend": _GPU_BACKEND,
+            # Detailed component breakdown (bytes)
+            "state_bytes": int(state_bytes),
+            "adjacency_dense_bytes": int(adjacency_dense_bytes),
+            "adjacency_csr_bytes": int(adjacency_csr_bytes),
+            "theta_bytes": int(theta_bytes),
+            "counts_bytes": int(counts_bytes),
+            "history_bytes": int(history_bytes),
+            "active_mask_bytes": int(active_mask_bytes),
+            "temporary_bytes": int(temporary_bytes),
+            "total_bytes": int(total_bytes),
+            "total_MB": total_bytes / 1e6,
+            "baseline_state_bytes": int(baseline_state_bytes),
+            "baseline_full_network_bytes": int(baseline_full_bytes),
+            "savings_vs_state_pct": savings_state,
+            "savings_vs_full_network_pct": savings_full,
+            "n_csr_edges": int(self._adj_csr.nnz) if hasattr(self, "_adj_csr") else 0,
         }
 
     @property
