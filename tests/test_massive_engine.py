@@ -188,9 +188,30 @@ class TestMassiveSimEngine:
         assert engine.M == 20
 
     def test_auto_M(self):
-        """M se calcula automáticamente como max(50, sqrt(N))."""
+        """M se calcula automáticamente como min(N, max(50, sqrt(N)))."""
         engine = MassiveSimEngine(N=10_000)
-        assert engine.M == max(50, int(10_000 ** 0.5))
+        assert engine.M == min(10_000, max(50, int(10_000 ** 0.5)))
+
+    def test_auto_M_never_exceeds_N(self):
+        """Para N pequeño, M automático no supera N."""
+        engine = MassiveSimEngine(N=20)
+        assert 1 <= engine.M <= 20
+
+    def test_invalid_M_raises(self):
+        with pytest.raises(ValueError, match="M must satisfy"):
+            MassiveSimEngine(N=100, M=0)
+        with pytest.raises(ValueError, match="M must satisfy"):
+            MassiveSimEngine(N=100, M=101)
+
+    def test_invalid_layer_weights_raise(self):
+        with pytest.raises(ValueError, match="layer_weights"):
+            MassiveSimEngine(N=100, M=10, layer_weights=(0.0, 0.0, 0.0))
+        with pytest.raises(ValueError, match="layer_weights"):
+            MassiveSimEngine(N=100, M=10, layer_weights=(1.0, 0.0))
+
+    def test_invalid_N_raises(self):
+        with pytest.raises(ValueError, match="N must be"):
+            MassiveSimEngine(N=0)
 
     def test_run_returns_dict(self):
         engine = MassiveSimEngine(N=500, M=20, seed=1)

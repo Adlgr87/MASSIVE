@@ -584,8 +584,26 @@ class MassiveSimEngine:
         dt: float = 0.01,
         seed: int = 42,
     ) -> None:
+        if N < 1:
+            raise ValueError(f"N must be >= 1, got {N}")
+        if K < 1:
+            raise ValueError(f"K must be >= 1, got {K}")
+
+        # Default M scales with sqrt(N) but never exceeds N.
+        if M is None:
+            M = min(N, max(50, int(N ** 0.5))) if N >= 50 else N
+        if not 1 <= M <= N:
+            raise ValueError(f"M must satisfy 1 <= M <= N (got M={M}, N={N})")
+
+        w = np.asarray(layer_weights, dtype=np.float64)
+        if w.ndim != 1 or w.size != 3 or not np.isfinite(w).all() or float(w.sum()) <= 0.0:
+            raise ValueError(
+                "layer_weights must be a length-3 positive-sum vector "
+                f"(got {layer_weights!r})"
+            )
+
         self.N = N
-        self.M = M if M is not None else max(50, int(N ** 0.5))
+        self.M = int(M)
         self.K = K
         self.quantize = quantize
         self.event_driven = event_driven
@@ -597,7 +615,6 @@ class MassiveSimEngine:
         self.rng = np.random.default_rng(seed)
 
         # Pesos de capa normalizados
-        w = np.array(layer_weights, dtype=np.float64)
         self.layer_weights: np.ndarray = w / w.sum()
 
         # ── Estrategia 1: generar super-agentes ──────────────────────

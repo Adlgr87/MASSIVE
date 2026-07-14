@@ -158,7 +158,8 @@ def _massive_real_forecast(
     cultural = meta.get("cultural_profile", "mixed")
     # network_type in MASSIVE: barabasi_albert / watts_strogatz / erdos_renyi
     net = meta.get("network_type", "watts_strogatz")
-    cluster = meta.get("cluster_id")
+    # Prefer explicit cluster_id; fall back to scenario_type as regime label.
+    cluster = meta.get("cluster_id") or meta.get("scenario_type")
 
     try:
         pred = massive_real_forecast_with_calibration(
