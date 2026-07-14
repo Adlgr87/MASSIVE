@@ -17,5 +17,6 @@
   "data_notes": "Polarization values estimated from published surveys and research. Values normalized to [0,1] where 0=consensus, 0.5=moderate division, 1.0=max polarization. For SIR-type cases, P represents protest participation rate rather than polarization.",
   "network_type": "watts_strogatz",
   "n_timesteps": 15,
-  "pvu_level_target": "bronze"
+  "pvu_level_target": "bronze",
+  "cluster_id": "polarization_escalation"
 }
