@@ -140,8 +140,23 @@ class WizardResult(BaseModel):
     confianza: float = 0.5
 
     def to_simular_kwargs(self) -> dict[str, Any]:
-        """Filtra nulls y devuelve kwargs listos para simular()."""
-        return {k: v for k, v in self.config.items() if v is not None}
+        """Filtra nulls y normaliza claves al vocabulario del simulador."""
+        # LLM prompt may emit aliases; map them to DEFAULT_CONFIG / estado keys.
+        aliases = {
+            "homofilia_rate": "homofilia_tasa",
+            "homofilia": "homofilia_tasa",
+            "regla": "regla_sugerida",
+            "rule": "regla_sugerida",
+            "confidence": "confianza",
+            "opinion_mean": "opinion",
+        }
+        out: dict[str, Any] = {}
+        for k, v in self.config.items():
+            if v is None:
+                continue
+            key = aliases.get(str(k), str(k))
+            out[key] = v
+        return out
 
 
 class ExplainerResult(BaseModel):

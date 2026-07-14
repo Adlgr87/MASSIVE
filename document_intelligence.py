@@ -133,9 +133,16 @@ class MASSIVEExtractedConfig(BaseModel):
 
     def to_simular_kwargs(self) -> dict[str, Any]:
         """
-        Convierte los campos extraídos al formato de kwargs de simular().
-        Solo incluye campos con valor (no None).
+        Convierte campos extraídos al formato consumido por el simulador.
+
+        Returns a flat dict with:
+          - estado keys (opinion, confianza, propaganda, …)
+          - config keys consumed by DEFAULT_CONFIG (homofilia_tasa, sesgo_…)
+          - top-level simular args (pasos, escenario if rule maps)
+
+        Only non-None fields are included.
         """
+        # Field → key actually read by simulator / DEFAULT_CONFIG
         mapping = {
             "opinion_inicial": "opinion",
             "confianza_institucional": "confianza",
@@ -144,7 +151,7 @@ class MASSIVEExtractedConfig(BaseModel):
             "opinion_grupo_b": "opinion_grupo_b",
             "identidad_grupo": "identidad_grupo",
             "sesgo_confirmacion": "sesgo_confirmacion",
-            "homofilia": "homofilia_rate",
+            "homofilia": "homofilia_tasa",  # NOT homofilia_rate
             "pasos": "pasos",
         }
         out: dict[str, Any] = {}
@@ -152,7 +159,55 @@ class MASSIVEExtractedConfig(BaseModel):
             val = getattr(self, src)
             if val is not None:
                 out[dst] = val
+        # regla_sugerida → escenario when it matches a known scenario key;
+        # otherwise keep as metadata for the architect/UI.
+        if self.regla_sugerida:
+            rule = str(self.regla_sugerida).strip().lower()
+            # Map common LLM rule aliases to simulator scenario bucket.
+            if rule in {"campana", "corporativo", "crisis"}:
+                out["escenario"] = rule
+            else:
+                out["regla_sugerida"] = rule
         return out
+
+    @property
+    def config_dict(self) -> dict[str, Any]:
+        """Backward-compatible alias for :meth:`to_simular_kwargs`."""
+        return self.to_simular_kwargs()
+
+    def to_simulation_request(self) -> dict[str, Any]:
+        """
+        Split extracted params into ``simular()`` positional structure.
+
+        Returns:
+            {
+              "estado_inicial": dict,
+              "escenario": str,
+              "pasos": int,
+              "config": dict,
+            }
+        """
+        flat = self.to_simular_kwargs()
+        estado_keys = {
+            "opinion", "propaganda", "confianza",
+            "opinion_grupo_a", "opinion_grupo_b", "identidad_grupo",
+            "pertenencia_grupo",
+        }
+        config_keys = {
+            "homofilia_tasa", "sesgo_confirmacion", "hk_epsilon",
+            "competencia_peso", "umbral_media", "umbral_std",
+            "cultural_profile",
+        }
+        estado = {k: flat[k] for k in estado_keys if k in flat}
+        config = {k: flat[k] for k in config_keys if k in flat}
+        if "regla_sugerida" in flat:
+            config["regla_sugerida"] = flat["regla_sugerida"]
+        return {
+            "estado_inicial": estado,
+            "escenario": flat.get("escenario", "campana"),
+            "pasos": int(flat.get("pasos", 50)),
+            "config": config,
+        }
 
 
 class DocumentContext(BaseModel):

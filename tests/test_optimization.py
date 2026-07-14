@@ -23,7 +23,27 @@ def test_optimizer_matrix_shape_matches_request():
 
 def test_optimizer_strategy_tag():
     result = optimize_interventions(_dummy_objective_function, n_agents=6, n_phases=2, max_iter=20)
-    assert result["strategy"] == "stochastic_search"
+    assert result["strategy"] == "multiobjective_stochastic_search"
+    assert "feasible" in result
+    assert "effectiveness" in result
+
+
+def test_optimizer_fiscal_does_not_only_shrink_iterations():
+    """Fiscal/cost constraints must report density budget, not only mutate max_iter."""
+    result = optimize_interventions(
+        _dummy_objective_function,
+        n_agents=10,
+        n_phases=3,
+        max_iter=30,
+        seed=1,
+        fiscal_constraint=0.2,
+        cost_scale_factor=2.0,
+    )
+    assert 0.0 < result["max_density"] <= 1.0
+    assert result["feasibility"] == 0.2
+    # Interventions should be sparser than fully dense ±1 matrix.
+    density = float(np.mean(np.abs(result["interventions"]) > 0))
+    assert density <= result["max_density"] + 1e-9
 
 
 def test_optimizer_deterministic_for_same_seed():
