@@ -36,7 +36,6 @@ class TestMassiveEngineManualShock:
 
 
 class TestDynamicRewiring:
-    @pytest.mark.skip(reason="dynamic_rewiring removido de MultilayerEngine en refactor — ver audit_report.md")
     def test_dynamic_rewiring_updates_layer(self):
         engine = MultilayerEngine(N=60, seed=3)
         original = engine.layers["social"].copy()
@@ -45,7 +44,6 @@ class TestDynamicRewiring:
         assert updated.shape == original.shape
         assert not np.allclose(original, updated)
 
-    @pytest.mark.skip(reason="graphs property removido de MultilayerEngine en refactor — ver audit_report.md")
     def test_graphs_property_returns_sparse_layers(self):
         engine = MultilayerEngine(N=25, seed=1)
         graphs = engine.graphs
