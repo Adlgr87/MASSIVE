@@ -41,6 +41,8 @@ from benchmarks.metrics import (
 )
 from benchmarks.turning_points import detect as detect_turning_points
 from benchmarks.turning_points import score_turning_points
+from benchmarks.walk_forward import walk_forward_scores
+from forecast.targets import resolve_target
 
 logging.basicConfig(
     level=logging.INFO,
@@ -181,6 +183,26 @@ def _massive_real_forecast(
 
 # ── Per-case evaluation ───────────────────────────────────────────────────────
 
+def _json_safe(obj):
+    """Recursively convert NaN/Inf to None for strict JSON."""
+    if isinstance(obj, dict):
+        return {k: _json_safe(v) for k, v in obj.items()}
+    if isinstance(obj, list):
+        return [_json_safe(v) for v in obj]
+    if isinstance(obj, float):
+        if not np.isfinite(obj):
+            return None
+        return obj
+    if isinstance(obj, np.generic):
+        val = obj.item()
+        if isinstance(val, float) and not np.isfinite(val):
+            return None
+        return val
+    if isinstance(obj, np.ndarray):
+        return _json_safe(obj.tolist())
+    return obj
+
+
 def evaluate_case(
     case: dict,
     mode: str,
@@ -190,25 +212,47 @@ def evaluate_case(
 
     Returns a result dict ready for JSON serialisation.
     """
-    P = case["timeseries"]["P"]
+    P = np.asarray(case["timeseries"]["P"], dtype=float).ravel()
     n = len(P)
     split = max(2, int(n * TRAIN_RATIO))
     train, test = P[:split], P[split:]
     horizon = len(test)
 
+    meta = case.get("meta", {}) or {}
+    cluster = meta.get("cluster_id") or meta.get("scenario_type")
+    target = resolve_target(cluster, meta.get("scenario_type"))
+
     if horizon < 1:
         log.warning("Case '%s': test split is empty — skipping.", case["name"])
-        return {"case": case["name"], "skipped": True, "reason": "empty test split"}
+        return {
+            "case": case["name"],
+            "cluster_id": cluster,
+            "target": target.to_dict(),
+            "skipped": True,
+            "reason": "empty test split",
+        }
 
     # ── Baselines ────────────────────────────────────────────────────────────
     baselines = get_all_baselines()
     baseline_results: dict[str, dict] = {}
     baseline_preds: dict[str, np.ndarray] = {}
+    walk_forward: dict[str, dict] = {}
 
     for bl in baselines:
         pred = bl.predict(train, horizon)
         baseline_preds[bl.name] = pred
         baseline_results[bl.name] = compute_all_metrics(test, pred)
+        # Rolling-origin evaluation (short series friendly)
+        try:
+            walk_forward[bl.name] = walk_forward_scores(
+                P,
+                predict_fn=lambda tr, h, _bl=bl: _bl.predict(tr, h),
+                min_train=max(3, split // 2),
+                horizon=min(horizon, 2),
+            )
+        except Exception as exc:  # noqa: BLE001
+            log.debug("walk-forward failed for %s: %s", bl.name, exc)
+            walk_forward[bl.name] = {"n_folds": 0, "mae": None, "rmse": None}
 
     # ── MASSIVE forecast ──────────────────────────────────────────────────
     if mode == "llm":
@@ -229,6 +273,7 @@ def evaluate_case(
     bs_metrics: dict = {}
     dm_results: dict = {}
     tp_result: dict = {}
+    massive_walk: dict = {}
 
     if bs_pred is not None:
         bs_metrics = compute_all_metrics(test, bs_pred)
@@ -254,18 +299,33 @@ def evaluate_case(
         tp_pred = detect_turning_points(bs_pred)
         tp_result = score_turning_points(tp_true, tp_pred, n=len(test))
 
-    return {
+        if mode == "offline":
+            try:
+                massive_walk = walk_forward_scores(
+                    P,
+                    predict_fn=lambda tr, h: _massive_offline_forecast(tr, h, rng),
+                    min_train=max(3, split // 2),
+                    horizon=min(horizon, 2),
+                )
+            except Exception as exc:  # noqa: BLE001
+                log.debug("MASSIVE walk-forward failed: %s", exc)
+
+    return _json_safe({
         "case": case["name"],
-        "cluster_id": case.get("meta", {}).get("cluster_id"),
+        "cluster_id": cluster,
+        "scenario_type": meta.get("scenario_type"),
+        "target": target.to_dict(),
         "n_total": n,
         "n_train": split,
         "n_test": horizon,
         "baselines": baseline_results,
+        "walk_forward": walk_forward,
         "massive": bs_metrics,
+        "massive_walk_forward": massive_walk,
         "dm_tests": dm_results,
         "turning_points": tp_result,
         "skipped": False,
-    }
+    })
 
 
 # ── Report generation ─────────────────────────────────────────────────────────
@@ -302,9 +362,11 @@ def generate_report(results: list[dict], mode: str, seed: int) -> str:
             lines += [f"_Skipped: {r.get('reason', 'unknown')}_", ""]
             continue
 
+        tgt = r.get("target") or {}
         lines += [
             f"- **N total / train / test:** {r['n_total']} / {r['n_train']} / {r['n_test']}",
             f"- **Cluster ID:** `{r.get('cluster_id') or 'n/a'}`",
+            f"- **Target:** `{tgt.get('name', 'n/a')}` ({tgt.get('unit', '?')}) — {tgt.get('semantics', '')}",
             "",
             "### Baseline metrics (test split)",
             "",
@@ -457,7 +519,7 @@ def main(argv=None) -> int:
 
     metrics_path = out_dir / "metrics.json"
     with open(metrics_path, "w", encoding="utf-8") as fh:
-        json.dump(results, fh, indent=2, ensure_ascii=False)
+        json.dump(_json_safe(results), fh, indent=2, ensure_ascii=False, allow_nan=False)
     log.info("Metrics saved to %s", metrics_path)
 
     report_md = generate_report(results, mode, seed)
