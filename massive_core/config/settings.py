@@ -37,8 +37,18 @@ class AppSettings(BaseModel):
     )
     rate_limit_per_min: int = Field(60, ge=1)
     max_upload_mb: int = Field(10, ge=1)
-    simulation: SimulationDefaults = Field(default_factory=SimulationDefaults)
-    logging: LoggingSettings = Field(default_factory=LoggingSettings)
+    simulation: SimulationDefaults = Field(
+        default_factory=lambda: SimulationDefaults(
+            default_steps=50, default_seed=42, train_ratio=0.7
+        )
+    )
+    logging: LoggingSettings = Field(
+        default_factory=lambda: LoggingSettings(
+            level="INFO",
+            format="%(asctime)s | %(name)-28s | %(levelname)-8s | %(message)s",
+            datefmt="%H:%M:%S",
+        )
+    )
 
     model_config = {"extra": "ignore", "validate_assignment": True}
 

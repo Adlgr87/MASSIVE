@@ -208,9 +208,7 @@ class SparseStabilityAnalyzer:
         n_random_perturbations: int = 5,
         rng: Optional[np.random.Generator] = None,
     ) -> None:
-        # Build a wrapper vector field for the legacy StabilityAnalyzer
-        vector_field = system_fn  # type: ignore[assignment]
-        self._legacy = StabilityAnalyzer(vector_field)
+        self._legacy = StabilityAnalyzer(system_fn)
         self.equilibrium = equilibrium
         self.jacobian_fn = jacobian_fn
         self.n_random_perturbations = n_random_perturbations
@@ -220,17 +218,36 @@ class SparseStabilityAnalyzer:
     # Compatibility
     # ------------------------------------------------------------------
 
-    def compute_jacobian(self, *args, **kwargs) -> Array:
+    def compute_jacobian(
+        self,
+        x: Array,
+        vector_field: Optional[Callable[[Array], Array]] = None,
+        eps: float = 1e-6,
+    ) -> Array:
         """Delegate to :meth:`StabilityAnalyzer.compute_jacobian`."""
-        return self._legacy.compute_jacobian(*args, **kwargs)
+        return self._legacy.compute_jacobian(x, vector_field=vector_field, eps=eps)
 
-    def analyze_linear_stability(self, *args, **kwargs) -> StabilityReport:
+    def analyze_linear_stability(
+        self,
+        x: Array,
+        vector_field: Optional[Callable[[Array], Array]] = None,
+        tolerance: float = 1e-9,
+    ) -> StabilityReport:
         """Delegate to :meth:`StabilityAnalyzer.analyze_linear_stability`."""
-        return self._legacy.analyze_linear_stability(*args, **kwargs)
+        return self._legacy.analyze_linear_stability(
+            x, vector_field=vector_field, tolerance=tolerance
+        )
 
-    def compute_spectral_radius(self, *args, **kwargs) -> float:
+    def compute_spectral_radius(
+        self,
+        matrix: Array,
+        iterations: int = 100,
+        tol: float = 1e-10,
+    ) -> float:
         """Delegate to :meth:`StabilityAnalyzer.compute_spectral_radius`."""
-        return self._legacy.compute_spectral_radius(*args, **kwargs)
+        return self._legacy.compute_spectral_radius(
+            matrix, iterations=iterations, tol=tol
+        )
 
     # ------------------------------------------------------------------
     # Extended diagnostics

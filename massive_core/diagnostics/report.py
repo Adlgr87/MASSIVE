@@ -90,10 +90,12 @@ def trajectory_from_history(history: Sequence[Any], fields: Sequence[str] | None
             raise ValueError("all history dictionaries must expose the same selected fields")
         return np.asarray(rows, dtype=float)
 
-    rows = [np.asarray(item, dtype=float).reshape(-1) for item in history]
-    if any(row.shape != rows[0].shape for row in rows):
+    array_rows: list[Array] = [
+        np.asarray(item, dtype=float).reshape(-1) for item in history
+    ]
+    if any(row.shape != array_rows[0].shape for row in array_rows):
         raise ValueError("all array history entries must have the same shape")
-    return np.vstack(rows)
+    return np.vstack(array_rows)
 
 
 def build_scientific_report(

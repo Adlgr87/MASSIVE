@@ -22,6 +22,14 @@ workflows (`REMEDIATION_STATUS.md`, `OPTIMIZATION_STATUS.md`).
 | B1 | Fix Pydantic `Intervention` `model_validator` (must `return self`) | P0 | **Done** |
 | B2 | Refresh `experiments/` smoke + reproducibility (local RNG, no stale “bug RNG” docs) | P0 | **Done** |
 | B3 | Coverage baseline + focused tests for critical modules | P0 | **Done** |
+| B4 | Broader type-hint pass on `massive_core` numerics/config/diagnostics/assimilation | P0 | **Done** |
+
+### B4 notes
+
+- Gradual mypy: `follow_imports = silent`; `disallow_untyped_defs` on typed packages.
+- Entry point: `python scripts/typecheck_slice.py` (21 source files, clean).
+- `mypy` added to `dev` extras in `pyproject.toml`.
+- Sparse multilayer engine still opted out of hard untyped-def (legacy surface).
 
 ### Coverage notes (B3)
 
@@ -48,10 +56,10 @@ PYTHONHASHSEED=42 python -m pytest tests/ --cov=massive_core --cov=micro_massive
 
 | ID | Item | Notes |
 |----|------|-------|
-| B4 | Broader type-hint pass on `massive_core/` engines/numerics | Gradual mypy; extend beyond services |
 | B5 | Raise line coverage toward 25–30% with module-by-module tests | Tooling ready (`pytest-cov` in `pyproject.toml`) |
 | B6 | Harden reproducibility pytest fixtures (bit-equality) for engines + `simular_multiples` | Beyond experiment scripts |
 | B7 | Document full `MASSIVE_*` env map for AppSettings | CORS/rate limit already partial |
+| B4b | Extend type slice to physics/metalearning + optional CI mypy job | Builds on B4 / B15 |
 
 ### P1 / P2 — architecture & product
 
@@ -91,8 +99,8 @@ PYTHONHASHSEED=42 python -m pytest tests/ --cov=massive_core --cov=micro_massive
 
 ---
 
-## Suggested next PR after FASE 5 slice
+## Suggested next PR
 
-1. **B4 + B15** — type-hint numerics package + optional CI mypy (non-blocking first)
-2. **B5** — coverage map + tests for lowest-covered critical modules
+1. **B5** — coverage map + tests for lowest-covered critical modules (prefer CI)
+2. **B15 / B4b** — optional non-blocking CI job running `scripts/typecheck_slice.py`
 3. **B16** — one profiled hotspot PR only
