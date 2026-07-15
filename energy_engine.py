@@ -54,11 +54,13 @@ def _landscape_gradient_jit(
     Works with plain arrays so Numba can compile it.
     """
     grad = 0.0
-    for i in range(len(att_positions)):
+    n_att = att_positions.shape[0]
+    n_rep = rep_positions.shape[0]
+    for i in range(n_att):
         diff = x - att_positions[i]
         g = np.exp(-diff * diff / (2.0 * sigma2))
         grad += att_strengths[i] * diff / sigma2 * g
-    for i in range(len(rep_positions)):
+    for i in range(n_rep):
         diff = x - rep_positions[i]
         g = np.exp(-diff * diff / (2.0 * sigma2))
         grad -= rep_strengths[i] * diff / sigma2 * g
