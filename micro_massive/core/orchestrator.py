@@ -33,7 +33,7 @@ class MicroOrchestrator:
             ]
         self._initialize_neighbors(initial_cohesion)
         self.influence = InfluenceMatrix(self.particles, rng=self.rng)
-        self.game = EvolutionaryGame(self.particles)
+        self.game = EvolutionaryGame(self.particles, rng=self.rng)
         self.metrics = GroupMetrics(self.particles)
         self._step = 0
 

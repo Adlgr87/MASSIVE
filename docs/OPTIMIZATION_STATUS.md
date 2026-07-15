@@ -6,48 +6,60 @@ Tracks `workflow_MASSIVE_optimization.md` against `main`.
 
 | Fix | Status | Notes |
 |-----|--------|-------|
-| 1.1 Global `np.random` in engines | **Done** | Local `default_rng` in `massive_engine`, `multilayer_engine`, `energy_engine`, `simulator`, `visualizations`, `energy_runner` |
-| 1.2 Delete root wrappers | **Rejected (intentional)** | Root `schemas.py`, `utility_logic.py`, `intervention_optimizer.py`, etc. are **deprecated re-exports** required for backward compatibility (`CLAUDE.md` / remediation). Not deleted. |
-| 1.3 Consolidate Stability* classes | **Partial** | Canonical import: `massive_core.analysis`. Physics/sparse variants kept (different roles). Full file move deferred (high risk). |
-| 1.4 SyntaxWarning in tests | **Done** | raw string match in `tests/test_contracts.py` |
+| 1.1 Global `np.random` in engines | **Done** | Local `default_rng` in engines/simulator; steppers use local RNG fallback |
+| 1.2 Delete root wrappers | **Rejected (intentional)** | Deprecated re-exports kept for BC (`CLAUDE.md`) |
+| 1.3 Consolidate Stability* classes | **Partial** | Canonical: `massive_core.analysis`; physics/sparse variants kept |
+| 1.4 SyntaxWarning in tests | **Done** | raw string in `tests/test_contracts.py` |
 
 ## FASE 2 — ALTA
 
 | Fix | Status | Notes |
 |-----|--------|-------|
-| 2.1 Type hints (public surface) | **Done (slice 1)** | Services, `rng.py`, `forecast/targets.py`; `mypy.ini` gradual |
+| 2.1 Type hints (public surface) | **Done (slice)** | Services, rng, forecast; `mypy.ini` gradual |
 | 2.2 `len()` in loops | **Done (core hot paths)** | energy JIT, app animation, perturbation_theory |
-| 2.3 Google docstrings | **Done (public services + rng)** | Service layer fully documented |
-| 2.4 TODO triage | **Done (tool)** | `scripts/todo_triage.py` — core tree currently clean |
+| 2.3 Google docstrings | **Done (public services + rng)** | Service layer documented |
+| 2.4 TODO triage | **Done (tool)** | `scripts/todo_triage.py` |
 
 ## FASE 3 — MEDIA
 
 | Fix | Status | Notes |
 |-----|--------|-------|
-| 3.1 `config/` package | **Done** | `config.py` → `massive_core/config/` with `ScientificRuntimeConfig` re-export for BC |
-| 3.2 AppSettings + YAML | **Done** | `settings.py` + `defaults.yaml`; env overrides |
-| 3.3 Logging setup | **Done** | `logging_setup.py`; wired in `api.py` |
-| 3.4 micro_massive RNG | **Done** | `seed`/`rng` on agent, influence, orchestrator, forer |
-| 3.5 Naming policy | **Done** | `docs/NAMING_CONVENTIONS.md` — no mass rename of `step`/`to_dict` |
-| 3.6 API CORS / rate limit | **Done** | Driven by `get_app_settings()` with env override |
+| 3.1 `config/` package | **Done** | `ScientificRuntimeConfig` + AppSettings + YAML |
+| 3.2 Rename `step`/`to_dict` | **Rejected (policy)** | See `docs/NAMING_CONVENTIONS.md` |
+| 3.3 Migrate to `@dataclass` | **Done (data types)** | Result/config types already dataclasses; engines kept as classes |
+| 3.4 micro_massive RNG | **Done** | agent, influence, orchestrator, forer, **game** |
+| 3.5 Logging / API settings | **Done** | `logging_setup.py`; CORS + rate limit from settings |
 
-## FASE 4 — BAJA (slice included)
+## FASE 4 — BAJA
 
 | Fix | Status | Notes |
 |-----|--------|-------|
-| 4.1 Config-driven defaults | **Done (slice)** | YAML + AppSettings for sim defaults, CORS, rate limit |
-| 4.2 Broader type-hint pass | **Deferred** | Beyond public services; continue incrementally |
-| 4.3 Deep perf (beyond len) | **Deferred** | Profile-driven; no speculative rewrites |
+| 4.1 Empty `__init__.py` | **Done** | `micro_massive.core` / `utils` export public API |
+| 4.2 Centralized logging | **Done** | FASE 3 package; API wires `configure_logging()` |
+| 4.3 Coverage tooling | **Done** | `pytest-cov` in dev extras; `[tool.coverage.*]` in `pyproject.toml` |
+| 4.4 Stepper local RNG | **Done** | `EulerMaruyamaStepper` owns Generator; no global `randn` |
 
 ## Verify
 
 ```bash
 PYTHONHASHSEED=42 python -m pytest tests/ -q
+PYTHONHASHSEED=42 python -m pytest tests/ --cov=massive_core --cov=micro_massive --cov-report=term-missing:skip-covered
 python scripts/todo_triage.py
 ```
 
-## Remaining (optional / later)
+## Workflow complete (implementable scope)
 
-- Broader type-hint pass on `massive_core/`
-- Profile-guided performance work
-- MutaLambda nested layout (owner-side)
+| Phase | PR | Commit |
+|-------|-----|--------|
+| FASE 1 | #69 | opt-phase1-critical |
+| FASE 2 | #70 | opt-phase2-high |
+| FASE 3 | #71 | opt-phase3-medium |
+| FASE 4 | (this) | opt-phase4-low |
+
+## Deferred / owner-side
+
+- Broader type-hint pass across all of `massive_core/`
+- Profile-guided deep performance work
+- Full Stability* file consolidation (high risk)
+- MutaLambda nested layout / experiments refresh
+- Raising line coverage to a hard 30% gate (tooling ready; expand tests incrementally)
