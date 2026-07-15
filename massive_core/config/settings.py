@@ -16,6 +16,9 @@ class LoggingSettings(BaseModel):
     level: str = "INFO"
     format: str = "%(asctime)s | %(name)-28s | %(levelname)-8s | %(message)s"
     datefmt: str = "%H:%M:%S"
+    file: str | None = None  # optional rotating log path (or MASSIVE_LOG_FILE)
+    max_bytes: int = Field(10_485_760, ge=1024)  # 10 MiB
+    backup_count: int = Field(5, ge=0)
 
 
 class SimulationDefaults(BaseModel):
@@ -36,6 +39,8 @@ class AppSettings(BaseModel):
         default_factory=lambda: ["http://localhost:1234", "http://localhost:3000"]
     )
     rate_limit_per_min: int = Field(60, ge=1)
+    rate_limit_backend: str = "memory"  # memory | file
+    rate_limit_path: str | None = None
     max_upload_mb: int = Field(10, ge=1)
     simulation: SimulationDefaults = Field(
         default_factory=lambda: SimulationDefaults(
@@ -47,6 +52,9 @@ class AppSettings(BaseModel):
             level="INFO",
             format="%(asctime)s | %(name)-28s | %(levelname)-8s | %(message)s",
             datefmt="%H:%M:%S",
+            file=None,
+            max_bytes=10_485_760,
+            backup_count=5,
         )
     )
 

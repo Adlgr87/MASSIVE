@@ -220,15 +220,21 @@ class EquilibriumPerturbationSolver:
         self.rng = rng if rng is not None else np.random.default_rng()
         self.tolerance = tolerance
 
+    def _require_system_fn(self) -> Callable[[Array], Array]:
+        if self.system_fn is None:
+            raise ValueError("system_fn must be set")
+        return self.system_fn
+
     def _compute_jacobian(self, state: Array, eps: float = 1e-6) -> Array:
         """Compute the Jacobian at *state* via finite differences."""
+        system_fn = self._require_system_fn()
         n = len(state)
         jacobian = np.zeros((n, n))
-        base = self.system_fn(state)
+        base = system_fn(state)
         for i in range(n):
             perturbed = state.copy()
             perturbed[i] += eps
-            jacobian[:, i] = (self.system_fn(perturbed) - base) / eps
+            jacobian[:, i] = (system_fn(perturbed) - base) / eps
         return jacobian
 
     def get_jacobian(self, state: Optional[Array] = None,
@@ -272,9 +278,10 @@ class EquilibriumPerturbationSolver:
             raise ValueError(f"Unknown perturbation type: {perturbation_type!r}")
 
         perturbed_state = state + perturbation
+        system_fn = self._require_system_fn()
 
         for _ in range(max_iterations):
-            new_state = self.system_fn(perturbed_state)
+            new_state = system_fn(perturbed_state)
             residual = np.linalg.norm(new_state - perturbed_state)
             if residual < self.tolerance:
                 break
@@ -314,8 +321,9 @@ class EquilibriumPerturbationSolver:
         perturbed_state = state.copy()
         perturbed_state[parameter_index] = perturbed_value
 
-        response = self.system_fn(perturbed_state)
-        nominal_response = self.system_fn(state)
+        system_fn = self._require_system_fn()
+        response = system_fn(perturbed_state)
+        nominal_response = system_fn(state)
 
         effect_size = float(np.linalg.norm(response - nominal_response))
         response_norm = float(np.linalg.norm(nominal_response))
