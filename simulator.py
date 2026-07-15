@@ -1429,6 +1429,9 @@ def simular(
     r           = _get_rango(cfg)
     alpha_blend = cfg["alpha_blend"]
     proveedor   = cfg.get("proveedor", "heurístico")
+    # Local RNG for all stochastic updates in this run (no process-global RNG).
+    _seed = cfg.get("seed", None)
+    rng = np.random.default_rng(_seed)
 
     estado = estado_inicial.copy()
     estado.setdefault("opinion_prev",     estado["opinion"])
@@ -1505,7 +1508,7 @@ def simular(
             opinion_blend
             + calcular_efecto_grupos(estado, cfg)
             + _calcular_fuerza_estrategica(estado, cfg)
-            + np.random.normal(0.0, ruido_std),
+            + float(rng.normal(0.0, ruido_std)),
             cfg
         )
 
@@ -1593,6 +1596,8 @@ def simular_multiples(
     r          = _get_rango(cfg)
     ruido_ini  = cfg["ruido_estado_inicial"]
     resultados = np.zeros(n_simulaciones)
+    base_seed = cfg.get("seed", None)
+    root_rng = np.random.default_rng(base_seed)
 
     # Keys whose valid range is [0, 1] regardless of the opinion range.
     # Clipping these to the opinion range (e.g. [-1, 1] in bipolar mode) is
@@ -1603,17 +1608,21 @@ def simular_multiples(
 
     for i in range(n_simulaciones):
         estado_ruido = {}
+        # Per-replica seed for independent but reproducible noise + simular noise
+        rep_seed = int(root_rng.integers(0, 2**31 - 1))
+        rep_rng = np.random.default_rng(rep_seed)
         for k, v in estado_inicial.items():
             if isinstance(v, float):
-                noisy = v + np.random.normal(0, ruido_ini)
+                noisy = v + float(rep_rng.normal(0, ruido_ini))
                 if k in _UNIT_INTERVAL_KEYS:
                     estado_ruido[k] = float(np.clip(noisy, 0.0, 1.0))
                 else:
                     estado_ruido[k] = float(np.clip(noisy, r["min"], r["max"]))
             else:
                 estado_ruido[k] = v
+        run_cfg = {**(config or {}), "seed": rep_seed}
         hist = simular(estado_ruido, escenario=escenario, pasos=pasos,
-                       cada_n_pasos=cada_n_pasos, config=config, verbose=False)
+                       cada_n_pasos=cada_n_pasos, config=run_cfg, verbose=False)
         resultados[i] = hist[-1]["opinion"]
 
     neutro = _neutro(cfg)
@@ -2117,6 +2126,7 @@ def run_with_schedule(
     cfg = {**DEFAULT_CONFIG, **(config or {})}
     r = _get_rango(cfg)
     alpha_blend = cfg["alpha_blend"]
+    sched_rng = np.random.default_rng(cfg.get("seed"))
     
     estado = estado_inicial.copy()
     estado.setdefault("opinion_prev", estado["opinion"])
@@ -2178,7 +2188,7 @@ def run_with_schedule(
                 opinion_blend
                 + calcular_efecto_grupos(estado, cfg)
                 + _calcular_fuerza_estrategica(estado, cfg)
-                + np.random.normal(0.0, ruido_std),
+                + float(sched_rng.normal(0.0, ruido_std)),
                 cfg,
             )
 

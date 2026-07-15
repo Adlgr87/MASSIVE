@@ -42,14 +42,14 @@ def run_energy_simulation(
     engine = SocialEnergyEngine(
         range_type=range_type,
         temperature=params["dynamics"]["temperature"],
-        lambda_social=params["dynamics"]["lambda_social"]
+        lambda_social=params["dynamics"]["lambda_social"],
+        seed=seed,
     )
     eta = params["dynamics"]["eta"]
     adj = random_network(n_agents, connectivity=connectivity, seed=seed)
 
     min_val, max_val = (0.0, 1.0) if range_type == "unipolar" else (-1.0, 1.0)
     rng = np.random.default_rng(seed)
-    np.random.seed(seed)  # seed global RNG for Langevin noise in engine.step()
     opinions = rng.uniform(min_val, max_val, size=n_agents)
 
     history = []

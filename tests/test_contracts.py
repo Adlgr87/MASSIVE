@@ -240,7 +240,7 @@ class TestSimulationConfig:
     
     def test_invalid_layer_weights_sum(self):
         """Test that zero sum layer_weights raises error."""
-        with pytest.raises(ValueError, match="sum\(layer_weights\) must be > 0"):
+        with pytest.raises(ValueError, match=r"sum\(layer_weights\) must be > 0"):
             SimulationConfig(N=100, K=3, layer_weights=(0.0, 0.0, 0.0))
     
     def test_to_dict(self):
