@@ -11,7 +11,7 @@
   {
     "test": "Reproducibilidad MassiveSimEngine (3 runs, seed=42)",
     "status": "PASS",
-    "detail": "max_delta=0.00e+00 (v\u00eda np.random.seed global)",
+    "detail": "max_delta=0.00e+00 (local engine seed)",
     "deltas": [
       0.0,
       0.0
