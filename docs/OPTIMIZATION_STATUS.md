@@ -60,7 +60,8 @@ python scripts/todo_triage.py
 
 See **`docs/BACKLOG_POST_WORKFLOW.md`** for the prioritized backlog and mini-workflow.
 
-First slice (B1–B3): Intervention validator fix, experiments refresh, focused coverage tests.
+- B1–B3: Intervention validator, experiments refresh, focused tests
+- B4: type-hint / mypy slice (`scripts/typecheck_slice.py`, numerics+config+diagnostics+assimilation)
 
 ## Deferred / owner-side
 

@@ -181,14 +181,21 @@ class AdaptiveODESolver:
         return sigma * self.rng.normal(0.0, np.sqrt(dt), size=x.shape)
 
     def _diffusion_value(self, x: Array) -> Array:
-        if callable(self.diffusion):
-            value = self.diffusion(x)
+        diffusion = self.diffusion
+        raw: Array | float
+        if callable(diffusion):
+            raw = diffusion(x)
+        elif diffusion is None:
+            raw = 0.0
         else:
-            value = self.diffusion
-        return np.asarray(value, dtype=float) * np.ones_like(x, dtype=float)
+            raw = diffusion
+        return np.asarray(raw, dtype=float) * np.ones_like(x, dtype=float)
 
     def _diffusion_derivative_diag(self, x: Array, eps: float = 1e-6) -> Array:
         grad = np.zeros_like(x, dtype=float)
+        if not callable(self.diffusion):
+            return grad
+        diffusion_fn: Drift = self.diffusion
         flat = x.reshape(-1)
         shape = x.shape
         for i in range(flat.size):
@@ -196,8 +203,8 @@ class AdaptiveODESolver:
             minus = flat.copy()
             plus[i] += eps
             minus[i] -= eps
-            s_plus = np.asarray(self.diffusion(plus.reshape(shape))).reshape(-1)
-            s_minus = np.asarray(self.diffusion(minus.reshape(shape))).reshape(-1)
+            s_plus = np.asarray(diffusion_fn(plus.reshape(shape)), dtype=float).reshape(-1)
+            s_minus = np.asarray(diffusion_fn(minus.reshape(shape)), dtype=float).reshape(-1)
             grad.reshape(-1)[i] = (s_plus[i] - s_minus[i]) / (2.0 * eps)
         return grad
 

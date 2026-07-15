@@ -14,8 +14,10 @@ Classes:
     SparseEnKF: Sparse Ensemble Kalman Filter for data assimilation
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
-from typing import Optional, Tuple, Dict, Any, Union, List
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 import time
 import numpy as np
 from scipy.sparse import csr_matrix, lil_matrix, coo_matrix, spmatrix
@@ -579,7 +581,7 @@ class SparseMultilayerEngine:
         return self._n_layers if hasattr(self, '_n_layers') else len(self.layers)
     
     @n_layers.setter
-    def n_layers(self, value: int):
+    def n_layers(self, value: int) -> None:
         """Set number of layers."""
         self._n_layers = value
     
@@ -589,7 +591,7 @@ class SparseMultilayerEngine:
         return self._layers if hasattr(self, '_layers') else []
     
     @layers.setter
-    def layers(self, value: List[LayerState]):
+    def layers(self, value: List[LayerState]) -> None:
         """Set list of layers."""
         self._layers = value
 
@@ -674,7 +676,7 @@ class SparseEnKF:
         inflation: float = 1.0,
         seed: Optional[int] = None,
         rng: Optional[np.random.Generator] = None,
-    ):
+    ) -> None:
         """
         Initialize the Sparse EnKF.
         
@@ -703,22 +705,26 @@ class SparseEnKF:
         else:
             self.rng = np.random.default_rng()
         
-        # Initialize ensemble
-        self.ensemble = self.rng.randn(n_ensemble, n_state_dim)
+        # Initialize ensemble (local Generator — no global np.random)
+        self.ensemble = self.rng.standard_normal((n_ensemble, n_state_dim))
         self.weights = np.ones(n_ensemble) / n_ensemble
     
-    def predict(self, model_function, dt: float = 0.01) -> None:
+    def predict(
+        self,
+        model_function: Callable[[np.ndarray, float], np.ndarray],
+        dt: float = 0.01,
+    ) -> None:
         """
         Predict step using the model function.
         
         Args:
-            model_function: Function that advances the state
+            model_function: Advances state ``x`` by ``dt`` → next state.
             dt: Time step
         """
         for i in range(self.n_ensemble):
             self.ensemble[i] = model_function(self.ensemble[i], dt)
             # Add process noise
-            self.ensemble[i] += self.rng.randn(self.n_state_dim) * np.sqrt(0.1 * dt)
+            self.ensemble[i] += self.rng.standard_normal(self.n_state_dim) * np.sqrt(0.1 * dt)
     
     def update(self, observations: np.ndarray, observation_matrix: spmatrix) -> None:
         """
