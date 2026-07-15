@@ -1,11 +1,20 @@
+"""Archetype-based particle generation for micro-MASSIVE."""
+
+from __future__ import annotations
+
+from typing import Any, Optional
+
 import numpy as np
 
 from micro_massive.core.agent import SocialParticle, Strategy
 
 
 class ForerPersonalityGenerator:
-    def __init__(self):
-        self.archetypes = {
+    """Sample social particles from named archetypes with local RNG."""
+
+    def __init__(self, *, seed: Optional[int] = None, rng: Optional[np.random.Generator] = None) -> None:
+        self.rng = rng if rng is not None else np.random.default_rng(seed)
+        self.archetypes: dict[str, dict[str, Any]] = {
             "el_pegamento": {"charge": 0.8, "energy": 0.7, "strategy": Strategy.COOPERATE},
             "el_lider": {"charge": 0.6, "energy": 0.9, "strategy": Strategy.COOPERATE},
             "el_observador": {"charge": 0.0, "energy": 0.5, "strategy": Strategy.OBSERVE},
@@ -18,19 +27,34 @@ class ForerPersonalityGenerator:
             "el_pasivo_agresivo": {"charge": -0.6, "energy": 0.5, "strategy": Strategy.COMPETE},
         }
 
-    def generate_particle(self, id, archetype=None):
+    def generate_particle(
+        self,
+        id: int,
+        archetype: Optional[str] = None,
+    ) -> SocialParticle:
         if archetype and archetype in self.archetypes:
             params = self.archetypes[archetype]
         else:
-            archetype = np.random.choice(list(self.archetypes.keys()))
+            keys = list(self.archetypes.keys())
+            archetype = str(self.rng.choice(keys))
             params = self.archetypes[archetype]
-        charge = np.clip(params["charge"] + np.random.normal(0, 0.1), -1.0, 1.0)
-        energy = np.clip(params["energy"] + np.random.normal(0, 0.1), 0.0, 1.0)
-        p = SocialParticle(id=id, charge=charge, energy=energy, strategy=params["strategy"])
-        p.archetype = archetype
+        charge = float(np.clip(params["charge"] + self.rng.normal(0, 0.1), -1.0, 1.0))
+        energy = float(np.clip(params["energy"] + self.rng.normal(0, 0.1), 0.0, 1.0))
+        p = SocialParticle(
+            id=id,
+            charge=charge,
+            energy=energy,
+            strategy=params["strategy"],
+            rng=self.rng,
+        )
+        p.archetype = archetype  # type: ignore[attr-defined]
         return p
 
-    def generate_group(self, n_particles, archetype_distribution=None):
+    def generate_group(
+        self,
+        n_particles: int,
+        archetype_distribution: Optional[dict[str, float]] = None,
+    ) -> list[SocialParticle]:
         if archetype_distribution is None:
             archetype_distribution = {
                 "el_pegamento": 0.1,
@@ -45,9 +69,9 @@ class ForerPersonalityGenerator:
                 "el_pasivo_agresivo": 0.05,
             }
         archetypes = list(archetype_distribution.keys())
-        probabilities = list(archetype_distribution.values())
-        probabilities = np.array(probabilities) / sum(probabilities)
+        probabilities = np.asarray(list(archetype_distribution.values()), dtype=float)
+        probabilities = probabilities / probabilities.sum()
         return [
-            self.generate_particle(i, np.random.choice(archetypes, p=probabilities))
+            self.generate_particle(i, str(self.rng.choice(archetypes, p=probabilities)))
             for i in range(n_particles)
         ]
