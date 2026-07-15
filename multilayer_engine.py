@@ -329,6 +329,48 @@ def multi_potential_gradient(x: np.ndarray) -> np.ndarray:
 # ============================================================
 
 @njit
+def _multilayer_langevin_step_core(
+    x_vec:        np.ndarray,
+    layers_flat:  np.ndarray,
+    layer_weights: np.ndarray,
+    theta_matrix: np.ndarray,
+    coupling:     float,
+    dt:           float,
+    x_min:        float,
+    x_max:        float,
+    noise:        np.ndarray,
+) -> np.ndarray:
+    """Numba core of Euler-Maruyama multilayer step (noise pre-sampled)."""
+    N, Kdim = x_vec.shape
+    L = layers_flat.shape[0]
+
+    social_force = np.zeros((N, Kdim))
+    for ell in range(L):
+        w = layer_weights[ell]
+        for i in range(N):
+            s = 0.0
+            for j in range(N):
+                s += layers_flat[ell, i, j] * x_vec[j, COL_OPINION]
+            social_force[i, COL_OPINION] += coupling * w * s
+
+    grad_U = multi_potential_gradient(x_vec)
+    x_new = x_vec + dt * (-grad_U + social_force) + theta_matrix * _STOCHASTIC_SCALE * noise * np.sqrt(dt)
+
+    for i in range(N):
+        v = x_new[i, COL_OPINION]
+        if v < x_min:
+            x_new[i, COL_OPINION] = x_min
+        elif v > x_max:
+            x_new[i, COL_OPINION] = x_max
+        for k in range(1, Kdim):
+            if x_new[i, k] < 0.0:
+                x_new[i, k] = 0.0
+            elif x_new[i, k] > 1.0:
+                x_new[i, k] = 1.0
+
+    return x_new
+
+
 def multilayer_langevin_step(
     x_vec:        np.ndarray,
     layers_flat:  np.ndarray,
@@ -345,6 +387,8 @@ def multilayer_langevin_step(
 
     Ecuación: dx_i = (-∇U + Σ_ℓ w_ℓ F_ℓ(x)) dt + θ_i · η_i · √dt
 
+    Noise is sampled with a local Generator (never process-global RNG).
+
     Args:
         x_vec:         Estado actual (N, K).
         layers_flat:   Matrices de adyacencia apiladas (L, N, N).
@@ -354,47 +398,27 @@ def multilayer_langevin_step(
         dt:            Paso de tiempo.
         x_min:         Mínimo del rango (opinión).
         x_max:         Máximo del rango (opinión).
+        rng:           Optional NumPy Generator for reproducibility.
 
     Returns:
         Estado actualizado (N, K) con opinión recortada a [x_min, x_max]
         y las demás dimensiones recortadas a [0, 1].
     """
-    N, Kdim = x_vec.shape
-    L = layers_flat.shape[0]
-
-    # Fuerza social multicapa: Σ_ℓ w_ℓ · A_ℓ · x[:,0]
-    social_force = np.zeros((N, Kdim))
-    for ell in range(L):
-        w = layer_weights[ell]
-        for i in range(N):
-            s = 0.0
-            for j in range(N):
-                s += layers_flat[ell, i, j] * x_vec[j, COL_OPINION]
-            social_force[i, COL_OPINION] += coupling * w * s
-
-    # Gradiente del potencial multidimensional
-    grad_U = multi_potential_gradient(x_vec)
-
-    # Ruido gaussiano modulado por theta
-    noise = rng.standard_normal((N, Kdim)) if rng is not None else np.random.randn(N, Kdim)
-
-    # Actualización: Euler-Maruyama
-    x_new = x_vec + dt * (-grad_U + social_force) + theta_matrix * _STOCHASTIC_SCALE * noise * np.sqrt(dt)
-
-    # Recortar al rango válido
-    for i in range(N):
-        v = x_new[i, COL_OPINION]
-        if v < x_min:
-            x_new[i, COL_OPINION] = x_min
-        elif v > x_max:
-            x_new[i, COL_OPINION] = x_max
-        for k in range(1, Kdim):
-            if x_new[i, k] < 0.0:
-                x_new[i, k] = 0.0
-            elif x_new[i, k] > 1.0:
-                x_new[i, k] = 1.0
-
-    return x_new
+    x_arr = np.asarray(x_vec, dtype=np.float64)
+    n, kdim = x_arr.shape
+    _rng = rng if rng is not None else np.random.default_rng()
+    noise = np.asarray(_rng.standard_normal((n, kdim)), dtype=np.float64)
+    return _multilayer_langevin_step_core(
+        x_arr,
+        np.asarray(layers_flat, dtype=np.float64),
+        np.asarray(layer_weights, dtype=np.float64),
+        np.asarray(theta_matrix, dtype=np.float64),
+        float(coupling),
+        float(dt),
+        float(x_min),
+        float(x_max),
+        noise,
+    )
 
 
 # ============================================================

@@ -654,7 +654,8 @@ def _langevin_step_masked(
     drift[:, _COL_OPINION] += social_op
 
     # Ruido gaussiano modulado por theta
-    noise = rng.standard_normal((M_active, K)) if rng is not None else np.random.randn(M_active, K)
+    _rng = rng if rng is not None else np.random.default_rng()
+    noise = _rng.standard_normal((M_active, K))
 
     # Actualización Euler-Maruyama
     x_new = x.copy()
@@ -744,7 +745,8 @@ def _langevin_step_gpu(
     for ell, w in enumerate(layer_weights):
         social_force[:, _COL_OPINION] += coupling * w * (layers_flat[ell] @ x[:, _COL_OPINION])
     grad_U = multi_potential_gradient(x)
-    noise = rng.standard_normal((M, K)) if rng is not None else np.random.randn(M, K)
+    _rng = rng if rng is not None else np.random.default_rng()
+    noise = _rng.standard_normal((M, K))
     x_new = (
         x
         + dt * (-grad_U + social_force)

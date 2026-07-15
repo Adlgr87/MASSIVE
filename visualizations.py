@@ -2,27 +2,38 @@ import networkx as nx
 import plotly.graph_objects as go
 import numpy as np
 
-def generate_social_network_viz(opinion_mean, confianza, amalgama=False, n_nodes=80, is_bipolar=False):
+def generate_social_network_viz(
+    opinion_mean,
+    confianza,
+    amalgama=False,
+    n_nodes=80,
+    is_bipolar=False,
+    seed=None,
+):
     """
     Genera una visualización de Plotly de una topología de red sintética
     que representa visualmente el estado macroscópico del simulador MASSIVE.
+
+    Args:
+        seed: Optional RNG seed for reproducible layouts/samples.
     """
     G = nx.Graph()
     opinions = []
+    rng = np.random.default_rng(seed)
     
     # Controlamos la dispersión basada en la confianza y polarización implícita
     # Si la opinión está muy al extremo y la confianza es baja, la red suele estar fracturada
     polarizacion_inferida = 1.0 - confianza if not amalgama else 0.2
 
     for i in range(n_nodes):
-        if np.random.rand() < polarizacion_inferida and not amalgama:
+        if rng.random() < polarizacion_inferida and not amalgama:
             # Comportamiento fragmentado polarizado
-            extremo = 1.0 if np.random.rand() > 0.5 else 0.0
+            extremo = 1.0 if rng.random() > 0.5 else 0.0
             if is_bipolar: extremo = 1.0 if extremo > 0.5 else -1.0
-            op = np.random.normal(loc=extremo, scale=0.15)
+            op = rng.normal(loc=extremo, scale=0.15)
         else:
             # Comportamiento de consenso normal
-            op = np.random.normal(loc=opinion_mean, scale=max(0.05, (1.0 - confianza) * 0.4))
+            op = rng.normal(loc=opinion_mean, scale=max(0.05, (1.0 - confianza) * 0.4))
         
         if is_bipolar:
             op = np.clip(op, -1.0, 1.0)
@@ -39,7 +50,7 @@ def generate_social_network_viz(opinion_mean, confianza, amalgama=False, n_nodes
     op_arr = np.array(opinions)
     diffs = np.abs(op_arr[:, None] - op_arr[None, :])
     probs = np.exp(-diffs * (5.0 * (1.1 - confianza))) * 0.15
-    rng_matrix = np.random.rand(n_nodes, n_nodes)
+    rng_matrix = rng.random((n_nodes, n_nodes))
     mask = np.triu(rng_matrix < probs, k=1)
     G.add_edges_from(zip(*np.where(mask)))
                 
