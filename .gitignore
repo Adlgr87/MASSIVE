@@ -17,6 +17,15 @@ reports/benchmarks/baseline_v*/
 landscapes_cache.db
 massive_run.log
 *.log
+.coverage
+htmlcov/
+.mypy_cache/
+.pytest_cache/
+
+# Local Factbook dumps (prefer fixtures under tests/ or data/factbook/*.example)
+data/factbook/*_raw.json
+data/factbook/*_test.json
+!data/factbook/.gitkeep
 
 # SOTA roadmap artifacts (regenerated on each run)
 reports/sota_v0_seed*/

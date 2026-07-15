@@ -23,6 +23,8 @@ DEFAULT_TARGETS = [
     "massive_core/diagnostics",
     "massive_core/data_assimilation",
     "massive_core/analysis",
+    "massive_core/physics",
+    "massive_core/metalearning",
     "massive_core/numerics/steppers.py",
     "massive_core/numerics/solvers.py",
     "massive_core/numerics/stability.py",

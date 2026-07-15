@@ -58,15 +58,14 @@ python scripts/todo_triage.py
 
 ## FASE 5+ — post-workflow backlog
 
-See **`docs/BACKLOG_POST_WORKFLOW.md`** for the prioritized backlog and mini-workflow.
+See **`docs/BACKLOG_POST_WORKFLOW.md`** (implementable B1–B20 closed or deferred/owner).
 
-- B1–B3: Intervention validator, experiments refresh, focused tests
-- B4: type-hint / mypy slice (`scripts/typecheck_slice.py`, numerics+config+diagnostics+assimilation)
+Highlights: typecheck slice + CI, ENV_VARS, rate-limit file backend, rotating logs,
+repro fixtures, profile_hotspot, deprecation warnings on root wrappers.
 
 ## Deferred / owner-side
 
-- Broader type-hint pass across all of `massive_core/`
-- Profile-guided deep performance work
 - Full Stability* file consolidation (high risk)
+- Profile-driven deep perf / full multilayer Langevin Rust port
 - MutaLambda nested layout / benches (owner-side)
-- Raising line coverage to a hard 30% gate (tooling ready; expand tests incrementally)
+- Hard CI coverage ≥30% gate (informational snapshot in CI)

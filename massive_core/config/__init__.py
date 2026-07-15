@@ -7,6 +7,12 @@ Exports:
 """
 
 from massive_core.config.logging_setup import configure_logging, get_logger
+from massive_core.config.rate_limit import (
+    FileRateLimiter,
+    InMemoryRateLimiter,
+    RateLimiter,
+    build_rate_limiter,
+)
 from massive_core.config.scientific import ScientificRuntimeConfig
 from massive_core.config.settings import (
     AppSettings,
@@ -27,4 +33,8 @@ __all__ = [
     "clear_settings_cache",
     "configure_logging",
     "get_logger",
+    "RateLimiter",
+    "InMemoryRateLimiter",
+    "FileRateLimiter",
+    "build_rate_limiter",
 ]

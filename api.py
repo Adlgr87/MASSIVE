@@ -2,9 +2,7 @@ from __future__ import annotations
 
 import os
 import tempfile
-import time
 import logging
-from collections import defaultdict
 from typing import Optional
 
 from fastapi import FastAPI, UploadFile, File, HTTPException, Depends, Header, Request
@@ -60,24 +58,36 @@ app.add_middleware(
 )
 
 
-# ── Simple in-process rate limit ──────────────────────────────────────
+# ── Rate limit (memory default; file backend for multi-worker) ────────
 _RATE_LIMIT = int(
     os.getenv(
         "MASSIVE_RATE_LIMIT_PER_MIN",
         str(_app_settings.rate_limit_per_min if _app_settings else 60),
     )
 )
-_hits: dict[str, list[float]] = defaultdict(list)
+try:
+    from massive_core.config import build_rate_limiter
+
+    _rate_limiter = build_rate_limiter(
+        backend=os.getenv(
+            "MASSIVE_RATE_LIMIT_BACKEND",
+            getattr(_app_settings, "rate_limit_backend", None) if _app_settings else "memory",
+        ),
+        path=os.getenv(
+            "MASSIVE_RATE_LIMIT_PATH",
+            getattr(_app_settings, "rate_limit_path", None) if _app_settings else None,
+        ),
+    )
+except Exception:  # pragma: no cover
+    from massive_core.config.rate_limit import InMemoryRateLimiter
+
+    _rate_limiter = InMemoryRateLimiter()
 
 
 def _rate_limit(request: Request) -> None:
     ip = request.client.host if request.client else "unknown"
-    now = time.time()
-    window = _hits[ip]
-    _hits[ip] = [t for t in window if now - t < 60.0]
-    if len(_hits[ip]) >= _RATE_LIMIT:
+    if not _rate_limiter.allow(ip, _RATE_LIMIT):
         raise HTTPException(status_code=429, detail="Rate limit exceeded")
-    _hits[ip].append(now)
 
 
 # ── Upload constraints ────────────────────────────────────────────────

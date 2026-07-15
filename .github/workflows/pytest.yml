@@ -78,3 +78,12 @@ jobs:
       - name: Full pytest
         run: |
           PYTHONHASHSEED=42 python -m pytest tests/ -q --tb=line
+      - name: Coverage snapshot (informational)
+        continue-on-error: true
+        run: |
+          pip install "pytest-cov>=5.0"
+          PYTHONHASHSEED=42 python -m pytest tests/test_opt_phase5.py tests/test_opt_phase5_b4.py \
+            tests/test_opt_phase5_closeout.py tests/test_engine_reproducibility.py \
+            --cov=massive_core.config --cov=massive_core.numerics.steppers \
+            --cov=massive_core.data_assimilation --cov=services \
+            --cov-report=term-missing:skip-covered -q
