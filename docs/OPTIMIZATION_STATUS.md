@@ -56,10 +56,16 @@ python scripts/todo_triage.py
 | FASE 3 | #71 | opt-phase3-medium |
 | FASE 4 | (this) | opt-phase4-low |
 
+## FASE 5+ — post-workflow backlog
+
+See **`docs/BACKLOG_POST_WORKFLOW.md`** for the prioritized backlog and mini-workflow.
+
+First slice (B1–B3): Intervention validator fix, experiments refresh, focused coverage tests.
+
 ## Deferred / owner-side
 
 - Broader type-hint pass across all of `massive_core/`
 - Profile-guided deep performance work
 - Full Stability* file consolidation (high risk)
-- MutaLambda nested layout / experiments refresh
+- MutaLambda nested layout / benches (owner-side)
 - Raising line coverage to a hard 30% gate (tooling ready; expand tests incrementally)
