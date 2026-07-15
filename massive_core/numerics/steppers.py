@@ -77,6 +77,22 @@ class EulerMaruyamaStepper:
 
     method = "euler_maruyama"
 
+    def __init__(
+        self,
+        *,
+        seed: int | None = None,
+        rng: np.random.Generator | None = None,
+    ) -> None:
+        """Create a stepper with a local RNG for noise fallbacks.
+
+        Args:
+            seed: Optional seed when ``rng`` is not provided.
+            rng: Optional NumPy Generator. Prefer supplying ``noise`` per step
+                for fully external control of stochasticity.
+        """
+
+        self.rng = rng if rng is not None else np.random.default_rng(seed)
+
     def step(
         self,
         state: Array,
@@ -110,7 +126,11 @@ class EulerMaruyamaStepper:
         if diffusion is not None:
             sigma = diffusion(state_arr) if callable(diffusion) else diffusion
             sigma_arr = np.asarray(sigma, dtype=float) * np.ones_like(state_arr)
-            noise_arr = np.asarray(noise, dtype=float) if noise is not None else np.random.randn(*state_arr.shape)
+            noise_arr = (
+                np.asarray(noise, dtype=float)
+                if noise is not None
+                else self.rng.standard_normal(state_arr.shape)
+            )
             update = update + sigma_arr * noise_arr * np.sqrt(dt)
         if bounds is not None:
             update = np.clip(update, bounds[0], bounds[1])
