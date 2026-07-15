@@ -11,12 +11,6 @@ Tracks `workflow_MASSIVE_optimization.md` against `main`.
 | 1.3 Consolidate Stability* classes | **Partial** | Canonical import: `massive_core.analysis`. Physics/sparse variants kept (different roles). Full file move deferred (high risk). |
 | 1.4 SyntaxWarning in tests | **Done** | raw string match in `tests/test_contracts.py` |
 
-## Verify
-
-```bash
-PYTHONHASHSEED=42 python -m pytest tests/ -q
-```
-
 ## FASE 2 — ALTA
 
 | Fix | Status | Notes |
@@ -26,6 +20,25 @@ PYTHONHASHSEED=42 python -m pytest tests/ -q
 | 2.3 Google docstrings | **Done (public services + rng)** | Service layer fully documented |
 | 2.4 TODO triage | **Done (tool)** | `scripts/todo_triage.py` — core tree currently clean |
 
+## FASE 3 — MEDIA
+
+| Fix | Status | Notes |
+|-----|--------|-------|
+| 3.1 `config/` package | **Done** | `config.py` → `massive_core/config/` with `ScientificRuntimeConfig` re-export for BC |
+| 3.2 AppSettings + YAML | **Done** | `settings.py` + `defaults.yaml`; env overrides |
+| 3.3 Logging setup | **Done** | `logging_setup.py`; wired in `api.py` |
+| 3.4 micro_massive RNG | **Done** | `seed`/`rng` on agent, influence, orchestrator, forer |
+| 3.5 Naming policy | **Done** | `docs/NAMING_CONVENTIONS.md` — no mass rename of `step`/`to_dict` |
+| 3.6 API CORS / rate limit | **Done** | Driven by `get_app_settings()` with env override |
+
+## FASE 4 — BAJA (slice included)
+
+| Fix | Status | Notes |
+|-----|--------|-------|
+| 4.1 Config-driven defaults | **Done (slice)** | YAML + AppSettings for sim defaults, CORS, rate limit |
+| 4.2 Broader type-hint pass | **Deferred** | Beyond public services; continue incrementally |
+| 4.3 Deep perf (beyond len) | **Deferred** | Profile-driven; no speculative rewrites |
+
 ## Verify
 
 ```bash
@@ -33,8 +46,8 @@ PYTHONHASHSEED=42 python -m pytest tests/ -q
 python scripts/todo_triage.py
 ```
 
-## Next (FASE 3)
+## Remaining (optional / later)
 
 - Broader type-hint pass on `massive_core/`
-- Remaining micro_massive global RNG
-- Performance micro-optimizations beyond len()
+- Profile-guided performance work
+- MutaLambda nested layout (owner-side)

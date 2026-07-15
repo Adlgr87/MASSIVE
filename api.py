@@ -31,9 +31,23 @@ async def get_api_key(api_key: Optional[str] = Header(None, alias="X-API-Key")):
     return api_key
 
 
+# ── App settings (YAML defaults + env overrides) ─────────────────────
+try:
+    from massive_core.config import configure_logging, get_app_settings
+
+    configure_logging()
+    _app_settings = get_app_settings()
+except Exception:  # pragma: no cover - fallback if config package unavailable
+    _app_settings = None
+
 # ── CORS (no wildcard when credentials are enabled) ───────────────────
-_cors_env = os.getenv("MASSIVE_CORS_ORIGINS", "http://localhost:1234,http://localhost:3000")
-_cors_origins = [o.strip() for o in _cors_env.split(",") if o.strip() and o.strip() != "*"]
+_cors_env = os.getenv("MASSIVE_CORS_ORIGINS", "")
+if _cors_env.strip():
+    _cors_origins = [o.strip() for o in _cors_env.split(",") if o.strip() and o.strip() != "*"]
+elif _app_settings is not None:
+    _cors_origins = list(_app_settings.cors_origins)
+else:
+    _cors_origins = ["http://localhost:1234", "http://localhost:3000"]
 if not _cors_origins:
     _cors_origins = ["http://localhost:1234", "http://localhost:3000"]
 
@@ -47,7 +61,12 @@ app.add_middleware(
 
 
 # ── Simple in-process rate limit ──────────────────────────────────────
-_RATE_LIMIT = int(os.getenv("MASSIVE_RATE_LIMIT_PER_MIN", "60"))
+_RATE_LIMIT = int(
+    os.getenv(
+        "MASSIVE_RATE_LIMIT_PER_MIN",
+        str(_app_settings.rate_limit_per_min if _app_settings else 60),
+    )
+)
 _hits: dict[str, list[float]] = defaultdict(list)
 
 

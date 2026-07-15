@@ -1,0 +1,20 @@
+# MASSIVE application defaults (not engine physics constants)
+app:
+  name: MASSIVE
+  env: development
+  log_level: INFO
+  cors_origins:
+    - http://localhost:1234
+    - http://localhost:3000
+  rate_limit_per_min: 60
+  max_upload_mb: 10
+
+simulation:
+  default_steps: 50
+  default_seed: 42
+  train_ratio: 0.7
+
+logging:
+  level: INFO
+  format: "%(asctime)s | %(name)-28s | %(levelname)-8s | %(message)s"
+  datefmt: "%H:%M:%S"
