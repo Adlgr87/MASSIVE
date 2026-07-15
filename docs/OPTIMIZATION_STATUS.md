@@ -17,9 +17,24 @@ Tracks `workflow_MASSIVE_optimization.md` against `main`.
 PYTHONHASHSEED=42 python -m pytest tests/ -q
 ```
 
-## Next (FASE 2)
+## FASE 2 — ALTA
 
-- Type hints gradual (public APIs)
-- `len()` in hot loops
-- Google docstrings on public surface
-- Triage TODOs
+| Fix | Status | Notes |
+|-----|--------|-------|
+| 2.1 Type hints (public surface) | **Done (slice 1)** | Services, `rng.py`, `forecast/targets.py`; `mypy.ini` gradual |
+| 2.2 `len()` in loops | **Done (core hot paths)** | energy JIT, app animation, perturbation_theory |
+| 2.3 Google docstrings | **Done (public services + rng)** | Service layer fully documented |
+| 2.4 TODO triage | **Done (tool)** | `scripts/todo_triage.py` — core tree currently clean |
+
+## Verify
+
+```bash
+PYTHONHASHSEED=42 python -m pytest tests/ -q
+python scripts/todo_triage.py
+```
+
+## Next (FASE 3)
+
+- Broader type-hint pass on `massive_core/`
+- Remaining micro_massive global RNG
+- Performance micro-optimizations beyond len()

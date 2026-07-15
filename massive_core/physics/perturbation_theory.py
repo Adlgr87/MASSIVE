@@ -336,7 +336,8 @@ class EquilibriumPerturbationSolver:
                                 state: Optional[Array] = None) -> list[ParameterSensitivity]:
         """Analyse sensitivity for all parameters simultaneously."""
         results: list[ParameterSensitivity] = []
-        for i in range(len(nominal_values)):
+        n_params = int(np.asarray(nominal_values).shape[0])
+        for i in range(n_params):
             result = self.analyze_parameter_sensitivity(
                 i, nominal_values[i], perturbation_fraction, state,
             )

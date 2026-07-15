@@ -1688,6 +1688,7 @@ with tab5:
         with m4:
             st.metric("Polarización (proxy)", f"{polar_proxy[selected_idx]:.3f}")
 
+        n_anim_steps = len(steps)
         fig_anim = go.Figure(
             data=[
                 go.Scatter(x=[steps[0]], y=[opinions[0]], name="Opinión", line=dict(color="#5ccfe6", width=2)),
@@ -1703,7 +1704,7 @@ with tab5:
                     ],
                     name=str(i),
                 )
-                for i in range(len(steps))
+                for i in range(n_anim_steps)
             ],
         )
         fig_anim.add_hline(y=neutro, line_dash="dot", line_color="#3d5166")
@@ -1741,7 +1742,7 @@ with tab5:
                         "method": "animate",
                         "args": [[str(i)], {"frame": {"duration": 0, "redraw": True}, "mode": "immediate"}],
                     }
-                    for i in range(len(steps))
+                    for i in range(n_anim_steps)
                 ],
             }],
         )
