@@ -3,13 +3,77 @@ from __future__ import annotations
 import os
 import tempfile
 import logging
-from typing import Optional
+from typing import Any, Dict, Literal, Optional
 
 from fastapi import FastAPI, UploadFile, File, HTTPException, Depends, Header, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import APIKeyHeader
+from pydantic import BaseModel, Field
 
 log = logging.getLogger("massive.api")
+
+# ── /api/run request / response models ───────────────────────────────
+
+_SUPPORTED_ENGINES = Literal["scalar", "multilayer", "massive"]
+
+
+class ResolvedRunSpec(BaseModel):
+    """Validated simulation specification consumed by the Execution Gateway.
+
+    This is the contract between SIM AI's Execution Gateway node and the
+    MASSIVE API.  All fields must be resolved (no ``None`` ambiguity) before
+    posting.  The ``params`` sub-dict is forwarded verbatim to the engine
+    selected by ``engine``.
+
+    Args:
+        spec_id: Opaque identifier issued by the Optimization Planner.
+        engine: Which MASSIVE engine to invoke.
+            ``"scalar"``      → ``simular`` (13-model scalar dynamics)
+            ``"multilayer"``  → ``MultilayerEngine`` (3-layer sociodemographic)
+            ``"massive"``     → ``MassiveSimEngine`` (LOD / event-driven)
+        params: Engine-specific keyword arguments.  For ``"scalar"`` these
+            map directly to ``run_scalar_simulation`` kwargs
+            (``estado_inicial``, ``escenario``, ``pasos``, ``config``).
+        seed: RNG seed for reproducibility.  Injected into ``params.config``
+            automatically when ``engine == "scalar"``.
+    """
+
+    model_config = {"extra": "forbid"}
+
+    spec_id: Optional[str] = None
+    engine: _SUPPORTED_ENGINES = "scalar"
+    params: Dict[str, Any] = Field(default_factory=dict)
+    seed: int = Field(42, ge=0)
+
+
+class RunReceipt(BaseModel):
+    """Structured response returned by ``POST /api/run``.
+
+    Args:
+        sim_id: Unique identifier for this simulation run.
+        spec_id: Echo of the ``ResolvedRunSpec.spec_id`` that triggered this run.
+        status: ``"success"`` or ``"failed"``.
+        started_at: ISO-8601 UTC timestamp when execution began.
+        finished_at: ISO-8601 UTC timestamp when execution ended.
+        seed_used: The seed value that was passed to the engine.
+        engine: The engine that was invoked.
+        summary: Aggregate metrics dict returned by ``resumen_historial``, or
+            ``None`` on failure.
+        checkpoint_path: Relative path of the saved checkpoint file, or
+            ``None`` if persistence failed or the run failed.
+        error: Machine-readable error category string on failure, else ``None``.
+    """
+
+    sim_id: str
+    spec_id: Optional[str] = None
+    status: Literal["success", "failed"]
+    started_at: str
+    finished_at: str
+    seed_used: int
+    engine: str
+    summary: Optional[Dict[str, Any]] = None
+    checkpoint_path: Optional[str] = None
+    error: Optional[str] = None
 
 app = FastAPI(title="MASSIVE UIL API", version="1.0.0")
 
@@ -213,6 +277,36 @@ async def api_simulate(
             "summary": result.get("summary"),
             "n_steps": len(result.get("history") or []),
         }
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise _public_error(exc)
+
+
+@app.post("/api/run", response_model=RunReceipt)
+async def api_run(
+    request: Request,
+    spec: ResolvedRunSpec,
+    api_key: Optional[str] = Depends(get_api_key),
+):
+    """Execute a validated ``ResolvedRunSpec`` and return a ``RunReceipt``.
+
+    This endpoint is the Execution Gateway for the SIM AI multi-agent workflow.
+    It is the only endpoint authorised to invoke MASSIVE simulation engines.
+
+    - Accepts a ``ResolvedRunSpec`` (JSON body validated by Pydantic).
+    - Dispatches to the correct engine via ``services.simulation_service``.
+    - Saves a checkpoint to ``reports/<sim_id>.json`` before returning.
+    - Always returns a structured ``RunReceipt``; simulation errors are
+      captured and surfaced as ``status="failed"`` with an ``error`` field —
+      stack traces are never forwarded to the caller.
+    """
+    _rate_limit(request)
+    try:
+        from services.simulation_service import run_from_spec
+
+        receipt = run_from_spec(spec.model_dump())
+        return receipt
     except HTTPException:
         raise
     except Exception as exc:
