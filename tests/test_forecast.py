@@ -4,7 +4,7 @@ from copy import deepcopy
 
 from forecast import TemporalConfig, forecast, apply_intervention, compare_scenarios
 from forecast.scenarios import ScenarioSpec
-from schemas import Intervention
+from massive.core.schemas import Intervention
 
 
 def _sample_historical() -> list[dict]:
