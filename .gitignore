@@ -29,3 +29,9 @@ data/factbook/*_test.json
 
 # SOTA roadmap artifacts (regenerated on each run)
 reports/sota_v0_seed*/
+
+# Generated site files
+/site/
+
+# Validation reports
+reports/validation/local/
