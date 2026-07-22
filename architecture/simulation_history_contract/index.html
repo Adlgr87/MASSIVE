@@ -1,0 +1,1855 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="MASSIVE — Hybrid social dynamics simulator. Numerical core + LLM as regime selector.">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>MASSIVE — Historial de simulación como contrato implícito - MASSIVE Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#massive-historial-de-simulacion-como-contrato-implicito" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="MASSIVE Documentation" class="md-header__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MASSIVE Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              MASSIVE — Historial de simulación como contrato implícito
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="MASSIVE Documentation" class="md-nav__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    MASSIVE Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../README_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spanish Version
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation (PVU-BS)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Validation (PVU-BS)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/PVU_MASSIVE_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/PVU_MASSIVE_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocolo (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/preregistration_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registration (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/preregistration_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registro (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/validation_report_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report template (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/validation_report_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plantilla de reporte (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#proposito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Propósito
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-tesis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Tesis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-forma-general-del-historial" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Forma general del historial
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Forma general del historial">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tipo-observable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tipo observable
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#convencion-observable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Convención observable
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#productores-observados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Productores observados
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-campos-minimos-observables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Campos mínimos observables
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#31-opinion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1. opinion
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.1. opinion">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#estado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#evidencia-de-consumo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidencia de consumo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regla-contractual" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regla contractual
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#32-estado-base-social" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2. Estado base social
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.2. Estado base social">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#evidencia-de-consumo_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidencia de consumo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#regla-contractual_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regla contractual
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-metadatos-estructurales-de-ejecucion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Metadatos estructurales de ejecución
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#41-_paso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1. _paso
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.1. _paso">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#uso-observado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Uso observado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#papel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Papel
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#42-_regla" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2. _regla
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.2. _regla">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#uso-observado_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Uso observado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#papel_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Papel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importancia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Importancia
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#43-_regla_nombre" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3. _regla_nombre
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.3. _regla_nombre">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#uso-observado_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Uso observado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#papel_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Papel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importancia_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Importancia
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#44-_razon" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4. _razon
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.4. _razon">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#uso-observado_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Uso observado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#papel_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Papel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importancia_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Importancia
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#45-_rango" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5. _rango
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.5. _rango">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#uso-observado_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Uso observado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#papel_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Papel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importancia_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Importancia
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-campos-analiticosdiagnosticos-opcionales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Campos analíticos/diagnósticos opcionales
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#51-ews" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1. ews
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5.1. ews">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#forma-observable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Forma observable
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#consumers-observados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consumers observados
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importancia_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Importancia
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#52-tda_change" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2. tda_change
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5.2. tda_change">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#consumers-observados_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consumers observados
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importancia_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Importancia
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#53-_fraccion_adoptantes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3. _fraccion_adoptantes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5.3. _fraccion_adoptantes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#consumers-observados_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consumers observados
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importancia_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Importancia
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#54-_sim_grupo_a-_sim_grupo_b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4. _sim_grupo_a, _sim_grupo_b
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5.4. _sim_grupo_a, _sim_grupo_b">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#consumers-observados_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consumers observados
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#papel_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Papel
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#55-_nash_sigma_a-_nash_sigma_b" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.5. _nash_sigma_a, _nash_sigma_b
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5.5. _nash_sigma_a, _nash_sigma_b">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#consumers-observados_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consumers observados
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#papel_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Papel
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#56-_bayes_uncertainty" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.6. _bayes_uncertainty
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5.6. _bayes_uncertainty">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#consumers-observados_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consumers observados
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#papel_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Papel
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#57-_sir_s-_sir_i-_sir_r" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.7. _sir_S, _sir_I, _sir_R
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5.7. _sir_S, _sir_I, _sir_R">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#consumers-observados_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Consumers observados
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#papel_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Papel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#importancia_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Importancia
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-campos-anadidos-fuera-del-historial-puro" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Campos añadidos fuera del historial puro
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Campos añadidos fuera del historial puro">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ejemplo-observado-en-apppy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejemplo observado en app.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implicacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implicación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-consumers-por-categoria" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Consumers por categoría
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#71-ui-visualizacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1. UI / visualización
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#72-forecast" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2. Forecast
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#73-social-architect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3. Social Architect
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#74-benchmarks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.4. Benchmarks
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#75-training-cfc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.5. Training CfC
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#76-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.6. Tests
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-clasificacion-contractual-de-campos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Clasificación contractual de campos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-campos-estructurales-duros" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A. Campos estructurales duros
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#b-campos-del-estado-social-base" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B. Campos del estado social base
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#c-campos-diagnosticos-opcionales-pero-ya-consumidos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C. Campos diagnósticos opcionales pero ya consumidos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-reglas-derivadas-para-consolidacion-futura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Reglas derivadas para consolidación futura
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Conclusión
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="massive-historial-de-simulacion-como-contrato-implicito">MASSIVE — Historial de simulación como contrato implícito</h1>
+<h2 id="proposito">Propósito</h2>
+<p>Documentar la estructura observable del historial devuelto por:
+- <code>simular</code>
+- <code>run_with_schedule</code></p>
+<p>Este documento implementa el <strong>Slice 3 — Historial de simulación como contrato implícito</strong>.</p>
+<p>Su objetivo es hacer explícito un hecho arquitectónico importante:</p>
+<blockquote>
+<p>gran parte de la sinergia actual de MASSIVE depende de listas de <code>dict</code> compartidas entre dominios, no de modelos tipados formales.</p>
+</blockquote>
+<hr />
+<h2 id="1-tesis">1. Tesis</h2>
+<p>El historial de simulación es hoy un <strong>contrato de datos transversal</strong> entre:
+- núcleo de simulación,
+- UI,
+- social architect,
+- forecast,
+- benchmarks,
+- training CfC,
+- y tests.</p>
+<p>Aunque no esté formalizado como DTO Pydantic, actúa como una interfaz estable de facto.</p>
+<p>Por eso, cualquier intento futuro de tiparlo, reducirlo o renombrar campos debe tratarse como un cambio contractual.</p>
+<hr />
+<h2 id="2-forma-general-del-historial">2. Forma general del historial</h2>
+<h3 id="tipo-observable">Tipo observable</h3>
+<p><code>list[dict]</code></p>
+<h3 id="convencion-observable">Convención observable</h3>
+<ul>
+<li>cada elemento representa un estado por paso temporal</li>
+<li>el primer elemento suele corresponder al estado inicial</li>
+<li>los elementos posteriores agregan metadatos del régimen y diagnósticos</li>
+</ul>
+<h3 id="productores-observados">Productores observados</h3>
+<ul>
+<li><code>simular</code></li>
+<li><code>run_with_schedule</code></li>
+</ul>
+<hr />
+<h2 id="3-campos-minimos-observables">3. Campos mínimos observables</h2>
+<p>Estos son los campos cuya presencia puede considerarse mínima o altamente esperada en la práctica.</p>
+<h2 id="31-opinion">3.1. <code>opinion</code></h2>
+<h3 id="estado">Estado</h3>
+<p>Campo esencial.</p>
+<h3 id="evidencia-de-consumo">Evidencia de consumo</h3>
+<ul>
+<li><code>app.py</code> construye trayectorias con <code>h["opinion"]</code></li>
+<li><code>benchmarks/runner.py</code> extrae opiniones desde historial</li>
+<li><code>cfc_trainer.py</code> construye trayectorias con <code>h["opinion"]</code></li>
+<li><code>tests/test_simulator.py</code>, <code>tests/test_forecast.py</code>, <code>tests/test_social_architect.py</code> lo usan explícitamente</li>
+</ul>
+<h3 id="regla-contractual">Regla contractual</h3>
+<p>No puede faltar en un historial válido.</p>
+<hr />
+<h2 id="32-estado-base-social">3.2. Estado base social</h2>
+<p>Campos observados como parte del estado de simulación principal:
+- <code>propaganda</code>
+- <code>confianza</code>
+- <code>opinion_grupo_a</code>
+- <code>opinion_grupo_b</code>
+- <code>pertenencia_grupo</code></p>
+<h3 id="evidencia-de-consumo_1">Evidencia de consumo</h3>
+<ul>
+<li><code>app.py</code> usa <code>historial[-1]["confianza"]</code> para visualización</li>
+<li><code>app.py</code> grafica o consulta <code>pertenencia_grupo</code></li>
+<li>múltiples reglas del simulador se apoyan en estos campos para evolucionar el estado</li>
+</ul>
+<h3 id="regla-contractual_1">Regla contractual</h3>
+<p>No todos son obligatorios para cada consumer, pero forman parte del shape esperado del estado social base.</p>
+<hr />
+<h2 id="4-metadatos-estructurales-de-ejecucion">4. Metadatos estructurales de ejecución</h2>
+<p>Estos campos no son puramente “analíticos”; ayudan a interpretar el historial como proceso dinámico.</p>
+<h2 id="41-_paso">4.1. <code>_paso</code></h2>
+<h3 id="uso-observado">Uso observado</h3>
+<ul>
+<li><code>app.py</code> filtra pasos para logs</li>
+<li><code>app.py</code> arma timelines y eventos de cambio de régimen</li>
+</ul>
+<h3 id="papel">Papel</h3>
+<p>Identificador temporal explícito del paso.</p>
+<hr />
+<h2 id="42-_regla">4.2. <code>_regla</code></h2>
+<h3 id="uso-observado_1">Uso observado</h3>
+<ul>
+<li><code>cfc_trainer.py</code> usa <code>_regla</code> para construir labels de régimen</li>
+</ul>
+<h3 id="papel_1">Papel</h3>
+<p>ID de la regla aplicada.</p>
+<h3 id="importancia">Importancia</h3>
+<p>Alta para training y análisis interno.</p>
+<hr />
+<h2 id="43-_regla_nombre">4.3. <code>_regla_nombre</code></h2>
+<h3 id="uso-observado_2">Uso observado</h3>
+<ul>
+<li><code>app.py</code> calcula regla dominante</li>
+<li><code>app.py</code> muestra distribución de reglas</li>
+<li><code>app.py</code> construye tabla de cambios de régimen</li>
+<li><code>tests/test_simulator.py</code> verifica su presencia en pasos no iniciales</li>
+</ul>
+<h3 id="papel_2">Papel</h3>
+<p>Nombre legible del régimen aplicado.</p>
+<h3 id="importancia_1">Importancia</h3>
+<p>Muy alta para UI y trazabilidad.</p>
+<hr />
+<h2 id="44-_razon">4.4. <code>_razon</code></h2>
+<h3 id="uso-observado_3">Uso observado</h3>
+<ul>
+<li><code>app.py</code> detecta pasos CfC por prefijo de razón</li>
+<li><code>app.py</code> lo muestra en logs y eventos de régimen</li>
+</ul>
+<h3 id="papel_3">Papel</h3>
+<p>Justificación de selección del régimen.</p>
+<h3 id="importancia_2">Importancia</h3>
+<p>Alta para explicabilidad operativa.</p>
+<hr />
+<h2 id="45-_rango">4.5. <code>_rango</code></h2>
+<h3 id="uso-observado_4">Uso observado</h3>
+<ul>
+<li>aparece en exportes y trazabilidad</li>
+</ul>
+<h3 id="papel_4">Papel</h3>
+<p>Persistencia del rango de opinión configurado.</p>
+<h3 id="importancia_3">Importancia</h3>
+<p>Media, pero útil para auditoría y exportación.</p>
+<hr />
+<h2 id="5-campos-analiticosdiagnosticos-opcionales">5. Campos analíticos/diagnósticos opcionales</h2>
+<p>Estos campos no siempre están presentes, pero existen consumers reales cuando aparecen.</p>
+<h2 id="51-ews">5.1. <code>ews</code></h2>
+<h3 id="forma-observable">Forma observable</h3>
+<pre><code class="language-python">{
+  &quot;metrics&quot;: {
+    &quot;variance&quot;: [...],
+    &quot;autocorr&quot;: [...],
+    &quot;skewness&quot;: [...],
+  },
+  &quot;flags&quot;: {
+    &quot;high_variance&quot;: bool,
+    &quot;high_autocorr&quot;: bool,
+    &quot;high_skewness&quot;: bool,
+  }
+}
+</code></pre>
+<h3 id="consumers-observados">Consumers observados</h3>
+<ul>
+<li><code>app.py</code> muestra warnings EWS</li>
+<li><code>forecast/engine.py</code> extrae métricas EWS desde el estado</li>
+<li><code>tests/test_forecast.py</code> usa esa estructura explícitamente</li>
+</ul>
+<h3 id="importancia_4">Importancia</h3>
+<p>Alta para forecast y señales tempranas.</p>
+<hr />
+<h2 id="52-tda_change">5.2. <code>tda_change</code></h2>
+<h3 id="consumers-observados_1">Consumers observados</h3>
+<ul>
+<li><code>app.py</code> muestra alerta de cambio topológico</li>
+</ul>
+<h3 id="importancia_5">Importancia</h3>
+<p>Media. Diagnóstico avanzado, pero ya consumido por UI.</p>
+<hr />
+<h2 id="53-_fraccion_adoptantes">5.3. <code>_fraccion_adoptantes</code></h2>
+<h3 id="consumers-observados_2">Consumers observados</h3>
+<ul>
+<li><code>app.py</code> lo muestra en logs</li>
+<li><code>app.py</code> lo usa como proxy de contagio en el centro analítico</li>
+</ul>
+<h3 id="importancia_6">Importancia</h3>
+<p>Media-alta cuando se usa el modelo de umbral heterogéneo.</p>
+<hr />
+<h2 id="54-_sim_grupo_a-_sim_grupo_b">5.4. <code>_sim_grupo_a</code>, <code>_sim_grupo_b</code></h2>
+<h3 id="consumers-observados_3">Consumers observados</h3>
+<ul>
+<li><code>app.py</code> los muestra en logs</li>
+</ul>
+<h3 id="papel_5">Papel</h3>
+<p>Trazabilidad de homofilia/similitud.</p>
+<hr />
+<h2 id="55-_nash_sigma_a-_nash_sigma_b">5.5. <code>_nash_sigma_a</code>, <code>_nash_sigma_b</code></h2>
+<h3 id="consumers-observados_4">Consumers observados</h3>
+<ul>
+<li><code>app.py</code> muestra <code>_nash_sigma_a</code> en logs</li>
+<li><code>extended_models.py</code> los produce</li>
+</ul>
+<h3 id="papel_6">Papel</h3>
+<p>Trazabilidad del estado estratégico del modelo Nash.</p>
+<hr />
+<h2 id="56-_bayes_uncertainty">5.6. <code>_bayes_uncertainty</code></h2>
+<h3 id="consumers-observados_5">Consumers observados</h3>
+<ul>
+<li><code>app.py</code> lo muestra en logs</li>
+<li><code>extended_models.py</code> lo produce</li>
+</ul>
+<h3 id="papel_7">Papel</h3>
+<p>Incertidumbre del modelo bayesiano.</p>
+<hr />
+<h2 id="57-_sir_s-_sir_i-_sir_r">5.7. <code>_sir_S</code>, <code>_sir_I</code>, <code>_sir_R</code></h2>
+<h3 id="consumers-observados_6">Consumers observados</h3>
+<ul>
+<li><code>app.py</code> muestra <code>_sir_I</code> y <code>_sir_R</code> en logs</li>
+<li><code>app.py</code> usa <code>_sir_I</code> como proxy de contagio en el centro analítico</li>
+<li><code>extended_models.py</code> los produce</li>
+</ul>
+<h3 id="papel_8">Papel</h3>
+<p>Estado epidemiológico/opinión-contagio del modelo SIR.</p>
+<h3 id="importancia_7">Importancia</h3>
+<p>Alta dentro de ese régimen.</p>
+<hr />
+<h2 id="6-campos-anadidos-fuera-del-historial-puro">6. Campos añadidos fuera del historial puro</h2>
+<p>Hay una distinción importante:
+- el historial en sí es <code>list[dict]</code>
+- algunos consumers crean un <strong>estado extendido</strong> a partir del último elemento del historial</p>
+<h3 id="ejemplo-observado-en-apppy">Ejemplo observado en <code>app.py</code></h3>
+<p>Se construye:
+- <code>temporal_state = dict(historial[-1])</code>
+- luego se agregan:
+  - <code>historial</code>
+  - <code>config</code></p>
+<h3 id="implicacion">Implicación</h3>
+<p>El contrato no es solo “cada item del historial”, sino también el patrón operativo:
+- tomar el último estado,
+- enriquecerlo con <code>historial</code> y <code>config</code>,
+- pasarlo a forecast u otros análisis.</p>
+<hr />
+<h2 id="7-consumers-por-categoria">7. Consumers por categoría</h2>
+<h2 id="71-ui-visualizacion">7.1. UI / visualización</h2>
+<p><code>app.py</code> consume:
+- <code>opinion</code>
+- <code>confianza</code>
+- <code>pertenencia_grupo</code>
+- <code>_paso</code>
+- <code>_regla_nombre</code>
+- <code>_razon</code>
+- <code>ews</code>
+- <code>tda_change</code>
+- <code>_fraccion_adoptantes</code>
+- <code>_sim_grupo_a</code>
+- <code>_sim_grupo_b</code>
+- <code>_nash_sigma_a</code>
+- <code>_bayes_uncertainty</code>
+- <code>_sir_I</code>
+- <code>_sir_R</code></p>
+<h2 id="72-forecast">7.2. Forecast</h2>
+<p>Consume desde el estado enriquecido:
+- <code>opinion</code>
+- <code>historial</code>
+- <code>config</code>
+- <code>confianza</code>
+- <code>ews</code></p>
+<h2 id="73-social-architect">7.3. Social Architect</h2>
+<p><code>evaluar_resultado()</code> consume principalmente:
+- <code>opinion</code></p>
+<p>Pero los flujos más amplios dependen de <code>run_with_schedule()</code> y de la compatibilidad general del historial.</p>
+<h2 id="74-benchmarks">7.4. Benchmarks</h2>
+<p><code>benchmarks/runner.py</code> consume:
+- <code>opinion</code></p>
+<h2 id="75-training-cfc">7.5. Training CfC</h2>
+<p><code>cfc_trainer.py</code> consume:
+- <code>opinion</code>
+- <code>_regla</code></p>
+<h2 id="76-tests">7.6. Tests</h2>
+<p>Hay tests que fijan explícitamente o implícitamente:
+- <code>opinion</code>
+- <code>_regla_nombre</code>
+- estructuras <code>ews</code>
+- semántica del historial como lista de estados</p>
+<hr />
+<h2 id="8-clasificacion-contractual-de-campos">8. Clasificación contractual de campos</h2>
+<h2 id="a-campos-estructurales-duros">A. Campos estructurales duros</h2>
+<p>Cambiar estos es muy riesgoso:
+- <code>opinion</code>
+- <code>_regla_nombre</code>
+- <code>_regla</code>
+- <code>_paso</code>
+- <code>_razon</code></p>
+<h2 id="b-campos-del-estado-social-base">B. Campos del estado social base</h2>
+<p>Riesgo alto si se alteran:
+- <code>propaganda</code>
+- <code>confianza</code>
+- <code>opinion_grupo_a</code>
+- <code>opinion_grupo_b</code>
+- <code>pertenencia_grupo</code></p>
+<h2 id="c-campos-diagnosticos-opcionales-pero-ya-consumidos">C. Campos diagnósticos opcionales pero ya consumidos</h2>
+<p>Riesgo medio-alto si se renombran o desaparecen sin transición:
+- <code>ews</code>
+- <code>tda_change</code>
+- <code>_fraccion_adoptantes</code>
+- <code>_sim_grupo_a</code>
+- <code>_sim_grupo_b</code>
+- <code>_nash_sigma_a</code>
+- <code>_bayes_uncertainty</code>
+- <code>_sir_S</code>
+- <code>_sir_I</code>
+- <code>_sir_R</code></p>
+<hr />
+<h2 id="9-reglas-derivadas-para-consolidacion-futura">9. Reglas derivadas para consolidación futura</h2>
+<ol>
+<li>No tipar ni reemplazar el historial sin inventario completo de consumers.</li>
+<li>Si se crea un modelo formal para el historial, debe coexistir primero con el shape legacy.</li>
+<li>No renombrar metadatos estructurales (<code>_regla_nombre</code>, <code>_paso</code>, <code>_razon</code>, <code>_regla</code>) sin wrappers o adaptación.</li>
+<li>Los campos diagnósticos opcionales ya son parte del contrato práctico porque la UI y forecast los consumen.</li>
+<li>El patrón <code>dict(historial[-1]) + historial + config</code> debe considerarse parte del flujo contractual.</li>
+</ol>
+<hr />
+<h2 id="10-conclusion">10. Conclusión</h2>
+<p>El historial de simulación en MASSIVE no es un detalle de implementación. Es un <strong>bus de datos implícito</strong> entre múltiples capas del sistema.</p>
+<p>Aunque su forma actual sea flexible y basada en <code>dict</code>, ya opera como contrato transversal.</p>
+<p>Por ello, la consolidación segura debe:
+- reconocer ese contrato,
+- documentarlo,
+- y solo después considerar tipificación o reestructuración gradual.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.expand", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

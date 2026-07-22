@@ -1,0 +1,1178 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="MASSIVE — Hybrid social dynamics simulator. Numerical core + LLM as regime selector.">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Plan orgánico para extensiones matemáticas, algorítmicas y físicas de MASSIVE - MASSIVE Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#plan-organico-para-extensiones-matematicas-algoritmicas-y-fisicas-de-massive" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="MASSIVE Documentation" class="md-header__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MASSIVE Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Plan orgánico para extensiones matemáticas, algorítmicas y físicas de MASSIVE
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="MASSIVE Documentation" class="md-nav__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    MASSIVE Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../README_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spanish Version
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation (PVU-BS)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Validation (PVU-BS)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/PVU_MASSIVE_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/PVU_MASSIVE_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocolo (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/preregistration_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registration (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/preregistration_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registro (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/validation_report_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report template (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/validation_report_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plantilla de reporte (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-diagnostico-del-estado-actual" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Diagnóstico del estado actual
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-principios-de-diseno" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Principios de diseño
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-arquitectura-objetivo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Arquitectura objetivo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-priorizacion-tecnica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Priorización técnica
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-workflow-de-implementacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Workflow de implementación
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Workflow de implementación">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fase-0-preparacion-arquitectonica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fase 0 — Preparación arquitectónica
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fase-1-nucleo-numerico-y-observacional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fase 1 — Núcleo numérico y observacional
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fase-2-diagnostico-de-transiciones-y-fisica-estadistica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fase 2 — Diagnóstico de transiciones y física estadística
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fase-3-transferibilidad-red-desconocida-multiescala-y-meta-regimen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fase 3 — Transferibilidad: red desconocida, multiescala y meta-régimen
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fase-4-extensiones-avanzadas-pinns-perturbacion-e-hidrodinamica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fase 4 — Extensiones avanzadas: PINNs, perturbación e hidrodinámica
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-workflow-de-ramas-commits-y-revision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Workflow de ramas, commits y revisión
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-decisiones-de-implementacion-clave" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Decisiones de implementación clave
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Decisiones de implementación clave">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-stiffness-y-seleccion-adaptativa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Stiffness y selección adaptativa
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-enkf-con-covarianza-correcta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 EnKF con covarianza correcta
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#73-estadistica-numericamente-estable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.3 Estadística numéricamente estable
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#74-network-reconstruction-como-inferencia-no-verdad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.4 Network reconstruction como inferencia, no verdad
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-riesgos-y-mitigaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Riesgos y mitigaciones
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-definition-of-done-por-extension" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Definition of Done por extensión
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-orden-recomendado-de-ejecucion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Orden recomendado de ejecución
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="plan-organico-para-extensiones-matematicas-algoritmicas-y-fisicas-de-massive">Plan orgánico para extensiones matemáticas, algorítmicas y físicas de MASSIVE</h1>
+<p>Este documento convierte la propuesta de extensiones en un plan de integración incremental para MASSIVE. El objetivo no es insertar clases aisladas, sino crear una capa científica coherente que pueda activarse gradualmente sin romper el motor actual, la UI, el Arquitecto Social ni los tests existentes.</p>
+<h2 id="1-diagnostico-del-estado-actual">1. Diagnóstico del estado actual</h2>
+<p>MASSIVE ya contiene una base funcional y útil:</p>
+<ul>
+<li>Un motor de energía social con dinámica de Langevin en una dimensión de opinión.</li>
+<li>Un motor multicapa con estado vectorial 5D y actualización estocástica Euler-Maruyama.</li>
+<li>Un selector CfC opcional que nunca bloquea el comportamiento LLM/heurístico.</li>
+<li>Validación, benchmarks, tests y documentación inicial.</li>
+</ul>
+<p>La brecha principal es que el núcleo numérico está muy acoplado a un único esquema explícito. Eso limita estabilidad, análisis formal, transferibilidad a dominios rígidos y asimilación de datos reales. La integración debe preservar el comportamiento actual como <code>baseline</code> y agregar capacidades nuevas mediante módulos opt-in.</p>
+<h2 id="2-principios-de-diseno">2. Principios de diseño</h2>
+<ol>
+<li><strong>Compatibilidad hacia atrás:</strong> ninguna simulación existente debe cambiar si el usuario no selecciona una extensión nueva.</li>
+<li><strong>Capas pequeñas y testeables:</strong> cada capacidad nueva debe exponer una API mínima y tener tests unitarios antes de conectarse a la UI.</li>
+<li><strong>Separación entre dinámica y diagnóstico:</strong> los solvers actualizan estados; los analizadores miden estabilidad, bifurcación, caos o transición de fase sin mutar el sistema.</li>
+<li><strong>Degradación elegante:</strong> dependencias pesadas como PyTorch avanzado, statsmodels o scipy sparse deben ser opcionales cuando sea viable.</li>
+<li><strong>Escalabilidad explícita:</strong> todo algoritmo O(N³) debe tener alternativa aproximada para redes grandes.</li>
+<li><strong>Trazabilidad científica:</strong> cada extensión debe declarar supuestos, límites numéricos y métricas de validación.</li>
+</ol>
+<h2 id="3-arquitectura-objetivo">3. Arquitectura objetivo</h2>
+<p>La integración propuesta crea paquetes científicos alrededor del núcleo existente:</p>
+<pre><code class="language-text">massive_core/
+  numerics/
+    solvers.py              # Euler-Maruyama, Milstein, RK4, implícitos, adaptativo
+    stability.py            # Jacobianos, radio espectral, Lyapunov, condición
+    diagnostics.py          # errores, tolerancias, eventos de inestabilidad
+  dynamical_systems/
+    bifurcation.py          # diagramas, puntos críticos, tipping probability
+  physics/
+    statistical_mechanics.py
+    perturbation_theory.py
+    hydrodynamics.py
+  data_assimilation/
+    kalman.py               # EnKF y operadores de observación
+  network_inference/
+    reconstruct.py          # correlación, TE, Granger, MI
+  multiscale/
+    hierarchical_time.py    # micro/meso/macro dynamics
+  neural_physics/
+    pinns.py                # PINNs opcionales con PyTorch
+  metalearning/
+    regime_selector.py      # selector meta-regimen sobre CfC/LLM/heurístico
+</code></pre>
+<p>El punto de conexión con el código actual debe ser un contrato común:</p>
+<pre><code class="language-python">class DynamicsStepper:
+    def step(self, state, dt, drift, diffusion=None, context=None):
+        ...
+</code></pre>
+<p>Así, <code>energy_engine.py</code> y <code>multilayer_engine.py</code> pueden mantener Euler-Maruyama por defecto, pero delegar en un <code>DynamicsStepper</code> cuando se configure otro solver.</p>
+<h2 id="4-priorizacion-tecnica">4. Priorización técnica</h2>
+<table>
+<thead>
+<tr>
+<th>Fase</th>
+<th>Extensión</th>
+<th>Prioridad</th>
+<th>Motivo</th>
+<th>Dependencias</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>Contratos internos y feature flags</td>
+<td>Crítica</td>
+<td>Evita acoplar clases nuevas al motor actual</td>
+<td>Ninguna</td>
+</tr>
+<tr>
+<td>1</td>
+<td>Solvers adaptativos</td>
+<td>Alta</td>
+<td>Mayor estabilidad y precisión con impacto directo</td>
+<td>NumPy/SciPy</td>
+</tr>
+<tr>
+<td>1</td>
+<td>StabilityAnalyzer</td>
+<td>Alta</td>
+<td>Permite decidir cuándo cambiar solver o reducir <code>dt</code></td>
+<td>NumPy/SciPy</td>
+</tr>
+<tr>
+<td>1</td>
+<td>EnKF</td>
+<td>Alta</td>
+<td>Conecta simulación con observaciones reales</td>
+<td>NumPy</td>
+</tr>
+<tr>
+<td>2</td>
+<td>BifurcationAnalyzer</td>
+<td>Alta</td>
+<td>Formaliza transiciones de fase y tipping points</td>
+<td>StabilityAnalyzer</td>
+</tr>
+<tr>
+<td>2</td>
+<td>StatisticalMechanicsEngine</td>
+<td>Media</td>
+<td>Entropía, energía libre y susceptibilidad para métricas globales</td>
+<td>NumPy</td>
+</tr>
+<tr>
+<td>2</td>
+<td>MultiTimescaleEngine</td>
+<td>Media</td>
+<td>Mejora realismo temporal sin requerir datos externos</td>
+<td>Solvers</td>
+</tr>
+<tr>
+<td>3</td>
+<td>NetworkReconstructor</td>
+<td>Media</td>
+<td>Aumenta transferibilidad cuando la red real no se conoce</td>
+<td>SciPy/statsmodels opcional</td>
+</tr>
+<tr>
+<td>3</td>
+<td>MetaRegimeSelector</td>
+<td>Media</td>
+<td>Evoluciona CfC hacia selección con aprendizaje de rendimiento</td>
+<td>PyTorch opcional</td>
+</tr>
+<tr>
+<td>4</td>
+<td>PINNs</td>
+<td>Media</td>
+<td>Útil para datos escasos, pero requiere diseño de pérdidas</td>
+<td>PyTorch</td>
+</tr>
+<tr>
+<td>4</td>
+<td>PerturbationTheorySolver</td>
+<td>Baja</td>
+<td>Potente pero menos urgente para el producto base</td>
+<td>Solvers/Stability</td>
+</tr>
+<tr>
+<td>4</td>
+<td>AgentHydrodynamics</td>
+<td>Baja</td>
+<td>Aproximación continua útil para N grande, más experimental</td>
+<td>SciPy</td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-workflow-de-implementacion">5. Workflow de implementación</h2>
+<h3 id="fase-0-preparacion-arquitectonica">Fase 0 — Preparación arquitectónica</h3>
+<p><strong>Objetivo:</strong> preparar el proyecto para extensiones sin alterar resultados actuales.</p>
+<ol>
+<li>Crear paquetes vacíos con <code>__init__.py</code> bajo <code>massive_core/</code>.</li>
+<li>Definir <code>DynamicsStepper</code>, <code>DriftFunction</code>, <code>DiffusionFunction</code> y <code>NumericalDiagnostics</code>.</li>
+<li>Agregar configuración opt-in:</li>
+<li><code>solver: "euler_maruyama"</code> por defecto.</li>
+<li><code>enable_stability_diagnostics: false</code> por defecto.</li>
+<li><code>enable_data_assimilation: false</code> por defecto.</li>
+<li>Añadir tests de compatibilidad que comparen el motor actual contra el wrapper Euler-Maruyama.</li>
+</ol>
+<p><strong>Criterio de salida:</strong> todos los tests actuales pasan y el solver por defecto reproduce el comportamiento existente dentro de tolerancia estadística.</p>
+<h3 id="fase-1-nucleo-numerico-y-observacional">Fase 1 — Núcleo numérico y observacional</h3>
+<p><strong>Objetivo:</strong> entregar valor inmediato sin tocar la lógica sociológica de reglas.</p>
+<ol>
+<li>Implementar <code>massive_core/numerics/solvers.py</code>:</li>
+<li><code>EulerMaruyamaSolver</code> como baseline.</li>
+<li><code>MilsteinSolver</code> para SDEs con difusión derivable.</li>
+<li><code>RK4Solver</code> para drift determinista.</li>
+<li><code>AdaptiveSolver</code> con heurística de stiffness y control de paso.</li>
+<li>Implementar <code>massive_core/numerics/stability.py</code>:</li>
+<li>estimación de Jacobiano por diferencias finitas;</li>
+<li>radio espectral por power iteration;</li>
+<li>clasificación estable/marginal/inestable;</li>
+<li>estimador de Lyapunov máximo basado en divergencia de trayectorias.</li>
+<li>Implementar <code>massive_core/data_assimilation/kalman.py</code>:</li>
+<li>EnKF con covarianza de estado correcta <code>(state_dim, state_dim)</code>;</li>
+<li>operador de observación <code>H</code> configurable;</li>
+<li>inflación de ensemble y clipping opcional al rango de estado.</li>
+<li>Conectar solo mediante APIs programáticas, no UI todavía.</li>
+</ol>
+<p><strong>Criterio de salida:</strong> tests unitarios para precisión relativa, estabilidad de shapes y EnKF con observación sintética.</p>
+<h3 id="fase-2-diagnostico-de-transiciones-y-fisica-estadistica">Fase 2 — Diagnóstico de transiciones y física estadística</h3>
+<p><strong>Objetivo:</strong> convertir alertas cualitativas en métricas científicas explícitas.</p>
+<ol>
+<li>Implementar <code>BifurcationAnalyzer</code> con barrido de parámetros y clasificación por eigenvalores.</li>
+<li>Implementar tipping probability con advertencia explícita para ruido fuerte.</li>
+<li>Implementar entropía, función de partición estable con log-sum-exp, energía libre y susceptibilidad.</li>
+<li>Agregar un objeto <code>ScientificReport</code> serializable para que UI/API puedan mostrar:</li>
+<li>estabilidad lineal;</li>
+<li>radio espectral;</li>
+<li>Lyapunov máximo;</li>
+<li>entropía;</li>
+<li>susceptibilidad;</li>
+<li>puntos críticos detectados.</li>
+</ol>
+<p><strong>Criterio de salida:</strong> benchmarks pequeños con sistemas conocidos: punto fijo estable, oscilador simple y doble pozo.</p>
+<h3 id="fase-3-transferibilidad-red-desconocida-multiescala-y-meta-regimen">Fase 3 — Transferibilidad: red desconocida, multiescala y meta-régimen</h3>
+<p><strong>Objetivo:</strong> permitir usar MASSIVE en escenarios con datos parciales, múltiples escalas temporales y selección de régimen más autónoma.</p>
+<ol>
+<li>Implementar <code>MultiTimescaleEngine</code> como capa de drift adicional, no como sustituto del motor base.</li>
+<li>Implementar <code>NetworkReconstructor</code> en niveles:</li>
+<li>correlación como baseline obligatorio;</li>
+<li>mutual information y transfer entropy discretizada;</li>
+<li>Granger opcional si la dependencia está disponible.</li>
+<li>Extender CfC con <code>MetaRegimeSelector</code> de forma compatible:</li>
+<li>CfC actual permanece como fast path;</li>
+<li>meta-selector agrega historial de performance y recompensas;</li>
+<li>fallback a LLM/heurística se mantiene.</li>
+<li>Agregar datasets sintéticos para validar reconstrucción y selección de régimen.</li>
+</ol>
+<p><strong>Criterio de salida:</strong> reconstrucción supera baseline aleatorio en datos sintéticos y no degrada la latencia cuando está desactivada.</p>
+<h3 id="fase-4-extensiones-avanzadas-pinns-perturbacion-e-hidrodinamica">Fase 4 — Extensiones avanzadas: PINNs, perturbación e hidrodinámica</h3>
+<p><strong>Objetivo:</strong> añadir capacidades científicas avanzadas sin comprometer mantenimiento.</p>
+<ol>
+<li>Implementar PINNs como paquete opcional con tests marcados <code>pytest.mark.optional_torch</code>.</li>
+<li>Implementar teoría de perturbaciones solo para operadores bien condicionados y con regularización configurable.</li>
+<li>Implementar hidrodinámica de agentes como aproximación para N grande con documentación clara de validez.</li>
+<li>Publicar notebooks o ejemplos mínimos en documentación antes de exponerlos en UI.</li>
+</ol>
+<p><strong>Criterio de salida:</strong> ejemplos reproducibles y tests que se saltan limpiamente si faltan dependencias opcionales.</p>
+<h2 id="6-workflow-de-ramas-commits-y-revision">6. Workflow de ramas, commits y revisión</h2>
+<p>Para mantener cambios elegantes y auditables:</p>
+<ol>
+<li><strong>Una rama por fase:</strong> <code>feature/scientific-core-f0</code>, <code>feature/scientific-core-f1</code>, etc.</li>
+<li><strong>Un PR por capacidad vertical:</strong> por ejemplo, solver + tests + docs, no todos los módulos a la vez.</li>
+<li><strong>Orden de commit recomendado:</strong></li>
+<li>contratos y estructura;</li>
+<li>implementación mínima;</li>
+<li>tests;</li>
+<li>documentación;</li>
+<li>integración opcional con API/UI.</li>
+<li><strong>Regla de no regresión:</strong> antes de fusionar, ejecutar como mínimo:</li>
+<li><code>python -m pytest tests/test_massive_engine.py tests/test_multilayer.py tests/test_energy_core.py</code>;</li>
+<li><code>python -m pytest tests</code> en PRs de fase completa;</li>
+<li>benchmark pequeño si se toca integración numérica.</li>
+<li><strong>Revisión científica:</strong> cada PR debe incluir supuestos matemáticos, complejidad temporal y condiciones de fallo.</li>
+</ol>
+<h2 id="7-decisiones-de-implementacion-clave">7. Decisiones de implementación clave</h2>
+<h3 id="71-stiffness-y-seleccion-adaptativa">7.1 Stiffness y selección adaptativa</h3>
+<p>La heurística inicial debe usar métricas baratas:</p>
+<ul>
+<li><code>spectral_radius(J) * dt</code> para estabilidad explícita;</li>
+<li>norma relativa del drift para detectar explosión;</li>
+<li>reducción de <code>dt</code> si el estado propuesto sale masivamente del dominio válido;</li>
+<li>método implícito o paso menor cuando <code>spectral_radius(J) * dt &gt;= 1</code>.</li>
+</ul>
+<h3 id="72-enkf-con-covarianza-correcta">7.2 EnKF con covarianza correcta</h3>
+<p>El ensemble debe organizarse como <code>(n_ensemble, state_dim)</code>. La covarianza de estado debe calcularse como:</p>
+<pre><code class="language-python">X = ensemble - ensemble.mean(axis=0)
+P = X.T @ X / (n_ensemble - 1)
+</code></pre>
+<p>Esto evita el error común de producir una covarianza <code>(n_ensemble, n_ensemble)</code> que no puede combinarse correctamente con <code>H</code>.</p>
+<h3 id="73-estadistica-numericamente-estable">7.3 Estadística numéricamente estable</h3>
+<p>La energía libre y partición deben usar log-sum-exp:</p>
+<pre><code class="language-python">logZ = logsumexp(-beta * energy)
+F = -temperature * logZ
+</code></pre>
+<p>Esto evita underflow/overflow en temperaturas bajas o paisajes energéticos profundos.</p>
+<h3 id="74-network-reconstruction-como-inferencia-no-verdad">7.4 Network reconstruction como inferencia, no verdad</h3>
+<p>Todas las redes reconstruidas deben marcarse como estimadas y devolver intervalos, scores o pesos. No deben reemplazar silenciosamente la red configurada por el usuario.</p>
+<h2 id="8-riesgos-y-mitigaciones">8. Riesgos y mitigaciones</h2>
+<table>
+<thead>
+<tr>
+<th>Riesgo</th>
+<th>Mitigación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cambiar el comportamiento histórico del motor</td>
+<td>Mantener Euler-Maruyama como default y tests de compatibilidad</td>
+</tr>
+<tr>
+<td>Coste O(N³) en eigenvalores</td>
+<td>Power iteration, Lanczos o muestreo de subredes</td>
+</tr>
+<tr>
+<td>Dependencias pesadas</td>
+<td>Extras opcionales y tests con skip limpio</td>
+</tr>
+<tr>
+<td>API demasiado compleja</td>
+<td>Contrato único <code>DynamicsStepper</code> y objetos reporte serializables</td>
+</tr>
+<tr>
+<td>Métricas mal interpretadas como certezas</td>
+<td>Documentar supuestos, rangos de validez e incertidumbre</td>
+</tr>
+<tr>
+<td>Meta-learning inestable</td>
+<td>Modo sombra antes de activar decisiones automáticas</td>
+</tr>
+</tbody>
+</table>
+<h2 id="9-definition-of-done-por-extension">9. Definition of Done por extensión</h2>
+<p>Una extensión se considera lista cuando cumple:</p>
+<ul>
+<li>API pública documentada.</li>
+<li>Tests unitarios de shapes, límites y casos conocidos.</li>
+<li>Ejemplo mínimo de uso.</li>
+<li>Complejidad temporal documentada.</li>
+<li>Integración opt-in con configuración.</li>
+<li>No rompe tests existentes.</li>
+<li>Métricas serializables para UI/API si aplica.</li>
+</ul>
+<h2 id="10-orden-recomendado-de-ejecucion">10. Orden recomendado de ejecución</h2>
+<ol>
+<li><code>DynamicsStepper</code> + wrapper Euler-Maruyama.</li>
+<li><code>StabilityAnalyzer</code> mínimo.</li>
+<li><code>AdaptiveSolver</code> con Milstein/RK4 y control de paso.</li>
+<li><code>EnsembleKalmanFilter</code>.</li>
+<li><code>BifurcationAnalyzer</code> + <code>ScientificReport</code>.</li>
+<li><code>StatisticalMechanicsEngine</code>.</li>
+<li><code>MultiTimescaleEngine</code>.</li>
+<li><code>NetworkReconstructor</code>.</li>
+<li><code>MetaRegimeSelector</code> sobre CfC.</li>
+<li>PINNs, perturbación e hidrodinámica como módulos avanzados.</li>
+</ol>
+<p>Este orden maximiza impacto temprano, minimiza riesgo de regresión y deja las capacidades más experimentales para cuando el contrato científico ya esté estabilizado.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.expand", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

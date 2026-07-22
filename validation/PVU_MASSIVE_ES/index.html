@@ -1,0 +1,1523 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="MASSIVE — Hybrid social dynamics simulator. Numerical core + LLM as regime selector.">
+      
+      
+      
+      
+        <link rel="prev" href="../PVU_MASSIVE_EN/">
+      
+      
+        <link rel="next" href="../preregistration_template_EN/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Protocolo (ES) - MASSIVE Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#massive-protocolo-de-uso-validado-pvu-bs-espanol" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="MASSIVE Documentation" class="md-header__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MASSIVE Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Protocolo (ES)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="MASSIVE Documentation" class="md-nav__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    MASSIVE Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../README_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spanish Version
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation (PVU-BS)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Validation (PVU-BS)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PVU_MASSIVE_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocolo (ES)
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocolo (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-proposito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Propósito
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-definiciones-operativas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Definiciones Operativas
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Definiciones Operativas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-caso-independiente" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Caso Independiente
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-uso-de-cluster_id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Uso de cluster_id
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-variable-objetivo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Variable Objetivo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-division-train-validacion-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 División Train / Validación / Test
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-reglas-anti-leakage-anti-filtracion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Reglas Anti-Leakage (Anti-Filtración)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-criterio-estadistico" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Criterio Estadístico
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Criterio Estadístico">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-hipotesis-principal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Hipótesis Principal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-procedimiento-de-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Procedimiento de Test
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-tamanos-de-efecto-obligatorios-junto-con-p-valores" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Tamaños de Efecto (obligatorios junto con p-valores)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-criterios-de-aceptacion-por-nivel-pvu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Criterios de Aceptación (por nivel PVU)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-baselines-obligatorios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Baselines (obligatorios)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-chequeo-de-consistencia-llm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Chequeo de Consistencia LLM
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-requisitos-de-reproducibilidad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Requisitos de Reproducibilidad
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-como-correr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Cómo Correr
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-formato-de-archivos-de-caso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Formato de Archivos de Caso
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Formato de Archivos de Caso">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#columnas-de-timeseriescsv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Columnas de timeseries.csv
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#campos-requeridos-de-metajson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Campos requeridos de meta.json
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-glosario" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Glosario
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../preregistration_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registration (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../preregistration_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registro (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation_report_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report template (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation_report_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plantilla de reporte (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-proposito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Propósito
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-definiciones-operativas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Definiciones Operativas
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Definiciones Operativas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-caso-independiente" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Caso Independiente
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-uso-de-cluster_id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Uso de cluster_id
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-variable-objetivo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Variable Objetivo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-division-train-validacion-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 División Train / Validación / Test
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-reglas-anti-leakage-anti-filtracion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Reglas Anti-Leakage (Anti-Filtración)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-criterio-estadistico" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Criterio Estadístico
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Criterio Estadístico">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-hipotesis-principal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Hipótesis Principal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-procedimiento-de-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Procedimiento de Test
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-tamanos-de-efecto-obligatorios-junto-con-p-valores" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Tamaños de Efecto (obligatorios junto con p-valores)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-criterios-de-aceptacion-por-nivel-pvu" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Criterios de Aceptación (por nivel PVU)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-baselines-obligatorios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Baselines (obligatorios)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-chequeo-de-consistencia-llm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Chequeo de Consistencia LLM
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-requisitos-de-reproducibilidad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Requisitos de Reproducibilidad
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-como-correr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Cómo Correr
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-formato-de-archivos-de-caso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Formato de Archivos de Caso
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Formato de Archivos de Caso">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#columnas-de-timeseriescsv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Columnas de timeseries.csv
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#campos-requeridos-de-metajson" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Campos requeridos de meta.json
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-glosario" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Glosario
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="massive-protocolo-de-uso-validado-pvu-bs-espanol">MASSIVE — Protocolo de Uso Validado (PVU-BS) — Español</h1>
+<blockquote>
+<p><strong>Version:</strong> 1.0 · <strong>Estado:</strong> Activo<br />
+<strong>Versión en inglés:</strong> <a href="../PVU_MASSIVE_EN/">PVU_MASSIVE_EN.md</a></p>
+</blockquote>
+<hr />
+<h2 id="1-proposito">1. Propósito</h2>
+<p>El <strong>Protocolo de Uso Validado (PVU-BS)</strong> establece el estándar mínimo de evidencia requerido para afirmar que MASSIVE ofrece desempeño predictivo <em>validado</em> sobre datos reales de dinámica de opinión.<br />
+Distingue claramente entre:</p>
+<ul>
+<li><strong>Casos de muestra</strong> (<code>datasets/pvu_cases/sample_case_*</code>): datos sintéticos usados únicamente para verificar que el pipeline funciona correctamente. <strong>No se pueden derivar afirmaciones científicas de ellos.</strong></li>
+<li><strong>Validación real</strong>: N ≥ 10 casos independientes con conjuntos de prueba bloqueados, ejecutados bajo este protocolo.</li>
+</ul>
+<hr />
+<h2 id="2-definiciones-operativas">2. Definiciones Operativas</h2>
+<h3 id="21-caso-independiente">2.1 Caso Independiente</h3>
+<p>Un <strong>caso</strong> es la tupla <code>{red, serie_temporal, intervenciones, metadatos}</code> descrita en una carpeta de caso PVU.</p>
+<p>Dos casos se consideran <strong>independientes</strong> si se cumplen <strong>ambas</strong> condiciones:</p>
+<ol>
+<li><strong>No solapamiento de red:</strong> los conjuntos de nodos (usuarios/comunidades) comparten menos del 10 % de sus miembros, O las estructuras de grafo provienen de poblaciones genuinamente distintas.</li>
+<li><strong>No solapamiento temporal:</strong> sus ventanas temporales no coinciden con el mismo shock global no modelado (p.ej., una pandemia mundial).<br />
+   Si comparten un shock, deben compartir un <code>cluster_id</code> común en <code>meta.json</code> y la evaluación debe hacerse a <strong>nivel de cluster</strong> (un test DM por cluster, no por caso), corrigiendo el tamaño de muestra efectivo reducido.</li>
+</ol>
+<h3 id="22-uso-de-cluster_id">2.2 Uso de <code>cluster_id</code></h3>
+<p><code>cluster_id</code> agrupa casos afectados por el mismo confundidor estructural o temporal.<br />
+Reglas:</p>
+<ul>
+<li>Definir <code>cluster_id</code> en <code>meta.json</code> cuando los casos comparten plataforma, evento regional o ventana temporal superpuesta.</li>
+<li>Los tests estadísticos y tamaños de efecto se calculan <strong>por cluster</strong> cuando N_cluster &gt; 1; los resultados individuales se reportan como suplementarios.</li>
+<li>Las métricas a nivel de cluster son la media ponderada de métricas por caso (peso = N_test de cada caso).</li>
+</ul>
+<h3 id="23-variable-objetivo">2.3 Variable Objetivo</h3>
+<p>MASSIVE se valida sobre un <strong>objetivo compuesto</strong> que captura tanto el nivel como la dinámica de la polarización de opinión:</p>
+<table>
+<thead>
+<tr>
+<th>Componente</th>
+<th>Definición</th>
+<th>Métrica</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Índice de Polarización P(t)</strong></td>
+<td>Varianza de la distribución de opinión + fracción de agentes en extremos (</td>
+<td>opinion</td>
+</tr>
+<tr>
+<td><strong>Habilidad en Puntos de Giro (TPS)</strong></td>
+<td>Capacidad de predecir <em>cuándo</em> ocurre una transición de régimen (extremo local en P)</td>
+<td>Precisión, Recall, F1, Error Medio de Timing</td>
+</tr>
+</tbody>
+</table>
+<h3 id="24-division-train-validacion-test">2.4 División Train / Validación / Test</h3>
+<table>
+<thead>
+<tr>
+<th>División</th>
+<th>Fracción</th>
+<th>Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Train</td>
+<td>70 %</td>
+<td>Calibración del modelo, selección de parámetros</td>
+</tr>
+<tr>
+<td>Validación</td>
+<td>—</td>
+<td>(opcional) ajuste de hiperparámetros</td>
+</tr>
+<tr>
+<td>Test</td>
+<td>30 %</td>
+<td><strong>Bloqueado; no debe tocarse antes de la evaluación final</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-reglas-anti-leakage-anti-filtracion">3. Reglas Anti-Leakage (Anti-Filtración)</h2>
+<p>Las siguientes acciones constituyen <strong>filtración del test</strong> e invalidan la corrida de validación:</p>
+<ol>
+<li>Mirar métricas del test (incluso agregadas) antes de congelar la configuración del modelo.</li>
+<li>Ajustar prompts, temperatura, proveedor de modelo, reglas de régimen o cualquier parámetro <strong>después de ver resultados del test</strong>, incluso informalmente.</li>
+<li>Seleccionar o descartar casos <em>post-hoc</em> para mejorar los resultados reportados.</li>
+<li>Correr el modelo múltiples veces sobre el mismo conjunto de test y reportar la mejor corrida (salvo que se haga explícitamente un chequeo de consistencia LLM bajo § 6).</li>
+<li>Usar observaciones del test como contexto de entrenamiento en el prompt del LLM.</li>
+</ol>
+<p><strong>Registro:</strong> Un documento de pre-registro (ver <code>preregistration_template_ES.md</code>) debe commitearse al repositorio <strong>antes</strong> de romper el sello del test.</p>
+<hr />
+<h2 id="4-criterio-estadistico">4. Criterio Estadístico</h2>
+<h3 id="41-hipotesis-principal">4.1 Hipótesis Principal</h3>
+<blockquote>
+<p>MASSIVE produce un MAE significativamente menor en el conjunto de test bloqueado comparado con el baseline naive (persistencia del último valor), tras corrección Holm–Bonferroni.</p>
+</blockquote>
+<h3 id="42-procedimiento-de-test">4.2 Procedimiento de Test</h3>
+<ol>
+<li>Calcular predicciones de <strong>todos</strong> los baselines y MASSIVE sobre el split de test de <strong>cada</strong> caso.</li>
+<li>Para cada caso, ejecutar un <strong>test de Diebold–Mariano (DM)</strong> bilateral de MASSIVE vs cada baseline usando pérdida cuadrática.</li>
+<li>Recopilar los M p-valores crudos por caso (uno por baseline).</li>
+<li>Aplicar <strong>corrección Holm–Bonferroni</strong> sobre las M × N comparaciones (M baselines × N casos). Usar <code>benchmarks/metrics.py::holm_bonferroni</code>.</li>
+<li>Reportar tanto p-valores crudos como ajustados.</li>
+</ol>
+<h3 id="43-tamanos-de-efecto-obligatorios-junto-con-p-valores">4.3 Tamaños de Efecto (obligatorios junto con p-valores)</h3>
+<table>
+<thead>
+<tr>
+<th>Métrica</th>
+<th>Interpretación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ΔMAE = MAE_baseline − MAE_BS</td>
+<td>Mejora absoluta en MAE</td>
+</tr>
+<tr>
+<td>ΔRMSE</td>
+<td>Mejora absoluta en RMSE</td>
+</tr>
+<tr>
+<td>Lift de exactitud direccional</td>
+<td>Dir. acc. BS − dir. acc. naive</td>
+</tr>
+<tr>
+<td>TPS F1</td>
+<td>Balance Precisión–Recall en puntos de giro</td>
+</tr>
+</tbody>
+</table>
+<h3 id="44-criterios-de-aceptacion-por-nivel-pvu">4.4 Criterios de Aceptación (por nivel PVU)</h3>
+<table>
+<thead>
+<tr>
+<th>Nivel</th>
+<th>Min casos</th>
+<th>DM vs naive</th>
+<th>Tamaño de efecto</th>
+<th>TPS F1</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bronce</td>
+<td>10</td>
+<td>p_adj &lt; 0.05</td>
+<td>ΔMAE &gt; 0</td>
+<td>—</td>
+</tr>
+<tr>
+<td>Plata</td>
+<td>20</td>
+<td>p_adj &lt; 0.05 vs <strong>todos</strong> los baselines</td>
+<td>ΔMAE &gt; 5 %</td>
+<td>≥ 0.50</td>
+</tr>
+<tr>
+<td>Oro</td>
+<td>30</td>
+<td>p_adj &lt; 0.05 vs todos + replicación externa</td>
+<td>ΔMAE &gt; 10 %</td>
+<td>≥ 0.70</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-baselines-obligatorios">5. Baselines (obligatorios)</h2>
+<p>Todos los siguientes deben incluirse en cada corrida de validación:</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Nombre</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>B1</td>
+<td>Naive</td>
+<td>Último valor observado persistido para todos los pasos de forecast</td>
+</tr>
+<tr>
+<td>B2</td>
+<td>Media Móvil</td>
+<td>Media de las últimas 4 observaciones</td>
+</tr>
+<tr>
+<td>B3</td>
+<td>AR(1)</td>
+<td>Autorregresión de primer orden ajustada por MCO</td>
+</tr>
+<tr>
+<td>B4</td>
+<td>Régimen Aleatorio</td>
+<td>Paseo aleatorio con ruido calibrado desde el entrenamiento</td>
+</tr>
+</tbody>
+</table>
+<p>Implementados en <code>benchmarks/baselines.py</code>.</p>
+<hr />
+<h2 id="6-chequeo-de-consistencia-llm">6. Chequeo de Consistencia LLM</h2>
+<p>Cuando MASSIVE se corre en modo LLM:</p>
+<ol>
+<li>Correr el mismo forecast <strong>5 veces</strong> con distintas semillas aleatorias.</li>
+<li>Calcular el coeficiente de variación (CV = std / media) del MAE reportado entre corridas.</li>
+<li>Si CV &gt; 0.15 (15 %), marcar el resultado y reportarlo; no suprimirlo.</li>
+</ol>
+<hr />
+<h2 id="7-requisitos-de-reproducibilidad">7. Requisitos de Reproducibilidad</h2>
+<p>Cada corrida de validación debe producir y archivar:</p>
+<ul>
+<li><code>configs/pvu.yaml</code> (copia congelada con todos los parámetros).</li>
+<li><code>reports/validation/&lt;run_id&gt;/metrics.json</code> (métricas por caso).</li>
+<li><code>reports/validation/&lt;run_id&gt;/report.md</code> (resumen legible).</li>
+<li>SHA del commit del código.</li>
+<li>Versiones de paquetes Python (<code>pip freeze</code>).</li>
+<li>Proveedor LLM + nombre del modelo + temperatura (si modo LLM).</li>
+<li><code>PYTHONHASHSEED</code> y valor <code>--seed</code>.</li>
+</ul>
+<p>El runner (<code>benchmarks/runner.py</code>) escribe <code>metrics.json</code> y <code>report.md</code> automáticamente.</p>
+<hr />
+<h2 id="8-como-correr">8. Cómo Correr</h2>
+<pre><code class="language-bash"># Modo offline (sin clave de API — por defecto en CI):
+PYTHONHASHSEED=42 python -m benchmarks.runner \
+    --cases datasets/pvu_cases \
+    --offline \
+    --out reports/validation/ci \
+    --seed 42
+
+# Modo LLM (requiere OPENROUTER_API_KEY o OPENAI_API_KEY):
+PYTHONHASHSEED=42 python -m benchmarks.runner \
+    --cases datasets/pvu_cases \
+    --llm \
+    --out reports/validation/llm_run \
+    --seed 42
+</code></pre>
+<hr />
+<h2 id="9-formato-de-archivos-de-caso">9. Formato de Archivos de Caso</h2>
+<p>Cada caso vive en su propia subcarpeta bajo <code>datasets/pvu_cases/</code>:</p>
+<pre><code>sample_case_001/
+├── timeseries.csv        # requerido: columnas date, P (+ opcionales)
+├── interventions.json    # lista de {date, label, source}
+└── meta.json             # metadatos del caso
+</code></pre>
+<h3 id="columnas-de-timeseriescsv">Columnas de <code>timeseries.csv</code></h3>
+<table>
+<thead>
+<tr>
+<th>Columna</th>
+<th>Tipo</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>date</code></td>
+<td>string (ISO 8601)</td>
+<td>Fecha de observación</td>
+</tr>
+<tr>
+<td><code>P</code></td>
+<td>float [0, 1]</td>
+<td>Índice de polarización</td>
+</tr>
+<tr>
+<td><code>volume</code></td>
+<td>float (opcional)</td>
+<td>Proxy de volumen de actividad</td>
+</tr>
+</tbody>
+</table>
+<h3 id="campos-requeridos-de-metajson">Campos requeridos de <code>meta.json</code></h3>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Tipo</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>case_id</code></td>
+<td>string</td>
+<td>Identificador único</td>
+</tr>
+<tr>
+<td><code>domain</code></td>
+<td>string</td>
+<td>p.ej. <code>political_opinion</code></td>
+</tr>
+<tr>
+<td><code>source</code></td>
+<td>string</td>
+<td>Origen de datos (o <code>synthetic</code>)</td>
+</tr>
+<tr>
+<td><code>cluster_id</code></td>
+<td>string | null</td>
+<td>Cluster para tests agrupados</td>
+</tr>
+<tr>
+<td><code>license</code></td>
+<td>string</td>
+<td>Licencia de los datos</td>
+</tr>
+<tr>
+<td><code>note</code></td>
+<td>string</td>
+<td>Notas en texto libre</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="10-glosario">10. Glosario</h2>
+<table>
+<thead>
+<tr>
+<th>Término</th>
+<th>Definición</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PVU-BS</td>
+<td>Protocolo de Uso Validado — MASSIVE</td>
+</tr>
+<tr>
+<td>Test DM</td>
+<td>Test de Diebold–Mariano de igual exactitud predictiva</td>
+</tr>
+<tr>
+<td>Holm–Bonferroni</td>
+<td>Corrección escalonada para comparaciones múltiples</td>
+</tr>
+<tr>
+<td>TPS</td>
+<td>Habilidad en Puntos de Giro (F1 sobre extremos locales detectados)</td>
+</tr>
+<tr>
+<td>EWS</td>
+<td>Señal de Alerta Temprana (Desaceleración Crítica)</td>
+</tr>
+<tr>
+<td>Filtración de test</td>
+<td>Cualquier flujo de información del split de test al diseño del modelo</td>
+</tr>
+<tr>
+<td>Caso de muestra</td>
+<td>Caso sintético solo para pruebas del pipeline</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>Ver también: <a href="../preregistration_template_ES/">Plantilla de pre-registro</a> · <a href="../validation_report_template_ES/">Plantilla de reporte de validación</a></em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.expand", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
