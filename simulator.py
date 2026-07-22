@@ -49,8 +49,8 @@ from benchmarks.butterfly_diagnostic import run_butterfly_diagnostic_core
 from massive_engine import MassiveEngine
 from massive_core.rust_core import langevin_opinion_update_inplace
 from multilayer_engine import MultilayerEngine
-from schemas import GamePayoff
-from utility_logic import calculate_strategic_force
+from massive.core.schemas import GamePayoff
+from massive.core.utility_logic import calculate_strategic_force
 from llm_credentials import resolve_provider_api_key
 from empirical_calibration import (
     MASSIVE_EMPIRICAL_MASTER,
