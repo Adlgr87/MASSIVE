@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from intervention_optimizer import optimize_interventions
+from massive.core.intervention_optimizer import optimize_interventions
 from multilayer_engine import MultilayerEngine
 from social_architect import find_optimal_interventions
 from state_compression import compress_agent_states, decompress_agent_states
