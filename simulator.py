@@ -618,6 +618,10 @@ def regla_umbral_heterogeneo(estado: dict, params: dict, cfg: dict) -> dict:
     """
     Heterogeneous Threshold model based on Granovetter (1978).
     Thresholds are normally distributed, enabling social cascades.
+    
+    En contextos sociales reales, cuando la heterogeneidad es muy baja (std≈0),
+    el grupo se comporta como un bloque homogéneo - fenómeno observado en
+    comunidades altamente cohesionadas o regímenes autoritarios.
 
     Args:
         estado: Current state.
@@ -633,9 +637,13 @@ def regla_umbral_heterogeneo(estado: dict, params: dict, cfg: dict) -> dict:
     neutro  = _neutro(cfg)
     prop    = _aplicar_sesgo_confirmacion(estado["propaganda"], opinion, cfg)
 
+    # Evitar división por cero: std mínimo representa heterogeneidad basal inevitable
+    # En masas reales, siempre existe mínima variación individual (≥0.01)
+    std_efectivo = max(std, 0.01)
+    
     # Fracción de la población que ya superó su umbral personal
     # (modelado con CDF de la normal)
-    fraccion_adoptantes = 0.5 * (1 + erf((opinion - neutro - media + 0.5) / (std * np.sqrt(2))))
+    fraccion_adoptantes = 0.5 * (1 + erf((opinion - neutro - media + 0.5) / (std_efectivo * np.sqrt(2))))
     fraccion_adoptantes = float(np.clip(fraccion_adoptantes, 0.0, 1.0))
 
     # La fracción de adoptantes genera presión social adicional
@@ -713,14 +721,28 @@ def calculate_ews_metrics(window_data: list) -> dict:
     returns per-variable arrays for variance, lag-1 autocorrelation,
     and skewness. The scalar time series is reshaped to (T, 1) so
     the return dict always contains 1-D arrays of length 1.
+    
+    En sistemas sociales, ventanas cortas (<5 puntos) indican datos insuficientes
+    para detectar señales de alerta temprana confiables - análogo a intentar
+    predecir tendencias sociales con muy pocas observaciones.
 
     Args:
-        window_data: List of scalar opinion values, length == HISTORY_BUFFER_SIZE.
+        window_data: List of scalar opinion values, length >= 5 recomendado.
 
     Returns:
-        Dict with keys "variance", "autocorr", "skewness", each a np.ndarray
-        of shape (n_vars,).
+        Dict with keys "variance", "autocorr", "skewness", "valid" (bool),
+        each a np.ndarray of shape (1,) except "valid" which is bool.
     """
+    # Validación temprana: ventana mínima para EWS confiables
+    if len(window_data) < 5:
+        # Retornar valores neutros con indicador de invalidez
+        return {
+            "variance": np.array([0.0]),
+            "autocorr": np.array([0.0]),
+            "skewness": np.array([0.0]),
+            "valid": False
+        }
+    
     data_array = np.array(window_data, dtype=float)
     if data_array.ndim == 1:
         data_array = data_array.reshape(-1, 1)  # shape: (T, n_vars)
@@ -736,7 +758,12 @@ def calculate_ews_metrics(window_data: list) -> dict:
             autocorr[i] = val if not np.isnan(val) else 0.0
 
     skewness = stats.skew(data_array, axis=0)
-    return {"variance": variance, "autocorr": autocorr, "skewness": skewness}
+    return {
+        "variance": variance,
+        "autocorr": autocorr,
+        "skewness": skewness,
+        "valid": True
+    }
 
 
 def check_ews_signals(metrics: dict, thresholds: dict) -> dict:
@@ -1459,10 +1486,20 @@ def simular(
             ews_metrics = calculate_ews_metrics(list(opinion_history))
             ews_flags   = check_ews_signals(ews_metrics, cfg.get("ews_thresholds", {}))
             estado["_ews_flags"] = ews_flags
-            historial[-1]["ews"] = {
-                "metrics": {k: v.tolist() for k, v in ews_metrics.items()},
-                "flags":   ews_flags,
-            }
+            
+            # Solo incluir métricas si son válidas (ventana suficiente)
+            if ews_metrics.get("valid", True):
+                historial[-1]["ews"] = {
+                    "metrics": {k: v.tolist() for k, v in ews_metrics.items() if k != "valid"},
+                    "flags":   ews_flags,
+                    "valid":   True
+                }
+            else:
+                historial[-1]["ews"] = {
+                    "metrics": {"variance": [0.0], "autocorr": [0.0], "skewness": [0.0]},
+                    "flags":   {"high_variance": False, "high_autocorr": False, "high_skewness": False},
+                    "valid":   False
+                }
 
         # ── TDA: topological change detection every 5 steps ───────────
         if TDA_AVAILABLE and paso % 5 == 0 and len(opinion_history) >= HISTORY_BUFFER_SIZE:
