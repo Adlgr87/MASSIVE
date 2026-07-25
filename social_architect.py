@@ -24,7 +24,22 @@ log = logging.getLogger("beyondsight")
 # ============================================================
 
 def setup_client():
-    """Inicializa el cliente OpenAI-compatible con la key disponible."""
+    """
+    Inicializa el cliente OpenAI-compatible con la key disponible.
+    
+    Orden de prioridad:
+    1. OPENAI_API_KEY (OpenAI oficial)
+    2. GROQ_API_KEY (Groq Cloud - más rápido, gratuito para desarrollo)
+    3. OPENROUTER_API_KEY (OpenRouter - acceso a múltiples modelos)
+    4. Variables por defecto del usuario (.env, config local)
+    
+    Returns:
+        Cliente OpenAI configurado, o None si no hay credenciales disponibles.
+    
+    Note:
+        En modo desarrollo sin API key, retorna None para permitir fallback
+        a modo mock o pruebas sin LLM. El caller debe verificar si client is None.
+    """
     api_key = os.getenv("OPENAI_API_KEY")
     base_url = os.getenv("OPENAI_BASE_URL")
 
@@ -36,7 +51,13 @@ def setup_client():
         base_url = "https://openrouter.ai/api/v1"
 
     if not api_key:
-        return OpenAI()  # Variables de entorno por defecto del usuario
+        # Sin API key: retornar None para permitir fallback del caller
+        log.warning(
+            "No API key found. Set OPENAI_API_KEY, GROQ_API_KEY, or OPENROUTER_API_KEY. "
+            "Returning None for mock/offline mode."
+        )
+        return None
+    
     return OpenAI(api_key=api_key, base_url=base_url)
 
 
@@ -226,6 +247,14 @@ def generar_narrativa_final(
             log.warning(f"[LangChain narrativa] Falló, usando HTTP directo: {lc_err}")
 
     client = setup_client()
+    
+    # Fallback si no hay API key
+    if client is None:
+        log.warning("generar_narrativa: sin API key, retornando mensaje estándar.")
+        return (
+            "Narrativa no disponible: el Social Architect requiere una API key de LLM. "
+            "Configura OPENAI_API_KEY, GROQ_API_KEY o OPENROUTER_API_KEY para generar narrativas personalizadas."
+        )
 
     if modo_simulacion == "corporativo":
         contexto = (
@@ -357,6 +386,18 @@ def buscar_estrategia_inversa(
 
     # ── Standard HTTP path ────────────────────────────────────────────────────
     client = setup_client()
+    
+    # Fallback si no hay API key: retornar estrategia vacía con mensaje claro
+    if client is None:
+        log.warning("Ejecutando en modo offline (sin API key). Retornando estrategia básica.")
+        return (
+            {"interventions": [], "note": "Modo offline - requiere API key para LLM"},
+            "No se generó narrativa: el Social Architect requiere una API key de LLM. "
+            "Configura OPENAI_API_KEY, GROQ_API_KEY o OPENROUTER_API_KEY.",
+            0,
+            []
+        )
+    
     historial_feedback = []
 
     estrategia_json = {}
