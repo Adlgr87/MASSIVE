@@ -7,8 +7,9 @@
         "@zapier/zapier-mcp"
       ],
       "env": {
-        "ZAPIER_MCP_TOKEN": "MzYxY2Y0MWEtYjU4Ny00ZjBmLTk2YjgtZWQwMDQ5YzE1NGIzOklSN2RxZUF1YTBlQTVRQlRoS3l6Z0RSUDd3cm1ZWWpwbUMrN05FOUMxUm89"
-      }
+        "ZAPIER_MCP_TOKEN": "${ZAPIER_MCP_TOKEN}"
+      },
+      "_comment": "IMPORTANTE: El token debe establecerse como variable de entorno ZAPIER_MCP_TOKEN. NO guardar tokens reales en este archivo."
     }
   }
 }
