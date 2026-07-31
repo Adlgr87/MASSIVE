@@ -40,9 +40,11 @@ from __future__ import annotations
 
 import logging
 import time
-from typing import Any
+from typing import Any, Optional
 
 import numpy as np
+
+from scipy import sparse
 
 from massive_core.rust_core import active_mask_step
 
@@ -108,13 +110,76 @@ class MassiveEngine:
 
     def __init__(self, config: dict | None = None) -> None:
         cfg = config or {}
+        self.config = dict(cfg)
+        self.param_provenance: dict[str, str] = dict(cfg.get("_provenance", {}))
         self.agents = self.initialize_agents(cfg)
+
+    @classmethod
+    def from_factbook(
+        cls,
+        country: str,
+        context: Any = None,
+        *,
+        n_agents: int | None = None,
+        seed: int = 42,
+        **overrides: Any,
+    ) -> "MassiveEngine":
+        """
+        Construct a MassiveEngine from CIA World Factbook-derived params.
+
+        Applies scaled population, demographics, Gini, and social groups when
+        available. Provenance tags distinguish derived vs default parameters.
+        """
+        if context is None:
+            from massive.core.factbook import get_factbook_context
+            context = get_factbook_context()
+        params = context.get_massive_params(country) or {}
+        provenance: dict[str, str] = {}
+
+        if n_agents is None:
+            n_agents = int(params.get("n_agents", 1000))
+            provenance["n_agents"] = (
+                "derived_parameter" if "n_agents" in params else "internal_default"
+            )
+        else:
+            provenance["n_agents"] = "caller_override"
+
+        gini = float(params.get("gini_coefficient", 0.35))
+        provenance["gini_coefficient"] = (
+            "derived_parameter" if "gini_coefficient" in params else "literature_prior"
+        )
+        social_groups = params.get("social_groups", {})
+        provenance["social_groups"] = (
+            "raw_factbook" if social_groups else "internal_default"
+        )
+        economic = params.get("economic_potential", {})
+        provenance["economic_potential"] = (
+            "derived_parameter" if economic else "internal_default"
+        )
+
+        config = {
+            "n_agents": int(n_agents),
+            "seed": seed,
+            "country": country,
+            "gini_coefficient": gini,
+            "social_groups": social_groups,
+            "economic_potential": economic,
+            "demographic_matrix": params.get("demographic_matrix"),
+            "social_pressure_weights": params.get("social_pressure_weights", {}),
+            "_provenance": provenance,
+            **overrides,
+        }
+        return cls(config)
 
     def initialize_agents(self, config: dict) -> np.ndarray:
         n_agents = int(config.get("n_agents", 100))
         seed = config.get("seed")
         rng = np.random.default_rng(seed)
         agents = rng.uniform(-0.5, 0.5, (n_agents, 5))
+        # Optional demographic conditioning via Gini → income dispersion
+        gini = float(config.get("gini_coefficient", 0.35))
+        income = rng.beta(max(0.5, 2.0 * (1.0 - gini)), max(0.5, 2.0 * gini), n_agents)
+        agents[:, 3] = income  # income column
         agents[:, 1:] = np.clip(agents[:, 1:], 0.0, 1.0)
         return agents.astype(np.float64)
 
@@ -224,6 +289,43 @@ def dequantize_state(q: np.ndarray) -> np.ndarray:
 # ESTRATEGIA 3 — COLA DE EVENTOS (Active Set)
 # ============================================================
 
+def active_mask_step_sparse(
+    x_prev: np.ndarray,
+    x_new: np.ndarray,
+    adj_csr: sparse.csr_matrix,
+    threshold: float,
+) -> np.ndarray:
+    """
+    Event-driven active mask using CSR neighbor lists only.
+
+    Changed agents stay active; only *true* graph neighbors (CSR indices)
+    are reactivated — no dense O(M²) adjacency scan.
+    """
+    prev = np.asarray(x_prev, dtype=np.float64)
+    new = np.asarray(x_new, dtype=np.float64)
+    changed = np.abs(new - prev).max(axis=1) > float(threshold)
+    active = changed.copy()
+    if not changed.any():
+        return active
+
+    indptr = adj_csr.indptr
+    indices = adj_csr.indices
+    for i in np.flatnonzero(changed):
+        start = indptr[i]
+        end = indptr[i + 1]
+        if end > start:
+            active[indices[start:end]] = True
+    return active
+
+
+def combine_layers_csr(layers_flat: np.ndarray) -> sparse.csr_matrix:
+    """Union of multilayer edges as a single CSR adjacency (binary)."""
+    combined = np.abs(np.asarray(layers_flat, dtype=np.float64)).sum(axis=0)
+    binary = (combined > 0).astype(np.float64)
+    np.fill_diagonal(binary, 0.0)
+    return sparse.csr_matrix(binary)
+
+
 class ActiveSet:
     """
     Rastrea qué super-agentes están "despiertos" (activos) en cada paso.
@@ -232,6 +334,8 @@ class ActiveSet:
     no recibe actualización hasta que un vecino cambie significativamente.
     Esto concentra el cómputo donde hay "acción" social, reduciendo la
     carga de CPU cuando la mayoría del sistema ha convergido.
+
+    Supports dense adjacency or ``scipy.sparse`` CSR for O(degree) wake-ups.
 
     Args:
         M: Número total de super-agentes.
@@ -249,7 +353,7 @@ class ActiveSet:
         self,
         x_prev: np.ndarray,
         x_new: np.ndarray,
-        adj: np.ndarray,
+        adj: np.ndarray | sparse.spmatrix,
     ) -> None:
         """
         Actualiza la máscara de activos tras un paso de simulación.
@@ -260,9 +364,17 @@ class ActiveSet:
         Args:
             x_prev: Estado anterior (M, K).
             x_new:  Estado nuevo (M, K).
-            adj:    Matriz de adyacencia (M, M) — se usa para encontrar vecinos.
+            adj:    Dense (M, M) or CSR adjacency for neighbor lookup.
         """
-        self._active = active_mask_step(x_prev, x_new, adj, self._threshold)
+        if sparse.issparse(adj):
+            csr = adj.tocsr()
+            self._active = active_mask_step_sparse(
+                x_prev, x_new, csr, self._threshold
+            )
+        else:
+            self._active = active_mask_step(
+                x_prev, x_new, np.asarray(adj), self._threshold
+            )
         self._history.append(float(self._active.mean()))
 
     @property
@@ -309,11 +421,13 @@ def build_super_agents(
     seed: int = 42,
 ) -> tuple[np.ndarray, np.ndarray]:
     """
-    Genera M super-agentes (clústeres) que representan N agentes reales.
+    **LOD sintético** — genera M super-agentes sin agentes micro reales.
 
     En lugar de inicializar y almacenar N vectores de estado (caro para N grande),
     se generan directamente M centros de clúster con distribuciones realistas.
     Cada clúster "representa" un grupo de agentes con perfil sociológico similar.
+
+    Para agregación desde agentes reales use :func:`build_aggregated_super_agents`.
 
     La distribución inicial refleja heterogeneidad social:
       - Opiniones: distribuidas uniformemente en [-1, 1] para reproducir
@@ -367,6 +481,121 @@ def build_super_agents(
             counts[i] = max(1, counts[i] - 1)
 
     return centers, counts
+
+
+def _kmeans_labels(
+    features: np.ndarray,
+    M: int,
+    rng: np.random.Generator,
+    max_iter: int = 25,
+) -> np.ndarray:
+    """Mini k-means (numpy-only) returning labels of shape (N,)."""
+    n = features.shape[0]
+    if M >= n:
+        return np.arange(n, dtype=np.int64)
+
+    mu = features.mean(axis=0)
+    sigma = features.std(axis=0)
+    sigma = np.where(sigma < 1e-12, 1.0, sigma)
+    x = (features - mu) / sigma
+
+    centers = np.empty((M, x.shape[1]), dtype=np.float64)
+    centers[0] = x[rng.integers(0, n)]
+    closest_dist_sq = np.full(n, np.inf)
+    for i in range(1, M):
+        d = ((x - centers[i - 1]) ** 2).sum(axis=1)
+        closest_dist_sq = np.minimum(closest_dist_sq, d)
+        probs = closest_dist_sq / closest_dist_sq.sum()
+        centers[i] = x[rng.choice(n, p=probs)]
+
+    labels = np.zeros(n, dtype=np.int64)
+    for _ in range(max_iter):
+        dists = ((x[:, None, :] - centers[None, :, :]) ** 2).sum(axis=2)
+        new_labels = dists.argmin(axis=1).astype(np.int64)
+        if np.array_equal(new_labels, labels):
+            break
+        labels = new_labels
+        for j in range(M):
+            members = x[labels == j]
+            if members.shape[0] == 0:
+                centers[j] = x[rng.integers(0, n)]
+            else:
+                centers[j] = members.mean(axis=0)
+    return labels
+
+
+def build_aggregated_super_agents(
+    agent_states: np.ndarray,
+    M: int,
+    feature_matrix: np.ndarray | None = None,
+    seed: int = 42,
+) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """
+    **LOD agregado** — construye M super-agentes desde agentes reales.
+
+    Cada super-agente es el promedio de los micro-agentes de un clúster
+    reproducible (k-means sobre estado y/o atributos demográficos).
+
+    Args:
+        agent_states: Matriz (N, K) de estados micro.
+        M: Número de super-agentes deseados (1 <= M <= N).
+        feature_matrix: Opcional (N, F) atributos extra para clustering.
+            Si None, se clusteriza solo con ``agent_states``.
+        seed: Semilla para k-means.
+
+    Returns:
+        centers: Centros de clúster (M, K) float64 (media de estados).
+        counts: Tamaño de cada clúster (M,) int64, suman N.
+        labels: Asignación agente→clúster (N,) int64.
+    """
+    states = np.asarray(agent_states, dtype=np.float64)
+    if states.ndim != 2:
+        raise ValueError("agent_states must be a 2D array of shape (N, K)")
+    n, k = states.shape
+    if n < 1:
+        raise ValueError("agent_states must contain at least one agent")
+    if not 1 <= M <= n:
+        raise ValueError(f"M must satisfy 1 <= M <= N (got M={M}, N={n})")
+
+    if feature_matrix is None:
+        features = states
+    else:
+        feats = np.asarray(feature_matrix, dtype=np.float64)
+        if feats.shape[0] != n:
+            raise ValueError(
+                f"feature_matrix rows ({feats.shape[0]}) must match N={n}"
+            )
+        features = np.concatenate([states, feats], axis=1)
+
+    rng = np.random.default_rng(seed)
+    labels = _kmeans_labels(features, M, rng)
+
+    centers = np.zeros((M, k), dtype=np.float64)
+    for j in range(M):
+        mask = labels == j
+        if not np.any(mask):
+            idx = int(rng.integers(0, n))
+            centers[j] = states[idx]
+            labels[idx] = j
+        else:
+            centers[j] = states[mask].mean(axis=0)
+
+    counts = np.bincount(labels, minlength=M).astype(np.int64)
+    empty = np.where(counts == 0)[0]
+    for j in empty:
+        donor = int(np.argmax(counts))
+        if counts[donor] <= 1:
+            continue
+        member = int(np.flatnonzero(labels == donor)[0])
+        labels[member] = j
+        counts[donor] -= 1
+        counts[j] += 1
+        centers[j] = states[member]
+        centers[donor] = states[labels == donor].mean(axis=0)
+
+    if int(counts.sum()) != n:
+        raise RuntimeError("aggregated cluster counts do not sum to N")
+    return centers, counts, labels
 
 
 # ============================================================
@@ -425,7 +654,8 @@ def _langevin_step_masked(
     drift[:, _COL_OPINION] += social_op
 
     # Ruido gaussiano modulado por theta
-    noise = rng.standard_normal((M_active, K)) if rng is not None else np.random.randn(M_active, K)
+    _rng = rng if rng is not None else np.random.default_rng()
+    noise = _rng.standard_normal((M_active, K))
 
     # Actualización Euler-Maruyama
     x_new = x.copy()
@@ -515,7 +745,8 @@ def _langevin_step_gpu(
     for ell, w in enumerate(layer_weights):
         social_force[:, _COL_OPINION] += coupling * w * (layers_flat[ell] @ x[:, _COL_OPINION])
     grad_U = multi_potential_gradient(x)
-    noise = rng.standard_normal((M, K)) if rng is not None else np.random.randn(M, K)
+    _rng = rng if rng is not None else np.random.default_rng()
+    noise = _rng.standard_normal((M, K))
     x_new = (
         x
         + dt * (-grad_U + social_force)
@@ -568,6 +799,9 @@ class MassiveSimEngine:
         coupling:        Intensidad del acoplamiento social λ.
         dt:              Paso de tiempo Δt para integración Euler-Maruyama.
         seed:            Semilla aleatoria para reproducibilidad.
+        lod_mode:        ``"synthetic"`` (default) o ``"aggregated"``.
+        agent_states:    Requerido si ``lod_mode="aggregated"``: matriz (N, K).
+        feature_matrix:  Atributos opcionales (N, F) para clustering agregado.
     """
 
     def __init__(
@@ -583,9 +817,42 @@ class MassiveSimEngine:
         coupling: float = 0.3,
         dt: float = 0.01,
         seed: int = 42,
+        lod_mode: str = "synthetic",
+        agent_states: np.ndarray | None = None,
+        feature_matrix: np.ndarray | None = None,
     ) -> None:
+        if lod_mode not in {"synthetic", "aggregated"}:
+            raise ValueError("lod_mode must be 'synthetic' or 'aggregated'")
+
+        if lod_mode == "aggregated":
+            if agent_states is None:
+                raise ValueError("agent_states is required when lod_mode='aggregated'")
+            agent_states = np.asarray(agent_states, dtype=np.float64)
+            if agent_states.ndim != 2:
+                raise ValueError("agent_states must have shape (N, K)")
+            N = int(agent_states.shape[0])
+            K = int(agent_states.shape[1])
+
+        if N < 1:
+            raise ValueError(f"N must be >= 1, got {N}")
+        if K < 1:
+            raise ValueError(f"K must be >= 1, got {K}")
+
+        # Default M scales with sqrt(N) but never exceeds N.
+        if M is None:
+            M = min(N, max(50, int(N ** 0.5))) if N >= 50 else N
+        if not 1 <= M <= N:
+            raise ValueError(f"M must satisfy 1 <= M <= N (got M={M}, N={N})")
+
+        w = np.asarray(layer_weights, dtype=np.float64)
+        if w.ndim != 1 or w.size != 3 or not np.isfinite(w).all() or float(w.sum()) <= 0.0:
+            raise ValueError(
+                "layer_weights must be a length-3 positive-sum vector "
+                f"(got {layer_weights!r})"
+            )
+
         self.N = N
-        self.M = M if M is not None else max(50, int(N ** 0.5))
+        self.M = int(M)
         self.K = K
         self.quantize = quantize
         self.event_driven = event_driven
@@ -594,14 +861,23 @@ class MassiveSimEngine:
         self.coupling = float(coupling)
         self.dt = float(dt)
         self.seed = seed
+        self.lod_mode = lod_mode
         self.rng = np.random.default_rng(seed)
+        self._cluster_labels: np.ndarray | None = None
 
         # Pesos de capa normalizados
-        w = np.array(layer_weights, dtype=np.float64)
         self.layer_weights: np.ndarray = w / w.sum()
 
-        # ── Estrategia 1: generar super-agentes ──────────────────────
-        self._x, self._counts = build_super_agents(N, self.M, K, seed)
+        # ── Estrategia 1: super-agentes (sintéticos o agregados) ─────
+        if lod_mode == "aggregated":
+            self._x, self._counts, self._cluster_labels = build_aggregated_super_agents(
+                agent_states,
+                self.M,
+                feature_matrix=feature_matrix,
+                seed=seed,
+            )
+        else:
+            self._x, self._counts = build_super_agents(N, self.M, K, seed)
 
         # ── Red de M super-agentes (capas social, digital, económica) ─
         from multilayer_engine import (
@@ -614,6 +890,11 @@ class MassiveSimEngine:
         A_d = generate_scale_free(M_, m=min(2, M_ - 1), seed=seed)
         A_e = generate_hierarchical(M_, seed=seed)
         self._layers_flat: np.ndarray = np.stack([A_s, A_d, A_e])   # (3, M, M)
+        # CSR union for sparse event-driven neighbor reactivation
+        self._adj_csr: sparse.csr_matrix = combine_layers_csr(self._layers_flat)
+        self._layers_csr: list[sparse.csr_matrix] = [
+            sparse.csr_matrix(self._layers_flat[i]) for i in range(self._layers_flat.shape[0])
+        ]
 
         # Theta: modulación de ruido — uniforme (sin datos demográficos individuales)
         self._theta: np.ndarray = np.ones((self.M, K), dtype=np.float64)
@@ -681,7 +962,7 @@ class MassiveSimEngine:
                 active_frac = 1.0
 
             elif self.event_driven and self._active_set is not None:
-                # Estrategia 3: solo agentes activos
+                # Estrategia 3: solo agentes activos; reactivación por CSR
                 self._x = _langevin_step_masked(
                     self._x,
                     self._layers_flat,
@@ -692,7 +973,8 @@ class MassiveSimEngine:
                     self._active_set.mask,
                     rng=self.rng,
                 )
-                self._active_set.step(x_prev, self._x, self._layers_flat[0])
+                # Use sparse multi-layer union — only real neighbors wake up
+                self._active_set.step(x_prev, self._x, self._adj_csr)
                 active_frac = float(self._active_set.mask.mean())
 
             else:
@@ -767,38 +1049,106 @@ class MassiveSimEngine:
         """
         Reporte detallado de uso y ahorro de memoria.
 
+        Breaks down real structures (state, adjacency, theta, history, …).
+        ``savings_pct`` remains the *state-array* savings for backward
+        compatibility; use ``savings_vs_full_network_pct`` for an honest
+        total comparison against a dense N-agent multilayer network.
+
         Returns:
-            Diccionario con campos:
-              - n_agents: agentes reales N.
-              - n_clusters: super-agentes M.
-              - float64_MB: RAM que usarían N agentes en float64.
-              - lod_MB: RAM de M clusters en float64 (ahorro LOD).
-              - final_MB: RAM real usada (LOD + cuantización).
-              - savings_pct: porcentaje total de ahorro.
-              - strategies: lista de estrategias activas.
-              - gpu_backend: nombre del backend GPU detectado.
+            Dict with legacy keys plus detailed byte breakdowns.
         """
-        float64_bytes = self.N * self.K * 8
-        lod_bytes = self.M * self.K * 8
-        final_bytes = self.M * self.K * 1 if self.quantize else lod_bytes
+        n_layers = int(self._layers_flat.shape[0]) if hasattr(self, "_layers_flat") else 3
+
+        # ── Component bytes (actual engine structures) ──────────────
+        state_bytes = (
+            self.M * self.K * 1 if self.quantize else self.M * self.K * 8
+        )
+        # Dense layer stack held for Langevin step (float64)
+        adjacency_dense_bytes = self.M * self.M * n_layers * 8
+        # CSR union used for event reactivation
+        if hasattr(self, "_adj_csr") and self._adj_csr is not None:
+            adjacency_csr_bytes = (
+                self._adj_csr.data.nbytes
+                + self._adj_csr.indices.nbytes
+                + self._adj_csr.indptr.nbytes
+            )
+        else:
+            adjacency_csr_bytes = 0
+        theta_bytes = self.M * self.K * 8
+        counts_bytes = self.M * 8  # int64
+        history_bytes = (
+            len(self._opinion_history) * 8
+            + len(self._active_fraction_history) * 8
+        )
+        active_mask_bytes = self.M if self.event_driven else 0
+        temporary_bytes = self.M * self.K * 8  # one scratch copy in run()
+
+        total_bytes = (
+            state_bytes
+            + adjacency_dense_bytes
+            + adjacency_csr_bytes
+            + theta_bytes
+            + counts_bytes
+            + history_bytes
+            + active_mask_bytes
+        )
+
+        # ── Baselines ───────────────────────────────────────────────
+        baseline_state_bytes = self.N * self.K * 8
+        # Theoretical dense multilayer graph on N agents (what LOD avoids)
+        baseline_full_bytes = baseline_state_bytes + self.N * self.N * n_layers * 8
+
+        # Legacy state-only figures
+        lod_state_bytes = self.M * self.K * 8
+        final_state_bytes = state_bytes
 
         strategies = ["LOD (Super-Agentes)"]
         if self.quantize:
             strategies.append("Cuantización uint8")
         if self.event_driven:
-            strategies.append("Event-Driven")
+            strategies.append("Event-Driven (CSR neighbors)")
         if self.use_gpu:
             strategies.append(f"GPU ({_GPU_BACKEND})")
+        if getattr(self, "lod_mode", "synthetic") == "aggregated":
+            strategies.append("LOD agregado (k-means)")
+
+        savings_state = (
+            (1.0 - final_state_bytes / baseline_state_bytes) * 100.0
+            if baseline_state_bytes > 0
+            else 0.0
+        )
+        savings_full = (
+            (1.0 - total_bytes / baseline_full_bytes) * 100.0
+            if baseline_full_bytes > 0
+            else 0.0
+        )
 
         return {
-            "n_agents":    self.N,
-            "n_clusters":  self.M,
-            "float64_MB":  float64_bytes / 1e6,
-            "lod_MB":      lod_bytes / 1e6,
-            "final_MB":    final_bytes / 1e6,
-            "savings_pct": (1.0 - final_bytes / float64_bytes) * 100.0,
-            "strategies":  strategies,
+            # Legacy keys (state-array view)
+            "n_agents": self.N,
+            "n_clusters": self.M,
+            "float64_MB": baseline_state_bytes / 1e6,
+            "lod_MB": lod_state_bytes / 1e6,
+            "final_MB": final_state_bytes / 1e6,
+            "savings_pct": savings_state,  # state-only (compat)
+            "strategies": strategies,
             "gpu_backend": _GPU_BACKEND,
+            # Detailed component breakdown (bytes)
+            "state_bytes": int(state_bytes),
+            "adjacency_dense_bytes": int(adjacency_dense_bytes),
+            "adjacency_csr_bytes": int(adjacency_csr_bytes),
+            "theta_bytes": int(theta_bytes),
+            "counts_bytes": int(counts_bytes),
+            "history_bytes": int(history_bytes),
+            "active_mask_bytes": int(active_mask_bytes),
+            "temporary_bytes": int(temporary_bytes),
+            "total_bytes": int(total_bytes),
+            "total_MB": total_bytes / 1e6,
+            "baseline_state_bytes": int(baseline_state_bytes),
+            "baseline_full_network_bytes": int(baseline_full_bytes),
+            "savings_vs_state_pct": savings_state,
+            "savings_vs_full_network_pct": savings_full,
+            "n_csr_edges": int(self._adj_csr.nnz) if hasattr(self, "_adj_csr") else 0,
         }
 
     @property

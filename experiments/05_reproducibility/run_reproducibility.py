@@ -1,62 +1,85 @@
 #!/usr/bin/env python3
 """
-FASE 7 — VERIFICACIÓN DE REPRODUCIBILIDAD FORMAL
+REPRODUCIBILIDAD FORMAL — post-optimization.
 
-Verifica que mismo seed produce mismo resultado (intra-máquina).
+Same local seed / Generator must yield identical results within machine.
+Global ``np.random.seed`` is **not** required for engine reproducibility.
 """
-import sys, os, json, time, traceback
+from __future__ import annotations
+
+import json
+import os
+import subprocess
+import sys
+import traceback
+from pathlib import Path
+
 import numpy as np
 
-REPO = "/home/adlg/Escritorio/Proyectos/MASSIVE"
-sys.path.insert(0, REPO)
+REPO = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO))
 os.environ.setdefault("PYTHONHASHSEED", "42")
 
-results = []
+results: list[dict] = []
+
 
 def record(name, status, detail, deltas=None):
-    results.append({"test": name, "status": status, "detail": detail,
-                    "deltas": deltas or []})
+    results.append(
+        {"test": name, "status": status, "detail": detail, "deltas": deltas or []}
+    )
     icon = "✅" if status == "PASS" else "❌" if status == "FAIL" else "⚠️"
     print(f"{icon} {name}: {status} — {detail}")
 
-# ============================================================================
-# [7.1] TEST DE REPRODUCIBILIDAD INTRA-MÁQUINA
-# ============================================================================
+
 def test_simulator_reproducibility():
-    """simular() con np.random.seed(42) debe ser idéntico en 3 corridas."""
+    """simular() with config seed=42 must match across 3 runs."""
     from simulator import simular
 
     runs = []
-    for i in range(3):
-        np.random.seed(42)
+    for _ in range(3):
         estado = {"opinion": 0.5, "propaganda": 0.3}
-        cfg = {"proveedor": "heurístico", "ruido_base": 0.03, "hk_epsilon": 0.3}
+        cfg = {
+            "proveedor": "heurístico",
+            "ruido_base": 0.03,
+            "hk_epsilon": 0.3,
+            "seed": 42,
+        }
         result = simular(estado, pasos=50, cada_n_pasos=5, config=cfg, verbose=False)
-        opinions = [h["opinion"] for h in result]
-        runs.append(opinions)
+        runs.append([h["opinion"] for h in result])
 
-    # Comparar
     delta_01 = max(abs(a - b) for a, b in zip(runs[0], runs[1]))
     delta_02 = max(abs(a - b) for a, b in zip(runs[0], runs[2]))
     max_delta = max(delta_01, delta_02)
 
     if max_delta < 1e-10:
-        record("Reproducibilidad simulator (3 runs, seed=42)", "PASS",
-               f"max_delta={max_delta:.2e}", [delta_01, delta_02])
+        record(
+            "Reproducibilidad simulator (3 runs, seed=42)",
+            "PASS",
+            f"max_delta={max_delta:.2e}",
+            [delta_01, delta_02],
+        )
     elif max_delta < 0.001:
-        record("Reproducibilidad simulator (3 runs, seed=42)", "WARN",
-               f"Estocasticidad controlada: max_delta={max_delta:.2e}", [delta_01, delta_02])
+        record(
+            "Reproducibilidad simulator (3 runs, seed=42)",
+            "WARN",
+            f"Estocasticidad controlada: max_delta={max_delta:.2e}",
+            [delta_01, delta_02],
+        )
     else:
-        record("Reproducibilidad simulator (3 runs, seed=42)", "FAIL",
-               f"max_delta={max_delta:.2e} — investigar fuente", [delta_01, delta_02])
+        record(
+            "Reproducibilidad simulator (3 runs, seed=42)",
+            "FAIL",
+            f"max_delta={max_delta:.2e} — investigar fuente",
+            [delta_01, delta_02],
+        )
+
 
 def test_massive_engine_reproducibility():
-    """MassiveSimEngine con np.random.seed(42) debe ser reproducible."""
+    """MassiveSimEngine(seed=42) must be reproducible without global seed."""
     from massive_engine import MassiveSimEngine
 
     runs = []
-    for i in range(3):
-        np.random.seed(42)
+    for _ in range(3):
         engine = MassiveSimEngine(N=1000, quantize=False, event_driven=False, seed=42)
         result = engine.run(steps=20)
         runs.append(result.get("mean_opinion", 0))
@@ -64,26 +87,38 @@ def test_massive_engine_reproducibility():
     deltas = [abs(runs[0] - runs[1]), abs(runs[0] - runs[2])]
     max_delta = max(deltas)
 
-    # BUG CONOCIDO: massive_engine usa np.random.randn() global, no self.rng
-    # Con np.random.seed(42) antes de cada run, debería ser reproducible
     if max_delta < 1e-10:
-        record("Reproducibilidad MassiveSimEngine (3 runs, seed=42)", "PASS",
-               f"max_delta={max_delta:.2e} (vía np.random.seed global)", deltas)
+        record(
+            "Reproducibilidad MassiveSimEngine (3 runs, seed=42)",
+            "PASS",
+            f"max_delta={max_delta:.2e} (local engine seed)",
+            deltas,
+        )
     elif max_delta < 0.001:
-        record("Reproducibilidad MassiveSimEngine (3 runs, seed=42)", "WARN",
-               f"Estocasticidad controlada: max_delta={max_delta:.2e}", deltas)
+        record(
+            "Reproducibilidad MassiveSimEngine (3 runs, seed=42)",
+            "WARN",
+            f"Estocasticidad controlada: max_delta={max_delta:.2e}",
+            deltas,
+        )
     else:
-        record("Reproducibilidad MassiveSimEngine (3 runs, seed=42)", "FAIL",
-               f"max_delta={max_delta:.2e} — bug np.random.randn global", deltas)
+        record(
+            "Reproducibilidad MassiveSimEngine (3 runs, seed=42)",
+            "FAIL",
+            f"max_delta={max_delta:.2e}",
+            deltas,
+        )
+
 
 def test_multilayer_reproducibility():
-    """MultilayerEngine con seed=42 debe ser reproducible."""
+    """MultilayerEngine with seed=42 must be reproducible."""
     from multilayer_engine import MultilayerEngine
 
     runs = []
-    for i in range(3):
-        engine = MultilayerEngine(N=50, layer_weights=(0.4, 0.3, 0.3),
-                                   coupling=0.3, seed=42)
+    for _ in range(3):
+        engine = MultilayerEngine(
+            N=50, layer_weights=(0.4, 0.3, 0.3), coupling=0.3, seed=42
+        )
         history = engine.run(steps=20)
         final = np.array(history[-1])
         runs.append(float(np.mean(final)))
@@ -92,27 +127,45 @@ def test_multilayer_reproducibility():
     max_delta = max(deltas)
 
     if max_delta < 1e-10:
-        record("Reproducibilidad MultilayerEngine (3 runs, seed=42)", "PASS",
-               f"max_delta={max_delta:.2e}", deltas)
+        record(
+            "Reproducibilidad MultilayerEngine (3 runs, seed=42)",
+            "PASS",
+            f"max_delta={max_delta:.2e}",
+            deltas,
+        )
     elif max_delta < 0.001:
-        record("Reproducibilidad MultilayerEngine (3 runs, seed=42)", "WARN",
-               f"Estocasticidad controlada: max_delta={max_delta:.2e}", deltas)
+        record(
+            "Reproducibilidad MultilayerEngine (3 runs, seed=42)",
+            "WARN",
+            f"Estocasticidad controlada: max_delta={max_delta:.2e}",
+            deltas,
+        )
     else:
-        record("Reproducibilidad MultilayerEngine (3 runs, seed=42)", "FAIL",
-               f"max_delta={max_delta:.2e}", deltas)
+        record(
+            "Reproducibilidad MultilayerEngine (3 runs, seed=42)",
+            "FAIL",
+            f"max_delta={max_delta:.2e}",
+            deltas,
+        )
+
 
 def test_energy_engine_reproducibility():
-    """SocialEnergyEngine con np.random.seed(42) debe ser reproducible."""
+    """SocialEnergyEngine(seed=42) + Generator init must be reproducible."""
     from energy_engine import SocialEnergyEngine
 
     runs = []
-    for i in range(3):
-        np.random.seed(42)
-        engine = SocialEnergyEngine(range_type="bipolar", temperature=0.05, lambda_social=0.5)
+    for _ in range(3):
+        engine = SocialEnergyEngine(
+            range_type="bipolar", temperature=0.05, lambda_social=0.5, seed=42
+        )
         N = 50
-        opinions = np.random.uniform(-1, 1, N)
+        rng = np.random.default_rng(42)
+        opinions = rng.uniform(-1, 1, N)
         adj = np.ones((N, N)) / N
-        attractors = [{"position": -0.5, "strength": 1.0}, {"position": 0.5, "strength": 1.0}]
+        attractors = [
+            {"position": -0.5, "strength": 1.0},
+            {"position": 0.5, "strength": 1.0},
+        ]
         repellers = [{"position": 0.0, "strength": 0.5}]
         for _ in range(20):
             opinions = engine.step(opinions, adj, attractors, repellers, eta=0.01)
@@ -122,50 +175,65 @@ def test_energy_engine_reproducibility():
     max_delta = max(deltas)
 
     if max_delta < 1e-10:
-        record("Reproducibilidad SocialEnergyEngine (3 runs, seed=42)", "PASS",
-               f"max_delta={max_delta:.2e}", deltas)
+        record(
+            "Reproducibilidad SocialEnergyEngine (3 runs, seed=42)",
+            "PASS",
+            f"max_delta={max_delta:.2e}",
+            deltas,
+        )
     elif max_delta < 0.001:
-        record("Reproducibilidad SocialEnergyEngine (3 runs, seed=42)", "WARN",
-               f"Estocasticidad controlada: max_delta={max_delta:.2e}", deltas)
+        record(
+            "Reproducibilidad SocialEnergyEngine (3 runs, seed=42)",
+            "WARN",
+            f"Estocasticidad controlada: max_delta={max_delta:.2e}",
+            deltas,
+        )
     else:
-        record("Reproducibilidad SocialEnergyEngine (3 runs, seed=42)", "FAIL",
-               f"max_delta={max_delta:.2e}", deltas)
+        record(
+            "Reproducibilidad SocialEnergyEngine (3 runs, seed=42)",
+            "FAIL",
+            f"max_delta={max_delta:.2e}",
+            deltas,
+        )
+
 
 def test_pythonhashseed_isolation():
-    """Verificar que PYTHONHASHSEED está activo."""
-    hash_a = hash("MASSIVE")
-    hash_b = hash("MASSIVE")
-    # Dentro del mismo proceso, hash es determinista
-    # Pero PYTHONHASHSEED asegura que sea el mismo entre procesos
-
-    import subprocess
+    """PYTHONHASHSEED=42 must be consistent across subprocesses."""
     proc = subprocess.run(
-        [sys.executable, "-c", f"print(hash('MASSIVE'))"],
-        capture_output=True, text=True,
-        env={**os.environ, "PYTHONHASHSEED": "42"}
+        [sys.executable, "-c", "print(hash('MASSIVE'))"],
+        capture_output=True,
+        text=True,
+        env={**os.environ, "PYTHONHASHSEED": "42"},
+        check=False,
     )
     hash_subprocess = int(proc.stdout.strip())
 
     proc2 = subprocess.run(
-        [sys.executable, "-c", f"print(hash('MASSIVE'))"],
-        capture_output=True, text=True,
-        env={**os.environ, "PYTHONHASHSEED": "42"}
+        [sys.executable, "-c", "print(hash('MASSIVE'))"],
+        capture_output=True,
+        text=True,
+        env={**os.environ, "PYTHONHASHSEED": "42"},
+        check=False,
     )
     hash_subprocess2 = int(proc2.stdout.strip())
 
     if hash_subprocess == hash_subprocess2:
-        record("PYTHONHASHSEED=42 consistencia cross-proceso", "PASS",
-               f"hash={hash_subprocess} (consistente entre 2 subprocess)")
+        record(
+            "PYTHONHASHSEED=42 consistencia cross-proceso",
+            "PASS",
+            f"hash={hash_subprocess} (consistente entre 2 subprocess)",
+        )
     else:
-        record("PYTHONHASHSEED=42 consistencia cross-proceso", "FAIL",
-               f"hash1={hash_subprocess}, hash2={hash_subprocess2}")
+        record(
+            "PYTHONHASHSEED=42 consistencia cross-proceso",
+            "FAIL",
+            f"hash1={hash_subprocess}, hash2={hash_subprocess2}",
+        )
 
-# ============================================================================
-# EJECUCIÓN
-# ============================================================================
+
 if __name__ == "__main__":
     print("=" * 70)
-    print("FASE 7 — VERIFICACIÓN DE REPRODUCIBILIDAD")
+    print("REPRODUCIBILIDAD FORMAL (local seed / Generator)")
     print("=" * 70)
 
     tests = [
@@ -184,15 +252,15 @@ if __name__ == "__main__":
             record(test.__name__, "FAIL", f"EXCEPCIÓN: {e}")
             traceback.print_exc()
 
-    # Guardar
-    output_path = os.path.join(REPO, "experiments/05_reproducibility/reproducibility_results.json")
-    with open(output_path, 'w') as f:
+    output_path = REPO / "experiments/05_reproducibility/reproducibility_results.json"
+    with output_path.open("w", encoding="utf-8") as f:
         json.dump(results, f, indent=2, default=str)
 
     passed = len([r for r in results if r["status"] == "PASS"])
     failed = len([r for r in results if r["status"] == "FAIL"])
     warned = len([r for r in results if r["status"] == "WARN"])
-    print(f"\n{'='*70}")
+    print(f"\n{'=' * 70}")
     print(f"TOTAL: {passed} PASS, {failed} FAIL, {warned} WARN de {len(results)} tests")
     print(f"Resultados: {output_path}")
-    print(f"{'='*70}")
+    print(f"{'=' * 70}")
+    sys.exit(1 if failed else 0)

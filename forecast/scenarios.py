@@ -6,7 +6,7 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
-from schemas import Intervention, StrategyMatrix
+from massive.core.schemas import Intervention, StrategyMatrix
 from simulator import run_with_schedule
 
 from .engine import ForecastResult, forecast

@@ -338,6 +338,10 @@ class FactbookContext:
                 if raw_data:
                     country.raw_data = raw_data
                     self._extract_data(country)
+                    # Recompute derived params from extracted fields
+                    # (__post_init__ ran on defaults before raw load).
+                    country._calculate_indices()
+                    country._derive_massive_params()
             except Exception as e:
                 log.warning(f"[FactbookContext] Error cargando datos para {cia_code}: {e}")
         

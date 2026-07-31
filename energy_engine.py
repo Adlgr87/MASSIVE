@@ -54,11 +54,13 @@ def _landscape_gradient_jit(
     Works with plain arrays so Numba can compile it.
     """
     grad = 0.0
-    for i in range(len(att_positions)):
+    n_att = att_positions.shape[0]
+    n_rep = rep_positions.shape[0]
+    for i in range(n_att):
         diff = x - att_positions[i]
         g = np.exp(-diff * diff / (2.0 * sigma2))
         grad += att_strengths[i] * diff / sigma2 * g
-    for i in range(len(rep_positions)):
+    for i in range(n_rep):
         diff = x - rep_positions[i]
         g = np.exp(-diff * diff / (2.0 * sigma2))
         grad -= rep_strengths[i] * diff / sigma2 * g
@@ -165,6 +167,8 @@ class SocialEnergyEngine:
         gini_coefficient: Optional[float] = None,
         inequality_factor: Optional[float] = None,
         economic_potential: Optional[Dict[str, Any]] = None,
+        seed: Optional[int] = None,
+        rng: Optional[np.random.Generator] = None,
     ):
         self.range_type = range_type
         self.temperature = float(temperature)
@@ -193,6 +197,14 @@ class SocialEnergyEngine:
         self.scientific_config = ScientificRuntimeConfig.from_dict(scientific_config)
         self._stepper = create_stepper(self.scientific_config.solver)
         self.last_numerical_diagnostics = None
+        
+        # Always use a local Generator (never the process-global np.random).
+        if rng is not None:
+            self.rng = rng
+        elif seed is not None:
+            self.rng = np.random.default_rng(seed)
+        else:
+            self.rng = np.random.default_rng()
 
     def step(
         self,
@@ -223,7 +235,7 @@ class SocialEnergyEngine:
         neighbor_mean = (adj @ opinions) / row_sums
 
         # ── Ruido estocástico (una muestra por agente) ─────────────────────────
-        noise = np.sqrt(2.0 * eta * self.temperature) * np.random.randn(n)
+        noise = np.sqrt(2.0 * eta * self.temperature) * self.rng.standard_normal(n)
 
         # ── Extract arrays for JIT-compiled hot path ───────────────────────────
         sigma2 = _SIGMA ** 2
@@ -253,7 +265,9 @@ class SocialEnergyEngine:
                 return local_drift
 
             diffusion = np.sqrt(2.0 * self.temperature) if self.temperature > 0.0 else None
-            step_noise = np.random.randn(n) if diffusion is not None else None
+            step_noise = (
+                self.rng.standard_normal(n) if diffusion is not None else None
+            )
             result = self._stepper.step(
                 opinions.astype(np.float64),
                 eta,

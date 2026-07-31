@@ -107,7 +107,11 @@ def assimilate_history_observations(
 
     for step in range(1, trajectory.shape[0]):
         increment = trajectory[step] - trajectory[step - 1]
-        enkf.predict(lambda member, inc=increment: member + inc)
+
+        def _model_step(member: Array, inc: Array = increment) -> Array:
+            return member + inc
+
+        enkf.predict(_model_step)
         if step in obs_by_step:
             enkf.update(obs_by_step[step], H=H_mat)
         mean, std = enkf.get_state_estimate()

@@ -15,6 +15,7 @@ from .multilayer_engine_sparse import (
     LayerState,
     MultilayerState,
     SimulationResult,
+    SparseEnKF,
 )
 
 __all__ = [
@@ -33,4 +34,5 @@ __all__ = [
     "LayerState",
     "MultilayerState",
     "SimulationResult",
+    "SparseEnKF",
 ]

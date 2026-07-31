@@ -4,7 +4,7 @@
     "motor": "simulator.py",
     "status": "PASS",
     "detail": "11 steps, opinion_final=0.7405",
-    "elapsed_ms": 2.9,
+    "elapsed_ms": 1.6,
     "reproducible": true
   },
   {
@@ -12,7 +12,7 @@
     "motor": "simulator.py",
     "status": "PASS",
     "detail": "opinion_final=0.8937",
-    "elapsed_ms": 1.8,
+    "elapsed_ms": 1.0,
     "reproducible": null
   },
   {
@@ -28,7 +28,7 @@
     "motor": "massive_engine.py",
     "status": "PASS",
     "detail": "mean_opinion=0.051888 (v\u00eda np.random.seed global)",
-    "elapsed_ms": 2125.5,
+    "elapsed_ms": 1181.7,
     "reproducible": true
   },
   {
@@ -36,7 +36,7 @@
     "motor": "massive_engine.py",
     "status": "PASS",
     "detail": "mean_opinion=0.027862, mem_savings=99.825",
-    "elapsed_ms": 3.6,
+    "elapsed_ms": 2.1,
     "reproducible": null
   },
   {
@@ -44,7 +44,7 @@
     "motor": "energy_engine.py",
     "status": "PASS",
     "detail": "mean=-0.0989, std=0.5551",
-    "elapsed_ms": 388.7,
+    "elapsed_ms": 203.9,
     "reproducible": true
   },
   {
@@ -60,7 +60,7 @@
     "motor": "multilayer_engine.py",
     "status": "PASS",
     "detail": "shape=(50, 5), mean=0.4005",
-    "elapsed_ms": 6.7,
+    "elapsed_ms": 4.4,
     "reproducible": true
   },
   {

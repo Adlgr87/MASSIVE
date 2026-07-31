@@ -66,6 +66,8 @@ class Intervention(BaseModel):
             raise ValueError(
                 f"time_start ({self.time_start}) must be <= time_end ({self.time_end})"
             )
+        return self
+
     parameters: Dict[str, Any] = Field(
         description=(
             "Parámetros numéricos. Ej: {'epsilon': 0.3} o {'umbral': 0.5}. "

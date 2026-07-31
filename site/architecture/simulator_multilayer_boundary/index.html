@@ -1,0 +1,1563 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="MASSIVE — Hybrid social dynamics simulator. Numerical core + LLM as regime selector.">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>MASSIVE — Frontera simulator.py ↔ multilayer_engine.py - MASSIVE Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#massive-frontera-simulatorpy-multilayer_enginepy" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="MASSIVE Documentation" class="md-header__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MASSIVE Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              MASSIVE — Frontera simulator.py ↔ multilayer_engine.py
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="MASSIVE Documentation" class="md-nav__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    MASSIVE Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../README_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spanish Version
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation (PVU-BS)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Validation (PVU-BS)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/PVU_MASSIVE_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/PVU_MASSIVE_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocolo (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/preregistration_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registration (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/preregistration_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registro (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/validation_report_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report template (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/validation_report_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plantilla de reporte (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#proposito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Propósito
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-tesis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Tesis
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-dependencia-desde-simulatorpy-hacia-multilayer_enginepy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Dependencia desde simulator.py hacia multilayer_engine.py
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#21-import-directo-del-tipo-principal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1. Import directo del tipo principal
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.1. Import directo del tipo principal">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#evidencia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidencia
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implicacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implicación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#22-uso-dentro-de-integratedsimulator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2. Uso dentro de IntegratedSimulator
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.2. Uso dentro de IntegratedSimulator">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#evidencia_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidencia
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implicacion_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implicación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#23-sincronizacion-de-estado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3. Sincronización de estado
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.3. Sincronización de estado">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#evidencia_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidencia
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implicacion_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implicación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#24-topologia-dinamica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4. Topología dinámica
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.4. Topología dinámica">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#evidencia_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidencia
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implicacion_3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implicación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#25-integracion-con-butterfly-diagnostics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.5. Integración con butterfly diagnostics
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.5. Integración con butterfly diagnostics">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#evidencia_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidencia
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implicacion_4" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implicación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-dependencia-desde-multilayer_enginepy-hacia-simulatorpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Dependencia desde multilayer_engine.py hacia simulator.py
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#31-consulta-de-proveedores-en-targeted_llm_bias" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1. Consulta de PROVEEDORES en targeted_llm_bias
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.1. Consulta de PROVEEDORES en targeted_llm_bias">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#evidencia_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidencia
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#uso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Uso
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implicacion_5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implicación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#32-naturaleza-del-acoplamiento-inverso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2. Naturaleza del acoplamiento inverso
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-fronteras-publicas-del-multilayerengine-consumidas-por-el-simulador" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Fronteras públicas del MultilayerEngine consumidas por el simulador
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Fronteras públicas del MultilayerEngine consumidas por el simulador">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#implicacion_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implicación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-contratos-implicitos-entre-ambos-modulos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Contratos implícitos entre ambos módulos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#51-contrato-de-shape-del-estado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1. Contrato de shape del estado
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5.1. Contrato de shape del estado">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#evidencia_6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidencia
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implicacion_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implicación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#52-contrato-de-clipping-y-rangos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2. Contrato de clipping y rangos
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5.2. Contrato de clipping y rangos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#evidencia_7" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidencia
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implicacion_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implicación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#53-contrato-de-semantica-de-capas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3. Contrato de semántica de capas
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5.3. Contrato de semántica de capas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#evidencia_8" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidencia
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implicacion_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implicación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#54-contrato-de-infraestructura-llm-parcial" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4. Contrato de infraestructura LLM parcial
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5.4. Contrato de infraestructura LLM parcial">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#evidencia_9" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Evidencia
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implicacion_10" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implicación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-consumers-externos-que-amplian-la-sensibilidad-de-la-frontera" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Consumers externos que amplían la sensibilidad de la frontera
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Consumers externos que amplían la sensibilidad de la frontera">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#apppy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        app.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cfc_trainerpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        cfc_trainer.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#teststest_multilayerpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tests/test_multilayer.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#massive_enginepy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        massive_engine.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implicacion_11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implicación
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-riesgos-especificos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Riesgos específicos
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#riesgo-1-separar-multilayerengine-del-simulador-sin-wrapper-adecuado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Riesgo 1 — Separar MultilayerEngine del simulador sin wrapper adecuado
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#riesgo-2-mover-proveedores-sin-adaptacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Riesgo 2 — Mover PROVEEDORES sin adaptación
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#riesgo-3-cambiar-shape-del-estado-integrado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Riesgo 3 — Cambiar shape del estado integrado
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#riesgo-4-cambiar-semantica-de-capas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Riesgo 4 — Cambiar semántica de capas
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#riesgo-5-tocar-esta-frontera-sin-considerar-a-massive_enginepy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Riesgo 5 — Tocar esta frontera sin considerar a massive_engine.py
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-opciones-futuras-seguras-solo-conceptuales-no-para-ejecutar-aun" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Opciones futuras seguras (solo conceptuales, no para ejecutar aún)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#opcion-a-encapsular-config-de-proveedores-en-un-modulo-estable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Opción A — Encapsular config de proveedores en un módulo estable
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#opcion-b-definir-interfaz-explicita-del-motor-multicapa-consumida-por-el-simulador" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Opción B — Definir interfaz explícita del motor multicapa consumida por el simulador
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#opcion-c-documentar-o-tipar-el-estado-n-k-compartido" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Opción C — Documentar o tipar el estado (N, K) compartido
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#opcion-d-separar-helpers-publicos-del-multicapa-de-los-acoplamientos-uillm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Opción D — Separar helpers públicos del multicapa de los acoplamientos UI/LLM
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-reglas-derivadas-para-consolidacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Reglas derivadas para consolidación
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Conclusión
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="massive-frontera-simulatorpy-multilayer_enginepy">MASSIVE — Frontera <code>simulator.py</code> ↔ <code>multilayer_engine.py</code></h1>
+<h2 id="proposito">Propósito</h2>
+<p>Aislar y documentar la relación entre <code>simulator.py</code> y <code>multilayer_engine.py</code>, que en el estado actual del proyecto constituye una frontera importante, útil y potencialmente frágil.</p>
+<p>Este documento implementa el <strong>Slice 4 — Aislamiento documental de la frontera <code>simulator</code> ↔ <code>multilayer_engine</code></strong>.</p>
+<hr />
+<h2 id="1-tesis">1. Tesis</h2>
+<p>La relación entre <code>simulator.py</code> y <code>multilayer_engine.py</code> no es una simple dependencia unidireccional.</p>
+<p>Lo observado en el código muestra:
+- dependencia directa del simulador hacia <code>MultilayerEngine</code>,
+- dependencia puntual del motor multicapa hacia <code>simulator</code>,
+- y un patrón más amplio donde ambos participan del ecosistema integrado de MASSIVE.</p>
+<p>Por tanto:</p>
+<blockquote>
+<p>esta frontera debe tratarse como una frontera de acoplamiento sensible, no como una relación trivial entre módulos independientes.</p>
+</blockquote>
+<hr />
+<h2 id="2-dependencia-desde-simulatorpy-hacia-multilayer_enginepy">2. Dependencia desde <code>simulator.py</code> hacia <code>multilayer_engine.py</code></h2>
+<h2 id="21-import-directo-del-tipo-principal">2.1. Import directo del tipo principal</h2>
+<h3 id="evidencia">Evidencia</h3>
+<p>En <code>simulator.py</code>:
+- <code>from multilayer_engine import MultilayerEngine</code></p>
+<h3 id="implicacion">Implicación</h3>
+<p>El simulador reconoce al motor multicapa como dependencia estructural, no solo opcional.</p>
+<hr />
+<h2 id="22-uso-dentro-de-integratedsimulator">2.2. Uso dentro de <code>IntegratedSimulator</code></h2>
+<h3 id="evidencia_1">Evidencia</h3>
+<p><code>IntegratedSimulator.__init__</code> crea una instancia de <code>MultilayerEngine</code>.</p>
+<p>Parámetros observados:
+- <code>N</code>
+- <code>dt</code>
+- <code>coupling</code>
+- <code>layer_config</code>
+- <code>seed</code></p>
+<h3 id="implicacion_1">Implicación</h3>
+<p>El motor multicapa forma parte del coordinador de dinámica integrada, no solo de la UI multicapa.</p>
+<hr />
+<h2 id="23-sincronizacion-de-estado">2.3. Sincronización de estado</h2>
+<h3 id="evidencia_2">Evidencia</h3>
+<p>En <code>IntegratedSimulator.step()</code>:
+- <code>self.multilayer_engine.update_opinions(self.massive_engine.agents.copy())</code></p>
+<h3 id="implicacion_2">Implicación</h3>
+<p><code>IntegratedSimulator</code> usa al motor multicapa como receptor y validador de estado actualizado.</p>
+<p>Esto significa que existe un contrato implícito sobre:
+- shape del array,
+- rango de opinión,
+- rango de dimensiones restantes,
+- compatibilidad entre el estado de <code>MassiveEngine</code> y el de <code>MultilayerEngine</code>.</p>
+<hr />
+<h2 id="24-topologia-dinamica">2.4. Topología dinámica</h2>
+<h3 id="evidencia_3">Evidencia</h3>
+<p>En <code>IntegratedSimulator.update_network_topology()</code>:
+- itera por <code>self.multilayer_engine.layers.keys()</code>
+- llama <code>self.multilayer_engine.dynamic_rewiring(...)</code></p>
+<h3 id="implicacion_3">Implicación</h3>
+<p>El simulador conoce y usa la estructura de capas internas del motor multicapa.</p>
+<p>Eso genera un acoplamiento no solo al API público del motor, sino también a su semántica de capas.</p>
+<hr />
+<h2 id="25-integracion-con-butterfly-diagnostics">2.5. Integración con butterfly diagnostics</h2>
+<h3 id="evidencia_4">Evidencia</h3>
+<p>En <code>IntegratedSimulator.run_butterfly_diagnostic()</code>:
+- pasa <code>self.multilayer_engine.graphs</code> al snapshot del benchmark</p>
+<h3 id="implicacion_4">Implicación</h3>
+<p>El simulador depende de la propiedad <code>graphs</code> como frontera pública del motor multicapa para diagnósticos externos.</p>
+<hr />
+<h2 id="3-dependencia-desde-multilayer_enginepy-hacia-simulatorpy">3. Dependencia desde <code>multilayer_engine.py</code> hacia <code>simulator.py</code></h2>
+<h2 id="31-consulta-de-proveedores-en-targeted_llm_bias">3.1. Consulta de <code>PROVEEDORES</code> en <code>targeted_llm_bias</code></h2>
+<h3 id="evidencia_5">Evidencia</h3>
+<p>Dentro de <code>targeted_llm_bias</code>, <code>multilayer_engine.py</code> hace:
+- <code>from simulator import PROVEEDORES as _PROVEEDORES</code></p>
+<h3 id="uso">Uso</h3>
+<p>Obtiene <code>base_url</code> del proveedor seleccionado.</p>
+<h3 id="implicacion_5">Implicación</h3>
+<p>Existe dependencia inversa del motor multicapa hacia una constante del simulador.</p>
+<p>Esto vuelve la frontera parcialmente bidireccional.</p>
+<hr />
+<h2 id="32-naturaleza-del-acoplamiento-inverso">3.2. Naturaleza del acoplamiento inverso</h2>
+<p>Este acoplamiento no afecta todo el motor, pero sí una función pública/operativa del módulo:
+- <code>targeted_llm_bias</code></p>
+<p>Eso basta para volver frágil una reubicación o separación de <code>PROVEEDORES</code> si no se deja wrapper.</p>
+<hr />
+<h2 id="4-fronteras-publicas-del-multilayerengine-consumidas-por-el-simulador">4. Fronteras públicas del <code>MultilayerEngine</code> consumidas por el simulador</h2>
+<p>Según la evidencia observada, <code>simulator.py</code> consume al menos estas superficies del motor multicapa:</p>
+<ul>
+<li>constructor <code>MultilayerEngine(...)</code></li>
+<li><code>update_opinions(...)</code></li>
+<li><code>dynamic_rewiring(...)</code></li>
+<li>propiedad <code>graphs</code></li>
+<li>acceso a <code>layers.keys()</code></li>
+</ul>
+<h3 id="implicacion_6">Implicación</h3>
+<p>La frontera real no es solo “importar el engine”, sino depender de varias capacidades públicas y semipúblicas.</p>
+<hr />
+<h2 id="5-contratos-implicitos-entre-ambos-modulos">5. Contratos implícitos entre ambos módulos</h2>
+<h2 id="51-contrato-de-shape-del-estado">5.1. Contrato de shape del estado</h2>
+<h3 id="evidencia_6">Evidencia</h3>
+<p><code>update_opinions()</code> valida shape <code>(N, K)</code>.</p>
+<h3 id="implicacion_7">Implicación</h3>
+<p>El estado producido por <code>MassiveEngine</code> y consumido por <code>MultilayerEngine</code> debe respetar:
+- número de agentes <code>N</code>
+- número de dimensiones <code>K</code>
+- layout de columnas</p>
+<p>Este contrato es invisible a simple vista, pero es estructural.</p>
+<hr />
+<h2 id="52-contrato-de-clipping-y-rangos">5.2. Contrato de clipping y rangos</h2>
+<h3 id="evidencia_7">Evidencia</h3>
+<p><code>update_opinions()</code> hace:
+- clip de opinión a <code>[x_min, x_max]</code>
+- clip del resto de dimensiones a <code>[0, 1]</code></p>
+<h3 id="implicacion_8">Implicación</h3>
+<p>El simulador puede empujar estado al motor multicapa, pero el motor se reserva la validación final del rango.</p>
+<p>Hay un contrato de coherencia matemática entre ambos.</p>
+<hr />
+<h2 id="53-contrato-de-semantica-de-capas">5.3. Contrato de semántica de capas</h2>
+<h3 id="evidencia_8">Evidencia</h3>
+<p><code>dynamic_rewiring()</code> espera nombres de capa conocidos.
+<code>graphs</code> expone capas como matrices CSR.
+<code>IntegratedSimulator</code> itera sobre <code>self.multilayer_engine.layers.keys()</code>.</p>
+<h3 id="implicacion_9">Implicación</h3>
+<p>El simulador depende de que el motor multicapa mantenga una semántica estable de capas.</p>
+<hr />
+<h2 id="54-contrato-de-infraestructura-llm-parcial">5.4. Contrato de infraestructura LLM parcial</h2>
+<h3 id="evidencia_9">Evidencia</h3>
+<p><code>targeted_llm_bias()</code> depende de <code>PROVEEDORES</code>.</p>
+<h3 id="implicacion_10">Implicación</h3>
+<p>La infraestructura de proveedores está acoplada entre ambos módulos, aunque de forma puntual.</p>
+<hr />
+<h2 id="6-consumers-externos-que-amplian-la-sensibilidad-de-la-frontera">6. Consumers externos que amplían la sensibilidad de la frontera</h2>
+<p>No solo el simulador depende del motor multicapa. También hay otros consumers que elevan la sensibilidad de esta frontera:</p>
+<h3 id="apppy"><code>app.py</code></h3>
+<p>Usa:
+- <code>MultilayerEngine</code>
+- <code>generate_attributes</code>
+- constantes como <code>COL_OPINION</code>, <code>COL_COOP</code>, <code>K</code>
+- <code>targeted_llm_bias</code></p>
+<h3 id="cfc_trainerpy"><code>cfc_trainer.py</code></h3>
+<p>Usa:
+- <code>generate_attributes</code>
+- <code>compute_theta</code></p>
+<h3 id="teststest_multilayerpy"><code>tests/test_multilayer.py</code></h3>
+<p>Valida:
+- comportamiento del engine
+- normalización de pesos
+- clipping
+- rendimiento
+- shape del estado
+- generadores de red
+- utilidades numéricas</p>
+<h3 id="massive_enginepy"><code>massive_engine.py</code></h3>
+<p>Usa:
+- <code>multi_potential_gradient</code>
+- <code>multilayer_langevin_step</code>
+- generadores de red multicapa</p>
+<h3 id="implicacion_11">Implicación</h3>
+<p>Aunque este slice se centra en la frontera con <code>simulator.py</code>, el módulo <code>multilayer_engine.py</code> ya es nodo relevante para varios dominios. Tocar esta frontera puede irradiar efectos indirectos.</p>
+<hr />
+<h2 id="7-riesgos-especificos">7. Riesgos específicos</h2>
+<h2 id="riesgo-1-separar-multilayerengine-del-simulador-sin-wrapper-adecuado">Riesgo 1 — Separar <code>MultilayerEngine</code> del simulador sin wrapper adecuado</h2>
+<p>Rompería el coordinador <code>IntegratedSimulator</code> y probablemente parte de diagnósticos/topología.</p>
+<h2 id="riesgo-2-mover-proveedores-sin-adaptacion">Riesgo 2 — Mover <code>PROVEEDORES</code> sin adaptación</h2>
+<p>Podría romper <code>targeted_llm_bias()</code> en <code>multilayer_engine.py</code>.</p>
+<h2 id="riesgo-3-cambiar-shape-del-estado-integrado">Riesgo 3 — Cambiar shape del estado integrado</h2>
+<p>Rompería <code>update_opinions()</code> y su validación del estado <code>(N, K)</code>.</p>
+<h2 id="riesgo-4-cambiar-semantica-de-capas">Riesgo 4 — Cambiar semántica de capas</h2>
+<p>Rompería <code>dynamic_rewiring()</code>, <code>graphs</code> y el uso de topology updates.</p>
+<h2 id="riesgo-5-tocar-esta-frontera-sin-considerar-a-massive_enginepy">Riesgo 5 — Tocar esta frontera sin considerar a <code>massive_engine.py</code></h2>
+<p><code>massive_engine.py</code> también depende de varias primitivas del módulo multicapa, así que la frontera real es parte de una triada:
+- <code>simulator.py</code>
+- <code>multilayer_engine.py</code>
+- <code>massive_engine.py</code></p>
+<hr />
+<h2 id="8-opciones-futuras-seguras-solo-conceptuales-no-para-ejecutar-aun">8. Opciones futuras seguras (solo conceptuales, no para ejecutar aún)</h2>
+<h2 id="opcion-a-encapsular-config-de-proveedores-en-un-modulo-estable">Opción A — Encapsular config de proveedores en un módulo estable</h2>
+<p>Objetivo:
+- que <code>multilayer_engine.py</code> no tenga que importar <code>PROVEEDORES</code> desde <code>simulator.py</code></p>
+<p>Condición:
+- mantener reexport o wrapper estable durante transición</p>
+<h2 id="opcion-b-definir-interfaz-explicita-del-motor-multicapa-consumida-por-el-simulador">Opción B — Definir interfaz explícita del motor multicapa consumida por el simulador</h2>
+<p>Objetivo:
+- formalizar qué subset del API usa <code>IntegratedSimulator</code></p>
+<p>Condición:
+- no cambiar el engine completo, solo documentar o encapsular su superficie usada</p>
+<h2 id="opcion-c-documentar-o-tipar-el-estado-n-k-compartido">Opción C — Documentar o tipar el estado <code>(N, K)</code> compartido</h2>
+<p>Objetivo:
+- hacer explícito el contrato de shape y clipping entre engines</p>
+<p>Condición:
+- coexistir primero con el estado actual, no reemplazarlo de golpe</p>
+<h2 id="opcion-d-separar-helpers-publicos-del-multicapa-de-los-acoplamientos-uillm">Opción D — Separar helpers públicos del multicapa de los acoplamientos UI/LLM</h2>
+<p>Objetivo:
+- distinguir mejor entre núcleo numérico y utilidades orientadas a narrativa/UX</p>
+<p>Condición:
+- hacerlo por slices pequeños, porque <code>app.py</code>, <code>cfc_trainer.py</code> y <code>massive_engine.py</code> también consumen este módulo</p>
+<hr />
+<h2 id="9-reglas-derivadas-para-consolidacion">9. Reglas derivadas para consolidación</h2>
+<ol>
+<li>No intervenir esta frontera como primer slice técnico.</li>
+<li>Si se toca <code>PROVEEDORES</code>, validar también <code>targeted_llm_bias()</code>.</li>
+<li>Si se toca <code>MultilayerEngine</code>, validar también:</li>
+<li><code>IntegratedSimulator</code></li>
+<li><code>massive_engine.py</code></li>
+<li><code>app.py</code></li>
+<li><code>cfc_trainer.py</code></li>
+<li><code>tests/test_multilayer.py</code></li>
+<li>Tratar <code>update_opinions()</code>, <code>graphs</code> y <code>dynamic_rewiring()</code> como frontera pública efectiva.</li>
+<li>Considerar esta relación como parte de una triada con <code>massive_engine.py</code>, no como un vínculo aislado.</li>
+</ol>
+<hr />
+<h2 id="10-conclusion">10. Conclusión</h2>
+<p>La frontera <code>simulator.py</code> ↔ <code>multilayer_engine.py</code> es útil pero delicada.</p>
+<p>No es solo una dependencia de implementación. Es una frontera donde confluyen:
+- simulación integrada,
+- topología dinámica,
+- clipping y shape del estado,
+- diagnósticos,
+- configuración de proveedores,
+- y consumers externos adicionales.</p>
+<p>Por eso, cualquier consolidación futura debe tratar esta frontera con slices pequeños, wrappers estables y validación cruzada explícita.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.expand", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

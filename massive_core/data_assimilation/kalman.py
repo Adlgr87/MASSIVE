@@ -201,8 +201,20 @@ class SparseEnsembleKalmanFilter:
     # Predict / update
     # ------------------------------------------------------------------
 
-    def predict(self, model_fn, process_noise: Optional[np.ndarray] = None):
-        """Advance the full ensemble through *model_fn*."""
+    def predict(
+        self,
+        model_fn: Callable[[Array], Array],
+        process_noise: Optional[np.ndarray] = None,
+    ) -> Array:
+        """Advance the full ensemble through *model_fn*.
+
+        Args:
+            model_fn: Maps one full state vector to the next.
+            process_noise: Optional process-noise covariance for additive noise.
+
+        Returns:
+            Updated ensemble array of shape ``(n_ensemble, n_state_dim)``.
+        """
         self.ensemble = np.array([model_fn(row) for row in self.ensemble])
         if process_noise is not None:
             noise = self.rng.multivariate_normal(
@@ -211,6 +223,7 @@ class SparseEnsembleKalmanFilter:
                 size=self.n_ensemble,
             )
             self.ensemble += noise
+        return self.ensemble
 
     def update(self, observations: np.ndarray) -> np.ndarray:
         """Perform EnKF analysis on the observable sub-space.
@@ -264,9 +277,22 @@ class SparseEnsembleKalmanFilter:
 
         return mean
 
-    def assimilate_step(self, model_fn, observations: np.ndarray,
-                        process_noise: Optional[np.ndarray] = None) -> Tuple[np.ndarray, np.ndarray]:
-        """Full predict-update cycle for sparse EnKF."""
+    def assimilate_step(
+        self,
+        model_fn: Callable[[Array], Array],
+        observations: np.ndarray,
+        process_noise: Optional[np.ndarray] = None,
+    ) -> Tuple[np.ndarray, np.ndarray]:
+        """Full predict-update cycle for sparse EnKF.
+
+        Args:
+            model_fn: Maps one full state vector to the next.
+            observations: Observation vector of length ``n_obs_dim``.
+            process_noise: Optional process-noise covariance for the predict step.
+
+        Returns:
+            Tuple ``(state_estimate, ensemble_copy)``.
+        """
         self.predict(model_fn, process_noise)
         state_estimate = self.update(observations)
         return state_estimate, self.ensemble.copy()

@@ -1,0 +1,1169 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="MASSIVE — Hybrid social dynamics simulator. Numerical core + LLM as regime selector.">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>MASSIVE — Inventario arquitectónico basado en evidencia - MASSIVE Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#massive-inventario-arquitectonico-basado-en-evidencia" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="MASSIVE Documentation" class="md-header__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MASSIVE Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              MASSIVE — Inventario arquitectónico basado en evidencia
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="MASSIVE Documentation" class="md-nav__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    MASSIVE Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../README_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spanish Version
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation (PVU-BS)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Validation (PVU-BS)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/PVU_MASSIVE_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/PVU_MASSIVE_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocolo (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/preregistration_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registration (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/preregistration_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registro (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/validation_report_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report template (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/validation_report_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plantilla de reporte (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#proposito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Propósito
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#premisa-fundamental" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Premisa fundamental
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-evidencia-principal-observada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Evidencia principal observada
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Evidencia principal observada">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-la-superficie-publica-real-sigue-anclada-en-modulos-raiz" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1. La superficie pública real sigue anclada en módulos raíz
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-massive-existe-pero-no-actua-aun-como-nucleo-operativo-consolidado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2. massive/ existe pero no actúa aún como núcleo operativo consolidado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-simulatorpy-es-el-punto-de-acoplamiento-central" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3. simulator.py es el punto de acoplamiento central
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-apppy-depende-de-una-red-transversal-de-modulos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4. app.py depende de una red transversal de módulos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-social_architectpy-depende-del-simulador-optimizacion-y-forecast" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5. social_architect.py depende del simulador, optimización y forecast
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-multilayer_enginepy-tambien-esta-acoplado-al-ecosistema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6. multilayer_engine.py también está acoplado al ecosistema
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#17-existe-un-contrato-backendfrontend-tipado-y-validado-por-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.7. Existe un contrato backend/frontend tipado y validado por tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#18-los-tests-actuales-codifican-la-arquitectura-observable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.8. Los tests actuales codifican la arquitectura observable
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-mapa-conceptual-del-sistema-actual" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Mapa conceptual del sistema actual
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#21-superficies-publicas-activas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1. Superficies públicas activas
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.1. Superficies públicas activas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#legacyroot-public-surface" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Legacy/root public surface
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#wrappers-adapters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Wrappers / adapters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#typed-contract-zone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Typed contract zone
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#partial-modularization-zone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Partial modularization zone
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-riesgos-de-consolidacion-detectados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Riesgos de consolidación detectados
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Riesgos de consolidación detectados">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#riesgo-1-confundir-arquitectura-objetivo-con-arquitectura-real" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Riesgo 1 — Confundir arquitectura objetivo con arquitectura real
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#riesgo-2-tratar-modulos-como-independientes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Riesgo 2 — Tratar módulos como independientes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#riesgo-3-reubicar-simulatorpy-prematuramente" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Riesgo 3 — Reubicar simulator.py prematuramente
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#riesgo-4-suponer-que-massive_core-ya-desacoplo-el-sistema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Riesgo 4 — Suponer que massive_core ya desacopló el sistema
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#riesgo-5-romper-contratos-backendfrontend-durante-un-refactor-estructural-amplio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Riesgo 5 — Romper contratos backend/frontend durante un refactor estructural amplio
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-oportunidades-de-consolidacion-reales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Oportunidades de consolidación reales
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Oportunidades de consolidación reales">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#oportunidad-a-consolidar-documentacion-y-ownership-antes-del-codigo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Oportunidad A — Consolidar documentación y ownership antes del código
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#oportunidad-b-separar-dominios-por-responsabilidad-no-solo-por-carpeta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Oportunidad B — Separar dominios por responsabilidad, no solo por carpeta
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#oportunidad-c-usar-wrappers-como-estrategia-intermedia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Oportunidad C — Usar wrappers como estrategia intermedia
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-conclusion-operativa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Conclusión operativa
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="massive-inventario-arquitectonico-basado-en-evidencia">MASSIVE — Inventario arquitectónico basado en evidencia</h1>
+<h2 id="proposito">Propósito</h2>
+<p>Este documento registra el reconocimiento estructural de <code>MASSIVE actualizado</code> realizado <strong>antes de cualquier consolidación</strong>. Su objetivo es evitar decisiones basadas en README o suposiciones superficiales.</p>
+<p>Se redacta bajo el protocolo de <code>CLAUDE.md</code>:
+- pensar antes de codificar,
+- simplicidad primero,
+- cambios quirúrgicos,
+- ejecución guiada por objetivos verificables.</p>
+<h2 id="premisa-fundamental">Premisa fundamental</h2>
+<p>MASSIVE <strong>no funciona como un conjunto de funciones aisladas</strong>. El sistema opera como un ensamblaje sinérgico donde UI, simulación, forecast, LLM/CfC, validación, DTOs y motores especializados comparten datos, imports y contratos.</p>
+<p>Por tanto, cualquier consolidación estructural debe tratar el repositorio como un <strong>sistema acoplado</strong> y no como carpetas independientes.</p>
+<hr />
+<h2 id="1-evidencia-principal-observada">1. Evidencia principal observada</h2>
+<h3 id="11-la-superficie-publica-real-sigue-anclada-en-modulos-raiz">1.1. La superficie pública real sigue anclada en módulos raíz</h3>
+<p>Evidencia leída:
+- <code>simulator.py</code>
+- <code>massive_engine.py</code>
+- <code>multilayer_engine.py</code>
+- <code>intervention_optimizer.py</code>
+- <code>app.py</code>
+- <code>app/__init__.py</code>
+- <code>massive_core/__init__.py</code>
+- múltiples tests en <code>tests/</code></p>
+<p>Hallazgo:
+- Los tests importan principalmente desde módulos de raíz, por ejemplo:
+  - <code>from simulator import ...</code>
+  - <code>from massive_engine import ...</code>
+  - <code>from multilayer_engine import ...</code>
+  - <code>from intervention_optimizer import ...</code>
+- <code>app/__init__.py</code> reexporta desde <code>simulator</code>.
+- <code>massive_core/__init__.py</code> también reexporta desde <code>simulator</code>.</p>
+<p>Conclusión:
+- La compatibilidad y el comportamiento observable del sistema siguen dependiendo de la <strong>superficie legacy de raíz</strong>.
+- Hoy <code>massive_core</code> actúa como adaptador, no como fuente de verdad independiente.</p>
+<h3 id="12-massive-existe-pero-no-actua-aun-como-nucleo-operativo-consolidado">1.2. <code>massive/</code> existe pero no actúa aún como núcleo operativo consolidado</h3>
+<p>Evidencia observada:
+- <code>massive/</code> solo contiene <code>core/</code>
+- <code>massive/core/</code> contiene <code>micro/</code>
+- no apareció un árbol amplio de módulos Python activos bajo <code>massive/core/</code> en el reconocimiento</p>
+<p>Conclusión:
+- La consolidación hacia <code>massive/</code> quedó incompleta o parcial.
+- A día de hoy no puede asumirse que <code>massive/</code> sea el centro real del sistema.</p>
+<h3 id="13-simulatorpy-es-el-punto-de-acoplamiento-central">1.3. <code>simulator.py</code> es el punto de acoplamiento central</h3>
+<p>Evidencia en imports de <code>simulator.py</code>:
+- <code>benchmarks.butterfly_diagnostic</code>
+- <code>massive_engine.MassiveEngine</code>
+- <code>multilayer_engine.MultilayerEngine</code>
+- <code>schemas.GamePayoff</code>
+- <code>utility_logic.calculate_strategic_force</code>
+- <code>llm_credentials.resolve_provider_api_key</code>
+- <code>empirical_calibration.*</code>
+- <code>cfc_router.CfCRouter</code> (opcional)
+- <code>extended_models.*</code> (opcional)
+- dependencias científicas (<code>numpy</code>, <code>scipy</code>, <code>networkx</code>, <code>requests</code>)</p>
+<p>Conclusión:
+- <code>simulator.py</code> no es un módulo simple: es un <strong>orquestador híbrido</strong> que conecta:
+  - dinámica social base,
+  - motores integrados,
+  - calibración empírica,
+  - selección LLM,
+  - fast path CfC,
+  - diagnósticos,
+  - teoría de juegos,
+  - TDA y EWS.
+- Tocar su posición o interfaz sin estrategia de compatibilidad sería de alto riesgo.</p>
+<h3 id="14-apppy-depende-de-una-red-transversal-de-modulos">1.4. <code>app.py</code> depende de una red transversal de módulos</h3>
+<p>Evidencia observada en <code>app.py</code>:
+- importa desde:
+  - <code>i18n</code>
+  - <code>llm_credentials</code>
+  - <code>social_architect</code>
+  - <code>visualizations</code>
+  - <code>forecast</code>
+  - <code>simulator</code>
+  - <code>cfc_router</code> (opcional)
+  - conectores sociales y motores especializados dentro del flujo de UI</p>
+<p>Conclusión:
+- La UI Streamlit no es una capa fina. Es un <strong>integrador operativo</strong> de múltiples dominios.
+- Una consolidación estructural no puede asumir que <code>app.py</code> solo consume una API limpia y estable; hoy participa de varias uniones internas del sistema.</p>
+<h3 id="15-social_architectpy-depende-del-simulador-optimizacion-y-forecast">1.5. <code>social_architect.py</code> depende del simulador, optimización y forecast</h3>
+<p>Evidencia observada:
+- <code>from simulator import run_with_schedule, resumen_historial, DEFAULT_CONFIG</code>
+- <code>from intervention_optimizer import optimize_interventions</code>
+- <code>from forecast import TemporalConfig, forecast</code>
+- uso opcional de <code>cfc_router</code></p>
+<p>Conclusión:
+- El arquitecto social no es un módulo aislado de IA; depende del núcleo de simulación y de la capa temporal.
+- Cualquier cambio estructural aquí tiene impacto transversal.</p>
+<h3 id="16-multilayer_enginepy-tambien-esta-acoplado-al-ecosistema">1.6. <code>multilayer_engine.py</code> también está acoplado al ecosistema</h3>
+<p>Evidencia observada:
+- depende de <code>llm_credentials</code>
+- depende de <code>state_compression</code>
+- usa <code>cfc_router</code> opcionalmente para la <code>tau_matrix</code></p>
+<p>Conclusión:
+- El motor multicapa tampoco es independiente. Participa del sistema LLM/CfC y del pipeline de compresión.</p>
+<h3 id="17-existe-un-contrato-backendfrontend-tipado-y-validado-por-tests">1.7. Existe un contrato backend/frontend tipado y validado por tests</h3>
+<p>Evidencia observada:
+- <code>backend/app/models/*</code>
+- <code>scripts/gen_ts_types.py</code>
+- tests en <code>tests/test_dto_models.py</code>
+- archivo generado en <code>frontend/src/types/api.generated.ts</code></p>
+<p>Conclusión:
+- El sistema ya tiene un subdominio con una disciplina de contrato más fuerte:
+  - DTOs Pydantic en backend
+  - generación de tipos TS
+  - verificación por tests
+- Esta zona puede servir de referencia metodológica para futuras consolidaciones.</p>
+<h3 id="18-los-tests-actuales-codifican-la-arquitectura-observable">1.8. Los tests actuales codifican la arquitectura observable</h3>
+<p>Evidencia observada:
+- <code>tests/test_simulator.py</code>
+- <code>tests/test_integrated_dynamics.py</code>
+- <code>tests/test_energy_core.py</code>
+- <code>tests/test_multilayer.py</code>
+- <code>tests/test_massive_engine.py</code>
+- <code>tests/test_integration_llm.py</code>
+- <code>tests/test_social_architect.py</code>
+- <code>tests/test_dto_models.py</code></p>
+<p>Conclusión:
+- Aunque exista una visión más modular en documentos previos, la arquitectura que realmente cuenta es la que los tests consumen.
+- Hoy los tests fijan como superficie estable principalmente a los módulos de raíz.</p>
+<hr />
+<h2 id="2-mapa-conceptual-del-sistema-actual">2. Mapa conceptual del sistema actual</h2>
+<h2 id="21-superficies-publicas-activas">2.1. Superficies públicas activas</h2>
+<h3 id="legacyroot-public-surface">Legacy/root public surface</h3>
+<ul>
+<li><code>simulator.py</code></li>
+<li><code>massive_engine.py</code></li>
+<li><code>multilayer_engine.py</code></li>
+<li><code>intervention_optimizer.py</code></li>
+<li><code>energy_engine.py</code></li>
+<li><code>forecast/</code></li>
+<li><code>social_architect.py</code></li>
+<li><code>app.py</code></li>
+</ul>
+<h3 id="wrappers-adapters">Wrappers / adapters</h3>
+<ul>
+<li><code>app/__init__.py</code></li>
+<li><code>massive_core/__init__.py</code></li>
+</ul>
+<h3 id="typed-contract-zone">Typed contract zone</h3>
+<ul>
+<li><code>backend/app/models/</code></li>
+<li><code>scripts/gen_ts_types.py</code></li>
+<li><code>frontend/src/types/</code></li>
+</ul>
+<h3 id="partial-modularization-zone">Partial modularization zone</h3>
+<ul>
+<li><code>massive/core/micro/</code></li>
+<li><code>micro_massive/</code> (aparentemente reducido o residual)</li>
+</ul>
+<hr />
+<h2 id="3-riesgos-de-consolidacion-detectados">3. Riesgos de consolidación detectados</h2>
+<h3 id="riesgo-1-confundir-arquitectura-objetivo-con-arquitectura-real">Riesgo 1 — Confundir arquitectura objetivo con arquitectura real</h3>
+<p>Existe evidencia documental previa de una modularización más profunda, pero la evidencia del código y tests muestra que la raíz sigue siendo crítica.</p>
+<h3 id="riesgo-2-tratar-modulos-como-independientes">Riesgo 2 — Tratar módulos como independientes</h3>
+<p>No aplica a MASSIVE. El sistema está acoplado en:
+- imports,
+- contratos de datos,
+- tests,
+- flujos UI,
+- motores internos,
+- y rutas de compatibilidad.</p>
+<h3 id="riesgo-3-reubicar-simulatorpy-prematuramente">Riesgo 3 — Reubicar <code>simulator.py</code> prematuramente</h3>
+<p>Es el módulo con más acoplamiento transversal. Moverlo o vaciarlo demasiado pronto sería una operación de alto riesgo.</p>
+<h3 id="riesgo-4-suponer-que-massive_core-ya-desacoplo-el-sistema">Riesgo 4 — Suponer que <code>massive_core</code> ya desacopló el sistema</h3>
+<p>La evidencia indica que <code>massive_core</code> aún reexporta desde <code>simulator</code> y no constituye una independencia estructural real.</p>
+<h3 id="riesgo-5-romper-contratos-backendfrontend-durante-un-refactor-estructural-amplio">Riesgo 5 — Romper contratos backend/frontend durante un refactor estructural amplio</h3>
+<p>La zona DTO + TS generation ya tiene validación automática; debe tratarse como frontera estable.</p>
+<hr />
+<h2 id="4-oportunidades-de-consolidacion-reales">4. Oportunidades de consolidación reales</h2>
+<h3 id="oportunidad-a-consolidar-documentacion-y-ownership-antes-del-codigo">Oportunidad A — Consolidar documentación y ownership antes del código</h3>
+<p>Es la acción de menor riesgo y mayor retorno inmediato.</p>
+<h3 id="oportunidad-b-separar-dominios-por-responsabilidad-no-solo-por-carpeta">Oportunidad B — Separar dominios por responsabilidad, no solo por carpeta</h3>
+<p>Dominios observables:
+- simulación legacy/orquestación
+- motores especializados
+- social architect / optimización
+- forecast temporal
+- contratos DTO / frontend
+- CfC / LLM / credenciales
+- validación y benchmarks</p>
+<h3 id="oportunidad-c-usar-wrappers-como-estrategia-intermedia">Oportunidad C — Usar wrappers como estrategia intermedia</h3>
+<p>La evidencia muestra que MASSIVE ya tolera wrappers/adapters (<code>app/__init__.py</code>, <code>massive_core/__init__.py</code>).
+Eso sugiere que la consolidación segura debe avanzar mediante:
+1. extracción interna,
+2. wrappers estables,
+3. validación,
+4. y solo después reducción de duplicación.</p>
+<hr />
+<h2 id="5-conclusion-operativa">5. Conclusión operativa</h2>
+<p>La consolidación estructural de MASSIVE debe partir de esta verdad:</p>
+<blockquote>
+<p>El sistema actual es híbrido, sinérgico y todavía fuertemente centrado en módulos de raíz. La modularización existente es parcial y no debe sobreestimarse.</p>
+</blockquote>
+<p>Por lo tanto:
+- primero se consolida el mapa arquitectónico,
+- luego se fijan reglas de intervención,
+- después se trabaja por slices pequeños y verificables,
+- y solo al final se evalúa reducción de superficie legacy.</p>
+<p>Cualquier otra secuencia aumenta innecesariamente el riesgo de daño estructural.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.expand", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

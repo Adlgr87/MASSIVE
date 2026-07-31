@@ -25,6 +25,31 @@ class NaiveBaseline:
         return np.full(horizon, last)
 
 
+class SeasonalNaiveBaseline:
+    """Seasonal naive: repeat the value from ``season`` steps ago.
+
+    Falls back to last-value naive when the series is shorter than season+1.
+    """
+
+    name = "seasonal_naive"
+
+    def __init__(self, season: int = 4):
+        self.season = max(1, int(season))
+
+    def predict(self, train: np.ndarray, horizon: int) -> np.ndarray:
+        y = np.asarray(train, dtype=float).ravel()
+        if len(y) <= self.season:
+            return np.full(horizon, float(y[-1]))
+        preds = np.empty(horizon, dtype=float)
+        for h in range(horizon):
+            idx = len(y) - self.season + (h % self.season)
+            if idx < 0:
+                preds[h] = float(y[-1])
+            else:
+                preds[h] = float(y[idx])
+        return preds
+
+
 class MovingAverageBaseline:
     """Mean of the last *window* training observations."""
 
@@ -215,14 +240,84 @@ class RidgeLagsBaseline:
         return np.asarray(preds, dtype=float)
 
 
+class _SklearnLagBaseline:
+    """Shared lag-feature recursive multi-step wrapper for sklearn regressors."""
+
+    name = "sklearn_lags"
+
+    def __init__(self, model_factory, lags: int = 4):
+        self._factory = model_factory
+        self.lags = lags
+
+    def _build_xy(self, series: np.ndarray):
+        X, y = [], []
+        for i in range(self.lags, len(series)):
+            X.append(series[i - self.lags : i])
+            y.append(series[i])
+        return np.asarray(X, dtype=float), np.asarray(y, dtype=float)
+
+    def predict(self, train: np.ndarray, horizon: int) -> np.ndarray:
+        if len(train) <= self.lags + 1:
+            return np.full(horizon, float(train[-1]))
+        X, y = self._build_xy(train)
+        model = self._factory()
+        model.fit(X, y)
+        hist = train.copy().astype(float)
+        preds = []
+        for _ in range(horizon):
+            x = hist[-self.lags :]
+            yhat = float(model.predict(x.reshape(1, -1))[0])
+            preds.append(yhat)
+            hist = np.append(hist, yhat)
+        return np.asarray(preds, dtype=float)
+
+
+class RandomForestBaseline(_SklearnLagBaseline):
+    """Random forest regressor on lag features (tabular ML baseline)."""
+
+    name = "random_forest"
+
+    def __init__(self, lags: int = 4, n_estimators: int = 50, random_state: int = 0):
+        from sklearn.ensemble import RandomForestRegressor
+
+        def factory():
+            return RandomForestRegressor(
+                n_estimators=n_estimators,
+                random_state=random_state,
+                max_depth=4,
+                n_jobs=1,
+            )
+
+        super().__init__(factory, lags=lags)
+
+
+class GradientBoostingBaseline(_SklearnLagBaseline):
+    """Gradient boosting regressor on lag features."""
+
+    name = "gradient_boosting"
+
+    def __init__(self, lags: int = 4, n_estimators: int = 50, random_state: int = 0):
+        from sklearn.ensemble import GradientBoostingRegressor
+
+        def factory():
+            return GradientBoostingRegressor(
+                n_estimators=n_estimators,
+                random_state=random_state,
+                max_depth=2,
+            )
+
+        super().__init__(factory, lags=lags)
+
+
 def get_all_baselines() -> list:
     """Return one instance of each baseline available in this environment.
 
     Baselines with missing optional dependencies (e.g., statsmodels,
-    scikit-learn) are skipped gracefully.
+    scikit-learn, torch) are skipped gracefully.
     """
     baselines = [
         NaiveBaseline(),
+        SeasonalNaiveBaseline(season=4),
         MovingAverageBaseline(window=4),
         AR1Baseline(),
         RandomRegimeBaseline(),
@@ -236,9 +331,23 @@ def get_all_baselines() -> list:
         baselines.append(ARIMABaseline())
     except Exception:
         pass
-    # Optional: sklearn-based baseline
+    # Optional: sklearn-based baselines
     try:
         baselines.append(RidgeLagsBaseline(lags=4, alpha=1.0))
+    except Exception:
+        pass
+    try:
+        baselines.append(RandomForestBaseline(lags=4, n_estimators=40))
+    except Exception:
+        pass
+    try:
+        baselines.append(GradientBoostingBaseline(lags=4, n_estimators=40))
+    except Exception:
+        pass
+    # Optional: Mamba SSM baseline (requires torch)
+    try:
+        from mamba_engine import MambaBaseline
+        baselines.append(MambaBaseline())
     except Exception:
         pass
     return baselines
