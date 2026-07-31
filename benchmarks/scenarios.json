@@ -1,0 +1,73 @@
+{
+  "scenarios": {
+    "small": {
+      "name": "Pequeño (Ciudad)",
+      "agentes": 10000,
+      "pasos": 50,
+      "descripcion": "Simulación de una ciudad pequeña",
+      "configuracion": {
+        "regla": "lineal",
+        "rango_opinion": [0, 1],
+        "proveedor_llm": "heuristico"
+      }
+    },
+    "medium": {
+      "name": "Mediano (Región)",
+      "agentes": 100000,
+      "pasos": 30,
+      "descripcion": "Simulación de una región o estado",
+      "configuracion": {
+        "regla": "hk",
+        "rango_opinion": [-1, 1],
+        "proveedor_llm": "heuristico"
+      }
+    },
+    "large": {
+      "name": "Grande (País)",
+      "agentes": 1000000,
+      "pasos": 20,
+      "descripcion": "Simulación a nivel país completo",
+      "configuracion": {
+        "regla": "contagio_competitivo",
+        "rango_opinion": [0, 1],
+        "proveedor_llm": "heuristico"
+      }
+    },
+    "extreme": {
+      "name": "Extremo (Múltiples Países)",
+      "agentes": 5000000,
+      "pasos": 10,
+      "descripcion": "Simulación masiva multi-país",
+      "configuracion": {
+        "regla": "umbral_heterogeneo",
+        "rango_opinion": [0, 1],
+        "proveedor_llm": "heuristico"
+      }
+    }
+  },
+  "optimizaciones_a_probar": {
+    "uint8_compression": {
+      "activado": true,
+      "descripcion": "Uso de uint8 para reducir consumo de memoria en 87.5%"
+    },
+    "super_agentes": {
+      "activado": true,
+      "descripcion": "Agrupación de agentes similares para reducir N efectivo"
+    },
+    "consenso_distribuido": {
+      "activado": false,
+      "descripcion": "Procesamiento distribuido (requiere configuración especial)"
+    }
+  },
+  "metricas_a_capturar": [
+    "ram_max_mb",
+    "ram_promedio_mb",
+    "ram_inicial_mb",
+    "ram_final_mb",
+    "pico_ram_mb",
+    "tiempo_total_segundos",
+    "agentes_por_segundo",
+    "mb_por_agente",
+    "ahorro_estimado_porcentaje"
+  ]
+}

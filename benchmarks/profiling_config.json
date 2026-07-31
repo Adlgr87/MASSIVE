@@ -1,0 +1,62 @@
+{
+  "scenarios": {
+    "quick": {
+      "agents": 1000,
+      "steps": 10,
+      "rules": ["lineal"],
+      "description": "Prueba rápida para desarrollo (30 segundos)"
+    },
+    "small": {
+      "agents": 10000,
+      "steps": 50,
+      "rules": ["lineal", "hk"],
+      "description": "Escenario pequeño para testing (2-5 minutos)"
+    },
+    "medium": {
+      "agents": 100000,
+      "steps": 100,
+      "rules": ["lineal", "hk", "umbral"],
+      "description": "Escenario medio para validación (10-20 minutos)"
+    },
+    "large": {
+      "agents": 1000000,
+      "steps": 50,
+      "rules": ["lineal"],
+      "description": "Escenario grande para producción (1-2 horas)"
+    },
+    "extreme": {
+      "agents": 5000000,
+      "steps": 20,
+      "rules": ["lineal"],
+      "description": "Escenario extremo para stress testing (4-6 horas)"
+    }
+  },
+  "profiling": {
+    "top_functions": 20,
+    "time_threshold_ms": 10,
+    "memory_threshold_mb": 1.0,
+    "save_raw_data": true,
+    "generate_flamegraph": false
+  },
+  "optimization_targets": {
+    "cpu_bound": [
+      "simulator.regla_*",
+      "simulator._actualizar_agente",
+      "simulator.calcular_interacciones"
+    ],
+    "memory_bound": [
+      "simulator.simular_multiples",
+      "historial de opiniones",
+      "matrices de interacción"
+    ],
+    "io_bound": [
+      "guardado de resultados",
+      "serialización JSON"
+    ]
+  },
+  "comparison_baseline": {
+    "enabled": true,
+    "baseline_file": "profiling_results/baseline.json",
+    "regression_threshold_percent": 5.0
+  }
+}

@@ -1,0 +1,21 @@
+================================================================================
+REPORTE DE PROFILING - MASSIVE
+================================================================================
+Fecha: 2026-07-31 02:51:56
+
+📊 CPU PROFILING:
+  Tiempo total: 11.14s
+  Archivo: profiling_results/cpu_profile_20260731_025156.prof
+  Top 5 funciones:
+    1. 1.128 /usr/local/lib/python3.12/site-packages/torch/_jit_internal.py:1022(_overload) (15.794s)
+    2. 0.051 /usr/local/lib/python3.12/site-packages/torch/_ops.py:316(fallthrough) (4.243s)
+    3. 0.032 <frozen importlib._bootstrap>:1390(_handle_fromlist) (3.347s)
+    4. 0.018 {built-in method builtins.__import__} (2.526s)
+    5. 0.245 /usr/local/lib/python3.12/importlib/__init__.py:73(import_module) (2.448s)
+
+🔍 BOTTLENECKS POTENCIALES:
+  ⚠️  1.128 /usr/local/lib/python3.12/site-packages/torch/_jit_internal.py:1022(_overload) - 15.79s
+  ⚠️  0.051 /usr/local/lib/python3.12/site-packages/torch/_ops.py:316(fallthrough) - 4.24s
+  ⚠️  0.032 <frozen importlib._bootstrap>:1390(_handle_fromlist) - 3.35s
+
+================================================================================
