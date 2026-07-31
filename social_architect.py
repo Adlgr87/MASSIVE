@@ -295,6 +295,72 @@ Secuencia final de intervenciones matemáticas ejecutadas: {json.dumps(estrategi
 
 
 # ============================================================
+# MOTOR DE BÚSQUEDA INVERSA — Lógica común extraída
+# ============================================================
+
+def _ejecutar_bucle_busqueda(
+    estado_inicial: dict,
+    objetivo_usuario: str,
+    max_intentos: int,
+    cfg: dict,
+    generar_estrategia_fn,
+    generar_narrativa_fn,
+    modo_simulacion: str,
+    metricas_red: str,
+) -> tuple:
+    """
+    Ejecuta el bucle iterativo de búsqueda inversa, independiente del backend (LangChain o HTTP).
+    
+    Args:
+        estado_inicial: Estado inicial del simulador.
+        objetivo_usuario: Descripción del objetivo deseado.
+        max_intentos: Número máximo de iteraciones.
+        cfg: Configuración del simulador.
+        generar_estrategia_fn: Función que genera estrategia (puede lanzar excepción).
+        generar_narrativa_fn: Función que genera narrativa desde estrategia.
+        modo_simulacion: 'macro' o 'corporativo'.
+        metricas_red: Métricas de la red para contexto.
+    
+    Returns:
+        Tupla (estrategia_json, narrativa, intentos_usados, historial).
+    """
+    historial_feedback = []
+    mejor_estrategia = {}
+    mejor_historial = None
+    mejor_score = -1
+
+    for intento in range(max_intentos):
+        try:
+            estrategia_json = generar_estrategia_fn(historial_feedback)
+        except Exception as e:
+            historial_feedback.append(f"Intento {intento+1}: Error generación: {e}")
+            continue
+
+        historial_sim = run_with_schedule(estado_inicial, estrategia_json, config=cfg)
+        score, feedback = evaluar_resultado(historial_sim, objetivo_usuario, cfg)
+
+        if score > mejor_score:
+            mejor_score = score
+            mejor_estrategia = estrategia_json
+            mejor_historial = historial_sim
+
+        if score >= 90:
+            narrativa = generar_narrativa_fn(estrategia_json)
+            return estrategia_json, narrativa, intento + 1, historial_sim
+        else:
+            historial_feedback.append(f"Intento {intento+1}: {feedback}")
+
+    if mejor_score >= 0:
+        narrativa = (
+            generar_narrativa_fn(mejor_estrategia)
+            + "\n\n*(La estrategia es la mejor aproximación, pero puede no haber cumplido todo el objetivo).* "
+        )
+        return mejor_estrategia, narrativa, max_intentos, mejor_historial
+
+    return {"interventions": []}, "Error total en la búsqueda.", max_intentos, []
+
+
+# ============================================================
 # ÁRQUITECTO SOCIAL — BÚSQUEDA INVERSA PRINCIPAL
 # ============================================================
 
@@ -337,49 +403,23 @@ def buscar_estrategia_inversa(
                 llm = build_llm(provider, api_key, modelo, temperature=0.0)
                 if llm is not None:
                     architect = LangChainSocialArchitect(llm)
-                    historial_feedback: list = []
-                    mejor_estrategia = {}
-                    mejor_historial = None
-                    mejor_score = -1
-
-                    for intento in range(max_intentos):
-                        try:
-                            estrategia_json = architect.generate_strategy(
-                                estado_inicial, objetivo_usuario,
-                                historial_feedback, modo_simulacion, metricas_red,
-                            )
-                        except Exception as e:
-                            historial_feedback.append(f"Intento {intento+1}: LangChain error: {e}")
-                            continue
-
-                        historial_sim = run_with_schedule(estado_inicial, estrategia_json, config=cfg)
-                        score, feedback = evaluar_resultado(historial_sim, objetivo_usuario, cfg)
-
-                        if score > mejor_score:
-                            mejor_score = score
-                            mejor_estrategia = estrategia_json
-                            mejor_historial = historial_sim
-
-                        if score >= 90:
-                            narrativa = architect.generate_narrative(
-                                estrategia_json, objetivo_usuario,
-                                modo_simulacion, metricas_red,
-                            )
-                            return estrategia_json, narrativa, intento + 1, historial_sim
-                        else:
-                            historial_feedback.append(f"Intento {intento+1}: {feedback}")
-
-                    if mejor_score >= 0:
-                        narrativa = (
-                            architect.generate_narrative(
-                                mejor_estrategia, objetivo_usuario,
-                                modo_simulacion, metricas_red,
-                            )
-                            + "\n\n*(La estrategia es la mejor aproximación).* "
+                    
+                    def gen_strategy(feedback_list):
+                        return architect.generate_strategy(
+                            estado_inicial, objetivo_usuario,
+                            feedback_list, modo_simulacion, metricas_red,
                         )
-                        return mejor_estrategia, narrativa, max_intentos, mejor_historial
-
-                    return {"interventions": []}, "Error en LangChain.", max_intentos, []
+                    
+                    def gen_narrative(estrategia):
+                        return architect.generate_narrative(
+                            estrategia, objetivo_usuario,
+                            modo_simulacion, metricas_red,
+                        )
+                    
+                    return _ejecutar_bucle_busqueda(
+                        estado_inicial, objetivo_usuario, max_intentos, cfg,
+                        gen_strategy, gen_narrative, modo_simulacion, metricas_red,
+                    )
         except Exception as lc_err:
             log.warning(f"[LangChain] Falló, usando HTTP directo: {lc_err}")
             # Fall through to standard HTTP path below
@@ -398,13 +438,6 @@ def buscar_estrategia_inversa(
             []
         )
     
-    historial_feedback = []
-
-    estrategia_json = {}
-    mejor_estrategia = {}
-    mejor_historial = None
-    mejor_score = -1
-
     model_llm = os.getenv("OPENAI_MODEL") or "gpt-4o-mini"
 
     # ── Seleccionar system prompt según modo ──────────────────────
@@ -413,55 +446,31 @@ def buscar_estrategia_inversa(
     else:
         system_prompt = _system_prompt_macro()
 
-    for intento in range(max_intentos):
+    def gen_strategy_http(feedback_list):
         user_prompt = _user_prompt_inverso(
             estado_inicial=estado_inicial,
             objetivo_usuario=objetivo_usuario,
-            historial_feedback=historial_feedback,
+            historial_feedback=feedback_list,
             modo_simulacion=modo_simulacion,
             metricas_red=metricas_red,
         )
-
-        try:
-            response = client.chat.completions.create(
-                model=model_llm,
-                messages=[
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user",   "content": user_prompt},
-                ],
-                response_format={"type": "json_object"},
-            )
-
-            response_content = response.choices[0].message.content
-            if response_content.startswith("```json"):
-                response_content = response_content.replace("```json", "", 1).replace("```", "")
-
-            estrategia_json = json.loads(response_content)
-        except Exception as e:
-            historial_feedback.append(f"Intento {intento+1}: Error dictado/parseo LLM: {e}")
-            continue
-
-        historial_sim = run_with_schedule(estado_inicial, estrategia_json, config=cfg)
-        score, feedback = evaluar_resultado(historial_sim, objetivo_usuario, cfg)
-
-        if score > mejor_score:
-            mejor_score = score
-            mejor_estrategia = estrategia_json
-            mejor_historial = historial_sim
-
-        if score >= 90:
-            narrativa = generar_narrativa_final(
-                estrategia_json, objetivo_usuario, modo_simulacion, metricas_red
-            )
-            return estrategia_json, narrativa, intento + 1, historial_sim
-        else:
-            historial_feedback.append(f"Intento {intento+1}: {feedback}")
-
-    if mejor_score >= 0:
-        narrativa = (
-            generar_narrativa_final(mejor_estrategia, objetivo_usuario, modo_simulacion, metricas_red)
-            + "\n\n*(La estrategia es la mejor aproximación, pero puede no haber cumplido todo el objetivo).* "
+        response = client.chat.completions.create(
+            model=model_llm,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user",   "content": user_prompt},
+            ],
+            response_format={"type": "json_object"},
         )
-        return mejor_estrategia, narrativa, max_intentos, mejor_historial
+        response_content = response.choices[0].message.content
+        if response_content.startswith("```json"):
+            response_content = response_content.replace("```json", "", 1).replace("```", "")
+        return json.loads(response_content)
 
-    return {"interventions": []}, "Error total en la simulación.", max_intentos, []
+    def gen_narrative_http(estrategia):
+        return generar_narrativa_final(estrategia, objetivo_usuario, modo_simulacion, metricas_red)
+
+    return _ejecutar_bucle_busqueda(
+        estado_inicial, objetivo_usuario, max_intentos, cfg,
+        gen_strategy_http, gen_narrative_http, modo_simulacion, metricas_red,
+    )
