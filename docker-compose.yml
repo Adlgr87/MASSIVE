@@ -6,7 +6,8 @@ services:
     container_name: massive-uil
     restart: unless-stopped
     ports:
-      - "8000:8000"  # API
+      - "80:80"       # Frontend + API (nginx)
+      - "8000:8000"  # API (direct, optional)
       - "8501:8501"  # Streamlit
     volumes:
       - ./.env.local:/app/.env.local:ro
