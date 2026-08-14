@@ -21,6 +21,11 @@ nav:
   - Home: index.md
   - API Reference: api.md
   - Spanish Version: README_ES.md
+  - Factbook Integration:
+      - Summary: FACTBOOK_SUMMARY.md
+      - Quickstart: FACTBOOK_QUICKSTART.md
+      - Integration Plan: FACTBOOK_INTEGRATION_PLAN.md
+      - Integration Complete: FACTBOOK_INTEGRATION_COMPLETE.md
   - Validation (PVU-BS):
       - Overview: validation/README.md
       - Protocol (EN): validation/PVU_MASSIVE_EN.md

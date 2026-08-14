@@ -346,7 +346,7 @@ Countries: US, CH, GM
 5. `massive/core/factbook/validator.py` - Validación
 6. `data/factbook/factbook_sample.json` - Datos de muestra
 7. `test_factbook_integration.py` - Script de prueba
-8. `FACTBOOK_INTEGRATION_COMPLETE.md` - Esta documentación
+8. `docs/FACTBOOK_INTEGRATION_COMPLETE.md` - Esta documentación
 
 ### Archivos Modificados
 1. `massive/core/utility_logic.py` - Funciones de social pressure

@@ -180,9 +180,9 @@ Accuracy: 86.3%
 
 ### Documentation
 
-1. ✅ **FACTBOOK_INTEGRATION_PLAN.md** - Complete technical plan
-2. ✅ **FACTBOOK_QUICKSTART.md** - Quick start guide
-3. ✅ **FACTBOOK_SUMMARY.md** - This executive summary
+1. ✅ **docs/FACTBOOK_INTEGRATION_PLAN.md** - Complete technical plan
+2. ✅ **docs/FACTBOOK_QUICKSTART.md** - Quick start guide
+3. ✅ **docs/FACTBOOK_SUMMARY.md** - This executive summary
 4. ✅ **factbook_sample.json** - Sample dataset (3 countries)
 
 ### Code Templates
@@ -263,9 +263,9 @@ Systematic comparison of social dynamics
 
 ```
 MASSIVE/
-├── FACTBOOK_INTEGRATION_PLAN.md    ← Complete technical plan (936 lines)
-├── FACTBOOK_QUICKSTART.md          ← Quick start guide (611 lines)
-├── FACTBOOK_SUMMARY.md             ← This file (executive summary)
+├── docs/FACTBOOK_INTEGRATION_PLAN.md    ← Complete technical plan (936 lines)
+├── docs/FACTBOOK_QUICKSTART.md          ← Quick start guide (611 lines)
+├── docs/FACTBOOK_SUMMARY.md             ← This file (executive summary)
 └── data/
     └── factbook/
         ├── factbook_sample.json    ← Sample data (3 countries)
@@ -313,8 +313,8 @@ This integration transforms MASSIVE from a **theoretical framework** into an **e
 
 ### Files to Review
 
-1. **FACTBOOK_INTEGRATION_PLAN.md** - Full technical details
-2. **FACTBOOK_QUICKSTART.md** - Step-by-step guide
+1. **docs/FACTBOOK_INTEGRATION_PLAN.md** - Full technical details
+2. **docs/FACTBOOK_QUICKSTART.md** - Step-by-step guide
 3. **data/factbook/factbook_sample.json** - Sample data structure
 
 ### Code to Implement

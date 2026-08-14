@@ -40,7 +40,7 @@ except ImportError:
 _SIGMA = 0.3
 
 
-@njit
+@njit(cache=True)
 def _landscape_gradient_jit(
     x: float,
     att_positions: np.ndarray,
@@ -67,7 +67,7 @@ def _landscape_gradient_jit(
     return grad
 
 
-@njit
+@njit(cache=True)
 def _step_jit(
     opinions: np.ndarray,
     neighbor_mean: np.ndarray,

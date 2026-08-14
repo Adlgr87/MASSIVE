@@ -43,7 +43,7 @@ params = context.get_massive_params("US")
 print(f"Agents: {params['n_agents']}, Gini: {params['gini_coefficient']:.3f}")
 ```
 
-The repository ships sample data for the CIA country codes `US`, `CH` (China) and `GM` (Germany) in `data/factbook/factbook_sample.json`. A full dataset (260+ countries) can be loaded from [wmccaffrey/cia_world_factbook](https://github.com/wmccaffrey/cia_world_factbook). See `FACTBOOK_INTEGRATION_COMPLETE.md` for full documentation.
+The repository ships sample data for the CIA country codes `US`, `CH` (China) and `GM` (Germany) in `data/factbook/factbook_sample.json`. A full dataset (260+ countries) can be loaded from [wmccaffrey/cia_world_factbook](https://github.com/wmccaffrey/cia_world_factbook). See `docs/FACTBOOK_INTEGRATION_COMPLETE.md` for full documentation.
 
 ---
 

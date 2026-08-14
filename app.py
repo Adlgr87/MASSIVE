@@ -4,6 +4,7 @@ Simulador híbrido con soporte completo de modelos extendidos
 """
 
 import json
+import logging
 import os
 from collections import Counter
 
@@ -34,6 +35,8 @@ from simulator import (
     simular_multiples,
     simular_multiples_dask,
 )
+
+log = logging.getLogger('massive.app')
 
 ANALYTICS_ANIMATION_FRAME_MS = 70
 ANALYTICS_ANIMATION_PAUSE_MS = 0
@@ -273,11 +276,20 @@ with st.sidebar:
 
     api_key, modelo, ollama_host = "", "", DEFAULT_CONFIG["ollama_host"]
 
+    # ── Safe secrets getter (BUG B1: avoid st.secrets errors) ──────────────
+    def safe_get_secret(key: str):
+        """Return a secret from st.secrets without raising if missing."""
+        try:
+            return st.secrets.get(key)
+        except (FileNotFoundError, KeyError, AttributeError, RuntimeError):
+            log.warning(f"st.secrets missing {key!r}; falling back to env only")
+            return None
+
     # Try to get API Key from environment or st.secrets
     env_keys = {
-        "groq": os.getenv("GROQ_API_KEY") or st.secrets.get("GROQ_API_KEY"),
-        "openai": os.getenv("OPENAI_API_KEY") or st.secrets.get("OPENAI_API_KEY"),
-        "openrouter": os.getenv("OPENROUTER_API_KEY") or st.secrets.get("OPENROUTER_API_KEY")
+        "groq": os.getenv("GROQ_API_KEY") or safe_get_secret("GROQ_API_KEY"),
+        "openai": os.getenv("OPENAI_API_KEY") or safe_get_secret("OPENAI_API_KEY"),
+        "openrouter": os.getenv("OPENROUTER_API_KEY") or safe_get_secret("OPENROUTER_API_KEY")
     }
 
     if proveedor == "ollama":

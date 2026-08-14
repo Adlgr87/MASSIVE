@@ -515,13 +515,13 @@ result = simulate(
 
 ### Full Documentation
 
-- **Integration Plan**: `FACTBOOK_INTEGRATION_PLAN.md` (detailed)
+- **Integration Plan**: `docs/FACTBOOK_INTEGRATION_PLAN.md` (detailed)
 - **Sample Data**: `data/factbook/factbook_sample.json`
 - **API Reference**: Inline in `factbook_context.py`
 
 ### Quick Reference
 
-- **This Guide**: `FACTBOOK_QUICKSTART.md` (you are here)
+- **This Guide**: `docs/FACTBOOK_QUICKSTART.md` (you are here)
 - **Examples**: `examples/factbook_simulation.py`
 
 ---
@@ -600,7 +600,7 @@ After integration, you should achieve:
 ## 📞 Support
 
 For questions or issues:
-- Check full plan: `FACTBOOK_INTEGRATION_PLAN.md`
+- Check full plan: `docs/FACTBOOK_INTEGRATION_PLAN.md`
 - Review sample data: `data/factbook/factbook_sample.json`
 - See examples: `examples/factbook_simulation.py`
 

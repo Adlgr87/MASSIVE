@@ -18,12 +18,14 @@ api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
 
 
 async def get_api_key(api_key: Optional[str] = Header(None, alias="X-API-Key")):
-    """Validate API key from header."""
+    """Validate API key from header. Fail-closed in production."""
     valid_key = os.getenv("MASSIVE_API_KEY")
     if not valid_key:
-        # Dev fallback only when MASSIVE_API_KEY unset
-        valid_key = "default-secret-key"
-        log.warning("MASSIVE_API_KEY not set — using insecure default")
+        if os.getenv("MASSIVE_ENV") == "dev":
+            valid_key = "dev-secret-key"
+            log.warning("MASSIVE_API_KEY not set — using dev fallback (dev mode only)")
+        else:
+            raise HTTPException(status_code=503, detail="API key not configured")
     if api_key != valid_key:
         raise HTTPException(status_code=401, detail="Invalid API Key")
     return api_key
