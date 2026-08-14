@@ -17,8 +17,6 @@ módulos `massive_core`.
 > Documento principal en inglés: [`README.md`](./README.md).
 > Esta versión es un resumen para usuarios hispanohablantes.
 
----
-
 ## Características clave
 
 - **Razonamiento de régimen híbrido:** rutas heurísticas, LLM-compatibles y CfC
@@ -65,8 +63,6 @@ El repositorio incluye datos de muestra para los códigos CIA `US`, `CH` (China)
 y `GM` (Alemania) en `data/factbook/factbook_sample.json`. Dataset completo (260+ países) en
 [wmccaffrey/cia_world_factbook](https://github.com/wmccaffrey/cia_world_factbook).
 
----
-
 ## Instalación
 
 ```bash
@@ -76,8 +72,6 @@ pip install -r requirements.txt
 
 Variables de entorno opcionales en `.env.example`. Para Ollama local, configura
 `OLLAMA_HOST` si difiere de `http://localhost:11434`.
-
----
 
 ## Inicio rápido
 
@@ -150,27 +144,6 @@ python -m benchmarks.runner --cases datasets/pvu_cases --offline \
 
 ---
 
-## Mamba SSM — baseline de pronóstico (complementario a CfC)
-
-MASSIVE incluye un modelo SSM selectivo (inspirado en Mamba) implementado en PyTorch puro como **baseline complementario** a la capa CfC:
-
-- `MambaCell` — celda SSM selectiva con paso de discretización Δ dependiente de la entrada.
-- `MambaSSM` — red SSM multicapa sobre secuencias de longitud arbitraria.
-- `MambaBaseline` — baseline plug-in para PVU-BS con la misma interfaz `predict(train, horizon)` que `AR1Baseline`, `ETSBaseline`, etc.
-
-**Rol diferenciado vs CfC:** Mamba no participa en la selección de régimen ni en las propuestas del Arquitecto Social — esas funciones las cubre CfC. Mamba opera exclusivamente como baseline de pronóstico de series temporales en la capa de benchmarks.
-
-```python
-from mamba_engine import MambaBaseline
-import numpy as np
-
-baseline = MambaBaseline(d_model=8, d_state=16, lags=4, epochs=50)
-forecast = baseline.predict(train_series, horizon=10)
-```
-
-> **Nota:** En series cortas univariadas (típicas de los casos PVU), la ventaja de SSM sobre AR(1)/ETS puede ser marginal. El test Holm-Bonferroni lo reflejará objetivamente.
-
----
 
 ## Mapa del repositorio
 
@@ -183,7 +156,6 @@ forecast = baseline.predict(train_series, horizon=10)
 | Asimilación de datos | `massive_core/data_assimilation/` | EnKF, observaciones dispersas. |
 | Módulos físicos | `massive_core/physics/`, `massive_core/dynamical_systems/` | Mecánica estadística, perturbación, bifurcación. |
 | CfC / meta-learning | `cfc_engine.py`, `cfc_router.py`, `cfc_trainer.py` | Modelos neuronales de tiempo continuo. |
-| Mamba SSM | `mamba_engine.py` | Baseline SSM selectivo puro PyTorch para benchmarks. |
 | Aceleración Rust | `rust_core/`, `massive_core/rust_core.py` | Kernels compilados opcionales con fallback compatible en Python. |
 | Motor de energía | `energy_engine.py`, `energy_runner.py` | Paisajes de energía social. |
 | Motor multicapa | `multilayer_engine.py`, `massive_engine.py` | Dinámica sociodemográfica y masiva. |
@@ -202,8 +174,6 @@ forecast = baseline.predict(train_series, horizon=10)
 - Reporte de benchmark: `experiments/MASSIVE_BENCHMARK_REPORT.md`
 - Benchmark con motor real: `experiments/06_real_benchmark_v0/REPORT.md`
 - Validación empírica histórica: `experiments/real_validation/EMPIRICAL_VALIDATION_REPORT.md`
-
----
 
 ## Licencia
 

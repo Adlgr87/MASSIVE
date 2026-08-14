@@ -313,7 +313,7 @@ def get_all_baselines() -> list:
     """Return one instance of each baseline available in this environment.
 
     Baselines with missing optional dependencies (e.g., statsmodels,
-    scikit-learn, torch) are skipped gracefully.
+    scikit-learn) are skipped gracefully.
     """
     baselines = [
         NaiveBaseline(),
@@ -342,12 +342,6 @@ def get_all_baselines() -> list:
         pass
     try:
         baselines.append(GradientBoostingBaseline(lags=4, n_estimators=40))
-    except Exception:
-        pass
-    # Optional: Mamba SSM baseline (requires torch)
-    try:
-        from mamba_engine import MambaBaseline
-        baselines.append(MambaBaseline())
     except Exception:
         pass
     return baselines
