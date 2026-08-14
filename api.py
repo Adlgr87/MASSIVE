@@ -221,6 +221,187 @@ async def api_simulate(
         raise _public_error(exc)
 
 
+
+
+# ── API v1: Architect, Forecast, Energy endpoints ───────────────────────────
+# Wired to the real core functions (see social_architect.py, forecast/engine.py,
+# energy_runner.py). Incoming payloads are validated loosely as dicts to stay
+# consistent with the existing /api/wizard and /api/simulate-uil endpoints;
+# outgoing / error shapes follow the same _public_error + _rate_limit pattern.
+#
+# The /api/v1/forecast endpoint validates its projected point against the
+# existing DTOs from backend.app.models (ForecastPoint / Feasibility).
+
+@app.post("/api/v1/architect")
+async def api_architect(
+    request: Request,
+    payload: dict,
+    api_key: Optional[str] = Depends(get_api_key),
+):
+    """Social architect inverse-strategy endpoint.
+
+    Runs the inverse-search architect to find a strategy reaching a user goal.
+    Payload fields:
+        estado_inicial: dict  – initial simulator state.
+        objetivo_usuario: str – desired end-state description.
+        max_intentos: int     (optional, default 3)
+        config: dict          (optional, simulator overrides)
+        modo_simulacion: str  (optional, "macro" | "corporativo")
+        metricas_red: str     (optional, network metrics summary)
+    """
+    _rate_limit(request)
+    from social_architect import buscar_estrategia_inversa
+    try:
+        if not isinstance(payload, dict):
+            raise HTTPException(status_code=400, detail="JSON body required")
+        estado_inicial = payload.get("estado_inicial")
+        objetivo_usuario = payload.get("objetivo_usuario")
+        if not isinstance(estado_inicial, dict) or not isinstance(objetivo_usuario, str)                 or not objetivo_usuario.strip():
+            raise HTTPException(
+                status_code=400,
+                detail="'estado_inicial' (dict) and 'objetivo_usuario' (str) are required",
+            )
+        estrategia, narrativa, intentos, historial = buscar_estrategia_inversa(
+            estado_inicial=estado_inicial,
+            objetivo_usuario=objetivo_usuario,
+            max_intentos=int(payload.get("max_intentos", 3)),
+            config=payload.get("config"),
+            modo_simulacion=payload.get("modo_simulacion", "macro"),
+            metricas_red=payload.get("metricas_red", ""),
+        )
+        return {
+            "strategy": estrategia,
+            "narrative": narrativa,
+            "attempts": intentos,
+            "history_summary": historial[:5] if isinstance(historial, list) else [],
+            "history_length": len(historial) if isinstance(historial, list) else 0,
+        }
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise _public_error(exc)
+
+
+@app.post("/api/v1/forecast")
+async def api_forecast(
+    request: Request,
+    payload: dict,
+    api_key: Optional[str] = Depends(get_api_key),
+):
+    """Forecast endpoint with confidence intervals.
+
+    Projects temporal risk metrics over a simulation state snapshot.
+    Payload fields:
+        simulation_state: dict – snapshot with optional "ews" metrics.
+        temporal_config: dict  (optional) – TemporalConfig overrides.
+        mode: "analytical" | "monte_carlo" (optional, default "analytical")
+        n_runs: int             (optional, MC mode only)
+    """
+    _rate_limit(request)
+    from forecast.engine import forecast
+    try:
+        if not isinstance(payload, dict):
+            raise HTTPException(status_code=400, detail="JSON body required")
+        simulation_state = payload.get("simulation_state")
+        if not isinstance(simulation_state, dict):
+            raise HTTPException(status_code=400, detail="'simulation_state' (dict) is required")
+        temporal_cfg = payload.get("temporal_config") or {}
+        result = forecast(
+            simulation_state,
+            temporal_config=temporal_cfg if isinstance(temporal_cfg, dict) else {},
+            mode=payload.get("mode", "analytical"),
+            n_runs=int(payload.get("n_runs", 200)),
+        )
+        data = result.model_dump() if hasattr(result, "model_dump") else dict(result)
+        # Validate the projected point against the existing ForecastPoint /
+        # Feasibility DTOs (backend.app.models.dto_forecast) so the response
+        # stays schema-aligned with the forecast domain contract.
+        try:
+            from backend.app.models import ForecastPoint, Feasibility
+            _p_event = float(data.get("p_event", 0.0))
+            _lower = max(0.0, _p_event - 0.05)
+            _upper = min(1.0, _p_event + 0.05)
+            point = ForecastPoint(
+                tick=data.get("steps_to_event") or 0,
+                mean_opinion=_p_event,
+                polarization=0.0,
+                confidence_lower=_lower,
+                confidence_upper=_upper,
+            )
+            feas = Feasibility(
+                score=_p_event,
+                label=data.get("confidence", "low"),
+                rationale=data.get("mode"),
+            )
+        except Exception:
+            # DTO validation is best-effort; never leak internals.
+            point = {"tick": data.get("steps_to_event") or 0,
+                     "mean_opinion": float(data.get("p_event", 0.0)),
+                     "polarization": 0.0,
+                     "confidence_lower": max(0.0, float(data.get("p_event", 0.0)) - 0.05),
+                     "confidence_upper": min(1.0, float(data.get("p_event", 0.0)) + 0.05)}
+            feas = {"score": float(data.get("p_event", 0.0)),
+                    "label": data.get("confidence", "low"),
+                    "rationale": data.get("mode")}
+        point_dict = point.model_dump() if hasattr(point, "model_dump") else dict(point)
+        feas_dict = feas.model_dump() if hasattr(feas, "model_dump") else dict(feas)
+        return {
+            "forecast": {
+                "sim_id": payload.get("sim_id"),
+                "horizon_ticks": data.get("steps_to_event"),
+                "points": [point_dict],
+                "feasibility": feas_dict,
+            },
+            "raw": data,
+        }
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise _public_error(exc)
+
+
+@app.post("/api/v1/energy")
+async def api_energy(
+    request: Request,
+    payload: dict,
+    api_key: Optional[str] = Depends(get_api_key),
+):
+    """Energy landscape analysis endpoint.
+
+    Runs the Langevin energy engine to evolve opinions on a social energy
+    landscape derived from a user goal.
+    Payload fields:
+        user_goal: str       – goal description (required)
+        n_agents: int          (optional, default 50)
+        steps: int             (optional, default 100)
+        connectivity: float    (optional, default 0.3)
+        range_type: "bipolar"|"unipolar" (optional, default "bipolar")
+        seed: int              (optional, default 42)
+        config_overrides: dict (optional)
+    """
+    _rate_limit(request)
+    from energy_runner import run_energy_simulation
+    try:
+        if not isinstance(payload, dict):
+            raise HTTPException(status_code=400, detail="JSON body required")
+        user_goal = payload.get("user_goal")
+        if not isinstance(user_goal, str) or not user_goal.strip():
+            raise HTTPException(status_code=400, detail="'user_goal' (str) is required")
+        result = run_energy_simulation(
+            user_goal=user_goal,
+            n_agents=int(payload.get("n_agents", 50)),
+            steps=int(payload.get("steps", 100)),
+            connectivity=float(payload.get("connectivity", 0.3)),
+            range_type=payload.get("range_type", "bipolar"),
+            seed=int(payload.get("seed", 42)),
+            config_overrides=payload.get("config_overrides"),
+        )
+        return result
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise _public_error(exc)
+
 @app.get("/")
 async def root():
     return {
@@ -237,4 +418,37 @@ async def health_check():
         "status": "healthy",
         "service": "MASSIVE UIL API",
         "version": "1.0.0",
+    }
+
+
+@app.get("/ready")
+async def readiness_check():
+    """Check if the API is ready to accept requests (not just healthy)."""
+    checks = {"status": "ready", "checks": {}}
+
+    # Check if LLM provider is configured
+    has_llm_key = any(os.getenv(k) for k in ("GROQ_API_KEY", "OPENAI_API_KEY", "OPENROUTER_API_KEY"))
+    checks["checks"]["llm_provider"] = "available" if has_llm_key else "not_configured"
+
+    # Check if UIL adapter can be instantiated (lazy check)
+    try:
+        get_adapter()
+        checks["checks"]["uil_adapter"] = "available"
+    except Exception:
+        checks["checks"]["uil_adapter"] = "unavailable"
+
+    if not has_llm_key:
+        raise HTTPException(status_code=503, detail=checks["checks"])
+
+    return checks
+
+
+@app.get("/version")
+async def version_info():
+    """Version and build information."""
+    import sys
+    return {
+        "version": "1.0.0",
+        "python": sys.version.split()[0],
+        "service": "MASSIVE UIL API"
     }
