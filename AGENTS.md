@@ -15,6 +15,14 @@ Angular "next-gen" UI (renamed from the former `massive-ui-ng-package`).
   ```
   from the repository root with `PYTHONPATH=.`.
 
+## One-command install & run
+- `./install.sh` — one-shot installer: creates `.venv`, installs Python deps,
+  builds the UI-NG frontend (`frontend/dist`).
+- `./install.sh run` — same as install, then launches `uvicorn` on `:8000`
+  serving both API and built frontend (`MASSIVE_SERVE_FRONTEND=1`).
+- `./install.sh docker` — builds and runs the single-service Docker image.
+- `./install.sh clean` — removes `.venv`, `node_modules`, build artifacts.
+
 ## Status
 - ✅ Streamlit (`app.py`, `.streamlit/`) fully removed (T6).
 - ✅ Model exports fused: `backend/app/models/dto_ui.py` (AssumptionItem,
