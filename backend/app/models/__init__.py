@@ -53,6 +53,10 @@ __all__ = [
     "InterventionRecord",
     "InterventionLogEntry",
     "ArchitectEventMessage",
+    # llm run_simulation
+    "LLMRunRequest",
+    "LLMRunResponse",
+    "LLMAmbiguityResponse",
 ]
 
 from backend.app.models.dto_ui import (  # noqa: E402
@@ -70,3 +74,10 @@ from backend.app.models.dto_ui import (  # noqa: E402
     SimulateResponse,
     StatusResponse,
 )
+
+from backend.app.models.dto_llm import (  # noqa: E402
+    LLMAmbiguityResponse,
+    LLMRunRequest,
+    LLMRunResponse,
+)
+

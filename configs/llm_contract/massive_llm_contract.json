@@ -1,0 +1,266 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "massive_llm_contract_v1.1",
+  "title": "MASSIVE LLM Contract",
+  "description": "Knowledge contract that lets the LLM reason safely about MASSIVE. This document defines supported flows, the fields the LLM may request, the output schema, rate tiers, and the endpoint spec for POST /v1/llm/run_simulation.",
+  "version": "1.1.0",
+  "generated_by": "Master Orchestrator → Cartógrafo (Fase 0)",
+  "last_updated": "2026-08-16",
+
+  "supported_flows": {
+    "flow_canonical": {
+      "description": "NL intent → engine classification → config completion → simulation → narrative summary",
+      "steps": ["classify_motor", "factbook_augment", "translate NL", "validate config", "dispatch engine", "narrate", "package"]
+    },
+    "flow_direct": {
+      "description": "LLM uses pre-built config and just dispatches to an engine (bypasses NL translate)"
+    },
+    "flow_factbook_aug": {
+      "description": "User mentions a country → Factbook augments base config with real-world parameters (Herfindahl, diversidad, etc.)"
+    },
+    "flow_inverse": {
+      "description": "LLM performs inverse search: given observed outcome, ask what parameters/conditions would have produced it"
+    }
+  },
+
+  "core_apis": {
+    "health":        { "path": "GET  /health",        "purpose": "liveness/readiness" },
+    "metrics":       { "path": "GET  /metrics",        "purpose": "Prometheus counters" },
+    "simulate":      { "path": "POST /v1/simulate",    "purpose": "scalar/energy/multilayer/massive simulation" },
+    "scientific":    { "path": "POST /v1/scientific",  "purpose": "scientific run with assimilation reports" },
+    "factbook":      { "path": "GET  /v1/factbook",    "purpose": "country params / validation" },
+    "benchmarks":    { "path": "POST /v1/benchmarks",  "purpose": "run PVU-BS or custom benchmarks" },
+    "forecast":      { "path": "POST /v1/forecast",    "purpose": "time-series forecast + intervention" },
+    "conversation":  { "path": "POST /api/conversation", "purpose": "non-streaming conversation" },
+    "simulate_uil":  { "path": "POST /api/simulate-uil", "purpose": "legacy UIL endpoint (deprecated)" },
+    "wormhole":      { "path": "GET  /api/wormhole/health", "purpose": "mesh health probe" },
+    "llm_run":       { "path": "POST /v1/llm/run_simulation", "purpose": "NL → simulation (this contract)" }
+  },
+
+  "motors": {
+    "multilayer_engine": {
+      "type": "langevin_graph",
+      "layers": ["social", "digital", "economic"],
+      "config_fields": {
+        "N": "int (100..20000)",
+        "coupling": "float [0,1]",
+        "noise": "float (sigma de Langevin)",
+        "T": "float (temperatura social)",
+        "topology": "str (watts_strogatz | er | configuration_model | real)",
+        "seed": "int"
+      }
+    },
+    "energy_engine": {
+      "type": "langevin_scalar",
+      "description": "Scalar opinion model with energy landscape. Country params from Factbook.",
+      "config_fields": {
+        "N": "int",
+        "k": "int (topología de redes)",
+        "p": "float (prob. de conexión) o p_norm",
+        "beta": "float (temperatura, inverse T)",
+        "mu": "float (sesgo inicial opinion)",
+        "noise_type": "str (gbm | ou | white)",
+        "interaction": "str (global_mean_field | topologic | hybrid)",
+        "steps": "int",
+        "dt": "float (paso temporal)"
+      }
+    },
+    "massive_engine": {
+      "type": "macroscopic",
+      "description": "Deterministic agent-based, uses active_set compression. For very large N.",
+      "config_fields": { "N": "int (1e4..1e7)", "beta": "float", "mu": "float", "steps": "int" }
+    },
+    "forecast_model": {
+      "description": "Time-series ARIMA or Prophet-based forecast with regime detection",
+      "config_fields": {
+        "horizon": "int (days)",
+        "confidence_level": "float (0.8..0.99)",
+        "intervention": "dict (optional counterfactual)",
+        "regime_detection": "bool"
+      }
+    },
+    "micro_massive": {
+      "description": "Micro-simulation of small groups (n<200) with heterogeneous agents",
+      "config_fields": { "n_agents": "int<200", "heterogeneity": "float", "interaction_matrix": "str" }
+    },
+    "benchmark_runner": {
+      "description": "Run a named canonical benchmark case",
+      "config_fields": { "case_id": "str", "case_dir": "str (datasets/)" }
+    },
+    "factbook_validation": {
+      "description": "Validate engine output against Factbook empirical targets for a country",
+      "config_fields": { "country_code": "str (ISO2)", "validate": "bool" }
+    },
+    "scalar_legacy": {
+      "description": "Alias for run_scalar_simulation → simulator.simular()",
+      "config_fields": { "regla": "str", "params": "dict", "n_sim": "int" }
+    }
+  },
+
+  "input_contract": {
+    "llm_requested_fields": {
+      "country_code": {
+        "type": "string|null",
+        "format": "ISO2 uppercase",
+        "description": "ISO 3166-1 alpha-2 country code detected from NL. NULL if not mentioned.",
+        "required_for_factbook_flow": true
+      },
+      "temporal_horizon": {
+        "type": "integer|null",
+        "unit": "days",
+        "default_if_missing": 90,
+        "description": "Simulation horizon in days. If null, default from engine config."
+      },
+      "confidence_level": {
+        "type": "number",
+        "range": [0.80, 0.99],
+        "default": 0.95,
+        "description": "Statistical confidence for uncertainty bounds"
+      },
+      "scenario": {
+        "type": "string|null",
+        "enum": ["baseline", "optimistic", "pessimistic", "crisis", "intervention", null],
+        "default": "baseline",
+        "description": "Named scenario. 'intervention' requires intervention_config."
+      },
+      "intervention_config": {
+        "type": "object|null",
+        "description": "Descripción estructurada de la intervención (cuando scenario=intervention)",
+        "schema": {
+          "type": "object",
+          "required": ["type", "magnitude"],
+          "properties": {
+            "type": {"type": "string", "description": "Tipo de intervención: info_campaign, opinion_boost, noise_reduction"},
+            "magnitude": {"type": "number", "description": "Magnitud de la intervención (0..1)"},
+            "target_groups": {"type": "array", "items": {"type": "string"}, "nullable": true}
+          }
+        }
+      },
+      "hypothesis": {
+        "type": "string|null",
+        "description": "Hipótesis explícita del usuario que el LLM debe contrastar con el modelo"
+      },
+      "detail_level": {
+        "type": "string",
+        "enum": ["low", "medium", "high"],
+        "default": "medium",
+        "description": "Nivel de detalle del resumen narrativo"
+      }
+    },
+
+    "input_schema": {
+      "type": "object",
+      "required": ["intent"],
+      "additionalProperties": false,
+      "properties": {
+        "intent": {
+          "type": "string",
+          "minLength": 5,
+          "description": "Intención del usuario en lenguaje natural"
+        },
+        "country_code": { "$ref": "#/$defs/country_code" },
+        "temporal_horizon": { "$ref": "#/$defs/temporal_horizon" },
+        "confidence_level": { "$ref": "#/$defs/confidence_level" },
+        "scenario": { "$ref": "#/$defs/scenario" },
+        "intervention_config": { "$ref": "#/$defs/intervention_config" },
+        "hypothesis": { "$ref": "#/$defs/hypothesis" },
+        "detail_level": { "$ref": "#/$defs/detail_level" },
+        "motor_override": {
+          "type": "string",
+          "enum": ["multilayer_engine", "energy_engine", "massive_engine", "forecast_model", "micro_massive", "benchmark_runner", "factbook_validation"],
+          "description": "Opcional: forzar motor específico"
+        }
+      }
+    }
+  },
+
+  "output_contract": {
+    "llm_output_fields": {
+      "simulation_id": "string (UUID)",
+      "classified_motor": "string (enum del motor)",
+      "country_code_resolved": "string|'none'",
+      "assumptions": "array[string] — supuestos declarados por el LLM",
+      "result": {
+        "metrics": "SimAggregateMetrics (mean_opinion, std_opinion, polarization, etc.)",
+        "timeline": "TimelineTick[] (para visualización)"
+      },
+      "narrative_summary": "string — resumen textual de resultados",
+      "hypothesis_evaluated": "string — cómo se relaciona la hipótesis con el resultado",
+      "confidence_bounds": "object{lower, upper, confidence_level}",
+      "artifacts": "object — archivos generados (reportes, gráficas, JSON)"
+    },
+
+    "response_schema": {
+      "type": "object",
+      "required": ["simulation_id", "classified_motor", "result", "narrative_summary"],
+      "properties": {
+        "simulation_id": { "type": "string", "format": "uuid" },
+        "classified_motor": { "type": "string" },
+        "country_code_resolved": { "type": "string" },
+        "assumptions": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "result": {
+          "type": "object",
+          "properties": {
+            "metrics": { "type": "object" },
+            "timeline": { "type": "array" }
+          }
+        },
+        "narrative_summary": { "type": "string" },
+        "hypothesis_evaluated": { "type": "string" },
+        "confidence_bounds": { "type": "object" },
+        "artifacts": { "type": "object" }
+      }
+    },
+
+    "error_schemas": {
+      "400_bad_request": "Intent incomprensible / config inválida",
+      "422_unprocessable": "Ambigüedad — LLM solicita campos_adicionales (requested_fields)",
+      "503_service_unavailable": "Proveedor LLM no configurado / timeout",
+      "429_too_many_requests": "Rate limit (ver rate_limit_tiers)"
+    }
+  },
+
+  "rate_limit_tiers": {
+    "anonymous": { "requests_per_minute": 10, "desc": "Sin API key" },
+    "basic":     { "requests_per_minute": 30, "desc": "API key estándar" },
+    "premium":   { "requests_per_minute": 60, "desc": "API key premium" },
+    "simulation": { "requests_per_minute": 15, "desc": "Endpoint /v1/llm/run_simulation" }
+  },
+
+  "$defs": {
+    "country_code": { "type": "string", "pattern": "^[A-Z]{2}$" },
+    "temporal_horizon": { "type": "integer", "minimum": 1, "maximum": 3650 },
+    "confidence_level": { "type": "number", "minimum": 0.80, "maximum": 0.99 },
+    "scenario": { "type": "string", "enum": ["baseline", "optimistic", "pessimistic", "crisis", "intervention"] },
+    "intervention_config": { "type": "object" },
+    "hypothesis": { "type": "string" },
+    "detail_level": { "type": "string", "enum": ["low", "medium", "high"] }
+  },
+
+  "integration_points": {
+    "factbook": {
+      "service": "services/factbook_service.py",
+      "function": "build_engine_from_country(country_code)",
+      "returns": "dict with country-specific params"
+    },
+    "simulator": {
+      "entry": "run_scalar_simulation()",
+      "service": "services/simulation_service.py"
+    },
+    "energy_runner": {
+      "entry": "run_energy_simulation()",
+      "service": "services/simulation_service.py"
+    },
+    "multilayer_runner": {
+      "entry": "MultilayerEngine.run() via run_multilayer_simulation()",
+      "service": "services/simulation_service.py"
+    },
+    "forecast_service": {
+      "entry": "forecast() via forecast_service.run_forecast()",
+      "service": "services/forecast_service.py"
+    }
+  }
+}

@@ -123,10 +123,11 @@ def create_app(settings: UISettings | None = None) -> FastAPI:
         )
 
     # ── Routers ───────────────────────────────────────────────────────────
-    from backend.app.routers import conversation, live, simulation, status
+    from backend.app.routers import conversation, live, llm, simulation, status
 
     app.include_router(status.router)
     app.include_router(conversation.router)
+    app.include_router(llm.router)
     app.include_router(simulation.router)
     app.include_router(live.router)
 
