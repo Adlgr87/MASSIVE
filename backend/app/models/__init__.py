@@ -54,3 +54,19 @@ __all__ = [
     "InterventionLogEntry",
     "ArchitectEventMessage",
 ]
+
+from backend.app.models.dto_ui import (  # noqa: E402
+    AssumptionItem,
+    CFCStatus,
+    ChatMessage,
+    ConversationRequest,
+    ConversationResponse,
+    ExplainRequest,
+    ExplainResponse,
+    Highlight,
+    LLMStatus,
+    RunListItem,
+    SimulateRequest,
+    SimulateResponse,
+    StatusResponse,
+)

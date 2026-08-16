@@ -65,7 +65,7 @@ The repository ships sample data for the CIA country codes `US`, `CH` (China) an
 | Strategy design | `social_architect.py`, `intervention_optimizer.py`, `programmatic_architect.py` | Inverse intervention design and optimization. |
 | Validation | `benchmarks/`, `datasets/pvu_cases/`, `docs/validation/` | PVU-MASSIVE cases, metrics and validation reports. |
 | **CIA World Factbook** | `massive/core/factbook/`, `data/factbook/` | Country-specific demographic, economic, social data integration for realistic simulations. |
-| UI/API contract | `app.py`, `backend/app/models/`, `frontend/src/types/` | Streamlit app, DTOs and generated TypeScript types. |
+| UI/API contract | `backend/app/main.py`, `backend/app/models/`, `frontend/src/types/` | FastAPI UI-NG backend, DTOs and generated TypeScript types. |
 
 ---
 
@@ -99,7 +99,7 @@ Optional environment variables are documented in `.env.example`. For local Ollam
 ### Run the Streamlit app
 
 ```bash
-streamlit run app.py
+uvicorn backend.app.main:app --host 0.0.0.0 --port 8000
 ```
 
 ### Run the legacy simulator
