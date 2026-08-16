@@ -208,6 +208,31 @@ from massive_core import run_canonical_benchmarks
 print(run_canonical_benchmarks())
 ```
 
+### LLM-NL Simulation Pipeline (v1.1)
+
+MASSIVE exposes a natural-language-to-simulation endpoint powered by the
+LLM orchestrator. The orchestrator classifies intent → augments config from
+the CIA World Factbook → validates → dispatches the correct engine → narrates
+results. See `configs/llm_contract/massive_llm_contract.json` for the full
+knowledge contract and `docs/MASSIVE_LLM_INTERFACE.md` for prompt templates.
+
+```bash
+# NL simulation (requires PROVIDER + LLM key; falls back gracefully)
+curl -X POST http://localhost:8000/v1/llm/run_simulation \
+  -H "X-API-Key: $MASSIVE_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{"intent": "alta polarización en Brasil, horizonte 90 días, confianza 95%"}'
+```
+
+Response includes `simulation_id`, `classified_motor`, `result.metrics`,
+`narrative_summary`, `assumptions`, and `confidence_bounds`.
+
+**Country detection** — the orchestrator auto-detects 95+ countries from NL text
+(ISO2→CIA mapping via FactbookContext). When a country is identified, the engine
+is automatically parametrized with real demographic/economic data.
+
+---
+
 ### Sparse multilayer engine
 
 A fully sparse implementation of the multilayer graph engine based on
@@ -315,6 +340,83 @@ python -m mkdocs build --strict
 - Reproducibility card: docs/cards/REPRODUCIBILITY.md
 - Real-engine benchmark report: `experiments/06_real_benchmark_v0/REPORT.md`
 - Historical empirical validation report: `experiments/real_validation/EMPIRICAL_VALIDATION_REPORT.md`
+
+---
+
+## 🚀 Production Readiness (v1.1)
+
+### Endpoints Versioned (`/v1/*`)
+
+| Endpoint | Método | Descripción |
+|----------|--------|-------------|
+| `/v1/simulate` | POST | Simulación básica (scalar, energy, multilayer, massive) |
+| `/v1/scientific` | POST | Simulación con reporte científico (assimilación, estabilidad) |
+| `/v1/factbook` | GET | Parámetros de país / validación |
+| `/v1/benchmarks` | POST | Benchmarks canónicos (PVU-BS) |
+| `/v1/forecast` | POST | Previsión temporal + intervenciones |
+| `/v1/llm/run_simulation` | POST | NL → simulación completa (ver contrato en `configs/llm_contract/`) |
+| `/health` | GET | Liveness/readiness probe (Docker HEALTHCHECK) |
+| `/metrics` | GET | Prometheus text-format counters |
+
+### Docker (single-service)
+
+```bash
+# Build + run (API + UI en :8000)
+docker compose -f infra/docker-compose.yml up --build
+
+# Health check
+curl http://localhost:8000/health
+```
+
+Multi-stage Dockerfile: Node 20 builder → Python 3.11-slim runtime. Frontend
+mountado en `frontend/dist/`, servido por FastAPI estático.
+
+### CI/CD Pipeline
+
+```
+Push / Pull Request → branch: main
+  1. lint        — ruff check + mypy --strict
+  2. test        — pytest --cov (453 tests, 0 failures)
+  3. docs        — mkdocs build --strict
+  4. frontend    — npm ci && npm run build
+  5. benchmark   — pyytest benchmarks/runner.py (solo en release tag)
+  └── 6. publish — PyPI + Docker Hub (solo en release tags: push v*)
+```
+
+### Variables de Entorno Clave (`.env.example`)
+
+```bash
+MASSIVE_ENV=production
+MASSIVE_API_KEYS=change-me-prod-key-1,change-me-prod-key-2
+MASSIVE_CORS_ORIGINS=https://app.massive.io
+MASSIVE_SERVE_FRONTEND=1
+MASSIVE_DATA_DIR=/data
+PROVIDER=groq|openai|openrouter|none  # proveedor LLM
+MASSIVE_LLM_MODEL=llama-3.1-70b       # modelo (si PROVIDER configurado)
+```
+
+### Observabilidad y Seguridad
+
+- **SLOs definidos:** latencia p95 (<2s simulaciones), tasa de error (<0.1%), disponibilidad mensual (99.9%)
+- **Logging:** JSON estructurado con `request_id`, `simulation_id`, `engine_type`, `country_code`, `llm_provider`, `user_id` (configurar con `MASSIVE_LOG_FORMAT=json`)
+- **Rate limiting:** sliding-window por IP; límites configurables vía `MASSIVE_RATE_LIMIT_*`
+- **Security headers:** CSP, X-Frame-Options=DENY, nosniff, Permissions-Policy
+- **Auditoría:** eventos de configuración registrados (ver `docs/OBSERVABILITY_AND_SECURITY.md`)
+
+### Testing
+
+```bash
+# Suite completa (453 tests)
+pytest tests/ -v --cov=massive --cov=backend --cov-report=term-missing
+
+# Solo endpoint LLM
+pytest tests/test_llm_endpoint.py -v
+
+# PVU-BS validation
+python -m benchmarks.runner --cases datasets/pvu_cases --out reports/validation/
+```
+
+**Cobertura actual:** 47% (objetivo 80% en próximos sprints). Módulos LLM al 94.5%.
 
 ---
 
