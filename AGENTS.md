@@ -6,14 +6,18 @@ Angular "next-gen" UI (renamed from the former `massive-ui-ng-package`).
 
 ## Layout
 - Repository root: `backend/app/`, `frontend/`, `massive/`, `data/`.
-- The Angular UI-NG package was integrated via `git subtree` into
-  `massive-ui-ng/` (kept as a sibling reference). **Its FastAPI backend was
-  merged into the repo-root `backend/app/`** so there is a single backend.
-- Run the unified UI-NG API:
+- The Angular UI-NG source lives **only** under `massive-ui-ng/` (single source of
+  truth). The standalone `massive-ui-ng-package/` directory is a throwaway test
+  harness that mirrors `massive-ui-ng/` — do **not** treat it as official. All
+  real work (frontend `src/`, backend `app/`, infra docker-compose, Dockerfile.ui-ng)
+  happens in `massive-ui-ng/`.
+- FastAPI backend lives inside `massive-ui-ng/backend/app/` (merged from root). Run:
   ```
   uvicorn backend.app.main:app --host 0.0.0.0 --port 8000
   ```
-  from the repository root with `PYTHONPATH=.`.
+  from `massive-ui-ng/` with `PYTHONPATH=.`.
+- Docker single service (`docker compose -f massive-ui-ng/infra/docker-compose.yml up --build`)
+  exposes the API + compiled Angular frontend on `:8000`.
 
 ## One-command install & run
 - `./install.sh` — one-shot installer: creates `.venv`, installs Python deps,
