@@ -1,0 +1,98 @@
+{
+  "version": "prompts-v1",
+  "cases": [
+    {
+      "id": "es_campana_polarizada",
+      "language": "es",
+      "description": "En mi ciudad lanzan una campaña muy agresiva y la gente ya desconfía de las instituciones, hay mucha polarización.",
+      "expect": {
+        "action": "propose",
+        "mode": "heuristic",
+        "min_assumptions": 3,
+        "max_questions": 3,
+        "assumption_params": ["propaganda", "confianza", "sesgo_confirmacion"],
+        "estado_keys": ["opinion", "propaganda", "confianza"],
+        "config_keys": ["rango", "sesgo_confirmacion"],
+        "estado_ranges": { "opinion": [0.0, 1.0], "propaganda": [0.0, 1.0], "confianza": [0.0, 1.0] },
+        "pasos_range": [5, 200]
+      }
+    },
+    {
+      "id": "es_elecciones_mexico_40",
+      "language": "es",
+      "description": "Quiero entender la polarización en redes sociales antes de unas elecciones en México, con un 40% de apoyo inicial.",
+      "expect": {
+        "action": "propose",
+        "min_assumptions": 2,
+        "assumption_params": ["opinion_inicial"],
+        "config_keys": ["rango"],
+        "estado_opinion_close_to": 0.4,
+        "estado_opinion_tolerance": 0.03,
+        "pasos_min": 60
+      }
+    },
+    {
+      "id": "es_rechazo_bipolar",
+      "language": "es",
+      "description": "Hay un rechazo activo del 30% de la población contra una nueva política.",
+      "expect": {
+        "action": "propose",
+        "config_keys": ["rango"],
+        "config_value": { "rango": "[-1, 1] — Bipolar" },
+        "estado_opinion_negative": true
+      }
+    },
+    {
+      "id": "en_campaign_distrust",
+      "language": "en",
+      "description": "What would happen if an aggressive campaign launches in my city while people already distrust institutions?",
+      "expect": {
+        "action": "propose",
+        "min_assumptions": 2,
+        "estado_keys": ["opinion"],
+        "reply_contains": ["assum", "question", "simulation"],
+        "reply_contains_any": ["assum", "question", "simulation"]
+      }
+    },
+    {
+      "id": "en_election_mexico",
+      "language": "en",
+      "description": "I want to understand social-media polarization before an election in Mexico, starting at 40% support.",
+      "expect": {
+        "action": "propose",
+        "estado_opinion_close_to": 0.4,
+        "estado_opinion_tolerance": 0.03,
+        "pasos_min": 60
+      }
+    },
+    {
+      "id": "es_confianza_alta",
+      "language": "es",
+      "description": "La población confía mucho en sus instituciones y hay una campaña de transparencia.",
+      "expect": {
+        "action": "propose",
+        "assumption_params": ["confianza"],
+        "estado_confianza_min": 0.6
+      }
+    },
+    {
+      "id": "es_teoria_juegos",
+      "language": "es",
+      "description": "Quiero simular un dilema del prisionero entre dos facciones políticas.",
+      "expect": {
+        "action": "propose",
+        "assumption_params": ["modelo_matematico"],
+        "config_value": { "modelo_matematico": "replicador" }
+      }
+    },
+    {
+      "id": "es_crisis_corta",
+      "language": "es",
+      "description": "Estalla una crisis con protestas masivas y la opinión cambia rápidamente.",
+      "expect": {
+        "action": "propose",
+        "pasos_max": 60
+      }
+    }
+  ]
+}
