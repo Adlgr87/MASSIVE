@@ -6,18 +6,15 @@ services:
     container_name: massive-uil
     restart: unless-stopped
     ports:
-      - "8000:8000"  # API
-      - "8501:8501"  # Streamlit
+      - "8000:8000"  # UI-NG Frontend + API (single-service)
     volumes:
       - ./.env.local:/app/.env.local:ro
       - ./.env:/app/.env:ro
       - massive-logs:/app/reports/validation/ci
     environment:
-      - STREAMLIT_SERVER_HEADLESS=true
-      - STREAMLIT_SERVER_PORT=8501
-      - STREAMLIT_BROWSER_GATHER_USAGE_STATS=false
+      - MASSIVE_SERVE_FRONTEND=1
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://127.0.0.1:8000/docs"]
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8000/health"]
       interval: 30s
       timeout: 5s
       retries: 3

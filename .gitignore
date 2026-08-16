@@ -27,6 +27,12 @@ data/factbook/*_raw.json
 data/factbook/*_test.json
 !data/factbook/.gitkeep
 
+# Runtime SQLite DBs (ui_ng, etc.)
+data/ui_ng/*.db
+data/ui_ng/*.db-shm
+data/ui_ng/*.db-wal
+data/ui_ng/.gitkeep
+
 # SOTA roadmap artifacts (regenerated on each run)
 reports/sota_v0_seed*/
 

@@ -96,7 +96,7 @@ Optional environment variables are documented in `.env.example`. For local Ollam
 
 ## Quick start
 
-### Run the Streamlit app
+### Run the UI-NG frontend + API (single-service)
 
 ```bash
 uvicorn backend.app.main:app --host 0.0.0.0 --port 8000
@@ -307,7 +307,7 @@ python -m mkdocs build --strict
 
 - CI deploy no longer uses force-push to Hugging Face Spaces.
 - Configure `HF_TOKEN` in repository secrets for Hugging Face sync.
-- Optional analytics in the Streamlit app can be injected with `MASSIVE_ANALYTICS_SNIPPET`; no placeholder script is emitted by default.
+- Optional analytics in the UI-NG app can be injected with `MASSIVE_ANALYTICS_SNIPPET`; no placeholder script is emitted by default.
 
 ---
 

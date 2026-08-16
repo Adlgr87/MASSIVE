@@ -9,13 +9,12 @@ python-dotenv>=1.0.1
 requests>=2.31
 pytest>=8.0.0
 
-# API
+# API / API server (UI-NG frontend lives in massive-ui-ng/ and is served as static files)
 fastapi>=0.110
 uvicorn[standard]>=0.27
 python-multipart>=0.0.6
 
-# UI
-streamlit>=1.35
+# Visualization / exports (used by tests + optional API export endpoints)
 plotly>=5.18.0
 
 # LLM (optional in production)

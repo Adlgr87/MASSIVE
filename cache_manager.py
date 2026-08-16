@@ -1,7 +1,7 @@
 """
 cache_manager.py — Gestor de caché para MASSIVE Architect
 Arquitectura: Memoria RAM (ultra-rápido) + SQLite (persistente cross-session)
-Compatible con: Streamlit, HF Spaces, Docker, serverless con volumen montado.
+Compatible con: UI-NG (servida por backend FastAPI), Docker, serverless con volumen montado.
 """
 import os
 import json
@@ -14,7 +14,7 @@ class LandscapeCache:
     """
     Caché clave-valor para paisajes sociales generados por el LLM.
     Prioriza velocidad (dict en memoria) y persistencia (SQLite).
-    Thread-safe para Streamlit (check_same_thread=False).
+    Thread-safe para uso concurrente del backend FastAPI que sirve la UI-NG (check_same_thread=False).
     """
 
     def __init__(self, db_path: str | None = None):

@@ -31,7 +31,8 @@ core = [
   "pyyaml>=6.0",
 ]
 api = ["fastapi>=0.110", "uvicorn[standard]>=0.27", "python-multipart>=0.0.6"]
-ui = ["streamlit>=1.35", "plotly>=5.18"]
+# UI-NG frontend (Vite/Angular) lives in massive-ui-ng/ and is built separately.
+# The backend serves it as static files via Starlette StaticFiles (see backend/app/main.py).
 llm = ["openai>=1.14", "langchain>=1.2.0", "langchain-openai>=1.2.0", "langchain-groq>=1.1.0"]
 ml = ["torch>=2.2", "torchdiffeq>=0.2.3", "scikit-learn>=1.4"]
 scientific = ["numba>=0.65", "statsmodels>=0.14", "scikit-learn>=1.4"]

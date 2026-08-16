@@ -7,7 +7,7 @@ a contract test.
 | Zone | Why sensitive |
 |------|----------------|
 | `simulator.py` | Legacy scalar engine; many call sites and rule registry |
-| `app.py` | Streamlit UI contracts + history shape |
+| `app.py` | Historic UI contracts + history shape (Streamlit, replaced by UI-NG frontend) |
 | `multilayer_engine.py` ↔ `simulator.py` ↔ `massive_engine.py` | Coupled dynamics / RNG / clipping |
 | `social_architect.py` + `forecast/` | LLM + temporal forecast pipeline |
 | `backend/app/models/` ↔ `scripts/gen_ts_types.py` ↔ `frontend/src/types` | Cross-language type sync |
