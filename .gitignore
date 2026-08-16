@@ -46,5 +46,6 @@ reports/validation/local/
 # Generated frontend build artifacts
 # `frontend/dist` is a symlink to massive-ui-ng/frontend/dist (build output).
 # Do not commit build outputs; they are regenerated via `npm run build`.
+frontend/dist
 frontend/dist/
 massive-ui-ng/frontend/dist/
