@@ -1,0 +1,61 @@
+# MASSIVE UI-NG — production image (single service: API + built frontend)
+#
+# Build (from the repo root):
+#   docker build -f Dockerfile.ui-ng -t massive-ui-ng .
+#
+# Run:
+#   docker run -p 8000:8000 \
+#     -e MASSIVE_SERVE_FRONTEND=1 \
+#     -e MASSIVE_DATA_DIR=/data \
+#     -e PROVIDER=groq -e GROQ_API_KEY=... \
+#     -e MASSIVE_API_KEYS=change-me \
+#     -v massive-data:/data \
+#     massive-ui-ng
+#
+# The API is exposed on :8000 and serves the compiled React app at /.
+
+# ── Stage 1: build the frontend ────────────────────────────────────────────
+FROM node:20-alpine AS frontend-build
+WORKDIR /fe
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci --no-audit --no-fund
+COPY frontend/ ./
+RUN npm run build
+
+# ── Stage 2: Python runtime ────────────────────────────────────────────────
+FROM python:3.11-slim
+
+ENV PYTHONUNBUFFERED=1 \
+    MASSIVE_SERVE_FRONTEND=1 \
+    MASSIVE_DATA_DIR=/data \
+    MASSIVE_ENV=production
+
+WORKDIR /app
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY requirements.txt /app/requirements.txt
+RUN pip install --upgrade pip setuptools wheel \
+    && pip install --no-cache-dir -r /app/requirements.txt \
+    && pip install --no-cache-dir "uvicorn[standard]"
+
+# Application code (backend + core modules) and built frontend.
+COPY . /app
+COPY --from=frontend-build /fe/dist /app/frontend/dist
+
+RUN adduser --disabled-password --gecos "" appuser || true \
+    && mkdir -p /data && chown -R appuser:appuser /app /data
+USER appuser
+
+EXPOSE 8000
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=15s \
+    CMD curl -sf http://127.0.0.1:8000/health || exit 1
+
+# Single worker per container is intentional: the in-process rate limiter is
+# per-worker. Scale horizontally behind a load balancer (see production docs).
+CMD ["python", "-m", "uvicorn", "backend.app.main:app", \
+     "--host", "0.0.0.0", "--port", "8000", "--workers", "1", \
+     "--proxy-headers", "--forwarded-allow-ips", "*"]
