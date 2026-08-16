@@ -98,9 +98,24 @@ Optional environment variables are documented in `.env.example`. For local Ollam
 
 ### Run the UI-NG frontend + API (single-service)
 
+MASSIVE ships a self-contained FastAPI backend that also serves the built UI-NG
+frontend (Angular + Vite) from `frontend/dist`. No separate web server is needed.
+
 ```bash
+# 1. Install backend deps
+pip install -r requirements.txt
+
+# 2. Build the UI-NG frontend (once) — produces frontend/dist
+cd frontend && npm ci && npm run build && cd ..
+
+# 3. Serve everything (API on :8000, frontend mounted at /)
 uvicorn backend.app.main:app --host 0.0.0.0 --port 8000
 ```
+
+Then open `http://localhost:8000` — the UI-NG app loads and the API powers it
+through the same port (`/docs` for the OpenAPI UI, `/health`, `/metrics`, SSE
+endpoints). To run API-only (no frontend), start with
+`MASSIVE_SERVE_FRONTEND=0 uvicorn ...`.
 
 ### Run the legacy simulator
 
@@ -308,6 +323,11 @@ python -m mkdocs build --strict
 - CI deploy no longer uses force-push to Hugging Face Spaces.
 - Configure `HF_TOKEN` in repository secrets for Hugging Face sync.
 - Optional analytics in the UI-NG app can be injected with `MASSIVE_ANALYTICS_SNIPPET`; no placeholder script is emitted by default.
+- Docker (`infra/docker-compose.yml`) runs the FastAPI backend on port `8000` and
+  mounts the pre-built `frontend/dist` so the UI-NG app is served from the same
+  container. No Streamlit process or extra web server is required.
+- To disable self-serving of the frontend in a container, set
+  `MASSIVE_SERVE_FRONTEND=0`; the backend stays API-only on `:8000`.
 
 ---
 
