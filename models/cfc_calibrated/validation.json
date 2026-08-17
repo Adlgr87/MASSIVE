@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-17T17:34:22.864061",
+  "timestamp": "2026-08-17T17:35:31.138738",
   "model_path": "/home/adlg/MASSIVE/models/cfc_calibrated/cfc_residual.pt",
   "architecture": {
     "type": "CfCResidualCorrector-N9H64",
@@ -23,111 +23,111 @@
   "baseline_metrics": {
     "final_leave_pct": 0.5449942526325485,
     "error": 0.026094252632548498,
-    "time_seconds": 1.5582466125488281
+    "time_seconds": 0.5182144641876221
   },
   "corrected_metrics": {
-    "final_leave_pct": 0.5275353119553138,
-    "error": 0.008635311955313751,
-    "time_seconds": 0.16983842849731445,
-    "improvement_percent": 66.90722636546198,
-    "correction_method": "Dynamic model-guided residual correction (scale=0.1)"
+    "final_leave_pct": 0.494265396511881,
+    "error": 0.024634603488119022,
+    "time_seconds": 0.049102783203125,
+    "improvement_percent": 5.593757234529076,
+    "correction_method": "CfC model-guided residual correction (scale=0.3)"
   },
   "stress_test": [
     {
       "seed": 0,
       "baseline_pct": 0.3887264136132821,
       "baseline_err": 0.13017358638671794,
-      "corrected_pct": 0.479572355638239,
-      "corrected_err": 0.039327644361761005,
-      "improvement_err": 0.09084594202495694,
-      "improvement_pct": 69.78830694198824
+      "corrected_pct": 0.4458398118335338,
+      "corrected_err": 0.07306018816646626,
+      "improvement_err": 0.05711339822025169,
+      "improvement_pct": 43.87479811040926
     },
     {
       "seed": 1,
       "baseline_pct": 0.5136011178952665,
       "baseline_err": 0.005298882104733504,
-      "corrected_pct": 0.4293175567173983,
-      "corrected_err": 0.08958244328260173,
-      "improvement_err": -0.08428356117786823,
-      "improvement_pct": -1590.591364593251
+      "corrected_pct": 0.39267986354916146,
+      "corrected_err": 0.12622013645083857,
+      "improvement_err": -0.12092125434610507,
+      "improvement_pct": -2282.0144316493815
     },
     {
       "seed": 2,
       "baseline_pct": 0.438948854270762,
       "baseline_err": 0.079951145729238,
-      "corrected_pct": 0.5378778588553359,
-      "corrected_err": 0.018977858855335872,
-      "improvement_err": 0.06097328687390213,
-      "improvement_pct": 76.26318086846916
+      "corrected_pct": 0.4759812992214433,
+      "corrected_err": 0.04291870077855675,
+      "improvement_err": 0.037032444950681254,
+      "improvement_pct": 46.31884210402072
     },
     {
       "seed": 3,
       "baseline_pct": 0.4786500916950523,
       "baseline_err": 0.040249908304947735,
-      "corrected_pct": 0.3903175261227203,
-      "corrected_err": 0.12858247387727972,
-      "improvement_err": -0.08833256557233199,
-      "improvement_pct": -219.46029020263302
+      "corrected_pct": 0.36323293046685035,
+      "corrected_err": 0.15566706953314968,
+      "improvement_err": -0.11541716122820195,
+      "improvement_pct": -286.7513643851314
     },
     {
       "seed": 4,
       "baseline_pct": 0.4184144496108418,
       "baseline_err": 0.10048555038915824,
-      "corrected_pct": 0.31991253285846155,
-      "corrected_err": 0.19898746714153848,
-      "improvement_err": -0.09850191675238024,
-      "improvement_pct": -98.025951364056
+      "corrected_pct": 0.2865999445311023,
+      "corrected_err": 0.2323000554688977,
+      "improvement_err": -0.13181450507973946,
+      "improvement_pct": -131.177571869041
     },
     {
       "seed": 5,
       "baseline_pct": 0.4437319028959506,
       "baseline_err": 0.07516809710404943,
-      "corrected_pct": 0.4376513560764656,
-      "corrected_err": 0.08124864392353442,
-      "improvement_err": -0.006080546819485,
-      "improvement_pct": -8.089265331631537
+      "corrected_pct": 0.4086081073215488,
+      "corrected_err": 0.11029189267845124,
+      "improvement_err": -0.03512379557440182,
+      "improvement_pct": -46.726998457580535
     },
     {
       "seed": 6,
       "baseline_pct": 0.45868512156009544,
       "baseline_err": 0.060214878439904584,
-      "corrected_pct": 0.35720261972072376,
-      "corrected_err": 0.16169738027927627,
-      "improvement_err": -0.10148250183937169,
-      "improvement_pct": -168.5339312619436
+      "corrected_pct": 0.33433993273496687,
+      "corrected_err": 0.18456006726503316,
+      "improvement_err": -0.12434518882512857,
+      "improvement_pct": -206.50243269896671
     },
     {
       "seed": 7,
       "baseline_pct": 0.3465401836665442,
       "baseline_err": 0.17235981633345582,
-      "corrected_pct": 0.39690016592606575,
-      "corrected_err": 0.12199983407393428,
-      "improvement_err": 0.05035998225952154,
-      "improvement_pct": 29.217936831687396
+      "corrected_pct": 0.3575192524450124,
+      "corrected_err": 0.1613807475549876,
+      "improvement_err": 0.010979068778468215,
+      "improvement_pct": 6.369854071570584
     },
     {
       "seed": 8,
       "baseline_pct": 0.38874799009110866,
       "baseline_err": 0.13015200990889136,
-      "corrected_pct": 0.49034431991178307,
-      "corrected_err": 0.02855568008821696,
-      "improvement_err": 0.1015963298206744,
-      "improvement_pct": 78.0597471309076
+      "corrected_pct": 0.4505471986333178,
+      "corrected_err": 0.0683528013666822,
+      "improvement_err": 0.06179920854220916,
+      "improvement_pct": 47.48233130281251
     },
     {
       "seed": 9,
       "baseline_pct": 0.3846987831736256,
       "baseline_err": 0.13420121682637443,
-      "corrected_pct": 0.4205252602185134,
-      "corrected_err": 0.09837473978148664,
-      "improvement_err": 0.03582647704488778,
-      "improvement_pct": 26.696089567681806
+      "corrected_pct": 0.37857773638512116,
+      "corrected_err": 0.14032226361487887,
+      "improvement_err": -0.006121046788504447,
+      "improvement_pct": -4.561096339702848
     }
   ],
   "stress_test_stats": {
-    "mean_improvement": -0.003907907413749434,
-    "std_improvement": 0.0780411094572801,
-    "positive_count": 5,
+    "mean_improvement": -0.0366818831350471,
+    "std_improvement": 0.07560980603134008,
+    "positive_count": 4,
     "total_seeds": 10
   },
   "overall_result": "PASS",
