@@ -615,6 +615,7 @@ class MultilayerEngine:
         self.x = np.column_stack([x0_opinion, x0_rest]).astype(np.float64)
 
         self._history: list[np.ndarray] = [self.x.copy()]
+        self._history_compact: list[dict] = []
         self.mps_state = None
 
     def _create_drift_function(self):
@@ -722,7 +723,8 @@ class MultilayerEngine:
         if not store_history:
             # Aggregate on-the-fly: pop each full snapshot immediately after
             # step() appends it so peak memory stays at O(1 snapshot).
-            ops0 = self._history[0][:, COL_OPINION]
+            initial = self._history[0] if self._history else self.x
+            ops0 = initial[:, COL_OPINION]
             aggregates: list[dict] = [{
                 "mean_opinion": float(ops0.mean()),
                 "std_opinion": float(ops0.std()),
@@ -828,7 +830,7 @@ class MultilayerEngine:
 
         Useful for instrumentation hooks, health checks and dashboards.
         """
-        n_steps = len(self._history_compact) if hasattr(self, "_history_compact") and self._history_compact else len(self._history)
+        n_steps = len(self._history_compact) if self._history_compact else len(self._history)
         ops = self.x[:, COL_OPINION]
         return {
             "n_agents": int(self.N),
