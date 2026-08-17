@@ -33,8 +33,7 @@ RUN pip install --upgrade pip setuptools wheel \
 # Copy project code
 COPY . /app
 # Inject the built frontend into the path the backend serves
-RUN mkdir -p /app/frontend/dist && \
-    cp -r /build/dist/* /app/frontend/dist/
+COPY --from=frontend /build/dist /app/frontend/dist
 
 # Create non-root user
 RUN adduser --disabled-password --gecos "" appuser || true
