@@ -17,6 +17,24 @@ módulos `massive_core`.
 > Documento principal en inglés: [`README.md`](./README.md).
 > Esta versión es un resumen para usuarios hispanohablantes.
 
+---
+
+## El océano no está en una sola molécula de agua
+
+MASSIVE no simula individuos: modela el **comportamiento emergente de millones de personas en interacción**. Al igual que el océano no reside en una molécula de agua sino en el conjunto, los fenómenos que MASSIVE captura solo existen a escala masiva.
+
+Criticar que "los humanos son impredecibles" es irrelevante: MASSIVE modela fenómenos *colectivos* —oleadas de opinión, polarización, cambios de fase— que carecen de significado a nivel individual. La meteorología no predice moléculas de aire; mapea campos de presión y temperatura. MASSIVE hace lo mismo con las sociedades: identifica **patrones y puntos de bifurcación** que solo emergen cuando millones de decisiones convergen.
+
+La base teórica es la **ontología de niveles**: los fenómenos sociales son irreducibles a la suma de decisiones individuales. MASSIVE no es un oráculo ni modela conciencias. Es una herramienta para:
+
+- **Explorar escenarios** antes de que se cristalicen en realidad.
+- **Probar intervenciones** en un sandbox seguro y cuantitativo.
+- **Detectar señales tempranas** de inestabilidad y puntos de quiebre.
+
+Se sitúa en la intersección de la física de sistemas complejos y las ciencias sociales cuantitativas —la misma tradición intelectual que dio origen a la termodinámica, los modelos epidemiológicos y la mecánica estadística aplicada al comportamiento colectivo humano.
+
+---
+
 ## Características clave
 
 - **Razonamiento de régimen híbrido:** rutas heurísticas, LLM-compatibles y CfC
@@ -75,11 +93,20 @@ Variables de entorno opcionales en `.env.example`. Para Ollama local, configura
 
 ## Inicio rápido
 
-### App Streamlit
+### UI-NG frontend + API (servicio único)
 
 ```bash
-streamlit run app.py
+# 1. Instalar dependencias backend
+pip install -r requirements.txt
+
+# 2. Compilar el frontend UI-NG (una vez) — genera frontend/dist
+cd frontend && npm ci && npm run build && cd ..
+
+# 3. Servir todo (API en :8000, frontend en /)
+uvicorn backend.app.main:app --host 0.0.0.0 --port 8000
 ```
+
+Abre `http://localhost:8000` para la app UI-NG. La documentación OpenAPI está en `/docs`.
 
 ### Simulador legacy
 
@@ -162,7 +189,7 @@ python -m benchmarks.runner --cases datasets/pvu_cases --offline \
 | Forecasting | `forecast/` | Pronósticos analíticos y Monte Carlo. |
 | Diseño de estrategias | `social_architect.py`, `intervention_optimizer.py` | Diseño inverso de intervención. |
 | **Factbook** | `massive/core/factbook/`, `data/factbook/` | Datos CIA por país. |
-| UI/API | `app.py`, `backend/`, `frontend/` | Streamlit, DTOs, TypeScript. |
+| UI/API | `backend/`, `frontend/` | FastAPI backend, DTOs Pydantic, interfaces TypeScript. |
 
 ---
 
