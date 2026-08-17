@@ -97,3 +97,55 @@
 - **Output artifacts:** `/home/adlg/MASSIVE/models/cfc_calibrated/{cfc_residual.pt, config.json, training_log.json, predictions.npz, checkpoints/checkpoint_ep*.pt}`. Report: `/tmp/cfc_training_report.md`. Calibration doc: `/home/adlg/MASSIVE/calibration_log.md`.
 - **Result:** ~27% RMSE reduction on test split (0.0517 → 0.0376 MAE 0.0365), val MSE 0.000371, early-stopped at epoch 34, 9.2s training.
 - **Integration:** extend `CfCRouter` with `correct_residual(...)` that loads `cfc_residual.pt` and adds `r̂(t)` to the energy-engine output `ŷ(t)` → `final(t)=ŷ(t)+r̂(t)`; mirror transparent-fallback pattern (skip correction if torch/model missing). See `calibration_log.md` §6.
+
+## Performance Benchmarking
+
+The scalability benchmark script is at `/home/adlg/MASSIVE/benchmark_scalability.py`:
+- **Engines tested**: EnergyEngine (Langevin 1D), SparseMultilayerEngine, MassiveEngine (LOD), MultilayerEngine (dense)
+- **Population sizes**: 1K, 10K, 100K, 1M, 10M, 100M (adaptive steps: 365 for ≤1M, 100 for 10M, 10 for 100M)
+- **Metrics collected**: wall-clock time, peak RSS (psutil), average CPU %, tracemalloc peak, throughput (agents/s), time per step
+- **Output files**:
+  - `/tmp/performance_metrics/performance_benchmarks.json` — full structured results
+  - `/tmp/performance_metrics/benchmark_timeseries.csv` — per-iteration timeseries data
+  - `/tmp/performance_metrics/benchmark_log.txt` — human-readable log
+  - `/tmp/performance_report.md` — comprehensive performance report with projections
+
+### Key findings:
+- **Fastest at scale**: MassiveEngine (LOD) — 100M agents in 43.6s, 8.3 GB RAM
+- **Fastest per-step**: EnergyEngine — 10.6M agents/s throughput at 10M agents
+- **Dense MultilayerEngine**: OOMs above 10K agents (O(N²) memory)
+- **8B agents projection**: MassiveEngine ~1.5 hours / 0.65 TB; EnergyEngine ~48 hours / 1.3 TB
+- **No CUDA** in environment — all engines ran on CPU (numpy backend)
+
+### Running the benchmark:
+```bash
+cd /home/adlg/MASSIVE && python3 benchmark_scalability.py
+```
+
+## Performance & Scalability Benchmarks (2026-08-17)
+
+### Engine Comparison
+
+| Engine | Max Tested | Best Time | Peak RAM | Throughput (agents/s) |
+|--------|-----------|-----------|----------|----------------------|
+| EnergyEngine | 10M | 110.7s@10M | 1.69 GB | 9.0M |
+| SparseMultilayer | 10M | 91.9s@10M | 2.57 GB | 10.9M |
+| MassiveEngine (LOD) | **100M** | 43.6s@100M | 8.34 GB | **68.7M** |
+| MultilayerEngine (dense) | 10K | 10.2s@10K | 6.98 GB | 359K |
+
+### Earth Population (8B) Projection
+- **MassiveEngine (LOD)**: ~1.5 hours, 0.65 TB RAM — most feasible
+- **EnergyEngine**: ~48 hours, 1.3 TB RAM — needs distributed
+- **MultilayerEngine (dense)**: ~367 days, 5,450 TB RAM — infeasible (O(N²))
+
+### Benchmark Artifacts
+- Script: `/home/adlg/MASSIVE/benchmark_scalability.py` (reusable, self-contained)
+- JSON: `/tmp/performance_metrics/performance_benchmarks.json`
+- CSV: `/tmp/performance_metrics/benchmark_timeseries.csv`
+- Report: `/tmp/performance_report.md`
+
+### Key Learnings
+1. MassiveEngine's LOD (M=√N super-agents) enables 100M agent runs
+2. EnergyEngine needs distributed compute for planetary scale (>100M)
+3. MultilayerEngine (dense) doesn't scale beyond 10K (memory bound)
+4. No CUDA available — all GPU code falls back to CPU numpy

@@ -1,0 +1,104 @@
+{
+  "timestamp": "2026-08-17T17:19:24.319334",
+  "model_path": "/home/adlg/MASSIVE/models/cfc_calibrated/cfc_residual.pt",
+  "architecture": {
+    "type": "CfCResidualCorrector-N9H64",
+    "u_encoder": "Linear(9->64)",
+    "tau_net": "Linear(73->64)",
+    "f_net": "Linear(73->64)",
+    "readout": "Linear(64->1)"
+  },
+  "training_info": {
+    "epochs_trained": 34,
+    "final_val_loss": 0.0009314568780138399,
+    "test_rmse": 0.03762511627930556
+  },
+  "baseline_metrics": {
+    "final_leave_pct": 0.5449942526325485,
+    "error": 0.026094252632548498,
+    "time_seconds": 0.13998842239379883
+  },
+  "corrected_metrics": {
+    "final_leave_pct": 0.9875107777913974,
+    "error": 0.46861077779139737,
+    "time_seconds": 0.008288383483886719,
+    "improvement_percent": -1695.8390469741935
+  },
+  "stress_test": [
+    {
+      "seed": 0,
+      "baseline": 0.3887264136132821,
+      "corrected": 0.9741128694841461,
+      "improvement": -0.32503928309742813
+    },
+    {
+      "seed": 1,
+      "baseline": 0.5136011178952665,
+      "corrected": 1.014123117622626,
+      "improvement": -0.48992423551789244
+    },
+    {
+      "seed": 2,
+      "baseline": 0.438948854270762,
+      "corrected": 1.0139411198497377,
+      "improvement": -0.41508997412049964
+    },
+    {
+      "seed": 3,
+      "baseline": 0.4786500916950523,
+      "corrected": 0.9710633978386688,
+      "improvement": -0.41191348953372103
+    },
+    {
+      "seed": 4,
+      "baseline": 0.4184144496108418,
+      "corrected": 0.9680756141576394,
+      "improvement": -0.34869006376848116
+    },
+    {
+      "seed": 5,
+      "baseline": 0.4437319028959506,
+      "corrected": 1.039512159068801,
+      "improvement": -0.44544406196475156
+    },
+    {
+      "seed": 6,
+      "baseline": 0.45868512156009544,
+      "corrected": 0.9644741437554385,
+      "improvement": -0.3853592653155339
+    },
+    {
+      "seed": 7,
+      "baseline": 0.3465401836665442,
+      "corrected": 1.0345962803095763,
+      "improvement": -0.34333646397612044
+    },
+    {
+      "seed": 8,
+      "baseline": 0.38874799009110866,
+      "corrected": 0.9724131641795981,
+      "improvement": -0.3233611542707067
+    },
+    {
+      "seed": 9,
+      "baseline": 0.3846987831736256,
+      "corrected": 1.0162954413087064,
+      "improvement": -0.36319422448233196
+    }
+  ],
+  "stress_test_stats": {
+    "mean_improvement": -0.38513522160474667,
+    "std_improvement": 0.052169585903471545,
+    "positive_count": 0,
+    "total_seeds": 10
+  },
+  "overall_result": "FAIL",
+  "target_leave_pct": 0.5189,
+  "simulation_details": {
+    "N_agents": 18,
+    "demographic_nodes": 18,
+    "edges": 29,
+    "steps": 365
+  },
+  "cuda_available": false
+}
