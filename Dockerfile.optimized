@@ -41,7 +41,9 @@ USER appuser
 
 EXPOSE 8000
 
-HEALTHCHECK --interval=30s --timeout=5s --start-period=10s CMD curl -f http://127.0.0.1:8000/docs || exit 1
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s \
+    CMD curl -f http://127.0.0.1:8000/health || exit 1
 
-# Run Uvicorn as default
-CMD ["uvicorn","api:app","--host","0.0.0.0","--port","8000","--workers","1"]
+# Default: API on :8000 (frontend can be served by nginx separately)
+# For single-service (API + UI on :8000), use docker-compose.single.yml variant
+CMD ["uvicorn","backend.app.main:app","--host","0.0.0.0","--port","8000","--workers","1"]

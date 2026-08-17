@@ -89,7 +89,40 @@ The Dockerfile is based on `python:3.11-slim` and includes:
 - System dependencies: `build-essential`, `poppler-utils`, `libmagic1`, `nginx`, `supervisor`
 - Python dependencies from `requirements.txt`
 - Non-root user `appuser` for security
-- Health check endpoint on `/docs`
+- Health check endpoint on `/health`
+- Multi-stage build: wheels built once, frontend built separately, runtime image slim.
+
+### Single-Service Variant (API + UI on :8000)
+
+For deployments that want a single container with the API serving the built
+frontend, use the optimised Dockerfile and `docker-compose.single.yml`:
+
+```bash
+# Build frontend first
+cd frontend && npm ci && npm run build
+
+# Start single-service (API+UI on port 8000)
+docker compose -f docker-compose.single.yml up -d --build
+```
+
+This variant uses `Dockerfile.optimized` which:
+- Builds Python wheels once in a builder stage (no runtime network).
+- Serves the FastAPI app directly via uvicorn on :8000.
+- Mounts `frontend/dist` as a volume so no nginx/rebuild needed for frontend changes.
+- Healthcheck targets `/health`.
+
+### Docker Best Practices Applied
+
+| Practice | How |
+|----------|-----|
+| Multi-stage builds | Wheels built in `builder-py`, frontend in `builder-fe`, slim runtime. |
+| Layer caching | `requirements.txt` copied before app source; wheels cached. |
+| Non-root user | `appuser` created and used for app processes. |
+| No secrets baked | `.env` / `.env.local` mounted as read-only volumes. |
+| `.dockerignore` | Excludes `node_modules/`, caches, data, `.env`, reports. |
+| Healthcheck | `/health` liveness probe with 20s start period. |
+| Minimal base | `python:3.11-slim`, `--no-install-recommends` for apt. |
+| Pinned deps | All package versions pinned via `requirements.txt` / `pyproject.toml`. |
 
 ## Troubleshooting
 

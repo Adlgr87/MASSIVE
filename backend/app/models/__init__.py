@@ -31,6 +31,15 @@ from backend.app.models.dto_snapshot import (
     TimelineTick,
     TimelineResponse,
 )
+from backend.app.models.dto_llm import (
+    LLMAmbiguityResponse,
+    LLMLlmHint,
+    LLMRunRequest,
+    LLMRunResponse,
+    LLMResults,
+    LLMSummary,
+    LLMTimelinePoint,
+)
 
 __all__ = [
     # simulation (live WebSocket)
@@ -53,4 +62,12 @@ __all__ = [
     "InterventionRecord",
     "InterventionLogEntry",
     "ArchitectEventMessage",
+    # LLM orchestration
+    "LLMRunRequest",
+    "LLMRunResponse",
+    "LLMSummary",
+    "LLMResults",
+    "LLMTimelinePoint",
+    "LLMLlmHint",
+    "LLMAmbiguityResponse",
 ]

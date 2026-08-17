@@ -1,0 +1,124 @@
+name: Benchmark Runner
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+    branches: ["main", "master"]
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Run mode: offline (no API key) or llm (requires secret)"
+        required: true
+        default: "offline"
+        type: choice
+        options:
+          - offline
+          - real
+          - llm
+      seed:
+        description: "RNG seed"
+        required: true
+        default: "42"
+        type: number
+      cases:
+        description: "Path to cases folder"
+        required: false
+        default: "datasets/pvu_cases"
+
+jobs:
+  benchmark:
+    name: PVU-BS Benchmark
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Resolve run parameters
+        id: params
+        run: |
+          MODE="${{ inputs.mode }}"
+          SEED="${{ inputs.seed || '42' }}"
+          CASES="${{ inputs.cases }}"
+          if [ -z "$MODE" ]; then MODE="offline"; fi
+          if [ -z "$CASES" ]; then CASES="datasets/pvu_cases"; fi
+          echo "mode=$MODE"   >> "$GITHUB_OUTPUT"
+          echo "seed=$SEED"   >> "$GITHUB_OUTPUT"
+          echo "cases=$CASES" >> "$GITHUB_OUTPUT"
+
+      - name: Check LLM secret availability
+        id: llm_check
+        if: steps.params.outputs.mode == 'llm'
+        run: |
+          if [ -z "${{ secrets.OPENROUTER_API_KEY }}" ] && [ -z "${{ secrets.OPENAI_API_KEY }}" ] && [ -z "${{ secrets.GROQ_API_KEY }}" ]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            echo "::warning::LLM mode requested but no API secret configured. Run will fall back to offline mode."
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Benchmark (offline mode)
+        if: steps.params.outputs.mode == 'offline' || steps.params.outputs.mode == 'real'
+        env:
+          PYTHONHASHSEED: "42"
+        run: |
+          echo "Running benchmark (mode=${{ steps.params.outputs.mode }})"
+          if [ "${{ steps.params.outputs.mode }}" = "real" ]; then
+            python -m benchmarks.runner \
+              --cases "${{ steps.params.outputs.cases }}" \
+              --real \
+              --out reports/validation/ci \
+              --seed ${{ steps.params.outputs.seed }}
+          else
+            python -m benchmarks.runner \
+              --cases "${{ steps.params.outputs.cases }}" \
+              --offline \
+              --out reports/validation/ci \
+              --seed ${{ steps.params.outputs.seed }}
+          fi
+
+      - name: Benchmark (LLM mode)
+        if: steps.params.outputs.mode == 'llm' && steps.llm_check.outputs.skip != 'true'
+        env:
+          PYTHONHASHSEED: "42"
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: |
+          echo "Running benchmark in LLM mode"
+          python -m benchmarks.runner \
+            --cases "${{ steps.params.outputs.cases }}" \
+            --llm \
+            --out reports/validation/ci \
+            --seed ${{ steps.params.outputs.seed }}
+
+      - name: Benchmark fallback (offline)
+        if: steps.params.outputs.mode == 'llm' && steps.llm_check.outputs.skip == 'true'
+        env:
+          PYTHONHASHSEED: "42"
+        run: |
+          echo "Falling back to offline mode (no LLM key)"
+          python -m benchmarks.runner \
+            --cases "${{ steps.params.outputs.cases }}" \
+            --offline \
+            --out reports/validation/ci \
+            --seed ${{ steps.params.outputs.seed }}
+
+      - name: Upload benchmark artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: benchmark-report
+          path: reports/validation/ci
+          if-no-files-found: warn

@@ -528,10 +528,11 @@ class FamilyOfFuturesAnalyzer:
         if max_k < 2:
             return np.zeros(n_sims, dtype=int)
 
+        best_score = -1.0
         if self.n_clusters > 1:
             k = min(self.n_clusters, max_k)
         else:
-            best_k, best_score = 2, -1.0
+            best_k = 2
             for k in range(2, max_k + 1):
                 km = KMeans(n_clusters=k, n_init=5, random_state=self.random_state)
                 labels = km.fit_predict(X)

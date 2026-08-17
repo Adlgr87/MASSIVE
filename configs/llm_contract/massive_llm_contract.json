@@ -1,0 +1,839 @@
+{
+  "name": "MASSIVE",
+  "purpose": "Mathematical Architecture for Scalable Social Interaction and Virtual Engine — un framework de simulación multi-agente y multi-escala para dinámicas sociales, con integración de Factbook, pronóstico temporal y búsqueda inversa de intervenciones.",
+  "version": "1.1.0",
+  "core_apis": [
+    {
+      "id": "simulation_service.run_scalar_simulation",
+      "type": "python_function",
+      "category": "legacy_simulation",
+      "description": "Ejecuta la simulación escalar legacy (simulator.simular) con un estado inicial, escenario y número de pasos. Devuelve el historial completo y un resumen de consenso/polarización.",
+      "required_input": {
+        "estado_inicial": "dict opcional con 'opinion' y 'propaganda' (default: {\"opinion\": 0.0, \"propaganda\": 0.0})",
+        "escenario": "str key del registro de reglas (default: 'campana')",
+        "pasos": "int, número de pasos (default: 50)",
+        "config": "dict opcional con overrides de DEFAULT_CONFIG (incluye 'seed')",
+        "verbose": "bool, emitir logs de paso"
+      },
+      "output": {
+        "history": "list[dict] — [{_paso, opinion, propaganda, ...}]",
+        "summary": "dict — {media, desviacion, polarizacion_media, regla_dominante, ...}",
+        "config": "dict — configuración usada",
+        "escenario": "str"
+      },
+      "module_path": "services.simulation_service"
+    },
+    {
+      "id": "simulation_service.run_multilayer_simulation",
+      "type": "python_function",
+      "category": "multilayer_engine",
+      "description": "Ejecuta el MultilayerEngine (dinámica Langevin multicapa 5D) con N agentes distribuidos en capas social, digital y económica.",
+      "required_input": {
+        "n_agents": "int, tamaño poblacional (default: 100)",
+        "steps": "int, pasos de integración (default: 50)",
+        "seed": "int, semilla RNG (default: 42)",
+        "layer_weights": "tuple[float,float,float], pesos (social, digital, economic) (default: (0.4, 0.3, 0.3))"
+      },
+      "output": {
+        "landscape": "dict — métricas del paisaje (opinión, cooperación, jerarquía, ingreso, acceso_info)",
+        "n_steps": "int — pasos ejecutados",
+        "n_agents": "int"
+      },
+      "module_path": "services.simulation_service"
+    },
+    {
+      "id": "simulation_service.run_massive_sim",
+      "type": "python_function",
+      "category": "lod_simulation",
+      "description": "Ejecuta MassiveSimEngine con compresión LOD (super-agentes), uint8 y event-driven para escalar a cientos de miles de agentes.",
+      "required_input": {
+        "n_agents": "int (default: 10000)",
+        "m_clusters": "int opcional (auto si None)",
+        "steps": "int (default: 50)",
+        "seed": "int (default: 42)",
+        "quantize": "bool, uint8 storage (default: True)",
+        "event_driven": "bool, sparse active-set (default: True)"
+      },
+      "output": "dict — result del engine + memory_report",
+      "module_path": "services.simulation_service"
+    },
+    {
+      "id": "POST /v1/engine/energy",
+      "type": "http_endpoint",
+      "method": "POST",
+      "category": "energy_landscape",
+      "description": "Ejecuta el motor de energía Langevin (SocialEnergyEngine) desde un objetivo en lenguaje natural. El programmatic_architect genera el paisaje (atractores/repulsores) vía LLM, luego corre la dinámica de Langevin con ruido estocástico.",
+      "required_input": {
+        "user_goal": "str (requerido) — objetivo en lenguaje natural",
+        "n_agents": "int (default: 50)",
+        "steps": "int (default: 100)",
+        "connectivity": "float (default: 0.3)",
+        "range_type": "str 'bipolar'|'unipolar' (default: 'bipolar')",
+        "seed": "int (default: 42)",
+        "config_overrides": "dict opcional — temperature, lambda_social, eta"
+      },
+      "output": {
+        "history": "list[dict] — [{_paso, mean_opinion, std_opinion, ...}]",
+        "metrics_timeline": "list[dict] — [{polarizacion, consenso, ...}]",
+        "final_state": "dict — {opinions, mean_opinion, std_opinion}",
+        "summary": "dict — {opinion_inicial, opinion_final, delta_total, ...}",
+        "config_used": "dict",
+        "archetype_info": "dict"
+      },
+      "module_path": "backend.app.routers.engine → energy_runner.run_energy_simulation",
+      "auth": "X-API-Key"
+    },
+    {
+      "id": "POST /v1/engine/architect",
+      "type": "http_endpoint",
+      "method": "POST",
+      "category": "social_architect",
+      "description": "Social Architect — búsqueda inversa de intervenciones. Dado un estado inicial y un objetivo, el LLM itera (máximo max_intentos) ejecutando simulaciones candidato hasta encontrar la secuencia de intervenciones que alcanza el objetivo.",
+      "required_input": {
+        "estado_inicial": "dict (requerido) — estado simulador inicial",
+        "objetivo_usuario": "str (requerido) — descripción del estado deseado",
+        "max_intentos": "int (default: 3)",
+        "config": "dict opcional",
+        "modo_simulacion": "str 'macro'|'corporativo' (default: 'macro')",
+        "metricas_red": "str opcional"
+      },
+      "output": {
+        "strategy": "dict — estrategia de intervención",
+        "narrative": "str — narrativa explicativa del LLM",
+        "attempts": "int — intentos realizados",
+        "history_summary": "list — primeros 5 del historial",
+        "history_length": "int"
+      },
+      "module_path": "backend.app.routers.engine → social_architect.buscar_estrategia_inversa",
+      "auth": "X-API-Key"
+    },
+    {
+      "id": "POST /v1/forecast",
+      "type": "http_endpoint",
+      "method": "POST",
+      "category": "temporal_forecast",
+      "description": "Motor de pronóstico temporal (analytical o Monte Carlo) sobre un estado de simulación. Calcula la probabilidad de un evento umbral (p_event), horizonte temporal y bandas de confianza.",
+      "required_input": {
+        "simulation_state": "dict (requerido) — snapshot con 'historial', 'opinion', 'ews' opcional",
+        "temporal_config": "dict opcional — TemporalConfig overrides",
+        "mode": "str 'analytical'|'monte_carlo' (default: 'analytical')",
+        "n_runs": "int (default: 200) — MC iterations"
+      },
+      "output": {
+        "sim_id": "str",
+        "horizon_ticks": "int",
+        "points": "list[ForecastPoint] — [{tick, mean_opinion, polarizacion, ci_low, ci_high}]",
+        "feasibility": "Feasibility — {score, label, rationale}"
+      },
+      "module_path": "backend.app.routers.forecast → forecast.engine.forecast",
+      "auth": "X-API-Key"
+    },
+    {
+      "id": "POST /v1/benchmarks",
+      "type": "http_endpoint",
+      "method": "POST",
+      "category": "benchmarking",
+      "description": "Ejecuta el benchmark PVU-BS (puntos de inflexión políticos). Tres modos: offline (AR(1) proxy), real (simulator.simular con calibración), llm (requiere API key).",
+      "required_input": {
+        "cases": "str path (default: 'datasets/pvu_cases')",
+        "mode": "str 'offline'|'real'|'llm' (default: 'offline')",
+        "seed": "int (default: 42)",
+        "out": "str path (default: 'reports/validation/ci')"
+      },
+      "output": {
+        "return_code": "int",
+        "mode": "str",
+        "seed": "int",
+        "cases": "str",
+        "out": "str"
+      },
+      "module_path": "backend.app.routers.benchmark → benchmarks.runner.main",
+      "auth": "X-API-Key"
+    },
+    {
+      "id": "factbook_service.country_params",
+      "type": "python_function",
+      "category": "factbook",
+      "description": "Deriva parámetros MASSIVE para un país desde CIA World Factbook. Devuelve n_agents, demographic_matrix, social_groups, social_pressure_weights, gini_coefficient, economic_potential y más (5 puntos de integración).",
+      "required_input": {
+        "country": "str — código CIA (US), ISO2, ISO3, o nombre ('United States')",
+        "data_path": "str opcional — ruta al JSON Factbook"
+      },
+      "output": "dict — {n_agents, demographic_matrix, social_groups, social_pressure_weights, gini_coefficient, inequality_factor, economic_potential, cost_scale_factor, fiscal_constraint, sector_multipliers, urban_rural_split, health_index}",
+      "module_path": "services.factbook_service"
+    },
+    {
+      "id": "factbook_service.build_engine_from_country",
+      "type": "python_function",
+      "category": "factbook",
+      "description": "Construye un MassiveEngine preconfigurado con datos reales de un país, listo para simulación.",
+      "required_input": {
+        "country": "str — identificador de país",
+        "n_agents": "int opcional",
+        "seed": "int (default: 42)",
+        "data_path": "str opcional",
+        "**overrides": "kwargs extra para el engine"
+      },
+      "output": "MassiveEngine instance configurado",
+      "module_path": "services.factbook_service"
+    },
+    {
+      "id": "llm_service.wizard_config",
+      "type": "python_function",
+      "category": "llm_natural_language",
+      "description": "Traduce una descripción en lenguaje natural a un config dict plano usando un LLM (Groq/OpenAI/OpenRouter).",
+      "required_input": {
+        "description": "str — escenario en lenguaje coloquial o técnico",
+        "provider": "str (default: 'groq')",
+        "api_key": "str opcional"
+      },
+      "output": "dict — configuración MASSIVE plana (usable por services)",
+      "module_path": "services.llm_service"
+    },
+    {
+      "id": "micro_massive.MicroOrchestrator.run",
+      "type": "python_function",
+      "category": "micro_agent",
+      "description": "Orquestador multi-partícula para grupos pequeños. Ejecuta influence → game → metrics cíclicamente y devuelve un historial de estados de partículas y métricas grupales.",
+      "required_input": {
+        "particles": "Sequence[SocialParticle] opcional",
+        "n_particles": "int (default: 8)",
+        "initial_cohesion": "float (default: 0.3)",
+        "steps": "int (default: 100)"
+      },
+      "output": "list[dict] — [{step, particles:[{id,mood,energy,strategy,...}], metrics:{cohesión,conflicto,diversidad,mean_mood}}]",
+      "module_path": "micro_massive.core.orchestrator"
+    },
+    {
+      "id": "GET /health, /ready, /version",
+      "type": "http_endpoint",
+      "method": "GET",
+      "category": "infra",
+      "description": "Health check (liveness), readiness (LLM + adapter check), and version metadata.",
+      "required_input": {},
+      "output": {
+        "/health": "{status: 'healthy', service: 'MASSIVE UIL API', version: '1.0.0'}",
+        "/ready": "{status: 'ready', checks: {llm_provider, uil_adapter}}",
+        "/version": "{version: '1.0.0', python:, service, entrypoint}"
+      },
+      "module_path": "backend.app.main"
+    },
+    {
+      "id": "POST /v1/llm/run_simulation",
+      "type": "http_endpoint",
+      "method": "POST",
+      "category": "llm_orchestration",
+      "description": "Single entrypoint for LLM agents: NL intent → config → engine dispatch → structured results + narrative summary. Validates against MASSIVE-LLM contract.",
+      "required_input": {
+        "intent": "string (required) — natural language description of desired simulation",
+        "motor": "string (optional) — engine family override; if omitted, LLM classifies via contract guidelines",
+        "country": "string (optional) — country for Factbook augmentation",
+        "partial_config": "dict (optional) — structured overrides",
+        "llm": "dict (optional) — {provider, model}",
+        "simulation_steps": "int (default: 50)",
+        "seed": "int (default: 42)",
+        "config_overrides": "dict (optional)"
+      },
+      "output": {
+        "sim_id": "string",
+        "motor": "string — dispatched engine",
+        "config": "dict — final resolved configuration",
+        "summary": "dict — narrative + numerical indicators",
+        "narrative": "string — LLM prose summary",
+        "results": "dict — engine-specific results",
+        "assumptions": "list[string]",
+        "factbook_params": "dict (optional)"
+      },
+      "module_path": "backend.app.routers.llm → services.llm_orchestrator.run_llm_simulation",
+      "auth": "X-API-Key + LLM key",
+      "rate_limit": {
+        "per_minute": 30,
+        "scope": "per IP"
+      }
+    }
+  ],
+  "user_intent_to_config": [
+    {
+      "intent": "Quiero entender cómo evoluciona la opinión en un país con alta desigualdad económica",
+      "motor": "energy_engine",
+      "config": {
+        "endpoint": "POST /v1/engine/energy",
+        "payload": {
+          "user_goal": "simulación de evolución de opinión con alta desigualdad económica",
+          "n_agents": 100,
+          "steps": 200,
+          "connectivity": 0.25,
+          "range_type": "bipolar",
+          "seed": 42,
+          "config_overrides": {
+            "temperature": 0.12,
+            "lambda_social": 0.4
+          }
+        },
+        "factbook_country": "Brazil"
+      }
+    },
+    {
+      "intent": "Necesito pronosticar si una protesta será viral en las próximas 2 semanas",
+      "motor": "forecast",
+      "config": {
+        "endpoint": "POST /v1/forecast",
+        "payload": {
+          "simulation_state": {
+            "historial": [
+              {
+                "opinion": 0.45
+              },
+              {
+                "opinion": 0.52
+              },
+              {
+                "opinion": 0.58
+              }
+            ],
+            "ews": {
+              "metrics": {
+                "variance": 0.08,
+                "autocorr": 0.65,
+                "skewness": 0.12
+              }
+            }
+          },
+          "temporal_config": {
+            "n_steps": 14,
+            "step_duration_days": 1,
+            "event_type": "viral_online"
+          },
+          "mode": "monte_carlo",
+          "n_runs": 500
+        }
+      }
+    },
+    {
+      "intent": "Busco la estrategia inversa para reducir la polarización en Estados Unidos",
+      "motor": "social_architect",
+      "config": {
+        "endpoint": "POST /v1/engine/architect",
+        "payload": {
+          "estado_inicial": {
+            "opinion": 0.85,
+            "propaganda": 0.7
+          },
+          "objetivo_usuario": "reducir polarización política a menos del 30% en 6 meses",
+          "max_intentos": 5,
+          "modo_simulacion": "macro"
+        },
+        "factbook_country": "US"
+      }
+    },
+    {
+      "intent": "Simula la dinámica de opinión con una red tipo mundo pequeño para 1000 agentes",
+      "motor": "multilayer_engine",
+      "config": {
+        "endpoint": "POST /v1/simulate",
+        "payload": {
+          "estado_inicial": {
+            "opinion": 0.0,
+            "propaganda": 0.0
+          },
+          "escenario": "campana",
+          "pasos": 150,
+          "config": {
+            "N": 1000,
+            "red_type": "watts_strogatz",
+            "k": 6,
+            "p": 0.1,
+            "seed": 42,
+            "ruido_base": 0.01
+          }
+        }
+      }
+    },
+    {
+      "intent": "Quiero validar mi simulación contra datos reales de México",
+      "motor": "factbook_validation",
+      "config": {
+        "endpoint": "POST /v1/engine/energy",
+        "factbook_country": "Mexico",
+        "validation_target": "reports/factbook_validation_MX.json",
+        "payload": {
+          "user_goal": "simulación con parámetros reales de México",
+          "n_agents": 250,
+          "steps": 300,
+          "connectivity": 0.3,
+          "range_type": "bipolar",
+          "seed": 42
+        }
+      }
+    },
+    {
+      "intent": "Ejecuta el benchmark PVU-BS sin necesidad de LLM para validación CI",
+      "motor": "benchmark_offline",
+      "config": {
+        "endpoint": "POST /v1/benchmarks",
+        "payload": {
+          "cases": "datasets/pvu_cases",
+          "mode": "offline",
+          "seed": 42,
+          "out": "reports/validation/ci"
+        }
+      }
+    },
+    {
+      "intent": "Analiza las familias de futuros para un grupo pequeño de amigos con alta diversidad",
+      "motor": "micro_massive",
+      "config": {
+        "endpoint": "Streamlit /ui/",
+        "payload": {
+          "n_members": 6,
+          "context": "friends",
+          "communication_frequency": 0.6,
+          "hierarchy_tolerance": 0.3,
+          "external_pressure": 0.2,
+          "diversity_of_opinion": 0.7,
+          "n_simulations": 500,
+          "steps_per_sim": 100
+        }
+      }
+    }
+  ],
+  "llm_guidelines": [
+    "Siempre identifica el país cuando el usuario lo mencione (US, United States, México, etc.) y usa esa información para configurar el motor vía Factbook (gini_coefficient, social_pressure_weights, economic_potential, n_agents escalable).",
+    "Cuando el usuario mencione 'desigualdad', 'polarización' o 'conflictos sociales', prioriza el motor energy_engine (Langevin) y pasa el país a factbook_service.get_massive_params para ajustar gini_coefficient, inequality_factor y economic_potential.",
+    "Cuando el usuario pida 'pronosticar', 'predecir' o 'probabilidad de', usa el motor forecast con modo 'analytical' (rápido, determinista) y pasa la configuración TemporalConfig adecuada. Usa 'monte_carlo' si pide intervalos de confianza explícitos.",
+    "Cuando el usuario pida 'estrategia inversa', 'cómo llegar a' o 'qué intervención', usa el motor social_architect (POST /v1/engine/architect) con estado_inicial y objetivo_usuario.",
+    "Para simulaciones estándar de dinámica de opinión sin contexto de país, usa el motor multilayer_engine (POST /v1/simulate) con el escenario apropiado (campana=bipolar, bimodal=presiona grupos).",
+    "Para análisis de grupos pequeños (3-15 agentes) con 'familias de futuros', redirige al micro_massive (Streamlit /ui/) con el contexto y perfiles de miembros.",
+    "Resumen siempre + datos estructurados: toda respuesta debe incluir un resumen en lenguaje natural breve y un bloque JSON con los resultados estructurados (history, metrics, score, etc.).",
+    "Supuesto de horizonte temporal: si el usuario no especifica horizonte, asume 50 pasos para simulaciones legacy, 100 para energy_engine, y 14 días para forecast viral_online.",
+    "Tipo de motor: si el usuario pide 'múltiples escalas' o 'millones de agentes', usa massive_engine (LOD). Para análisis de grupos, usa micro_massive. Para dinámica de opiniones estándar, usa multilayer_engine.",
+    "No expongas detalles internos de implementación (Numba JIT, super-agentes) al usuario. Enfócate en interpretación de resultados: consenso, polarización, p_event, tiempo hasta evento umbral.",
+    "Valida siempre que los payloads cumplan el contrato de autenticación (X-API-Key) y rate-limit antes de hacer llamadas al backend."
+  ],
+  "supported_countries": [
+    "US",
+    "United States",
+    "CH",
+    "China",
+    "GM",
+    "Germany",
+    "UK",
+    "United Kingdom",
+    "FR",
+    "France",
+    "JP",
+    "Japan",
+    "IN",
+    "India",
+    "BR",
+    "Brazil",
+    "RU",
+    "Russia",
+    "IT",
+    "Italy",
+    "CA",
+    "Canada",
+    "AU",
+    "Australia",
+    "MX",
+    "Mexico",
+    "KR",
+    "South Korea",
+    "SP",
+    "Spain"
+  ],
+  "simulation_modes": {
+    "macro": {
+      "description": "Simulación a gran escala (N=1000-1M agentes), dinámica de opiniones multicapa",
+      "engines": [
+        "multilayer_engine",
+        "massive_engine"
+      ],
+      "use_cases": [
+        "polarización pública",
+        "cambio social masivo",
+        "análisis de regímenes"
+      ]
+    },
+    "micro": {
+      "description": "Simulación de grupos pequeños (3-15 agentes), familias de futuros",
+      "engines": [
+        "micro_massive"
+      ],
+      "use_cases": [
+        "dinámica grupal",
+        "análisis organizacional",
+        "relaciones interpersonales"
+      ]
+    },
+    "energy": {
+      "description": "Motor Langevin con paisaje de energía configurable",
+      "engines": [
+        "energy_engine"
+      ],
+      "use_cases": [
+        "dinámica de opiniones controlada",
+        "optimización de intervenciones"
+      ]
+    },
+    "architect": {
+      "description": "Búsqueda inversa de intervenciones vía LLM",
+      "engines": [
+        "social_architect"
+      ],
+      "use_cases": [
+        "planificación de intervenciones",
+        "optimización de estrategias"
+      ]
+    },
+    "forecast": {
+      "description": "Pronóstico temporal probabilístico",
+      "engines": [
+        "forecast.engine"
+      ],
+      "use_cases": [
+        "detección de eventos umbral",
+        "pronóstico de riesgos"
+      ]
+    }
+  },
+  "supported_flows": {
+    "canonical_llm_flow": {
+      "name": "NL → config → run → summary (MASSIVE-LLM)",
+      "entry_point": "POST /v1/llm/run_simulation",
+      "steps": [
+        {
+          "step": 1,
+          "actor": "LLM client",
+          "action": "Send intent + partial_config to /v1/llm/run_simulation"
+        },
+        {
+          "step": 2,
+          "actor": "Backend",
+          "action": "Validate payload against MASSIVE-LLM contract; if intent ambiguous, return 422 with 'requested_fields' asking the LLM to collect missing info"
+        },
+        {
+          "step": 3,
+          "actor": "LLM client",
+          "action": "Re-send with resolved fields (or proceed with documented assumptions)"
+        },
+        {
+          "step": 4,
+          "actor": "Backend",
+          "action": "LLM wizard_config translates NL → flat config (services.llm_service)"
+        },
+        {
+          "step": 5,
+          "actor": "Backend",
+          "action": "Augment config with Factbook params if country present (services.factbook_service.country_params)"
+        },
+        {
+          "step": 6,
+          "actor": "Backend",
+          "action": "Dispatch to engine by 'motor' field: energy→/v1/engine/energy, social_architect→/v1/engine/architect, forecast→/v1/forecast, multilayer→/v1/simulate, benchmark→/v1/benchmarks"
+        },
+        {
+          "step": 7,
+          "actor": "Backend",
+          "action": "Run engine; narrate results via interpreter_layer.ResultNarratorChain"
+        },
+        {
+          "step": 8,
+          "actor": "Backend",
+          "action": "Return structured result to LLM client"
+        }
+      ],
+      "example_intent": "Quiero entender cómo evoluciona la opinión en un país con alta desigualdad económica",
+      "resolves_to": "energy_engine + Factbook(country=Brasil)"
+    },
+    "direct_endpoints": {
+      "name": "Direct engine invocation (bypass LLM intent translation)",
+      "description": "When the LLM already has structured params, call engine endpoints directly without NL→config step",
+      "endpoints": [
+        "POST /v1/simulate",
+        "POST /v1/engine/energy",
+        "POST /v1/engine/architect",
+        "POST /v1/forecast",
+        "POST /v1/benchmarks",
+        "POST /v1/factbook"
+      ]
+    },
+    "factbook_augmented": {
+      "name": "Factbook-augmented simulation",
+      "trigger": "User or LLM provides a country/CIA code",
+      "action": "services.factbook_service.country_params → inject n_agents, demographic_matrix, social_groups, social_pressure_weights, gini_coefficient, economic_potential into engine config"
+    },
+    "inverse_search": {
+      "name": "Social Architect inverse intervention search",
+      "entry_point": "POST /v1/engine/architect (also callable via /v1/llm/run_simulation with motor='social_architect')",
+      "description": "Given estado_inicial + objetivo_usuario, LLM iterates candidate interventions until objective reached or max_intentos exhausted"
+    }
+  },
+  "llm_requested_fields": {
+    "when_ambiguous": {
+      "description": "If the user's intent lacks enough specificity, the LLM must request the following fields before configuring the engine:",
+      "fields": [
+        {
+          "field": "country",
+          "type": "string",
+          "reason": "Needed for Factbook-derived demographic & inequality params. Detect from names like 'United States', 'México', 'Brasil', 'US', 'MX'."
+        },
+        {
+          "field": "horizon_steps",
+          "type": "int",
+          "reason": "Simulation duration. Ask if intent mentions 'durante X meses/semanas' or if engine default is insufficient."
+        },
+        {
+          "field": "n_agents",
+          "type": "int",
+          "reason": "Population scale. Needed for multilayer/massive engines; default 100 for energy_engine, infer from country if Factbook available."
+        },
+        {
+          "field": "seed",
+          "type": "int",
+          "reason": "Reproducibility. Default 42 unless user requests randomness."
+        },
+        {
+          "field": "confidence_interval",
+          "type": "bool",
+          "reason": "If user wants ranges → forecast mode='monte_carlo' with n_runs."
+        },
+        {
+          "field": "temporal_horizon_days",
+          "type": "int",
+          "reason": "For forecast flows: translate '2 weeks' → n_steps=14, step_duration_days=1."
+        }
+      ]
+    },
+    "assumption_defaults": {
+      "description": "When user does NOT specify a field, the LLM must announce the default assumption:",
+      "horizon_default": "50 pasos (legacy scalar), 100 pasos (energy_engine), 14 días (forecast viral_online)",
+      "range_type_default": "'bipolar'",
+      "connectivity_default": "0.3",
+      "n_agents_default": "50 (energy), 100 (multilayer), escalable vía Factbook",
+      "seed_default": "42 (reproducible; state explicitly)",
+      "mode_default": "analytical (forecast), offline (benchmarks)"
+    }
+  },
+  "llm_output_fields": {
+    "numerical_indicators": [
+      {
+        "name": "mean_opinion",
+        "range": "[-1, 1] or [0, 1]",
+        "description": "Population mean opinion"
+      },
+      {
+        "name": "std_opinion",
+        "range": "[0, 1]",
+        "description": "Standard deviation of opinion"
+      },
+      {
+        "name": "polarizacion",
+        "range": "[0, 1]",
+        "description": "Polarization index — higher = more split"
+      },
+      {
+        "name": "consenso",
+        "range": "[0, 1]",
+        "description": "Consensus rate — fraction agreeing"
+      },
+      {
+        "name": "p_event",
+        "range": "[0, 1]",
+        "description": "Probability of threshold event (forecast)"
+      },
+      {
+        "name": "delta_total",
+        "range": "[-2, 2]",
+        "description": "Total opinion shift from initial to final"
+      },
+      {
+        "name": "horizon_ticks",
+        "type": "int",
+        "description": "Forecast horizon in ticks"
+      },
+      {
+        "name": "feasibility_score",
+        "range": "[0, 1]",
+        "description": "Feasibility assessment score"
+      },
+      {
+        "name": "n_agents",
+        "type": "int",
+        "description": "Number of agents simulated"
+      },
+      {
+        "name": "n_steps",
+        "type": "int",
+        "description": "Number of steps executed"
+      },
+      {
+        "name": "attempts",
+        "type": "int",
+        "description": "Architect search attempts performed"
+      }
+    ],
+    "textual_summaries": [
+      {
+        "name": "diagnostico",
+        "description": "What happened in the simulation (2-3 sentences)"
+      },
+      {
+        "name": "dinamica_clave",
+        "description": "Dominant mechanism and why (2-3 sentences)"
+      },
+      {
+        "name": "implicaciones",
+        "description": "What results suggest for the real situation (2-3 sentences)"
+      },
+      {
+        "name": "recomendaciones",
+        "type": "list[str]",
+        "description": "Concrete actions derived from results"
+      },
+      {
+        "name": "narrative",
+        "description": "LLM-generated narrative for architect flows"
+      },
+      {
+        "name": "regla_dominante",
+        "description": "Name of the dominant influence rule"
+      },
+      {
+        "name": "confidence_label",
+        "description": "Qualitative feasibility/prediction confidence (high/medium/low)"
+      }
+    ],
+    "structured_artifacts": [
+      {
+        "name": "config",
+        "type": "dict",
+        "description": "Final engine config used (estado_inicial, escenario, pasos, config, motor)"
+      },
+      {
+        "name": "history",
+        "type": "list[dict]",
+        "description": "Full timestep history (or summary slice for large N)"
+      },
+      {
+        "name": "final_state",
+        "type": "dict",
+        "description": "Terminal opinions, mean, std"
+      },
+      {
+        "name": "metrics_timeline",
+        "type": "list[dict]",
+        "description": "Per-tick polarization/consensus curve"
+      },
+      {
+        "name": "strategy",
+        "type": "dict",
+        "description": "Intervention sequence from social_architect"
+      },
+      {
+        "name": "feasibility",
+        "type": "dict",
+        "description": "Feasibility assessment {score, label, rationale}"
+      },
+      {
+        "name": "factbook_params",
+        "type": "dict",
+        "description": "Country-derived params injected (if Factbook used)"
+      }
+    ]
+  },
+  "rate_limit_tiers": {
+    "default": {
+      "per_minute": 60,
+      "scope": "per IP"
+    },
+    "simulation": {
+      "per_minute": 60,
+      "endpoints": [
+        "/v1/simulate"
+      ]
+    },
+    "energy_architect": {
+      "per_minute": 30,
+      "endpoints": [
+        "/v1/engine/energy",
+        "/v1/engine/architect"
+      ]
+    },
+    "forecast": {
+      "per_minute": 30,
+      "endpoints": [
+        "/v1/forecast"
+      ]
+    },
+    "benchmarks": {
+      "per_minute": 10,
+      "endpoints": [
+        "/v1/benchmarks"
+      ]
+    },
+    "llm": {
+      "per_minute": 30,
+      "endpoints": [
+        "/v1/llm/run_simulation"
+      ],
+      "auth": "X-API-Key + LLM key configured"
+    }
+  },
+  "llm_endpoint": {
+    "id": "POST /v1/llm/run_simulation",
+    "type": "http_endpoint",
+    "method": "POST",
+    "category": "llm_orchestration",
+    "description": "Single entrypoint for LLM agents to run a MASSIVE simulation from a natural-language intent plus optional partial structured config. Validates against this contract, completes missing config via LLM wizard_config, augments with Factbook if a country is mentioned, dispatches to the correct engine, and returns structured results + narrative summary.",
+    "auth": "X-API-Key (always) + LLM API key configured server-side (checked at /ready)",
+    "rate_limit": "30/min per IP",
+    "request": {
+      "intent": "string (required) — natural language intent, e.g. 'Quiero entender cómo evoluciona la opinión en un país con alta desigualdad económica'",
+      "motor": {
+        "type": "string",
+        "enum": [
+          "energy_engine",
+          "social_architect",
+          "forecast",
+          "multilayer_engine",
+          "massive_engine",
+          "micro_massive",
+          "benchmark_offline",
+          "factbook_validation"
+        ],
+        "description": "Engine family to invoke. If omitted, the backend LLM classifies intent via the contract guidelines."
+      },
+      "country": "string (optional) — country name/code for Factbook augmentation",
+      "partial_config": "dict (optional) — structured overrides; merged with LLM-translated config",
+      "llm": {
+        "type": "object",
+        "description": "LLM provider hints",
+        "fields": {
+          "provider": "groq|openai|openrouter",
+          "model": "string"
+        }
+      },
+      "simulation_steps": "int (optional, default 50) — step count override",
+      "seed": "int (optional, default 42)",
+      "config_overrides": "dict (optional) — engine-specific overrides"
+    },
+    "response": {
+      "sim_id": "string — unique run identifier",
+      "motor": "string — engine that was dispatched",
+      "config": "dict — final resolved configuration (estado_inicial, escenario, pasos, config, factbook_country if applicable)",
+      "summary": "dict — narrative + numerical indicators (mean_opinion, polarizacion, consenso, etc.)",
+      "narrative": "string — LLM-generated prose summary",
+      "results": "dict — engine-specific output (history slice, final_state, metrics_timeline, p_event/feasibility for forecast, strategy for architect)",
+      "assumptions": "list[string] — defaults applied / ambiguities resolved",
+      "factbook_params": "dict (optional) — country params injected"
+    },
+    "error_responses": {
+      "400": "Invalid payload structure",
+      "401": "Missing/invalid X-API-Key",
+      "422": "Intent ambiguous; response includes 'requested_fields' listing what the LLM must collect from the user",
+      "503": "LLM provider not configured"
+    },
+    "module_path": "backend.app.routers.llm → services.llm_orchestrator.run_llm_simulation"
+  }
+}

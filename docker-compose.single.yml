@@ -1,0 +1,46 @@
+# =============================================================================
+# docker-compose.single.yml — Single-service deployment (API + UI on :8000)
+# =============================================================================
+# Mounts the pre-built frontend `dist/` and serves it via FastAPI's
+# StaticFiles at /, while the JSON API lives under /api/*.
+#
+# Usage:
+#   docker compose -f docker-compose.yml -f docker-compose.single.yml up -d --build
+#   # or standalone:
+#   docker compose -f docker-compose.single.yml up -d --build
+#
+# This variant uses the optimised Dockerfile.optimized which serves the
+# FastAPI app directly on :8000 (no nginx / supervisord).
+# The frontend is mounted into /app/frontend/dist and served from disk.
+services:
+  massive:
+    build:
+      context: .
+      dockerfile: Dockerfile.optimized
+    container_name: massive-single
+    restart: unless-stopped
+    ports:
+      - "8000:8000"  # API + UI on single port
+    volumes:
+      - ./.env:/app/.env:ro
+      - ./frontend/dist:/app/frontend/dist:ro
+      - massive-logs:/app/reports/validation/ci
+    environment:
+      - MASSIVE_ENV=${MASSIVE_ENV:-production}
+      - MASSIVE_CORS_ORIGINS=${MASSIVE_CORS_ORIGINS:-http://localhost:8000}
+      - PYTHONHASHSEED=42
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    networks:
+      - massive-net
+
+volumes:
+  massive-logs:
+
+networks:
+  massive-net:
+    driver: bridge
