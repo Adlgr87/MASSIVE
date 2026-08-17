@@ -25,9 +25,8 @@ def test_microengine_perf_baseline(n_agents: int):
     elapsed = time.perf_counter() - t0
 
     steps_per_sec = 20 / elapsed
-    # PERF-01 baseline on this CPU (~30 steps/sec w/o torch).
-    # Gate set below baseline to avoid flakiness on CI runners.
-    assert steps_per_sec >= 25.0, f"throughput {steps_per_sec:.1f} < 25"
+    # PERF-01 gate (after Numba warm-up): >= 100 steps/sec (CPU, no torch).
+    assert steps_per_sec >= 100.0, f"throughput {steps_per_sec:.1f} < 100"
     assert result["mean_cooperation"] >= 0.0
 
 

@@ -271,7 +271,7 @@ def compute_theta(attributes_df: pd.DataFrame, K: int = 5) -> np.ndarray:
 # POTENCIAL MULTIDIMENSIONAL (JIT)
 # ============================================================
 
-@njit
+@njit(cache=True)
 def _bimodal_grad(opinion: float) -> float:
     """Gradiente del doble pozo U = (x²-0.49)² → attrae hacia ±0.7.
 
@@ -280,7 +280,7 @@ def _bimodal_grad(opinion: float) -> float:
     return 4.0 * opinion * (opinion * opinion - 0.49)
 
 
-@njit
+@njit(cache=True)
 def multi_potential_gradient(x: np.ndarray) -> np.ndarray:
     """
     Gradiente del potencial social multidimensional U(x).
@@ -328,7 +328,7 @@ def multi_potential_gradient(x: np.ndarray) -> np.ndarray:
 # PASO DE LANGEVIN MULTICAPA (JIT)
 # ============================================================
 
-@njit
+@njit(cache=True)
 def _multilayer_langevin_step_core(
     x_vec:        np.ndarray,
     layers_flat:  np.ndarray,
