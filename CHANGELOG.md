@@ -3,7 +3,7 @@
 All notable changes to **MASSIVE** are documented here. This project follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) semantics.
 
-## [v1.2] — 2025-01-XX  (post-PR #79)
+## [Unreleased]  (post-PR #79)
 
 ### Security
 - **SEC-01**: Replace weak `change-me` API key placeholders in `.env.example`
