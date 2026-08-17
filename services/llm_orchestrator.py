@@ -250,12 +250,16 @@ def _dispatch(
 
     if motor == "energy_engine":
         from energy_runner import run_energy_simulation
-        n_steps = int(steps or config.get("pasos", _DEFAULT_STEPS.get(motor, 100)))
-        n_agents = int(config.get("n_agents", 50))
-        connectivity = float(config.get("connectivity", 0.3))
-        range_type = str(config.get("range_type", "bipolar"))
-        energy_overrides = {k: v for k, v in overrides.items()
-                            if k in ("temperature", "lambda_social", "eta")}
+        n_steps = int(steps or config.get("pasos") or _DEFAULT_STEPS.get(motor, 100))
+        n_agents = int(config.get("n_agents") or 50)
+        connectivity = float(config.get("connectivity") or 0.3)
+        range_type = str(config.get("range_type") or "bipolar").strip().lower()
+        if range_type not in ("bipolar", "unipolar"):
+            range_type = "bipolar"
+        energy_overrides = {
+            k: v for k, v in overrides.items()
+            if k in ("temperature", "lambda_social", "eta") and v is not None
+        }
         return run_energy_simulation(
             user_goal=intent,
             n_agents=n_agents,
