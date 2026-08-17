@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-17T17:19:29.422147",
+  "timestamp": "2026-08-17T17:20:38.921220",
   "model_path": "/home/adlg/MASSIVE/models/cfc_calibrated/cfc_residual.pt",
   "architecture": {
     "type": "CfCResidualCorrector-N9H64",
@@ -16,80 +16,122 @@
   "baseline_metrics": {
     "final_leave_pct": 0.5449942526325485,
     "error": 0.026094252632548498,
-    "time_seconds": 0.13635945320129395
+    "time_seconds": 0.5592944622039795
   },
   "corrected_metrics": {
-    "final_leave_pct": 0.9875107777913974,
-    "error": 0.46861077779139737,
-    "time_seconds": 0.007898569107055664,
-    "improvement_percent": -1695.8390469741935
+    "final_leave_pct": 0.554151375477271,
+    "error": 0.035251375477270974,
+    "time_seconds": 0.008899211883544922,
+    "temperature_adjustment": 0.04255576943821785,
+    "improvement_percent": -35.092489421599296,
+    "correction_method": "Temperature scaling using residual mean"
   },
   "stress_test": [
     {
       "seed": 0,
-      "baseline": 0.3887264136132821,
-      "corrected": 0.9741128694841461,
-      "improvement": -0.32503928309742813
+      "baseline_pct": 0.3887264136132821,
+      "baseline_err": 0.13017358638671794,
+      "corrected_pct": 0.3878593779064522,
+      "corrected_err": 0.13104062209354783,
+      "improvement_err": -0.0008670357068298884,
+      "baseline_time_s": 0.008794069290161133,
+      "corrected_time_s": 0.008785724639892578
     },
     {
       "seed": 1,
-      "baseline": 0.5136011178952665,
-      "corrected": 1.014123117622626,
-      "improvement": -0.48992423551789244
+      "baseline_pct": 0.5136011178952665,
+      "baseline_err": 0.005298882104733504,
+      "corrected_pct": 0.5183224893534061,
+      "corrected_err": 0.0005775106465939484,
+      "improvement_err": 0.004721371458139556,
+      "baseline_time_s": 0.008797168731689453,
+      "corrected_time_s": 0.008788824081420898
     },
     {
       "seed": 2,
-      "baseline": 0.438948854270762,
-      "corrected": 1.0139411198497377,
-      "improvement": -0.41508997412049964
+      "baseline_pct": 0.438948854270762,
+      "baseline_err": 0.079951145729238,
+      "corrected_pct": 0.4411571823502751,
+      "corrected_err": 0.0777428176497249,
+      "improvement_err": 0.0022083280795131,
+      "baseline_time_s": 0.00883793830871582,
+      "corrected_time_s": 0.008803367614746094
     },
     {
       "seed": 3,
-      "baseline": 0.4786500916950523,
-      "corrected": 0.9710633978386688,
-      "improvement": -0.41191348953372103
+      "baseline_pct": 0.4786500916950523,
+      "baseline_err": 0.040249908304947735,
+      "corrected_pct": 0.48686818220271916,
+      "corrected_err": 0.03203181779728087,
+      "improvement_err": 0.008218090507666864,
+      "baseline_time_s": 0.008862495422363281,
+      "corrected_time_s": 0.008803844451904297
     },
     {
       "seed": 4,
-      "baseline": 0.4184144496108418,
-      "corrected": 0.9680756141576394,
-      "improvement": -0.34869006376848116
+      "baseline_pct": 0.4184144496108418,
+      "baseline_err": 0.10048555038915824,
+      "corrected_pct": 0.42450835225226535,
+      "corrected_err": 0.09439164774773467,
+      "improvement_err": 0.006093902641423565,
+      "baseline_time_s": 0.008437871932983398,
+      "corrected_time_s": 0.00842738151550293
     },
     {
       "seed": 5,
-      "baseline": 0.4437319028959506,
-      "corrected": 1.039512159068801,
-      "improvement": -0.44544406196475156
+      "baseline_pct": 0.4437319028959506,
+      "baseline_err": 0.07516809710404943,
+      "corrected_pct": 0.44581771465853914,
+      "corrected_err": 0.07308228534146088,
+      "improvement_err": 0.002085811762588541,
+      "baseline_time_s": 0.008439064025878906,
+      "corrected_time_s": 0.00839996337890625
     },
     {
       "seed": 6,
-      "baseline": 0.45868512156009544,
-      "corrected": 0.9644741437554385,
-      "improvement": -0.3853592653155339
+      "baseline_pct": 0.45868512156009544,
+      "baseline_err": 0.060214878439904584,
+      "corrected_pct": 0.4677980162542783,
+      "corrected_err": 0.051101983745721724,
+      "improvement_err": 0.00911289469418286,
+      "baseline_time_s": 0.008438587188720703,
+      "corrected_time_s": 0.008397340774536133
     },
     {
       "seed": 7,
-      "baseline": 0.3465401836665442,
-      "corrected": 1.0345962803095763,
-      "improvement": -0.34333646397612044
+      "baseline_pct": 0.3465401836665442,
+      "baseline_err": 0.17235981633345582,
+      "corrected_pct": 0.3561579746917617,
+      "corrected_err": 0.16274202530823834,
+      "improvement_err": 0.009617791025217481,
+      "baseline_time_s": 0.008399248123168945,
+      "corrected_time_s": 0.008453607559204102
     },
     {
       "seed": 8,
-      "baseline": 0.38874799009110866,
-      "corrected": 0.9724131641795981,
-      "improvement": -0.3233611542707067
+      "baseline_pct": 0.38874799009110866,
+      "baseline_err": 0.13015200990889136,
+      "corrected_pct": 0.3900128690075713,
+      "corrected_err": 0.1288871309924287,
+      "improvement_err": 0.0012648789164626528,
+      "baseline_time_s": 0.008414983749389648,
+      "corrected_time_s": 0.00844717025756836
     },
     {
       "seed": 9,
-      "baseline": 0.3846987831736256,
-      "corrected": 1.0162954413087064,
-      "improvement": -0.36319422448233196
+      "baseline_pct": 0.3846987831736256,
+      "baseline_err": 0.13420121682637443,
+      "corrected_pct": 0.3902238808800548,
+      "corrected_err": 0.12867611911994525,
+      "improvement_err": 0.005525097706429172,
+      "baseline_time_s": 0.008447885513305664,
+      "corrected_time_s": 0.008428096771240234
     }
   ],
   "stress_test_stats": {
-    "mean_improvement": -0.38513522160474667,
-    "std_improvement": 0.052169585903471545,
-    "positive_count": 0,
+    "mean_improvement": 0.00479811310847939,
+    "std_improvement": 0.003382270941350323,
+    "positive_count": 9,
     "total_seeds": 10
   },
   "overall_result": "FAIL",
@@ -99,6 +141,12 @@
     "demographic_nodes": 18,
     "edges": 29,
     "steps": 365
+  },
+  "residual_stats": {
+    "mean": 0.04255576943821785,
+    "std": 0.029295811591112112,
+    "min": -0.0253233173977324,
+    "max": 0.0925108874977174
   },
   "cuda_available": false
 }
