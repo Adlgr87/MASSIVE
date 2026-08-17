@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-17T17:35:31.138738",
+  "timestamp": "2026-08-17T17:35:39.631714",
   "model_path": "/home/adlg/MASSIVE/models/cfc_calibrated/cfc_residual.pt",
   "architecture": {
     "type": "CfCResidualCorrector-N9H64",
@@ -23,12 +23,12 @@
   "baseline_metrics": {
     "final_leave_pct": 0.5449942526325485,
     "error": 0.026094252632548498,
-    "time_seconds": 0.5182144641876221
+    "time_seconds": 0.5063338279724121
   },
   "corrected_metrics": {
     "final_leave_pct": 0.494265396511881,
     "error": 0.024634603488119022,
-    "time_seconds": 0.049102783203125,
+    "time_seconds": 0.04970955848693848,
     "improvement_percent": 5.593757234529076,
     "correction_method": "CfC model-guided residual correction (scale=0.3)"
   },
