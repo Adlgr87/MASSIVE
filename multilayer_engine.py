@@ -340,7 +340,10 @@ def _multilayer_langevin_step_core(
     x_max:        float,
     noise:        np.ndarray,
 ) -> np.ndarray:
-    """Numba core of Euler-Maruyama multilayer step (noise pre-sampled)."""
+    """Numba core of Euler-Maruyama multilayer step (noise pre-sampled).
+
+    Operates on a DENSE layers_flat array ``(L, N, N)``. For sparse graphs use
+    ``_multilayer_langevin_step_core_sparse`` which avoids the O(N²) path."""
     N, Kdim = x_vec.shape
     L = layers_flat.shape[0]
 
@@ -368,6 +371,38 @@ def _multilayer_langevin_step_core(
             elif x_new[i, k] > 1.0:
                 x_new[i, k] = 1.0
 
+    return x_new
+
+
+def _multilayer_langevin_step_core_sparse(
+    x_vec:         np.ndarray,
+    layers_sparse: list,
+    layer_weights: np.ndarray,
+    theta_matrix:  np.ndarray,
+    coupling:      float,
+    dt:            float,
+    x_min:         float,
+    x_max:         float,
+    noise:         np.ndarray,
+) -> np.ndarray:
+    """Pure-Python core for sparse layers — O(L·N·k) per step instead of O(L·N²).
+
+    ``layers_sparse`` is a list of ``scipy.sparse.csr_matrix`` (one per layer).
+    """
+    N, Kdim = x_vec.shape
+    L = len(layers_sparse)
+
+    social_force = np.zeros((N, Kdim))
+    for ell in range(L):
+        w = layer_weights[ell]
+        contribution = np.asarray(layers_sparse[ell] @ x_vec[:, COL_OPINION]).ravel()
+        social_force[:, COL_OPINION] += coupling * w * contribution
+
+    grad_U = multi_potential_gradient(x_vec)
+    x_new = x_vec + dt * (-grad_U + social_force) + theta_matrix * _STOCHASTIC_SCALE * noise * np.sqrt(dt)
+
+    x_new[:, COL_OPINION] = np.clip(x_new[:, COL_OPINION], x_min, x_max)
+    x_new[:, 1:] = np.clip(x_new[:, 1:], 0.0, 1.0)
     return x_new
 
 
@@ -408,11 +443,24 @@ def multilayer_langevin_step(
     n, kdim = x_arr.shape
     _rng = rng if rng is not None else np.random.default_rng()
     noise = np.asarray(_rng.standard_normal((n, kdim)), dtype=np.float64)
+
+    layer_weights = np.asarray(layer_weights, dtype=np.float64)
+    theta_matrix  = np.asarray(theta_matrix, dtype=np.float64)
+
+    # Dispatch to the sparse-aware core when layers are scipy CSR matrices,
+    # keeping the O(L·N·k) runtime for sparse graphs. Otherwise use the
+    # Numba-compiled dense kernel (backward compatible).
+    is_sparse = isinstance(layers_flat, (list, tuple)) and layers_flat and hasattr(layers_flat[0], "format")
+    if is_sparse:
+        return _multilayer_langevin_step_core_sparse(
+            x_arr, layers_flat, layer_weights, theta_matrix,
+            float(coupling), float(dt), float(x_min), float(x_max), noise,
+        )
     return _multilayer_langevin_step_core(
         x_arr,
         np.asarray(layers_flat, dtype=np.float64),
-        np.asarray(layer_weights, dtype=np.float64),
-        np.asarray(theta_matrix, dtype=np.float64),
+        layer_weights,
+        theta_matrix,
         float(coupling),
         float(dt),
         float(x_min),
@@ -600,13 +648,20 @@ class MultilayerEngine:
         except ImportError:
             pass
 
-        # Capas de red
+        # Capas de red (sparse CSR keeps the step kernel O(L·N·k) for sparse graphs
+# such as Watts-Strogatz, with a dense fallback only when explicitly needed).
+        from scipy import sparse as _sparse
         self.layers = build_layers(N, layer_config)
         self._layers_flat = np.stack([
             self.layers["social"],
             self.layers["digital"],
             self.layers["economic"],
         ], axis=0).astype(np.float64)
+        self._layers_sparse = [
+            _sparse.csr_matrix(self.layers["social"]),
+            _sparse.csr_matrix(self.layers["digital"]),
+            _sparse.csr_matrix(self.layers["economic"]),
+        ]
 
         # Estado inicial
         rng = np.random.default_rng(seed)
@@ -672,7 +727,7 @@ class MultilayerEngine:
             # Fallback al método legacy
             self.x = multilayer_langevin_step(
                 self.x,
-                self._layers_flat,
+                self._layers_sparse,
                 self.layer_weights,
                 self.theta,
                 self.coupling,
