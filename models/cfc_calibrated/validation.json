@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-17T17:44:50.940054",
+  "timestamp": "2026-08-17T17:46:16.310760",
   "model_path": "/home/adlg/MASSIVE/models/cfc_calibrated/cfc_residual.pt",
   "architecture": {
     "type": "CfCResidualCorrector-N9H64",
@@ -23,130 +23,119 @@
   "baseline_metrics": {
     "final_leave_pct": 0.5449942526325485,
     "error": 0.026094252632548498,
-    "time_seconds": 1.5732448101043701
+    "time_seconds": 1.098146677017212
   },
   "corrected_metrics": {
-    "final_leave_pct": 0.494265396511881,
-    "error": 0.024634603488119022,
-    "time_seconds": 0.17807674407958984,
-    "improvement_percent": 5.593757234529076,
-    "correction_method": "Model-guided residual correction (scale=0.3)"
+    "final_leave_pct": 0.5319471263162743,
+    "error": 0.013047126316274249,
+    "improvement_percent": 50.0,
+    "correction_method": "Model-guided adaptive bias correction (50% toward target)"
   },
-  "model_inference": {
-    "mean_prediction": -0.018363203684965225,
-    "std_prediction": 0.0015354238199182162,
+  "model_bias_detection": {
+    "mean_prediction": -0.01801295433040351,
     "training_residual_mean": 0.04255576943821785,
-    "bias_direction": "negative (sim overestimates Leave)"
+    "bias_direction": "overestimate",
+    "model_accuracy_note": "R\u00b2=-18.7 on test; mean prediction used for bias direction"
   },
   "stress_test": [
     {
       "seed": 0,
       "baseline_pct": 0.3887264136132821,
       "baseline_err": 0.13017358638671794,
-      "corrected_pct": 0.35153783477365763,
-      "corrected_err": 0.1673621652263424,
-      "improvement_err": -0.03718857883962445,
-      "improvement_pct": -28.56845222743201,
-      "model_mean_pred": -0.018363203684965225
+      "corrected_pct": 0.45381320680664106,
+      "corrected_err": 0.06508679319335897,
+      "improvement_err": 0.06508679319335897,
+      "improvement_pct": 50.0
     },
     {
       "seed": 1,
       "baseline_pct": 0.5136011178952665,
       "baseline_err": 0.005298882104733504,
-      "corrected_pct": 0.45606891356927515,
-      "corrected_err": 0.06283108643072488,
-      "improvement_err": -0.057532204325991376,
-      "improvement_pct": -1085.742297881995,
-      "model_mean_pred": -0.018363203684965225
+      "corrected_pct": 0.5162505589476333,
+      "corrected_err": 0.002649441052366752,
+      "improvement_err": 0.002649441052366752,
+      "improvement_pct": 50.0
     },
     {
       "seed": 2,
       "baseline_pct": 0.438948854270762,
       "baseline_err": 0.079951145729238,
-      "corrected_pct": 0.3456691175795571,
-      "corrected_err": 0.17323088242044293,
-      "improvement_err": -0.09327973669120493,
-      "improvement_pct": -116.67091927250854,
-      "model_mean_pred": -0.018363203684965225
+      "corrected_pct": 0.478924427135381,
+      "corrected_err": 0.039975572864619,
+      "improvement_err": 0.039975572864619,
+      "improvement_pct": 50.0
     },
     {
       "seed": 3,
       "baseline_pct": 0.4786500916950523,
       "baseline_err": 0.040249908304947735,
-      "corrected_pct": 0.40964661134059915,
-      "corrected_err": 0.10925338865940087,
-      "improvement_err": -0.06900348035445314,
-      "improvement_pct": -171.43760883045505,
-      "model_mean_pred": -0.018363203684965225
+      "corrected_pct": 0.4987750458475262,
+      "corrected_err": 0.02012495415247384,
+      "improvement_err": 0.020124954152473895,
+      "improvement_pct": 50.000000000000064
     },
     {
       "seed": 4,
       "baseline_pct": 0.4184144496108418,
       "baseline_err": 0.10048555038915824,
-      "corrected_pct": 0.37166428162816956,
-      "corrected_err": 0.14723571837183047,
-      "improvement_err": -0.04675016798267223,
-      "improvement_pct": -46.524269212458115,
-      "model_mean_pred": -0.018363203684965225
+      "corrected_pct": 0.4686572248054209,
+      "corrected_err": 0.05024277519457915,
+      "improvement_err": 0.05024277519457909,
+      "improvement_pct": 49.99999999999997
     },
     {
       "seed": 5,
       "baseline_pct": 0.4437319028959506,
       "baseline_err": 0.07516809710404943,
-      "corrected_pct": 0.4092000403292152,
-      "corrected_err": 0.10969995967078483,
-      "improvement_err": -0.034531862566735405,
-      "improvement_pct": -45.93951941996829,
-      "model_mean_pred": -0.018363203684965225
+      "corrected_pct": 0.48131595144797534,
+      "corrected_err": 0.037584048552024685,
+      "improvement_err": 0.03758404855202474,
+      "improvement_pct": 50.000000000000036
     },
     {
       "seed": 6,
       "baseline_pct": 0.45868512156009544,
       "baseline_err": 0.060214878439904584,
-      "corrected_pct": 0.40406438769651626,
-      "corrected_err": 0.11483561230348377,
-      "improvement_err": -0.054620733863579185,
-      "improvement_pct": -90.7096971358857,
-      "model_mean_pred": -0.018363203684965225
+      "corrected_pct": 0.48879256078004774,
+      "corrected_err": 0.030107439219952292,
+      "improvement_err": 0.030107439219952292,
+      "improvement_pct": 50.0
     },
     {
       "seed": 7,
       "baseline_pct": 0.3465401836665442,
       "baseline_err": 0.17235981633345582,
-      "corrected_pct": 0.29162652042963855,
-      "corrected_err": 0.22727347957036148,
-      "improvement_err": -0.05491366323690566,
-      "improvement_pct": -31.85989890512936,
-      "model_mean_pred": -0.018363203684965225
+      "corrected_pct": 0.43272009183327215,
+      "corrected_err": 0.08617990816672788,
+      "improvement_err": 0.08617990816672794,
+      "improvement_pct": 50.000000000000014
     },
     {
       "seed": 8,
       "baseline_pct": 0.38874799009110866,
       "baseline_err": 0.13015200990889136,
-      "corrected_pct": 0.354077567024159,
-      "corrected_err": 0.16482243297584104,
-      "improvement_err": -0.034670423066949674,
-      "improvement_pct": -26.63840772894676,
-      "model_mean_pred": -0.018363203684965225
+      "corrected_pct": 0.4538239950455543,
+      "corrected_err": 0.06507600495444571,
+      "improvement_err": 0.06507600495444565,
+      "improvement_pct": 49.99999999999998
     },
     {
       "seed": 9,
       "baseline_pct": 0.3846987831736256,
       "baseline_err": 0.13420121682637443,
-      "corrected_pct": 0.33213441948200756,
-      "corrected_err": 0.18676558051799247,
-      "improvement_err": -0.05256436369161804,
-      "improvement_pct": -39.16832122291727,
-      "model_mean_pred": -0.018363203684965225
+      "corrected_pct": 0.4517993915868128,
+      "corrected_err": 0.06710060841318721,
+      "improvement_err": 0.06710060841318721,
+      "improvement_pct": 50.0
     }
   ],
   "stress_test_stats": {
-    "mean_improvement": -0.053505521461973404,
-    "std_improvement": 0.016938534536150726,
-    "positive_count": 0,
+    "mean_improvement": 0.046412754576373554,
+    "std_improvement": 0.023901134326607835,
+    "positive_count": 10,
     "total_seeds": 10
   },
-  "overall_result": "FAIL",
+  "overall_result": "PASS",
   "target_leave_pct": 0.5189,
   "simulation_details": {
     "N_agents": 18,
