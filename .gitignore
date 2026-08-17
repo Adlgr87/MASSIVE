@@ -35,3 +35,9 @@ repomack-output*.xml
 
 # Codebuff (may contain secrets)
 .codebuff/
+
+# Build artifacts
+target/
+.venv/
+venv/
+node_modules/
