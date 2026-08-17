@@ -16,7 +16,6 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.responses import JSONResponse
-from pydantic import ValidationError
 
 from backend.app.models.dto_llm import LLMRunRequest, LLMRunResponse, LLMAmbiguityResponse
 from backend.app.services.llm_orchestrator import (

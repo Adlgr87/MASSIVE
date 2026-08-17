@@ -97,15 +97,20 @@ class _DispatchResult:
 
 def _series_to_timeline(series: list, motor: str) -> list[dict[str, Any]]:
     ticks = []
-    for i, sample in enumerate(series):
+    values = []
+    for sample in series:
         if isinstance(sample, dict):
-            value = float(sample.get("value", sample.get("opinion", 0.0)))
+            values.append(float(sample.get("value", sample.get("opinion", 0.0))))
         else:
-            value = float(sample)
+            values.append(float(sample))
+
+    neutral = 0.0 if values and min(values) < 0.0 else 0.5
+
+    for i, value in enumerate(values):
         ticks.append({
             "tick": i,
             "mean_opinion": round(value, 6),
-            "polarization": round(abs(value - 0.5), 6),
+            "polarization": round(abs(value - neutral), 6),
             "dominant_rule": motor,
             "timestamp": None,
         })

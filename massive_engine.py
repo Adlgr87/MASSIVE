@@ -919,7 +919,7 @@ class MassiveSimEngine:
     # Ejecución
     # ------------------------------------------------------------------
 
-    def run(self, steps: int) -> dict[str, Any]:
+    def run(self, steps: int, store_history: bool = True) -> dict[str, Any]:
         """
         Ejecuta la simulación masiva y devuelve estadísticas de resumen.
 
@@ -929,6 +929,10 @@ class MassiveSimEngine:
 
         Args:
             steps: Número de pasos de integración Euler-Maruyama.
+            store_history: Acceptado por compatibilidad con ``MultilayerEngine``
+                y la capa de servicios.  El motor LOD ya almacena únicamente
+                medias ponderadas (no snapshots completos ``(N, K)``) por lo
+                que el argumento no afecta al consumo de memoria.
 
         Returns:
             Diccionario con métricas finales:
