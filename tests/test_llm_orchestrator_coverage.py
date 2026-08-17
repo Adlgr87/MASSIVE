@@ -36,7 +36,12 @@ def test_energy_intervention_scenario(client):
         "api_key": VALID_KEY,
     })
     assert resp.status_code == 200, resp.text
-    assert resp.json()["classified_motor"] == "energy_engine"
+    data = resp.json()
+    assert data["classified_motor"] == "energy_engine"
+    # Guard against regression where dispatch silently falls back to scalar engine:
+    # verify that energy-specific output fields are populated.
+    assert len(data["result"]["timeline"]) >= 1
+    assert data["result"]["metrics"]["dominant_rule"] == "energy_engine"
 
 
 def test_massive_engine_dispatch(client):
