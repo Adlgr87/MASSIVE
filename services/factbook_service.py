@@ -32,7 +32,11 @@ def country_params(country: str, data_path: Optional[str] = None) -> dict[str, A
         Dict of derived massive parameters (may be empty if unknown).
     """
     ctx = get_context(data_path)
-    return dict(ctx.get_massive_params(country) or {})
+    raw = ctx.get_massive_params(country) or {}
+    # Sanitize numpy types (ndarrays/np.float64) so downstream Pydantic
+    # models (LLMRunResponse) never raise PydanticSerializationError. Fixes BUG-02.
+    from massive.core.utils.serialize import to_jsonable
+    return to_jsonable(dict(raw))
 
 
 def intervention_constraints(

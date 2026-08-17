@@ -71,13 +71,13 @@ def test_unknown_motor_override_returns_422(client):
     assert "requested_fields" in resp.json()
 
 
-def test_unimplemented_motor_returns_422(client):
+def test_micro_massive_dispatch(client):
     resp = _post(client, {
         "intent": "Simula un micro-grupo de agentes",
         "api_key": VALID_KEY,
     })
-    assert resp.status_code == 422, resp.text
-    assert "requested_fields" in resp.json()
+    assert resp.status_code == 200, resp.text
+    assert resp.json()["classified_motor"] == "micro_massive"
 
 
 def test_country_name_detection_spanish(client):

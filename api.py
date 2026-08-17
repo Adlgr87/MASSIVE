@@ -21,9 +21,14 @@ async def get_api_key(api_key: Optional[str] = Header(None, alias="X-API-Key")):
     """Validate API key from header."""
     valid_key = os.getenv("MASSIVE_API_KEY")
     if not valid_key:
-        # Dev fallback only when MASSIVE_API_KEY unset
-        valid_key = "default-secret-key"
-        log.warning("MASSIVE_API_KEY not set — using insecure default")
+        # Insecure default removed (SEC-01): require explicit env var.
+        log.warning("MASSIVE_API_KEY not set — authentication disabled")
+        # When no key is configured we *still* reject every request so the
+        # API never silently accepts unauthenticated traffic.
+        raise HTTPException(
+            status_code=503,
+            detail="MASSIVE_API_KEY not configured — service unavailable",
+        )
     if api_key != valid_key:
         raise HTTPException(status_code=401, detail="Invalid API Key")
     return api_key

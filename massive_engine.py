@@ -915,6 +915,28 @@ class MassiveSimEngine:
         self._active_fraction_history: list[float] = [1.0]
         self._steps_run: int = 0
 
+        # ── Warm-up Numba JIT (cache=True avoids recomile across sessions) ──
+        if not getattr(self, "_jit_woken", False):
+            try:
+                from multilayer_engine import (
+                    multi_potential_gradient,
+                    _multilayer_langevin_step_core,
+                )
+                # Tiny batch to trigger one-time compilation.
+                _xt = self._x[:2].copy()
+                multi_potential_gradient(_xt)
+                _M = self._x.shape[0]
+                _layers = self._layers_flat[:, :2, :2]
+                _w = self.layer_weights.astype(np.float64)
+                _th = np.ones((2, K), dtype=np.float64)
+                _multilayer_langevin_step_core(
+                    _xt[:, 0].copy(), _layers, _w, _th,
+                    self.coupling, self.dt, -1.0, 1.0,
+                )
+                self._jit_woken = True
+            except Exception:
+                pass  # JIT missing or not needed — runtime path handles it
+
     # ------------------------------------------------------------------
     # Ejecución
     # ------------------------------------------------------------------
