@@ -496,10 +496,10 @@ class FactbookDataLoader:
             return self._name_to_cia[identifier_lower]
 
         # Search in loaded data
-        for _cia_code, data in self.countries.items():
+        for cia_code, data in self.countries.items():  # noqa: B007
             country_name = data.get("name", "").lower()
             if identifier_lower in country_name:
-                return _cia_code
+                return cia_code
 
         return None
 

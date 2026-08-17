@@ -51,7 +51,7 @@ log = logging.getLogger("massive.interpreter_layer")
 # ── Detección de LangChain (opcional) ────────────────────────────────────────
 
 try:
-    from langchain_core.output_parsers import JsonOutputParser, StrOutputParser
+    from langchain_core.output_parsers import JsonOutputParser
     from langchain_core.prompts import ChatPromptTemplate
 
     _LC_AVAILABLE = True
@@ -300,7 +300,6 @@ class InterpreterLayer:
                 )
 
             json_parser = JsonOutputParser()
-            StrOutputParser()
 
             self._chains["wizard"] = (
                 ChatPromptTemplate.from_messages(
