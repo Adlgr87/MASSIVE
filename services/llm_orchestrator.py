@@ -248,8 +248,25 @@ def _dispatch(
     if seed is not None:
         overrides["seed"] = seed
 
-    if motor in ("multilayer_engine", "massive_engine", "factbook_validation",
-                 "energy_engine"):
+    if motor == "energy_engine":
+        from energy_runner import run_energy_simulation
+        n_steps = int(steps or config.get("pasos", _DEFAULT_STEPS.get(motor, 100)))
+        n_agents = int(config.get("n_agents", 50))
+        connectivity = float(config.get("connectivity", 0.3))
+        range_type = str(config.get("range_type", "bipolar"))
+        energy_overrides = {k: v for k, v in overrides.items()
+                            if k in ("temperature", "lambda_social", "eta")}
+        return run_energy_simulation(
+            user_goal=intent,
+            n_agents=n_agents,
+            steps=n_steps,
+            connectivity=connectivity,
+            range_type=range_type,
+            seed=seed if seed is not None else 42,
+            config_overrides=energy_overrides or None,
+        )
+
+    if motor in ("multilayer_engine", "massive_engine", "factbook_validation"):
         # Default target engine when intent is opinion-dynamics oriented.
         # Prefer the scalar legacy engine path which is universally available.
         estado = config.get("estado_inicial", {"opinion": 0.0, "propaganda": 0.0})
