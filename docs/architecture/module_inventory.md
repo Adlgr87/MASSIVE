@@ -96,7 +96,7 @@ Evidencia observada en `app.py`:
   - conectores sociales y motores especializados dentro del flujo de UI
 
 Conclusión:
-- La UI Streamlit no es una capa fina. Es un **integrador operativo** de múltiples dominios.
+- La UI Streamlit (histórica, reemplazada por el frontend Angular/Vite `massive-ui-ng` servido como archivos estáticos) no es una capa fina. Es un **integrador operativo** de múltiples dominios.
 - Una consolidación estructural no puede asumir que `app.py` solo consume una API limpia y estable; hoy participa de varias uniones internas del sistema.
 
 ### 1.5. `social_architect.py` depende del simulador, optimización y forecast

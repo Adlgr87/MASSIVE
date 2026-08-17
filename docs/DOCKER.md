@@ -24,18 +24,16 @@ docker compose up -d --build
 
 # 4. Access services
 # API documentation: http://localhost:8000/docs
-# Streamlit UI: http://localhost:8501
+# UI-NG Frontend: http://localhost:8000/
 ```
 
 ## Services
 
-The container runs three processes via **supervisord**:
+The container runs a single process via **uvicorn** (FastAPI backend serving the UI-NG frontend):
 
-| Service       | Port  | Description                          |
-| ------------- | ----- | ------------------------------------ |
-| FastAPI API   | 8000  | REST API with OpenAPI docs at `/docs` |
-| Streamlit UI  | 8501  | Web interface for MASSIVE           |
-| Nginx         | 80    | Reverse proxy (optional)            |
+| Service       | Port | Description                                    |
+| ------------- | ---- | ---------------------------------------------- |
+| MASSIVE UI-NG | 8000 | UI-NG frontend + REST API (single-service)     |
 
 ## Commands
 
@@ -67,7 +65,7 @@ docker inspect --format='{{.State.Health.Status}}' massive-uil
 | Host File           | Container Path   | Purpose                                |
 | ------------------- | ---------------- | -------------------------------------- |
 | `.env`              | `/app/.env`      | Standard Python env vars               |
-| `.env.local`        | `/app/.env.local`| Streamlit-specific env vars            |
+| `.env.local`        | `/app/.env.local`| UI-NG-specific env vars            |
 | `reports/validation/` | Volume mount    | Persist benchmark reports              |
 
 ## Environment Variables
@@ -143,7 +141,7 @@ docker info
 
 ```bash
 # Change ports in docker-compose.yml
-# Example: "8080:8000" for API, "8510:8501" for Streamlit
+# Example: "8080:8000" for UI-NG frontend + API
 ```
 
 ### Out of memory

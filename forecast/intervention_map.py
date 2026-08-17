@@ -7,7 +7,7 @@ from typing import Any
 
 import numpy as np
 
-from schemas import Intervention
+from massive.core.schemas import Intervention
 
 
 def _clip_unit(value: Any) -> float:

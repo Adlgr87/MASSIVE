@@ -1,0 +1,39 @@
+# MASSIVE UI-NG — single-service Docker Compose (API + built frontend)
+# Streamlit legacy service removed: UI-NG is the only supported UI.
+#
+# Run:  docker compose -f docker-compose.yml up --build
+services:
+  ui-ng:
+    build:
+      context: ..
+      dockerfile: infra/Dockerfile.ui-ng
+    container_name: massive-ui-ng
+    restart: unless-stopped
+    ports:
+      - "8000:8000"  # API + frontend (single port)
+    volumes:
+      - massive-ui-ng-data:/data
+    env_file:
+      - ../.env
+    environment:
+      - MASSIVE_SERVE_FRONTEND=1
+      - MASSIVE_DATA_DIR=/data
+      - MASSIVE_ENV=production
+      # Security (uncomment/override in .env):
+      # - MASSIVE_API_KEYS=change-me-strong-key
+      # - MASSIVE_ALLOWED_HOSTS=massive.example.com
+    healthcheck:
+      test: ["CMD", "curl", "-sf", "http://127.0.0.1:8000/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    networks:
+      - massive-net
+
+volumes:
+  massive-ui-ng-data:
+
+networks:
+  massive-net:
+    driver: bridge

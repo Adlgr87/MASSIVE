@@ -57,7 +57,7 @@ Wrapper / compatibility surface.
 ### Evidencia
 - permite `import app` como superficie de librería
 - reexporta directamente desde `simulator`
-- evita depender del runtime de Streamlit solo para imports básicos
+- evita depender del runtime de UI-NG solo para imports básicos
 
 ### Función actual
 Separar la UI interactiva (`app.py`) de una superficie importable de API básica.

@@ -68,7 +68,7 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 - All opinion values stay within their declared range (unipolar `[0,1]` or bipolar `[-1,1]`); use `np.clip` after every update.
 - The main simulation API (`simular`, `simular_multiples`) must remain backward-compatible. New features live in new modules.
 - New modules follow the existing docstring style (Google-style with Args/Returns).
-- Build: `pip install -r requirements.txt` · Run: `streamlit run app.py` · Test: `pytest tests/`
+- Build: `pip install -r requirements.txt` · Run: `uvicorn backend.app.main:app --host 0.0.0.0 --port 8000` · Test: `pytest tests/`
 
 ---
 

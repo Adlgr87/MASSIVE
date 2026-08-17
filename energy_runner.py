@@ -1,7 +1,7 @@
 """
 energy_runner.py — Orquestador de simulaciones Langevin para MASSIVE
 Conecta: ProgrammaticArchitect → EnergyConfig → SocialEnergyEngine
-Devuelve historial y métricas compatibles con simulator.py y Streamlit.
+Devuelve historial y métricas compatibles con simulator.py y la UI-NG (consumida vía API del backend).
 """
 import numpy as np
 from typing import Optional

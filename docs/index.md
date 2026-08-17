@@ -7,7 +7,7 @@ Welcome to the **MASSIVE** documentation. This project is a hybrid social dynami
 - **Hybrid Architecture:** Numerical simulation with LLM context-aware logic.
 - **Multiple Models:** Includes DeGroot, Friedkin-Johnsen, Hegselmann-Krause, and more.
 - **Multi-Range Support:** Works with both [0, 1] probabilistic and [-1, 1] bipolar ranges.
-- **Interactive UI:** Built with Streamlit for real-time visualization and exports.
+- **Interactive UI:** Built with the modern Angular/Vite frontend (`massive-ui-ng`) served by the UI-NG backend with real-time visualization and exports.
 - **Security First:** Management of API keys via environment variables.
 - **Scientific Extension Plan:** Roadmap for adaptive solvers, stability diagnostics, data assimilation, bifurcations, and physics-informed modules.
 
@@ -26,5 +26,5 @@ pip install -r requirements.txt
 ### Quick Start
 
 ```bash
-streamlit run app.py
+uvicorn backend.app.main:app --host 0.0.0.0 --port 8000
 ```

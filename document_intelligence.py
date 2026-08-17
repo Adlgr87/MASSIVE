@@ -530,7 +530,7 @@ class DocumentIntelligence:
         filename: str,
     ) -> DocumentContext:
         """
-        Parsea contenido en memoria (útil para uploads de Streamlit).
+        Parsea contenido en memoria (útil para uploads de la UI-NG / API).
 
         Escribe a un archivo temporal, parsea y limpia.
         """

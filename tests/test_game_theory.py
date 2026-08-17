@@ -15,8 +15,8 @@ import numpy as np
 # Ensure project root is in path when running directly
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from schemas import GamePayoff, StrategicConfig
-from utility_logic import calculate_strategic_force
+from massive.core.schemas import GamePayoff, StrategicConfig
+from massive.core.utility_logic import calculate_strategic_force
 
 
 class TestGamePayoff(unittest.TestCase):

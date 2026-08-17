@@ -1,8 +1,7 @@
 """massive_core — stable adapter layer over the legacy MASSIVE simulator.
 
 This package acts as the stable import surface for newer backend/frontend code.
-It re-exports the public simulation API without touching the legacy Streamlit
-root modules so that existing runtime behavior and import paths remain stable.
+It re-exports the public simulation API without touching the legacy root modules so that existing runtime behavior and import paths remain stable.
 
 This module is an active compatibility adapter, not a redundant wrapper.
 Its re-exports should only change as part of an explicit migration slice with

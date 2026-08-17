@@ -12,9 +12,9 @@ import logging
 import os
 from pydantic import ValidationError
 
-from schemas import StrategyMatrix
+from massive.core.schemas import StrategyMatrix
 from simulator import run_with_schedule, resumen_historial, DEFAULT_CONFIG
-from intervention_optimizer import optimize_interventions
+from massive.core.intervention_optimizer import optimize_interventions
 from forecast import TemporalConfig, forecast
 
 log = logging.getLogger("massive")

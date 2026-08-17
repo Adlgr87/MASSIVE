@@ -410,6 +410,79 @@
         "Disputes": "EU leadership role, migration policy",
         "Refugees": "Major refugee接收 country in Europe"
       }
+    },
+    "Brazil": {
+      "Introduction": {
+        "Background": "Portuguese colony until 1822; largest country in South America."
+      },
+      "Geography": {
+        "Location": "South America",
+        "Area": {
+          "total": "8.5 million sq km",
+          "value": 8515767
+        },
+        "Climate": "Mostly tropical"
+      },
+      "People and Society": {
+        "Population": {
+          "value": 216451349,
+          "text": "216 million (2024 est.)"
+        },
+        "Population growth rate": {
+          "value": 0.007,
+          "text": "0.7% (2024 est.)"
+        },
+        "Urbanization": {
+          "urban population": 87.0,
+          "text": "87.0% (2023)"
+        },
+        "Ethnic groups": {
+          "pardo": 45.3,
+          "white": 43.5,
+          "black": 7.6,
+          "asian": 2.3,
+          "indigenous": 0.8,
+          "other": 0.5
+        },
+        "Gini Index": {
+          "value": 53.4,
+          "text": "53.4 (2019 est.)"
+        }
+      },
+      "Economy": {
+        "GDP": {
+          "value": 2080000000000,
+          "text": "$2.08 trillion (2023 est.)"
+        },
+        "GDP - per capita": {
+          "value": 9680,
+          "text": "$9,680 (2023 est.)"
+        },
+        "GDP - real growth rate": {
+          "value": 2.3,
+          "text": "2.3% (2023 est.)"
+        },
+        "Inflation rate": {
+          "value": 4.6,
+          "text": "4.6% (2023 est.)"
+        },
+        "Unemployment rate": {
+          "value": 8.3,
+          "text": "8.3% (2023 est.)"
+        },
+        "Public debt": {
+          "value": 90.2,
+          "text": "90.2% of GDP (2023 est.)"
+        },
+        "Exports": {
+          "value": 352000000000,
+          "text": "$352 billion (2023 est.)"
+        },
+        "Imports": {
+          "value": 327000000000,
+          "text": "$327 billion (2023 est.)"
+        }
+      }
     }
   }
 }

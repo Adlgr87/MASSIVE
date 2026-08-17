@@ -1,0 +1,65 @@
+MASSIVE UI-NG — Paquete de Integración v1.0
+Fecha: 2026-08-14
+Base requerida: checkout de MASSIVE (github.com/Adlgr87/MASSIVE, main)
+
+=== INVENTARIO (rutas relativas al repo MASSIVE) ===
+  backend/app/__init__.py                                 → backend/app/__init__.py
+  backend/app/eval_golden.json                            → backend/app/eval_golden.json
+  backend/app/evaluation.py                               → backend/app/evaluation.py
+  backend/app/live_runner.py                              → backend/app/live_runner.py
+  backend/app/llm_chat.py                                 → backend/app/llm_chat.py
+  backend/app/llm_prompts.py                              → backend/app/llm_prompts.py
+  backend/app/main.py                                     → backend/app/main.py
+  backend/app/metrics.py                                  → backend/app/metrics.py
+  backend/app/models/__init__.py                          → backend/app/models/__init__.py
+  backend/app/models/dto_ui.py                            → backend/app/models/dto_ui.py
+  backend/app/narrative.py                                → backend/app/narrative.py
+  backend/app/rate_limit.py                               → backend/app/rate_limit.py
+  backend/app/routers/__init__.py                         → backend/app/routers/__init__.py
+  backend/app/routers/conversation.py                     → backend/app/routers/conversation.py
+  backend/app/routers/live.py                             → backend/app/routers/live.py
+  backend/app/routers/simulation.py                       → backend/app/routers/simulation.py
+  backend/app/routers/status.py                           → backend/app/routers/status.py
+  backend/app/run_store.py                                → backend/app/run_store.py
+  backend/app/scenario_parser.py                          → backend/app/scenario_parser.py
+  backend/app/security.py                                 → backend/app/security.py
+  backend/app/settings.py                                 → backend/app/settings.py
+  docs/NEXT_GEN_UI_PRODUCTION_ES.md                       → docs/NEXT_GEN_UI_PRODUCTION_ES.md
+  docs/NEXT_GEN_UI_WORKFLOW_ES.md                         → docs/NEXT_GEN_UI_WORKFLOW_ES.md
+  frontend/.gitignore                                     → frontend/.gitignore
+  frontend/README_ES.md                                   → frontend/README_ES.md
+  frontend/index.html                                     → frontend/index.html
+  frontend/package-lock.json                              → frontend/package-lock.json
+  frontend/package.json                                   → frontend/package.json
+  frontend/src/App.tsx                                    → frontend/src/App.tsx
+  frontend/src/MASSIVE_UIL_demo.jsx                       → frontend/src/MASSIVE_UIL_demo.jsx
+  frontend/src/api.ts                                     → frontend/src/api.ts
+  frontend/src/components/ChatPanel.tsx                   → frontend/src/components/ChatPanel.tsx
+  frontend/src/components/DraftEditor.tsx                 → frontend/src/components/DraftEditor.tsx
+  frontend/src/components/GuidedForm.tsx                  → frontend/src/components/GuidedForm.tsx
+  frontend/src/components/LiveControls.tsx                → frontend/src/components/LiveControls.tsx
+  frontend/src/components/LiveView.tsx                    → frontend/src/components/LiveView.tsx
+  frontend/src/components/ResultsPanel.tsx                → frontend/src/components/ResultsPanel.tsx
+  frontend/src/components/StatusBar.tsx                   → frontend/src/components/StatusBar.tsx
+  frontend/src/i18n.ts                                    → frontend/src/i18n.ts
+  frontend/src/live.ts                                    → frontend/src/live.ts
+  frontend/src/main.tsx                                   → frontend/src/main.tsx
+  frontend/src/stream.ts                                  → frontend/src/stream.ts
+  frontend/src/theme.css                                  → frontend/src/theme.css
+  frontend/src/types.ts                                   → frontend/src/types.ts
+  frontend/src/types/api.generated.ts                     → frontend/src/types/api.generated.ts
+  frontend/tsconfig.json                                  → frontend/tsconfig.json
+  frontend/vite.config.ts                                 → frontend/vite.config.ts
+  infra/.github/workflows/ui-ng.yml                       → .github/workflows/ui-ng.yml
+  infra/Dockerfile.ui-ng                                  → Dockerfile.ui-ng
+  infra/docker-compose.yml                                → docker-compose.yml (fusionar con el existente)
+  infra/env.example                                       → .env.example (anexar sección UI-NG)
+  infra/scripts/gen_ts_types.py                           → scripts/gen_ts_types.py
+  tests/test_ui_ng.py                                     → tests/test_ui_ng.py
+  tests/test_ui_ng_live.py                                → tests/test_ui_ng_live.py
+
+=== DOCUMENTACIÓN EN LA RAÍZ DEL PAQUETE ===
+  README.md     instrucciones de instalación y operación
+  WORKFLOW.md   workflow general (problema → solución → arquitectura → fases)
+  EXAMPLES.md   ejemplos de implementación verificados
+  MANIFEST.txt  este inventario
