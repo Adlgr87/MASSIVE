@@ -66,13 +66,11 @@ def run_multilayer_simulation(
     from multilayer_engine import MultilayerEngine
 
     engine = MultilayerEngine(N=n_agents, seed=seed, layer_weights=layer_weights)
-    history = engine.run(steps=steps, store_history=False)
-    # When store_history=False we receive compact per-step aggregates instead
-    # of full (N, K) snapshots — O(steps·4) instead of O(steps·N·K).
-    if history and isinstance(history[0], dict):
-        opinion_trajectory = [h["mean_opinion"] for h in history]
-    else:
-        opinion_trajectory = [float(hist[:, 0].mean()) for hist in history]
+    # store_history=False → compact per-step aggregates, O(1 snapshot) peak memory.
+    history: list[dict] = engine.run(steps=steps, store_history=False)  # type: ignore[assignment]
+    opinion_trajectory = [h["mean_opinion"] for h in history]
+    # MultilayerEngine tracks a single global opinion; the same trajectory is
+    # returned for each layer key until per-layer tracking is implemented.
     return {
         "landscape": engine.get_landscape(),
         "n_steps": len(history) - 1,

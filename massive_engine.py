@@ -951,7 +951,7 @@ class MassiveSimEngine:
 
         Args:
             steps: Número de pasos de integración Euler-Maruyama.
-            store_history: Acceptado por compatibilidad con ``MultilayerEngine``
+            store_history: Aceptado por compatibilidad con ``MultilayerEngine``
                 y la capa de servicios.  El motor LOD ya almacena únicamente
                 medias ponderadas (no snapshots completos ``(N, K)``) por lo
                 que el argumento no afecta al consumo de memoria.

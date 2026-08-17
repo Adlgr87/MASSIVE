@@ -670,6 +670,7 @@ class MultilayerEngine:
         self.x = np.column_stack([x0_opinion, x0_rest]).astype(np.float64)
 
         self._history: list[np.ndarray] = [self.x.copy()]
+        self._history_compact: list[dict] = []
         self.mps_state = None
 
     def _create_drift_function(self):
@@ -750,27 +751,57 @@ class MultilayerEngine:
         self._refresh_mps_state()
         return self.x
 
-    def run(self, steps: int = 100, store_history: bool = True) -> list[np.ndarray]:
+    def run(
+        self, steps: int = 100, store_history: bool = True
+    ) -> "list[np.ndarray] | list[dict]":
         """
         Ejecuta la simulación por `steps` pasos.
 
         Args:
             steps: Número de pasos de integración.
-            store_history: Cuando ``False`` no se conservan las snapshots
-                completas ``(N, K)`` en ``self._history``; en su lugar se
-                guardan solo los agregados de opinión (media, std, polarización)
-                por paso, reduciendo el uso de memoria de O(steps·N·K) a
-                O(steps·4).  Backward-compatible: el valor predeterminado
-                ``True`` preserva el comportamiento original.
+            store_history: Cuando ``False`` los agregados de opinión se
+                calculan *durante* el loop, nunca acumulando más de una
+                snapshot completa ``(N, K)`` en memoria al mismo tiempo.
+                Esto reduce el pico de memoria de O(steps·N·K) a O(1 snapshot).
+                Backward-compatible: el valor predeterminado ``True`` preserva
+                el comportamiento original.
 
         Returns:
-            Lista de matrices de estado (N, K), de longitud steps + 1
-            (incluye el estado inicial) — o, cuando ``store_history=False``,
-            una lista de agregados de opinión (dicts) de la misma longitud.
+            ``store_history=True``: lista de matrices de estado ``(N, K)``,
+            longitud steps + 1 (incluye el estado inicial).
+            ``store_history=False``: lista de dicts de agregados de opinión
+            ``{mean_opinion, std_opinion, polarization, sample_size}``,
+            misma longitud.
         """
         if steps < 1:
             raise ValueError("steps debe ser ≥ 1")
-        prev = len(self._history)
+        if not store_history:
+            # Aggregate on-the-fly: pop each full snapshot immediately after
+            # step() appends it so peak memory stays at O(1 snapshot).
+            initial = self._history[0] if self._history else self.x
+            ops0 = initial[:, COL_OPINION]
+            aggregates: list[dict] = [{
+                "mean_opinion": float(ops0.mean()),
+                "std_opinion": float(ops0.std()),
+                "polarization": float(np.mean(np.abs(ops0))),
+                "sample_size": int(ops0.size),
+            }]
+            # Clear pre-existing history to avoid double-counting.
+            self._history.clear()
+            for _ in range(steps):
+                self.step()
+                snap = self._history.pop()  # discard full snapshot immediately
+                ops = snap[:, COL_OPINION]
+                aggregates.append({
+                    "mean_opinion": float(ops.mean()),
+                    "std_opinion": float(ops.std()),
+                    "polarization": float(np.mean(np.abs(ops))),
+                    "sample_size": int(ops.size),
+                })
+            # Retain only final state so get_landscape() / get_opinions() work.
+            self._history = [self.x.copy()]
+            self._history_compact = aggregates
+            return aggregates
         for _ in range(steps):
             self.step()
         if not store_history and len(self._history) > 1:
@@ -871,7 +902,7 @@ class MultilayerEngine:
 
         Useful for instrumentation hooks, health checks and dashboards.
         """
-        n_steps = len(self._history_compact) if hasattr(self, "_history_compact") and self._history_compact else len(self._history)
+        n_steps = len(self._history_compact) if self._history_compact else len(self._history)
         ops = self.x[:, COL_OPINION]
         return {
             "n_agents": int(self.N),
