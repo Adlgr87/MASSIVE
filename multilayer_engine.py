@@ -695,35 +695,45 @@ class MultilayerEngine:
         self._refresh_mps_state()
         return self.x
 
-    def run(self, steps: int = 100, store_history: bool = True) -> list[np.ndarray]:
+    def run(
+        self, steps: int = 100, store_history: bool = True
+    ) -> "list[np.ndarray] | list[dict]":
         """
         Ejecuta la simulación por `steps` pasos.
 
         Args:
             steps: Número de pasos de integración.
-            store_history: Cuando ``False`` no se conservan las snapshots
-                completas ``(N, K)`` en ``self._history``; en su lugar se
-                guardan solo los agregados de opinión (media, std, polarización)
-                por paso, reduciendo el uso de memoria de O(steps·N·K) a
-                O(steps·4).  Backward-compatible: el valor predeterminado
-                ``True`` preserva el comportamiento original.
+            store_history: Cuando ``False`` los agregados de opinión se
+                calculan *durante* el loop, nunca acumulando más de una
+                snapshot completa ``(N, K)`` en memoria al mismo tiempo.
+                Esto reduce el pico de memoria de O(steps·N·K) a O(1 snapshot).
+                Backward-compatible: el valor predeterminado ``True`` preserva
+                el comportamiento original.
 
         Returns:
-            Lista de matrices de estado (N, K), de longitud steps + 1
-            (incluye el estado inicial) — o, cuando ``store_history=False``,
-            una lista de agregados de opinión (dicts) de la misma longitud.
+            ``store_history=True``: lista de matrices de estado ``(N, K)``,
+            longitud steps + 1 (incluye el estado inicial).
+            ``store_history=False``: lista de dicts de agregados de opinión
+            ``{mean_opinion, std_opinion, polarization, sample_size}``,
+            misma longitud.
         """
         if steps < 1:
             raise ValueError("steps debe ser ≥ 1")
-        prev = len(self._history)
-        for _ in range(steps):
-            self.step()
-        if not store_history and len(self._history) > 1:
-            # Replace full snapshots with compact aggregates (PERF-01).
-            # We keep only the opinion column's per-step summary; the full
-            # ``self.x`` final state remains accessible via ``self.x``.
-            aggregates = []
-            for snap in self._history:
+        if not store_history:
+            # Aggregate on-the-fly: pop each full snapshot immediately after
+            # step() appends it so peak memory stays at O(1 snapshot).
+            ops0 = self._history[0][:, COL_OPINION]
+            aggregates: list[dict] = [{
+                "mean_opinion": float(ops0.mean()),
+                "std_opinion": float(ops0.std()),
+                "polarization": float(np.mean(np.abs(ops0))),
+                "sample_size": int(ops0.size),
+            }]
+            # Clear pre-existing history to avoid double-counting.
+            self._history.clear()
+            for _ in range(steps):
+                self.step()
+                snap = self._history.pop()  # discard full snapshot immediately
                 ops = snap[:, COL_OPINION]
                 aggregates.append({
                     "mean_opinion": float(ops.mean()),
@@ -731,10 +741,12 @@ class MultilayerEngine:
                     "polarization": float(np.mean(np.abs(ops))),
                     "sample_size": int(ops.size),
                 })
-            # Free the large snapshots; keep compact aggregates + final state.
+            # Retain only final state so get_landscape() / get_opinions() work.
+            self._history = [self.x.copy()]
             self._history_compact = aggregates
-            self._history = [self.x.copy()]  # retain only the last full snapshot
-            return aggregates  # length steps+1 (backward-compatible with service layer)
+            return aggregates
+        for _ in range(steps):
+            self.step()
         return self._history
 
     def get_landscape(self) -> dict:
