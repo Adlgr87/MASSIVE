@@ -6,18 +6,16 @@ import logging
 import warnings
 from pathlib import Path
 
-import pytest
-
 from massive_core.config import (
-    InMemoryRateLimiter,
     FileRateLimiter,
+    InMemoryRateLimiter,
     build_rate_limiter,
     clear_settings_cache,
     configure_logging,
     get_app_settings,
 )
-from services.simulation_service import run_scalar_simulation
 from services.forecast_service import list_targets
+from services.simulation_service import run_scalar_simulation
 
 
 def test_inmemory_rate_limiter_blocks():

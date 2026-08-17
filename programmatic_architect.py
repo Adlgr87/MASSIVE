@@ -3,34 +3,54 @@ programmatic_architect.py — Arquitecto Social de MASSIVE (Actualizado)
 Traduce intenciones del usuario en configuraciones matemáticas para el EnergyEngine.
 FLUJO: Arquetipo → Caché (RAM+SQLite) → LLM One-Shot → Fallback
 """
+
 import json
 import os
 import time
+
 import numpy as np
 import requests
-from typing import Optional
+
 from cache_manager import LandscapeCache
 from energy_schemas import EnergyConfig
 
 ARCHETYPES: dict[str, dict] = {
     "polarizacion_extrema": {
-        "metadata": {"nombre_ui": "Polarización Extrema", "descripcion_ui": "Dos bandos irreconciliables. El centro es tierra de nadie.", "icono": "⚡"},
+        "metadata": {
+            "nombre_ui": "Polarización Extrema",
+            "descripcion_ui": "Dos bandos irreconciliables. El centro es tierra de nadie.",
+            "icono": "⚡",
+        },
         "energy_params": {
-            "attractors": [{"position": -0.85, "strength": 2.5, "label": "Polo Izquierdo"}, {"position": 0.85, "strength": 2.5, "label": "Polo Derecho"}],
+            "attractors": [
+                {"position": -0.85, "strength": 2.5, "label": "Polo Izquierdo"},
+                {"position": 0.85, "strength": 2.5, "label": "Polo Derecho"},
+            ],
             "repellers": [{"position": 0.0, "strength": 1.5, "label": "Centro / Moderación"}],
             "dynamics": {"temperature": 0.03, "eta": 0.01, "lambda_social": 0.4},
         },
     },
     "polarizacion_moderada": {
-        "metadata": {"nombre_ui": "División Moderada", "descripcion_ui": "Dos grupos, pero con diálogo posible en el centro.", "icono": "🔀"},
+        "metadata": {
+            "nombre_ui": "División Moderada",
+            "descripcion_ui": "Dos grupos, pero con diálogo posible en el centro.",
+            "icono": "🔀",
+        },
         "energy_params": {
-            "attractors": [{"position": -0.5, "strength": 1.5, "label": "Grupo A"}, {"position": 0.5, "strength": 1.5, "label": "Grupo B"}],
+            "attractors": [
+                {"position": -0.5, "strength": 1.5, "label": "Grupo A"},
+                {"position": 0.5, "strength": 1.5, "label": "Grupo B"},
+            ],
             "repellers": [],
             "dynamics": {"temperature": 0.04, "eta": 0.01, "lambda_social": 0.5},
         },
     },
     "consenso_moderado": {
-        "metadata": {"nombre_ui": "Búsqueda de Consenso", "descripcion_ui": "La sociedad tiende a acuerdos. El centro atrae a todos.", "icono": "🤝"},
+        "metadata": {
+            "nombre_ui": "Búsqueda de Consenso",
+            "descripcion_ui": "La sociedad tiende a acuerdos. El centro atrae a todos.",
+            "icono": "🤝",
+        },
         "energy_params": {
             "attractors": [{"position": 0.0, "strength": 2.0, "label": "Punto de Acuerdo"}],
             "repellers": [],
@@ -38,7 +58,11 @@ ARCHETYPES: dict[str, dict] = {
         },
     },
     "consenso_forzado": {
-        "metadata": {"nombre_ui": "Uniformidad Forzada", "descripcion_ui": "Presión institucional fuerte hacia una sola posición.", "icono": "📢"},
+        "metadata": {
+            "nombre_ui": "Uniformidad Forzada",
+            "descripcion_ui": "Presión institucional fuerte hacia una sola posición.",
+            "icono": "📢",
+        },
         "energy_params": {
             "attractors": [{"position": 0.3, "strength": 3.5, "label": "Posición Oficial"}],
             "repellers": [{"position": -0.5, "strength": 2.0, "label": "Disidencia"}],
@@ -46,23 +70,44 @@ ARCHETYPES: dict[str, dict] = {
         },
     },
     "fragmentacion_3_grupos": {
-        "metadata": {"nombre_ui": "Tres Facciones", "descripcion_ui": "La sociedad se divide en tres grupos que coexisten sin fusionarse.", "icono": "🔺"},
+        "metadata": {
+            "nombre_ui": "Tres Facciones",
+            "descripcion_ui": "La sociedad se divide en tres grupos que coexisten sin fusionarse.",
+            "icono": "🔺",
+        },
         "energy_params": {
-            "attractors": [{"position": -0.7, "strength": 1.5, "label": "Facción A"}, {"position": 0.0, "strength": 1.2, "label": "Facción B"}, {"position": 0.7, "strength": 1.5, "label": "Facción C"}],
+            "attractors": [
+                {"position": -0.7, "strength": 1.5, "label": "Facción A"},
+                {"position": 0.0, "strength": 1.2, "label": "Facción B"},
+                {"position": 0.7, "strength": 1.5, "label": "Facción C"},
+            ],
             "repellers": [],
             "dynamics": {"temperature": 0.04, "eta": 0.01, "lambda_social": 0.5},
         },
     },
     "fragmentacion_4_grupos": {
-        "metadata": {"nombre_ui": "Cuatro Tribus", "descripcion_ui": "Cuatro comunidades con identidades distintas. Alta segmentación.", "icono": "🔷"},
+        "metadata": {
+            "nombre_ui": "Cuatro Tribus",
+            "descripcion_ui": "Cuatro comunidades con identidades distintas. Alta segmentación.",
+            "icono": "🔷",
+        },
         "energy_params": {
-            "attractors": [{"position": -0.8, "strength": 1.2, "label": "Tribu A"}, {"position": -0.25, "strength": 1.2, "label": "Tribu B"}, {"position": 0.25, "strength": 1.2, "label": "Tribu C"}, {"position": 0.8, "strength": 1.2, "label": "Tribu D"}],
+            "attractors": [
+                {"position": -0.8, "strength": 1.2, "label": "Tribu A"},
+                {"position": -0.25, "strength": 1.2, "label": "Tribu B"},
+                {"position": 0.25, "strength": 1.2, "label": "Tribu C"},
+                {"position": 0.8, "strength": 1.2, "label": "Tribu D"},
+            ],
             "repellers": [],
             "dynamics": {"temperature": 0.05, "eta": 0.01, "lambda_social": 0.5},
         },
     },
     "caos_social": {
-        "metadata": {"nombre_ui": "Caos Social", "descripcion_ui": "Sin estructura clara. Cada agente actúa por impulso propio.", "icono": "🌀"},
+        "metadata": {
+            "nombre_ui": "Caos Social",
+            "descripcion_ui": "Sin estructura clara. Cada agente actúa por impulso propio.",
+            "icono": "🌀",
+        },
         "energy_params": {
             "attractors": [],
             "repellers": [],
@@ -70,9 +115,16 @@ ARCHETYPES: dict[str, dict] = {
         },
     },
     "radicalizacion_progresiva": {
-        "metadata": {"nombre_ui": "Radicalización Progresiva", "descripcion_ui": "Los agentes empiezan al centro pero son jalados hacia los extremos.", "icono": "📉"},
+        "metadata": {
+            "nombre_ui": "Radicalización Progresiva",
+            "descripcion_ui": "Los agentes empiezan al centro pero son jalados hacia los extremos.",
+            "icono": "📉",
+        },
         "energy_params": {
-            "attractors": [{"position": -0.9, "strength": 3.0, "label": "Extremo Izq"}, {"position": 0.9, "strength": 3.0, "label": "Extremo Der"}],
+            "attractors": [
+                {"position": -0.9, "strength": 3.0, "label": "Extremo Izq"},
+                {"position": 0.9, "strength": 3.0, "label": "Extremo Der"},
+            ],
             "repellers": [{"position": 0.0, "strength": 2.5, "label": "Moderación"}],
             "dynamics": {"temperature": 0.02, "eta": 0.015, "lambda_social": 0.35},
         },
@@ -99,15 +151,27 @@ ESQUEMA OBLIGATORIO:
 }"""
 
 
-def call_llm(user_goal: str, llm_client=None, provider: str = None, api_key: str = None, model: str = None, use_langchain: bool = False) -> Optional[dict]:
+def call_llm(
+    user_goal: str,
+    llm_client=None,
+    provider: str = None,
+    api_key: str = None,
+    model: str = None,
+    use_langchain: bool = False,
+) -> dict | None:
     provider = (provider or os.getenv("LLM_PROVIDER", "groq")).lower()
-    api_key  = api_key or os.getenv(f"{provider.upper()}_API_KEY") or os.getenv("OPENAI_API_KEY")
-    model    = model or os.getenv("LLM_MODEL", "llama-3.1-8b-instant")
+    api_key = api_key or os.getenv(f"{provider.upper()}_API_KEY") or os.getenv("OPENAI_API_KEY")
+    model = model or os.getenv("LLM_MODEL", "llama-3.1-8b-instant")
 
     # ── LangChain path ────────────────────────────────────────────────────────
     if use_langchain:
         try:
-            from langchain_workflows import build_llm, LangChainProgrammaticArchitect, LANGCHAIN_AVAILABLE
+            from langchain_workflows import (
+                LANGCHAIN_AVAILABLE,
+                LangChainProgrammaticArchitect,
+                build_llm,
+            )
+
             if LANGCHAIN_AVAILABLE:
                 llm = build_llm(provider, api_key or "", model, temperature=0.2)
                 if llm is not None:
@@ -123,7 +187,7 @@ def call_llm(user_goal: str, llm_client=None, provider: str = None, api_key: str
         "groq": "https://api.groq.com/openai/v1",
         "openai": "https://api.openai.com/v1",
         "openrouter": "https://openrouter.ai/api/v1",
-        "ollama": os.getenv("OLLAMA_HOST", "http://localhost:11434")
+        "ollama": os.getenv("OLLAMA_HOST", "http://localhost:11434"),
     }
     base_url = base_urls.get(provider, base_urls["groq"])
 
@@ -134,10 +198,20 @@ def call_llm(user_goal: str, llm_client=None, provider: str = None, api_key: str
     prompt = f"Objetivo del usuario: {user_goal}"
     messages = [{"role": "system", "content": SYSTEM_PROMPT}, {"role": "user", "content": prompt}]
 
-    for attempt in range(2):
+    for _attempt in range(2):
         try:
             if provider == "ollama":
-                resp = requests.post(f"{base_url}/api/generate", json={"model": model, "prompt": prompt, "system": SYSTEM_PROMPT, "stream": False, "options": {"temperature": 0.2}}, timeout=30)
+                resp = requests.post(
+                    f"{base_url}/api/generate",
+                    json={
+                        "model": model,
+                        "prompt": prompt,
+                        "system": SYSTEM_PROMPT,
+                        "stream": False,
+                        "options": {"temperature": 0.2},
+                    },
+                    timeout=30,
+                )
                 resp.raise_for_status()
                 raw_json = resp.json().get("response", "{}")
             else:
@@ -145,7 +219,17 @@ def call_llm(user_goal: str, llm_client=None, provider: str = None, api_key: str
                 if provider == "openrouter":
                     headers["HTTP-Referer"] = "https://github.com/Adlgr87/MASSIVE"
                     headers["X-Title"] = "MASSIVE Architect"
-                resp = requests.post(f"{base_url}/chat/completions", headers=headers, json={"model": model, "messages": messages, "temperature": 0.2, "max_tokens": 500}, timeout=30)
+                resp = requests.post(
+                    f"{base_url}/chat/completions",
+                    headers=headers,
+                    json={
+                        "model": model,
+                        "messages": messages,
+                        "temperature": 0.2,
+                        "max_tokens": 500,
+                    },
+                    timeout=30,
+                )
                 resp.raise_for_status()
                 raw_json = resp.json()["choices"][0]["message"]["content"]
 
@@ -184,10 +268,10 @@ class ProgrammaticArchitect:
 
         if llm_result and self._validate_config(llm_result):
             _cache.set(goal_clean, llm_result)
-            print(f"[Architect] 💾 Guardado en caché.")
+            print("[Architect] 💾 Guardado en caché.")
             return llm_result
 
-        print(f"[Architect] ⚠️ Fallback a 'caos_social'.")
+        print("[Architect] ⚠️ Fallback a 'caos_social'.")
         return ARCHETYPES["caos_social"]
 
     def list_available_archetypes(self) -> list[dict]:
@@ -204,7 +288,9 @@ class ProgrammaticArchitect:
 
 
 def design_intervention(state_vector, history, constraints):
-    candidates = state_vector + np.outer(np.linspace(0.0, 1.0, 20), [-1.0, 1.0]).reshape(-1, *np.asarray(state_vector).shape)
+    candidates = state_vector + np.outer(np.linspace(0.0, 1.0, 20), [-1.0, 1.0]).reshape(
+        -1, *np.asarray(state_vector).shape
+    )
     for c in candidates:
         if constraints.is_valid(c):
             return c

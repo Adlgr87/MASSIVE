@@ -27,7 +27,9 @@ class MetaRegimeSelector:
         self.learning_rate = learning_rate
         self.rule_performance = np.zeros(n_rules, dtype=float)
 
-    def predict_proba(self, state_history: Array, current_state: Array, metadata: dict[str, object] | None = None) -> Array:
+    def predict_proba(
+        self, state_history: Array, current_state: Array, metadata: dict[str, object] | None = None
+    ) -> Array:
         """Return probabilities over rules.
 
         Args:
@@ -56,9 +58,13 @@ class MetaRegimeSelector:
         if not 0 <= rule_id < self.n_rules:
             raise ValueError("rule_id out of range")
         alpha = self.learning_rate
-        self.rule_performance[rule_id] = alpha * reward + (1.0 - alpha) * self.rule_performance[rule_id]
+        self.rule_performance[rule_id] = (
+            alpha * reward + (1.0 - alpha) * self.rule_performance[rule_id]
+        )
 
-    def _extract_features(self, state_history: Array, current_state: Array, metadata: dict[str, object]) -> Array:
+    def _extract_features(
+        self, state_history: Array, current_state: Array, metadata: dict[str, object]
+    ) -> Array:
         state = np.asarray(current_state, dtype=float)
         history = np.asarray(state_history, dtype=float)
         volatility = float(np.std(history)) if history.size else 0.0

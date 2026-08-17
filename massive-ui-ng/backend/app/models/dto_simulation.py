@@ -10,25 +10,24 @@ Naming convention: snake_case in Python and JSON (zero migration friction).
 from __future__ import annotations
 
 from datetime import datetime
-from enum import Enum
-from typing import Any, Dict, List, Literal, Optional
+from enum import StrEnum
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
-
 
 # ---------------------------------------------------------------------------
 # Enumerations
 # ---------------------------------------------------------------------------
 
 
-class SimMode(str, Enum):
+class SimMode(StrEnum):
     """Operating mode of a simulation snapshot."""
 
     live = "live"
     replay = "replay"
 
 
-class SimEventKind(str, Enum):
+class SimEventKind(StrEnum):
     """Lifecycle events emitted by the simulation engine."""
 
     started = "started"
@@ -66,7 +65,7 @@ class SimAgentLite(BaseModel):
     y: float
     z: float = 0.0
     opinion: float = Field(..., ge=-1.0, le=1.0)
-    metadata: Optional[Dict[str, Any]] = None
+    metadata: dict[str, Any] | None = None
 
 
 class SimAggregateMetrics(BaseModel):
@@ -92,7 +91,7 @@ class SimAggregateMetrics(BaseModel):
     consensus_rate: float
     fragmentation_index: float
     active_agents: int
-    schema_version: Optional[str] = None
+    schema_version: str | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -115,9 +114,9 @@ class SimulationSnapshotPayload(BaseModel):
 
     tick: int
     metrics: SimAggregateMetrics
-    agents: Optional[List[SimAgentLite]] = None
+    agents: list[SimAgentLite] | None = None
     mode: SimMode = SimMode.live
-    schema_version: Optional[str] = None
+    schema_version: str | None = None
 
 
 # ---------------------------------------------------------------------------
@@ -142,7 +141,7 @@ class SimSnapshotMessage(BaseModel):
     sim_id: str
     timestamp: datetime
     payload: SimulationSnapshotPayload
-    schema_version: Optional[str] = None
+    schema_version: str | None = None
 
 
 class SimEventMessage(BaseModel):
@@ -161,5 +160,5 @@ class SimEventMessage(BaseModel):
     type: Literal["event"] = "event"
     sim_id: str
     event: SimEventKind
-    detail: Optional[str] = None
-    schema_version: Optional[str] = None
+    detail: str | None = None
+    schema_version: str | None = None

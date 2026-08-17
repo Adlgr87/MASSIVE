@@ -34,6 +34,7 @@ MODELS_DIR.mkdir(exist_ok=True)
 # GENERADORES DE DATASETS
 # ============================================================
 
+
 def generate_regime_dataset(
     n_simulations: int = 10_000,
     window_size: int = 6,
@@ -56,11 +57,9 @@ def generate_regime_dataset(
     try:
         import torch
     except ImportError:
-        raise ImportError(
-            "PyTorch no instalado. Ejecuta: pip install torch>=2.2.0"
-        )
+        raise ImportError("PyTorch no instalado. Ejecuta: pip install torch>=2.2.0") from None
 
-    from simulator import simular, DEFAULT_CONFIG
+    from simulator import DEFAULT_CONFIG, simular
 
     X_hist, X_state, Y = [], [], []
     cfg = {**DEFAULT_CONFIG, "proveedor": "heurístico", "pasos": pasos}
@@ -96,20 +95,22 @@ def generate_regime_dataset(
         regimes = [h.get("_regla", 0) for h in historial]
 
         for t in range(window_size, len(traj)):
-            X_hist.append(traj[t - window_size:t])
-            X_state.append([
-                traj[t - 1],
-                cfg["propaganda"],
-                cfg["confianza"],
-                cfg["opinion_grupo_a"],
-                cfg["opinion_grupo_b"],
-                # trust, ews_variance, ews_autocorr are 0.0 here because the
-                # heuristic teacher does not track them; knowledge distillation
-                # focuses on the opinion + parameter space that the teacher uses.
-                0.4,   # trust (static default from DEFAULT_CONFIG)
-                0.0,   # ews_variance (not accumulated in short runs)
-                0.0,   # ews_autocorr (not accumulated in short runs)
-            ])
+            X_hist.append(traj[t - window_size : t])
+            X_state.append(
+                [
+                    traj[t - 1],
+                    cfg["propaganda"],
+                    cfg["confianza"],
+                    cfg["opinion_grupo_a"],
+                    cfg["opinion_grupo_b"],
+                    # trust, ews_variance, ews_autocorr are 0.0 here because the
+                    # heuristic teacher does not track them; knowledge distillation
+                    # focuses on the opinion + parameter space that the teacher uses.
+                    0.4,  # trust (static default from DEFAULT_CONFIG)
+                    0.0,  # ews_variance (not accumulated in short runs)
+                    0.0,  # ews_autocorr (not accumulated in short runs)
+                ]
+            )
             Y.append(regimes[t - 1])
 
         if (i + 1) % 1000 == 0:
@@ -146,13 +147,11 @@ def generate_tau_dataset(
     try:
         import torch
     except ImportError:
-        raise ImportError(
-            "PyTorch no instalado. Ejecuta: pip install torch>=2.2.0"
-        )
+        raise ImportError("PyTorch no instalado. Ejecuta: pip install torch>=2.2.0") from None
 
-    from multilayer_engine import generate_attributes, compute_theta
+    from multilayer_engine import compute_theta, generate_attributes
 
-    rng = np.random.default_rng(0)
+    np.random.default_rng(0)
 
     # Atributos: religion, education, age_norm, gender
     attrs_df = generate_attributes(n_samples, seed=0)
@@ -163,12 +162,15 @@ def generate_tau_dataset(
     theta_max = theta.max(axis=0, keepdims=True)
     theta_norm = (theta - theta_min) / (theta_max - theta_min + 1e-8)
 
-    attrs_array = np.stack([
-        attrs_df["religion"].to_numpy(dtype=np.float32),
-        attrs_df["education"].to_numpy(dtype=np.float32),
-        (attrs_df["age_group"].to_numpy(dtype=np.float32) / 3.0),  # norm a [0,1]
-        attrs_df["gender"].to_numpy(dtype=np.float32),
-    ], axis=1)
+    attrs_array = np.stack(
+        [
+            attrs_df["religion"].to_numpy(dtype=np.float32),
+            attrs_df["education"].to_numpy(dtype=np.float32),
+            (attrs_df["age_group"].to_numpy(dtype=np.float32) / 3.0),  # norm a [0,1]
+            attrs_df["gender"].to_numpy(dtype=np.float32),
+        ],
+        axis=1,
+    )
 
     path = MODELS_DIR / "dataset_tau.pt"
     torch.save(
@@ -185,6 +187,7 @@ def generate_tau_dataset(
 # ============================================================
 # ENTRENADORES
 # ============================================================
+
 
 def train_regime_selector(
     dataset_path: Path,
@@ -209,9 +212,7 @@ def train_regime_selector(
         from torch import nn
         from torch.utils.data import DataLoader, TensorDataset
     except ImportError:
-        raise ImportError(
-            "PyTorch no instalado. Ejecuta: pip install torch>=2.2.0"
-        )
+        raise ImportError("PyTorch no instalado. Ejecuta: pip install torch>=2.2.0") from None
 
     from cfc_engine import CfCRegimeSelector
 
@@ -274,9 +275,7 @@ def train_tau_matrix(
         from torch import nn
         from torch.utils.data import DataLoader, TensorDataset
     except ImportError:
-        raise ImportError(
-            "PyTorch no instalado. Ejecuta: pip install torch>=2.2.0"
-        )
+        raise ImportError("PyTorch no instalado. Ejecuta: pip install torch>=2.2.0") from None
 
     from cfc_engine import CfCTauMatrix
 
@@ -323,9 +322,7 @@ def train_tau_matrix(
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser(
-        description="Entrenar modelos CfC para MASSIVE"
-    )
+    parser = argparse.ArgumentParser(description="Entrenar modelos CfC para MASSIVE")
     parser.add_argument(
         "--component",
         choices=["selector", "tau", "all"],

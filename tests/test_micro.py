@@ -3,14 +3,14 @@ Tests para el módulo MASSIVE Micro (micro_engine, micro_schemas)
 """
 
 import numpy as np
-from micro_schemas import GroupProfile, MemberProfile, EnsembleConfig, SimVariation
+
 from micro_engine import (
-    extract_trajectory_features,
-    MicroSimOrchestrator,
     FamilyOfFuturesAnalyzer,
-    MicroSocialArchitect,
+    MicroSimOrchestrator,
     analyze_group,
+    extract_trajectory_features,
 )
+from micro_schemas import GroupProfile, MemberProfile
 
 
 class TestMicroSchemas:
@@ -22,8 +22,10 @@ class TestMicroSchemas:
 
     def test_group_profile_custom(self):
         p = GroupProfile(
-            n_members=7, context="friends",
-            communication_frequency=0.6, hierarchy_tolerance=0.8,
+            n_members=7,
+            context="friends",
+            communication_frequency=0.6,
+            hierarchy_tolerance=0.8,
         )
         assert p.n_members == 7
         assert p.communication_frequency == 0.6
@@ -70,7 +72,10 @@ class TestMicroEngine:
         orch = MicroSimOrchestrator(quiet=True)
         profile = GroupProfile(n_members=3, communication_frequency=0.3)
         trajs, feat_mat, params = orch.run_ensemble(
-            profile, n_simulations=20, steps_per_sim=30, use_dask=False,
+            profile,
+            n_simulations=20,
+            steps_per_sim=30,
+            use_dask=False,
         )
         assert feat_mat.shape[0] == 20
         assert feat_mat.shape[1] > 5
@@ -79,8 +84,10 @@ class TestMicroEngine:
 
     def test_full_pipeline_small(self):
         profile = GroupProfile(
-            n_members=4, context="work",
-            communication_frequency=0.4, hierarchy_tolerance=0.3,
+            n_members=4,
+            context="work",
+            communication_frequency=0.4,
+            hierarchy_tolerance=0.3,
         )
         result = analyze_group(
             profile=profile,
@@ -125,9 +132,9 @@ class TestMicroEngine:
         architect = result["architect"]
 
         if len(families) >= 2:
-            transition = architect.find_transition(families, bif,
-                                                   families[0]["id"],
-                                                   families[1]["id"])
+            transition = architect.find_transition(
+                families, bif, families[0]["id"], families[1]["id"]
+            )
             assert "from_label" in transition
             assert "to_label" in transition
             assert "recommendation" in transition
@@ -140,14 +147,34 @@ class TestFamilyOfFuturesAnalyzer:
     def test_label_variety(self):
         analyzer = FamilyOfFuturesAnalyzer()
         scenarios = [
-            {"polarization": 0.7, "cooperation": 0.3, "trust": 0.3,
-             "stability": 0.01, "hierarchy_mean": 0.5, "hierarchy_std": 0.1,
-             "extreme_fraction": 0.6, "opinion_delta": 0.3, "time_to_stabilize": 0.5,
-             "max_polarization": 0.7, "dim_correlation": 0.3, "cooperation_delta": 0.1},
-            {"polarization": 0.1, "cooperation": 0.8, "trust": 0.8,
-             "stability": 0.01, "hierarchy_mean": 0.5, "hierarchy_std": 0.1,
-             "extreme_fraction": 0.1, "opinion_delta": 0.05, "time_to_stabilize": 0.5,
-             "max_polarization": 0.1, "dim_correlation": 0.3, "cooperation_delta": 0.1},
+            {
+                "polarization": 0.7,
+                "cooperation": 0.3,
+                "trust": 0.3,
+                "stability": 0.01,
+                "hierarchy_mean": 0.5,
+                "hierarchy_std": 0.1,
+                "extreme_fraction": 0.6,
+                "opinion_delta": 0.3,
+                "time_to_stabilize": 0.5,
+                "max_polarization": 0.7,
+                "dim_correlation": 0.3,
+                "cooperation_delta": 0.1,
+            },
+            {
+                "polarization": 0.1,
+                "cooperation": 0.8,
+                "trust": 0.8,
+                "stability": 0.01,
+                "hierarchy_mean": 0.5,
+                "hierarchy_std": 0.1,
+                "extreme_fraction": 0.1,
+                "opinion_delta": 0.05,
+                "time_to_stabilize": 0.5,
+                "max_polarization": 0.1,
+                "dim_correlation": 0.3,
+                "cooperation_delta": 0.1,
+            },
         ]
         labels = []
         for s in scenarios:
@@ -160,9 +187,11 @@ class TestFamilyOfFuturesAnalyzer:
         analyzer = FamilyOfFuturesAnalyzer()
         X = np.random.rand(100, 10)
         params = [
-            {"coupling": np.random.uniform(0, 1),
-             "external_pressure": np.random.uniform(0, 1),
-             "initial_noise": np.random.uniform(0, 1)}
+            {
+                "coupling": np.random.uniform(0, 1),
+                "external_pressure": np.random.uniform(0, 1),
+                "initial_noise": np.random.uniform(0, 1),
+            }
             for _ in range(100)
         ]
         labels, bif = analyzer.fit(X, params)

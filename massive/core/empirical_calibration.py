@@ -107,9 +107,7 @@ def build_empirical_engine_config(cultural_profile: str = "mixed") -> dict:
 
     return {
         "ruido_base": round(
-            _scale_unit_to_range(
-                runtime["temperature"], RUIDO_BASE_MIN, RUIDO_BASE_MAX
-            ),
+            _scale_unit_to_range(runtime["temperature"], RUIDO_BASE_MIN, RUIDO_BASE_MAX),
             4,
         ),
         "ruido_desconfianza": round(
@@ -213,9 +211,7 @@ def apply_empirical_profile(cfg: dict) -> dict:
 
     strategic = dict(merged.get("strategic", {}))
     strategic.setdefault("enabled", False)
-    strategic.setdefault(
-        "strategic_weight", engine_cfg["strategic"]["strategic_weight"]
-    )
+    strategic.setdefault("strategic_weight", engine_cfg["strategic"]["strategic_weight"])
     payoff = dict(
         strategic.get(
             "payoff_matrix",

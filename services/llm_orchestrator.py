@@ -25,7 +25,7 @@ from __future__ import annotations
 import logging
 import os
 import uuid
-from typing import Any, Optional
+from typing import Any
 
 from services.factbook_service import country_params as _factbook_params
 from services.llm_service import resolve_llm_credentials, wizard_config
@@ -36,7 +36,7 @@ log = logging.getLogger("massive.services.llm_orchestrator")
 _DEFAULT_STEPS = {
     "energy_engine": 100,
     "social_architect": 100,
-    "forecast": 14,          # interpreted as days for viral_online
+    "forecast": 14,  # interpreted as days for viral_online
     "multilayer_engine": 50,
     "massive_engine": 50,
 }
@@ -50,16 +50,29 @@ def _load_contract() -> dict[str, Any]:
     candidates = []
     if env_path:
         candidates.append(env_path)
-    candidates.extend([
-        "configs/llm_contract/massive_llm_contract.json",
-        os.path.join(os.path.dirname(__file__), "..", "configs", "llm_contract", "massive_llm_contract.json"),
-        os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "configs", "llm_contract", "massive_llm_contract.json"),
-    ])
+    candidates.extend(
+        [
+            "configs/llm_contract/massive_llm_contract.json",
+            os.path.join(
+                os.path.dirname(__file__),
+                "..",
+                "configs",
+                "llm_contract",
+                "massive_llm_contract.json",
+            ),
+            os.path.join(
+                os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+                "configs",
+                "llm_contract",
+                "massive_llm_contract.json",
+            ),
+        ]
+    )
     for c in candidates:
         c = os.path.normpath(c)
         if os.path.isfile(c):
             try:
-                with open(c, "r", encoding="utf-8") as fh:
+                with open(c, encoding="utf-8") as fh:
                     return json.load(fh)
             except Exception as exc:
                 log.warning("Could not load contract from %s (%s)", c, exc)
@@ -71,7 +84,8 @@ def _load_contract() -> dict[str, Any]:
 # Intent classification
 # ---------------------------------------------------------------------------
 
-def classify_motor(intent: str, motor_hint: Optional[str] = None) -> tuple[str, list[str]]:
+
+def classify_motor(intent: str, motor_hint: str | None = None) -> tuple[str, list[str]]:
     """Select the engine family for a given intent.
 
     Mirrors the ``llm_guidelines`` rules in the contract. If ``motor_hint`` is
@@ -102,11 +116,25 @@ def classify_motor(intent: str, motor_hint: Optional[str] = None) -> tuple[str, 
     if country is None:
         ambiguities.append("country")
 
-    if any(w in it for w in ("estrategia inversa", "cómo llegar", "qué intervención", "intervención", "reducir polarización", "objetivo")):
+    if any(
+        w in it
+        for w in (
+            "estrategia inversa",
+            "cómo llegar",
+            "qué intervención",
+            "intervención",
+            "reducir polarización",
+            "objetivo",
+        )
+    ):
         return "social_architect", ambiguities
-    if any(w in it for w in ("energía", "desigualdad", "conflict", "polarización", "conflicto social")):
+    if any(
+        w in it for w in ("energía", "desigualdad", "conflict", "polarización", "conflicto social")
+    ):
         return "energy_engine", ambiguities
-    if any(w in it for w in ("pronosticar", "predecir", "probabilidad", "viral", "2 semanas", "semana")):
+    if any(
+        w in it for w in ("pronosticar", "predecir", "probabilidad", "viral", "2 semanas", "semana")
+    ):
         ambiguities.append("temporal_horizon_days")
         return "forecast", ambiguities
     if any(w in it for w in ("múltiples escalas", "millones de agentes", "gran escala", "masivo")):
@@ -121,7 +149,7 @@ def classify_motor(intent: str, motor_hint: Optional[str] = None) -> tuple[str, 
     return "multilayer_engine", ambiguities
 
 
-def _detect_country(intent: str) -> Optional[str]:
+def _detect_country(intent: str) -> str | None:
     """Best-effort country detection from an intent string.
 
     Reuses the contract's ``supported_countries`` list. Returns the canonical
@@ -138,10 +166,36 @@ def _detect_country(intent: str) -> Optional[str]:
         countries = contract.get("supported_countries", [])
         if not countries:
             countries = [
-                "US", "United States", "CH", "China", "GM", "Germany", "UK",
-                "United Kingdom", "FR", "France", "JP", "Japan", "IN", "India",
-                "BR", "Brazil", "RU", "Russia", "IT", "Italy", "CA", "Canada",
-                "AU", "Australia", "MX", "Mexico", "KR", "South Korea", "SP", "Spain",
+                "US",
+                "United States",
+                "CH",
+                "China",
+                "GM",
+                "Germany",
+                "UK",
+                "United Kingdom",
+                "FR",
+                "France",
+                "JP",
+                "Japan",
+                "IN",
+                "India",
+                "BR",
+                "Brazil",
+                "RU",
+                "Russia",
+                "IT",
+                "Italy",
+                "CA",
+                "Canada",
+                "AU",
+                "Australia",
+                "MX",
+                "Mexico",
+                "KR",
+                "South Korea",
+                "SP",
+                "Spain",
             ]
         # Spanish aliases → canonical contract spelling.
         span = {
@@ -176,6 +230,7 @@ def _detect_country(intent: str) -> Optional[str]:
 # Config assembly
 # ---------------------------------------------------------------------------
 
+
 def _wizard_translate(intent: str, llm_creds: dict[str, Any]) -> tuple[dict[str, Any], list[str]]:
     """Translate *intent* to a flat config dict and assumptions list.
 
@@ -201,10 +256,10 @@ def _wizard_translate(intent: str, llm_creds: dict[str, Any]) -> tuple[dict[str,
 
 def _augment_factbook(
     motor: str,
-    country: Optional[str],
+    country: str | None,
     partial_config: dict[str, Any],
     assumptions: list[str],
-) -> tuple[dict[str, Any], Optional[dict[str, Any]]]:
+) -> tuple[dict[str, Any], dict[str, Any] | None]:
     """If *country* is present, enrich config with Factbook-derived params."""
     if not country:
         return partial_config, None
@@ -212,7 +267,9 @@ def _augment_factbook(
         fb = _factbook_params(country)
     except Exception as exc:  # pragma: no cover - Factbook may be absent
         log.warning("factbook lookup failed for %s (%s)", country, exc)
-        assumptions.append(f"country '{country}' mencionado pero Factbook no disponible; usando defaults")
+        assumptions.append(
+            f"country '{country}' mencionado pero Factbook no disponible; usando defaults"
+        )
         return partial_config, None
 
     assumptions.append(
@@ -231,14 +288,15 @@ def _augment_factbook(
 # Engine dispatch
 # ---------------------------------------------------------------------------
 
+
 def _dispatch(
     motor: str,
     config: dict[str, Any],
     intent: str,
-    country: Optional[str],
+    country: str | None,
     seed: int,
     steps: int,
-    config_overrides: Optional[dict[str, Any]] = None,
+    config_overrides: dict[str, Any] | None = None,
     llm_creds: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Dispatch to the correct engine given the classified *motor*."""
@@ -250,12 +308,14 @@ def _dispatch(
 
     if motor == "energy_engine":
         from energy_runner import run_energy_simulation
+
         n_steps = int(steps or config.get("pasos", _DEFAULT_STEPS.get(motor, 100)))
         n_agents = int(config.get("n_agents", 50))
         connectivity = float(config.get("connectivity", 0.3))
         range_type = str(config.get("range_type", "bipolar"))
-        energy_overrides = {k: v for k, v in overrides.items()
-                            if k in ("temperature", "lambda_social", "eta")}
+        energy_overrides = {
+            k: v for k, v in overrides.items() if k in ("temperature", "lambda_social", "eta")
+        }
         return run_energy_simulation(
             user_goal=intent,
             n_agents=n_agents,
@@ -272,11 +332,20 @@ def _dispatch(
         estado = config.get("estado_inicial", {"opinion": 0.0, "propaganda": 0.0})
         escenario = str(config.get("escenario", "campana"))
         sim_cfg = {
-            key: val for key, val in config.items()
+            key: val
+            for key, val in config.items()
             if key not in ("estado_inicial", "escenario", "pasos", "motor", "country")
-            and key in ("opinion", "propaganda", "confianza",
-                        "identidad_grupo", "sesgo_confirmacion",
-                        "homofilia_tasa", "ruido_base", "regla_sugerida")
+            and key
+            in (
+                "opinion",
+                "propaganda",
+                "confianza",
+                "identidad_grupo",
+                "sesgo_confirmacion",
+                "homofilia_tasa",
+                "ruido_base",
+                "regla_sugerida",
+            )
             or key in DEFAULT_CONFIG_KEYS
         }
         sim_cfg.update(overrides)
@@ -297,6 +366,7 @@ def _dispatch(
                 "configure GROQ_API_KEY / OPENAI_API_KEY / OPENROUTER_API_KEY"
             )
         from social_architect import buscar_estrategia_inversa
+
         estado = config.get("estado_inicial", {"opinion": 0.0, "propaganda": 0.0})
         objetivo = config.get("objetivo_usuario", intent)
         return buscar_estrategia_inversa(
@@ -311,6 +381,7 @@ def _dispatch(
     if motor == "forecast":
         from forecast.engine import forecast
         from forecast.temporal_config import TemporalConfig
+
         sim_state = config.get("simulation_state", {})
         temporal_raw = config.get("temporal_config", {})
         if isinstance(temporal_raw, TemporalConfig):
@@ -338,8 +409,15 @@ def _dispatch(
 
     if motor == "benchmark_offline":
         from benchmarks import runner as bench_runner
-        argv = ["--cases", "datasets/pvu_cases", "--out", "reports/validation/ci",
-                "--seed", str(seed)]
+
+        argv = [
+            "--cases",
+            "datasets/pvu_cases",
+            "--out",
+            "reports/validation/ci",
+            "--seed",
+            str(seed),
+        ]
         rc = bench_runner.main(argv)
         return {"return_code": rc, "mode": "offline", "seed": seed}
 
@@ -362,20 +440,39 @@ def _dispatch(
 
 # Keys from simulator.DEFAULT_CONFIG that are accepted as flat overrides.
 DEFAULT_CONFIG_KEYS = {
-    "N", "ruido_base", "red_type", "k", "p", "alpha_blend", "beta_blend",
-    "gamma_blend", "homofilia_tasa", "sesgo_confirmacion", "lambda_ruido",
-    "lambda_social", "temperature", "eta", "llm_temperature", "llm_timeout",
-    "seed", "mu", "sigma", "t_max", "dt",
+    "N",
+    "ruido_base",
+    "red_type",
+    "k",
+    "p",
+    "alpha_blend",
+    "beta_blend",
+    "gamma_blend",
+    "homofilia_tasa",
+    "sesgo_confirmacion",
+    "lambda_ruido",
+    "lambda_social",
+    "temperature",
+    "eta",
+    "llm_temperature",
+    "llm_timeout",
+    "seed",
+    "mu",
+    "sigma",
+    "t_max",
+    "dt",
 }
 
 # Re-import here to avoid circular import at module load.
 from simulator import DEFAULT_CONFIG as _DEFAULT_CONFIG  # noqa: E402
+
 DEFAULT_CONFIG_KEYS |= set(_DEFAULT_CONFIG.keys())
 
 
 # ---------------------------------------------------------------------------
 # Narration
 # ---------------------------------------------------------------------------
+
 
 def _narrate(
     results: dict[str, Any],
@@ -388,16 +485,24 @@ def _narrate(
     if creds.get("configured"):
         try:
             from uil_adapter import create_uil_adapter
+
             provider = creds["provider"]
             key = creds.get("api_key")
             adapter = create_uil_adapter(llm_provider=provider, llm_api_key=key)
             narr = adapter.interpreter.narrate(results)
             if hasattr(narr, "model_dump"):
                 d = narr.model_dump()
-                return "\n".join(filter(None, [
-                    d.get("diagnostico"), d.get("dinamica_clave"),
-                    d.get("implicaciones"), *d.get("recomendaciones", []),
-                ]))
+                return "\n".join(
+                    filter(
+                        None,
+                        [
+                            d.get("diagnostico"),
+                            d.get("dinamica_clave"),
+                            d.get("implicaciones"),
+                            *d.get("recomendaciones", []),
+                        ],
+                    )
+                )
             return str(narr)
         except Exception as exc:
             log.warning("narrate failed (%s); using template summary", exc)
@@ -405,24 +510,24 @@ def _narrate(
     summary = results.get("summary") or {}
     mean = summary.get("media") or summary.get("mean_opinion")
     polar = summary.get("polarizacion_media") or summary.get("polarizacion")
-    return (f"Simulación completada. Opinión media={mean}, "
-            f"polarización={polar}.")
+    return f"Simulación completada. Opinión media={mean}, " f"polarización={polar}."
 
 
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
 
+
 def run_llm_simulation(
     intent: str,
     *,
-    motor: Optional[str] = None,
-    country: Optional[str] = None,
-    partial_config: Optional[dict[str, Any]] = None,
-    llm: Optional[dict[str, Any]] = None,
-    simulation_steps: Optional[int] = None,
-    seed: Optional[int] = None,
-    config_overrides: Optional[dict[str, Any]] = None,
+    motor: str | None = None,
+    country: str | None = None,
+    partial_config: dict[str, Any] | None = None,
+    llm: dict[str, Any] | None = None,
+    simulation_steps: int | None = None,
+    seed: int | None = None,
+    config_overrides: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Run a full LLM-orchestrated MASSIVE simulation from a natural-language intent.
 
@@ -466,10 +571,13 @@ def run_llm_simulation(
     resolved_motor, ambiguities = classify_motor(intent, motor)
     if ambiguities:
         for amb in ambiguities:
-            assumptions.append(f"campo no especificado por el usuario: {amb} (asumiendo default del contrato)")
+            assumptions.append(
+                f"campo no especificado por el usuario: {amb} (asumiendo default del contrato)"
+            )
 
-    log.info("llm_orchestrator: intent='%s…' motor=%s country=%s",
-             intent[:60], resolved_motor, country)
+    log.info(
+        "llm_orchestrator: intent='%s…' motor=%s country=%s", intent[:60], resolved_motor, country
+    )
 
     # 2. Translate NL → config (LLM when available).
     nl_config, _ = _wizard_translate(intent, llm_creds)
@@ -478,9 +586,7 @@ def run_llm_simulation(
     merged = {**nl_config, **(partial_config or {})}
 
     # 4. Factbook augmentation.
-    merged, factbook_params = _augment_factbook(
-        resolved_motor, country, merged, assumptions
-    )
+    merged, factbook_params = _augment_factbook(resolved_motor, country, merged, assumptions)
     # Sanitize any numpy / non-JSON-native values introduced by Factbook or
     # the wizard so the downstream response DTO can always serialize.
     merged = _sanitize_for_json(merged)
@@ -494,8 +600,14 @@ def run_llm_simulation(
 
     # 6. Dispatch engine.
     results = _dispatch(
-        resolved_motor, merged, intent, country, seed=seed,
-        steps=int(steps), config_overrides=config_overrides, llm_creds=llm_creds,
+        resolved_motor,
+        merged,
+        intent,
+        country,
+        seed=seed,
+        steps=int(steps),
+        config_overrides=config_overrides,
+        llm_creds=llm_creds,
     )
 
     # 7. Extract numerical indicators + summary.
@@ -530,7 +642,7 @@ def run_llm_simulation(
     }
 
 
-def _extract_final_state(results: dict[str, Any]) -> Optional[dict[str, Any]]:
+def _extract_final_state(results: dict[str, Any]) -> dict[str, Any] | None:
     """Best-effort extract of a normalized terminal state."""
     if isinstance(results.get("final_state"), dict):
         return dict(results["final_state"])
@@ -548,6 +660,7 @@ def _sanitize_for_json(obj: Any) -> Any:
     """Recursively convert numpy scalars/arrays + non-native types to JSON-safe values."""
     try:
         import numpy as np
+
         _NP_TYPES = (np.generic,)
     except Exception:  # pragma: no cover - numpy may be absent
         _NP_TYPES = ()
@@ -560,6 +673,7 @@ def _sanitize_for_json(obj: Any) -> Any:
         return obj.item()
     try:
         import numpy as np
+
         if isinstance(obj, np.ndarray):
             return [_sanitize_for_json(v) for v in obj.tolist()]
     except Exception:
@@ -567,7 +681,9 @@ def _sanitize_for_json(obj: Any) -> Any:
     return obj
 
 
-def _extract_timeline(results: dict[str, Any], motor: str, n_points: int = 25) -> Optional[list[dict[str, Any]]]:
+def _extract_timeline(
+    results: dict[str, Any], motor: str, n_points: int = 25
+) -> list[dict[str, Any]] | None:
     """Build an abridged timeline (first/last N ticks) from engine history.
 
     Returns ``None`` when no usable history is present.
@@ -583,17 +699,15 @@ def _extract_timeline(results: dict[str, Any], motor: str, n_points: int = 25) -
         tick = item.get("_paso", item.get("tick"))
         if tick is None:
             tick = idx
-        mean = (
-            item.get("mean_opinion")
-            or item.get("media")
-            or item.get("opinion")
+        mean = item.get("mean_opinion") or item.get("media") or item.get("opinion")
+        pts.append(
+            {
+                "tick": tick,
+                "mean_opinion": mean,
+                "polarization": item.get("polarizacion", item.get("polarizacion_media")),
+                "active_agents": item.get("active_agents"),
+            }
         )
-        pts.append({
-            "tick": tick,
-            "mean_opinion": mean,
-            "polarization": item.get("polarizacion", item.get("polarizacion_media")),
-            "active_agents": item.get("active_agents"),
-        })
     if not pts:
         return None
     # Abridge if huge.
@@ -603,8 +717,10 @@ def _extract_timeline(results: dict[str, Any], motor: str, n_points: int = 25) -
 
 
 def _extract_summary(
-    results: dict[str, Any], motor: str, assumptions: list[str],
-    factbook_params: Optional[dict[str, Any]] = None,
+    results: dict[str, Any],
+    motor: str,
+    assumptions: list[str],
+    factbook_params: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Normalize the varied engine outputs into the contract's ``summary`` shape."""
     # Engine-specific extraction.
@@ -629,7 +745,11 @@ def _extract_summary(
         "consenso": base.get("consenso", 0.0),
         "delta_total": base.get("delta_total", 0.0),
         "p_event": results.get("p_event"),
-        "feasibility_score": results.get("feasibility", {}).get("score") if isinstance(results.get("feasibility"), dict) else None,
+        "feasibility_score": (
+            results.get("feasibility", {}).get("score")
+            if isinstance(results.get("feasibility"), dict)
+            else None
+        ),
         "n_agents": results.get("n_agents"),
         "n_steps": results.get("n_steps") or results.get("horizon_ticks"),
         "attempts": results.get("attempts"),
@@ -644,7 +764,7 @@ def _extract_summary(
     }
 
 
-def _extract_country(factbook_params: Optional[dict[str, Any]]) -> Optional[str]:
+def _extract_country(factbook_params: dict[str, Any] | None) -> str | None:
     """Best-effort extract a country reference from Factbook params."""
     if isinstance(factbook_params, dict) and "country" in factbook_params:
         return factbook_params["country"]

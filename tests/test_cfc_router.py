@@ -9,6 +9,7 @@ Verifica que el router:
 """
 
 import unittest
+
 import numpy as np
 
 
@@ -18,6 +19,7 @@ class TestCfCRouterFallback(unittest.TestCase):
     def setUp(self):
         # Forzar instancia nueva sin modelos
         from cfc_router import CfCRouter
+
         CfCRouter._instance = None
         self.router = CfCRouter()
         # Asegurar que no hay modelos cargados (estado fresh)
@@ -61,6 +63,7 @@ class TestCfCRouterFallback(unittest.TestCase):
     def tearDown(self):
         # Limpiar singleton para no afectar otros tests
         from cfc_router import CfCRouter
+
         CfCRouter._instance = None
 
 
@@ -69,6 +72,7 @@ class TestCfCRouterSingleton(unittest.TestCase):
 
     def test_singleton_identity(self):
         from cfc_router import CfCRouter
+
         CfCRouter._instance = None
         a = CfCRouter.get()
         b = CfCRouter.get()
@@ -76,19 +80,20 @@ class TestCfCRouterSingleton(unittest.TestCase):
 
     def tearDown(self):
         from cfc_router import CfCRouter
+
         CfCRouter._instance = None
 
 
 try:
-    import torch
+    import torch  # noqa: F401
+
     TORCH_AVAILABLE = True
 except ImportError:
     TORCH_AVAILABLE = False
 
-import pytest
-skip_no_torch = pytest.mark.skipif(
-    not TORCH_AVAILABLE, reason="PyTorch no disponible"
-)
+import pytest  # noqa: E402
+
+skip_no_torch = pytest.mark.skipif(not TORCH_AVAILABLE, reason="PyTorch no disponible")
 
 
 @skip_no_torch
@@ -96,9 +101,9 @@ class TestCfCRouterWithSyntheticModel(unittest.TestCase):
     """Con un modelo CfC sintético en memoria, las predicciones son válidas."""
 
     def setUp(self):
-        from cfc_router import CfCRouter
+
         from cfc_engine import CfCRegimeSelector, CfCTauMatrix
-        import torch
+        from cfc_router import CfCRouter
 
         CfCRouter._instance = None
         self.router = CfCRouter()
@@ -112,14 +117,20 @@ class TestCfCRouterWithSyntheticModel(unittest.TestCase):
 
     def tearDown(self):
         from cfc_router import CfCRouter
+
         CfCRouter._instance = None
 
     def test_select_regime_returns_tuple(self):
         history = [0.5, 0.52, 0.54, 0.55, 0.53, 0.51]
         state = {
-            "opinion": 0.5, "propaganda": 0.7, "confianza": 0.4,
-            "opinion_grupo_a": 0.72, "opinion_grupo_b": 0.28,
-            "trust": 0.4, "ews_variance": 0.0, "ews_autocorr": 0.0,
+            "opinion": 0.5,
+            "propaganda": 0.7,
+            "confianza": 0.4,
+            "opinion_grupo_a": 0.72,
+            "opinion_grupo_b": 0.28,
+            "trust": 0.4,
+            "ews_variance": 0.0,
+            "ews_autocorr": 0.0,
         }
         rid, source, conf = self.router.select_regime(history, state)
         self.assertIsInstance(rid, int)
@@ -130,9 +141,14 @@ class TestCfCRouterWithSyntheticModel(unittest.TestCase):
     def test_select_regime_id_in_range(self):
         history = [0.3, 0.35, 0.4, 0.42, 0.38, 0.36]
         state = {
-            "opinion": 0.4, "propaganda": 0.3, "confianza": 0.6,
-            "opinion_grupo_a": 0.6, "opinion_grupo_b": 0.2,
-            "trust": 0.5, "ews_variance": 0.01, "ews_autocorr": 0.1,
+            "opinion": 0.4,
+            "propaganda": 0.3,
+            "confianza": 0.6,
+            "opinion_grupo_a": 0.6,
+            "opinion_grupo_b": 0.2,
+            "trust": 0.5,
+            "ews_variance": 0.01,
+            "ews_autocorr": 0.1,
         }
         rid, source, conf = self.router.select_regime(history, state)
         # Si el modelo acepta, el regime debe estar en [0, 12]
@@ -169,6 +185,7 @@ class TestCfCSimulatorIntegration(unittest.TestCase):
     def test_simular_works_without_cfc_models(self):
         """La simulación completa no debe romperse sin modelos CfC."""
         from simulator import simular
+
         np.random.seed(0)
         estado = {
             "opinion": 0.5,
@@ -185,11 +202,13 @@ class TestCfCSimulatorIntegration(unittest.TestCase):
     def test_cfc_available_is_boolean(self):
         """CFC_AVAILABLE debe ser siempre un bool (True o False, nunca None)."""
         import simulator
+
         self.assertIsInstance(simulator.CFC_AVAILABLE, bool)
 
     def test_cfc_fast_path_does_not_change_output_format(self):
         """El fast path CfC no altera el formato de historial devuelto."""
         from simulator import simular
+
         np.random.seed(42)
         estado = {
             "opinion": 0.6,

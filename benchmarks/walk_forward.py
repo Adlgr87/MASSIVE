@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Callable, Iterator
+from collections.abc import Callable, Iterator
 
 import numpy as np
 
@@ -48,7 +48,7 @@ def walk_forward_scores(
             pred = pred[: len(test)]
         err = pred - test
         maes.append(float(np.mean(np.abs(err))))
-        rmses.append(float(np.sqrt(np.mean(err ** 2))))
+        rmses.append(float(np.sqrt(np.mean(err**2))))
     if not maes:
         return {"n_folds": 0, "mae": float("nan"), "rmse": float("nan")}
     return {

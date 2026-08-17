@@ -2,8 +2,10 @@
 
 Located at tests/test_kalman_filter.py for CI discoverability.
 """
+
 import numpy as np
 import pytest
+
 from massive_core.data_assimilation.kalman import (
     EnsembleKalmanFilter,
     SparseEnsembleKalmanFilter,

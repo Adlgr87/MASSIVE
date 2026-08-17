@@ -8,7 +8,6 @@ from typing import ClassVar, Literal
 
 from pydantic import BaseModel, Field
 
-
 EventType = Literal[
     "viral_online",
     "protest_campaign",
@@ -51,7 +50,7 @@ class TemporalConfig(BaseModel):
         *,
         calendar_start: date | None = None,
         notes: str = "",
-    ) -> "TemporalConfig":
+    ) -> TemporalConfig:
         """Builds a TemporalConfig using event-type defaults."""
         defaults = cls._DEFAULTS[event_type]
         return cls(

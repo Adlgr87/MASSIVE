@@ -3,11 +3,12 @@ energy_runner.py — Orquestador de simulaciones Langevin para MASSIVE
 Conecta: ProgrammaticArchitect → EnergyConfig → SocialEnergyEngine
 Devuelve historial y métricas compatibles con simulator.py y la UI-NG (consumida vía API del backend).
 """
+
 import numpy as np
-from typing import Optional
+
 from energy_engine import SocialEnergyEngine, random_network
-from programmatic_architect import ProgrammaticArchitect
 from energy_schemas import EnergyConfig
+from programmatic_architect import ProgrammaticArchitect
 
 
 def run_energy_simulation(
@@ -56,12 +57,14 @@ def run_energy_simulation(
     metrics_timeline = []
 
     for t in range(steps + 1):
-        history.append({
-            "_paso": t,
-            "mean_opinion": float(np.mean(opinions)),
-            "std_opinion": float(np.std(opinions)),
-            "opinions_snapshot": opinions.tolist() if t % 10 == 0 or t == steps else None
-        })
+        history.append(
+            {
+                "_paso": t,
+                "mean_opinion": float(np.mean(opinions)),
+                "std_opinion": float(np.std(opinions)),
+                "opinions_snapshot": opinions.tolist() if t % 10 == 0 or t == steps else None,
+            }
+        )
 
         if t % metrics_every_n == 0:
             mets = engine.system_metrics(opinions, adj, params["attractors"], params["repellers"])
@@ -69,14 +72,16 @@ def run_energy_simulation(
             metrics_timeline.append(mets)
 
         if t < steps:
-            opinions = engine.step(opinions, adj, params["attractors"], params["repellers"], eta=eta)
+            opinions = engine.step(
+                opinions, adj, params["attractors"], params["repellers"], eta=eta
+            )
 
     initial_op = history[0]["mean_opinion"]
-    final_op   = history[-1]["mean_opinion"]
-    delta      = final_op - initial_op
-    neutro     = 0.0 if range_type == "bipolar" else 0.5
-    all_means  = [h["mean_opinion"] for h in history]
-    all_polar  = [m["polarizacion"] for m in metrics_timeline] if metrics_timeline else [0.0]
+    final_op = history[-1]["mean_opinion"]
+    delta = final_op - initial_op
+    neutro = 0.0 if range_type == "bipolar" else 0.5
+    all_means = [h["mean_opinion"] for h in history]
+    all_polar = [m["polarizacion"] for m in metrics_timeline] if metrics_timeline else [0.0]
 
     return {
         "history": history,
@@ -84,7 +89,7 @@ def run_energy_simulation(
         "final_state": {
             "opinions": opinions.tolist(),
             "mean_opinion": final_op,
-            "std_opinion": float(np.std(opinions))
+            "std_opinion": float(np.std(opinions)),
         },
         "summary": {
             "opinion_inicial": initial_op,
@@ -96,8 +101,8 @@ def run_energy_simulation(
             "pasos": steps,
             "regla_dominante": "langevin_energy",
             "neutro": neutro,
-            "rango": f"[{min_val}, {max_val}]"
+            "rango": f"[{min_val}, {max_val}]",
         },
         "config_used": validated.model_dump(),
-        "archetype_info": landscape.get("metadata", {})
+        "archetype_info": landscape.get("metadata", {}),
     }

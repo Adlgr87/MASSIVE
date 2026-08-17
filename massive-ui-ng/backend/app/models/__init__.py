@@ -28,8 +28,8 @@ from backend.app.models.dto_simulation import (
 )
 from backend.app.models.dto_snapshot import (
     SnapshotRecord,
-    TimelineTick,
     TimelineResponse,
+    TimelineTick,
 )
 
 __all__ = [
@@ -55,7 +55,7 @@ __all__ = [
     "ArchitectEventMessage",
 ]
 
-from backend.app.models.dto_ui import (  # noqa: E402
+from backend.app.models.dto_ui import (  # noqa: E402, F401
     AssumptionItem,
     CFCStatus,
     ChatMessage,

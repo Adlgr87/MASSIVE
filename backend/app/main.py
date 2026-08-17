@@ -35,16 +35,16 @@ import os
 import sys
 from typing import Any
 
-from fastapi import FastAPI, Header, HTTPException, Request
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
-from backend.app.security import get_api_key
+from backend.app.routers import benchmark, engine, forecast, llm, sim
 from backend.app.settings import get_app_settings
-from backend.app.routers import sim, forecast, engine, benchmark, llm
 
 # --- logging setup -------------------------------------------------------
 try:
     from massive_core.config import configure_logging, get_logger
+
     configure_logging()
     log = get_logger("massive.backend.main")
 except Exception:  # pragma: no cover - fallback if config unavailable
@@ -130,6 +130,7 @@ async def readiness_check() -> dict[str, Any]:
 
     try:
         from uil_adapter import create_uil_adapter  # type: ignore[import-not-found]
+
         provider = os.getenv("PROVIDER", "groq")
         api_key = os.getenv("GROQ_API_KEY", os.getenv("OPENAI_API_KEY", ""))
         create_uil_adapter(llm_provider=provider, llm_api_key=api_key)

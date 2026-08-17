@@ -24,7 +24,7 @@ import json
 import os
 import sys
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 _ROOT = Path(__file__).resolve().parents[2]
 if str(_ROOT) not in sys.path:
@@ -40,9 +40,7 @@ def _load_cases() -> list[dict[str, Any]]:
     return json.loads(_GOLDEN.read_text(encoding="utf-8"))["cases"]
 
 
-def _score_case(
-    case: dict[str, Any], resp: ConversationResponse
-) -> tuple[float, list[str]]:
+def _score_case(case: dict[str, Any], resp: ConversationResponse) -> tuple[float, list[str]]:
     """Score one case against its expectations. Returns (score 0..1, failures)."""
     expect: dict[str, Any] = case.get("expect", {})
     failures: list[str] = []
@@ -84,15 +82,16 @@ def _score_case(
         target = expect["estado_opinion_close_to"]
         tol = expect.get("estado_opinion_tolerance", 0.05)
         v = estado.get("opinion")
-        check(isinstance(v, (int, float)) and abs(float(v) - target) <= tol,
-              f"opinion ≈ {target}")
+        check(isinstance(v, (int, float)) and abs(float(v) - target) <= tol, f"opinion ≈ {target}")
     if "estado_opinion_negative" in expect and expect["estado_opinion_negative"]:
         v = estado.get("opinion")
         check(isinstance(v, (int, float)) and float(v) < 0, "opinion negative")
     if "estado_confianza_min" in expect:
         v = estado.get("confianza")
-        check(isinstance(v, (int, float)) and float(v) >= expect["estado_confianza_min"],
-              "confianza_min")
+        check(
+            isinstance(v, (int, float)) and float(v) >= expect["estado_confianza_min"],
+            "confianza_min",
+        )
     for key, val in expect.get("config_value", {}).items():
         check(cfg.get(key) == val, f"config[{key}]={val}")
     if "pasos_range" in expect:
@@ -126,10 +125,13 @@ def evaluate(mode: str = "heuristic", verbose: bool = True) -> dict[str, Any]:
 
             resp = _llm_turn(messages, case["language"])
             if resp is None:
-                results.append({
-                    "id": case["id"], "score": 0.0,
-                    "failures": ["LLM unavailable — run with EVAL_LLM=0 for heuristic eval"],
-                })
+                results.append(
+                    {
+                        "id": case["id"],
+                        "score": 0.0,
+                        "failures": ["LLM unavailable — run with EVAL_LLM=0 for heuristic eval"],
+                    }
+                )
                 continue
         else:
             resp = interpret_turn(messages, case["language"])
@@ -138,8 +140,10 @@ def evaluate(mode: str = "heuristic", verbose: bool = True) -> dict[str, Any]:
         results.append({"id": case["id"], "score": score, "failures": failures})
         if verbose:
             status = "✓" if score == 1.0 else "✗"
-            print(f"  {status} {case['id']:<28} {score * 100:5.1f}%"
-                  + (f"  — {'; '.join(failures)}" if failures else ""))
+            print(
+                f"  {status} {case['id']:<28} {score * 100:5.1f}%"
+                + (f"  — {'; '.join(failures)}" if failures else "")
+            )
     n = max(len(cases), 1)
     overall = total_score / n
     return {"mode": mode, "cases": n, "overall": overall, "results": results}

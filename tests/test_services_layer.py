@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from services import factbook_service, forecast_service, llm_service
+from services import forecast_service, llm_service
 from services.simulation_service import run_scalar_simulation
 
 

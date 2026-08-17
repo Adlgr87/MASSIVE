@@ -3,12 +3,12 @@ langchain_workflows.py — Flujos de trabajo LangChain para MASSIVE
 Reemplaza las llamadas HTTP manuales con cadenas LangChain tipadas.
 Soporta: groq, openai, openrouter, ollama.
 """
+
 from __future__ import annotations
 
 import json
 import logging
 import os
-from typing import Optional
 
 from llm_credentials import resolve_provider_api_key
 
@@ -16,9 +16,10 @@ log = logging.getLogger("massive")
 
 # ── Importaciones opcionales ──────────────────────────────────────────────────
 try:
-    from langchain_core.prompts import ChatPromptTemplate
-    from langchain_core.output_parsers import JsonOutputParser, StrOutputParser
     from langchain_core.language_models.chat_models import BaseChatModel
+    from langchain_core.output_parsers import JsonOutputParser, StrOutputParser
+    from langchain_core.prompts import ChatPromptTemplate
+
     LANGCHAIN_AVAILABLE = True
 except ImportError:
     LANGCHAIN_AVAILABLE = False
@@ -26,12 +27,14 @@ except ImportError:
 
 try:
     from langchain_openai import ChatOpenAI
+
     LANGCHAIN_OPENAI_AVAILABLE = True
 except ImportError:
     LANGCHAIN_OPENAI_AVAILABLE = False
 
 try:
     from langchain_groq import ChatGroq
+
     LANGCHAIN_GROQ_AVAILABLE = True
 except ImportError:
     LANGCHAIN_GROQ_AVAILABLE = False
@@ -88,7 +91,7 @@ def build_llm(
     api_key: str = "",
     model: str = "",
     temperature: float = 0.0,
-) -> "BaseChatModel | None":
+) -> BaseChatModel | None:
     """
     Build a LangChain chat model for the given provider.
 
@@ -131,9 +134,9 @@ def build_llm(
             temperature=temperature,
             base_url=base_url,
             default_headers=(
-                {"HTTP-Referer": "https://github.com/Adlgr87/MASSIVE",
-                 "X-Title": "MASSIVE"}
-                if p == "openrouter" else {}
+                {"HTTP-Referer": "https://github.com/Adlgr87/MASSIVE", "X-Title": "MASSIVE"}
+                if p == "openrouter"
+                else {}
             ),
         )
 
@@ -159,6 +162,7 @@ def build_llm(
 # SOCIAL ARCHITECT CHAIN
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class LangChainSocialArchitect:
     """
     LangChain-based Social Architect for MASSIVE.
@@ -168,22 +172,29 @@ class LangChainSocialArchitect:
     2. narrative_chain — translates the schedule to a natural-language narrative.
     """
 
-    def __init__(self, llm: "BaseChatModel") -> None:
+    def __init__(self, llm: BaseChatModel) -> None:
         if not LANGCHAIN_AVAILABLE:
             raise ImportError("langchain-core requerido.")
         self.llm = llm
         self._build_chains()
 
     def _build_chains(self) -> None:
-        strategy_prompt = ChatPromptTemplate.from_messages([
-            ("system", _STRATEGY_SYSTEM),
-            ("user", "{user_input}"),
-        ])
-        narrative_prompt = ChatPromptTemplate.from_messages([
-            ("system", _NARRATIVE_SYSTEM),
-            ("user", "Objetivo: {objetivo}\n\nIntervenciones ejecutadas:\n{interventions}\n\nContexto: {context}"),
-        ])
-        self.strategy_chain  = strategy_prompt  | self.llm | JsonOutputParser()
+        strategy_prompt = ChatPromptTemplate.from_messages(
+            [
+                ("system", _STRATEGY_SYSTEM),
+                ("user", "{user_input}"),
+            ]
+        )
+        narrative_prompt = ChatPromptTemplate.from_messages(
+            [
+                ("system", _NARRATIVE_SYSTEM),
+                (
+                    "user",
+                    "Objetivo: {objetivo}\n\nIntervenciones ejecutadas:\n{interventions}\n\nContexto: {context}",
+                ),
+            ]
+        )
+        self.strategy_chain = strategy_prompt | self.llm | JsonOutputParser()
         self.narrative_chain = narrative_prompt | self.llm | StrOutputParser()
 
     def generate_strategy(
@@ -195,9 +206,8 @@ class LangChainSocialArchitect:
         metricas_red: str = "",
     ) -> dict:
         """Generate an intervention schedule as a JSON dict."""
-        contexto = (
-            f"MODO {modo.upper()} ACTIVO. "
-            + (f"Métricas de red: {metricas_red}" if metricas_red else "")
+        contexto = f"MODO {modo.upper()} ACTIVO. " + (
+            f"Métricas de red: {metricas_red}" if metricas_red else ""
         )
         user_input = (
             f"Estado inicial: {json.dumps(estado_inicial)}\n"
@@ -218,20 +228,24 @@ class LangChainSocialArchitect:
         metricas_red: str = "",
     ) -> str:
         """Generate a natural-language narrative for the given strategy."""
-        context = (
-            f"Modo: {modo}. " +
-            (f"Red organizacional: {metricas_red}" if metricas_red else "Contexto: redes sociales masivas.")
+        context = f"Modo: {modo}. " + (
+            f"Red organizacional: {metricas_red}"
+            if metricas_red
+            else "Contexto: redes sociales masivas."
         )
-        return self.narrative_chain.invoke({
-            "objetivo": objetivo,
-            "interventions": json.dumps(estrategia, indent=2, ensure_ascii=False),
-            "context": context,
-        })
+        return self.narrative_chain.invoke(
+            {
+                "objetivo": objetivo,
+                "interventions": json.dumps(estrategia, indent=2, ensure_ascii=False),
+                "context": context,
+            }
+        )
 
 
 # ─────────────────────────────────────────────────────────────────────────────
 # PROGRAMMATIC ARCHITECT CHAIN
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class LangChainProgrammaticArchitect:
     """
@@ -241,17 +255,19 @@ class LangChainProgrammaticArchitect:
     properly structured LangChain chain with JSON output parsing.
     """
 
-    def __init__(self, llm: "BaseChatModel") -> None:
+    def __init__(self, llm: BaseChatModel) -> None:
         if not LANGCHAIN_AVAILABLE:
             raise ImportError("langchain-core requerido.")
         self.llm = llm
-        landscape_prompt = ChatPromptTemplate.from_messages([
-            ("system", _LANDSCAPE_SYSTEM),
-            ("user", "Objetivo del usuario: {goal}"),
-        ])
+        landscape_prompt = ChatPromptTemplate.from_messages(
+            [
+                ("system", _LANDSCAPE_SYSTEM),
+                ("user", "Objetivo del usuario: {goal}"),
+            ]
+        )
         self.chain = landscape_prompt | self.llm | JsonOutputParser()
 
-    def generate_landscape(self, goal: str) -> Optional[dict]:
+    def generate_landscape(self, goal: str) -> dict | None:
         """
         Generate an EnergyConfig dict from a user goal description.
 

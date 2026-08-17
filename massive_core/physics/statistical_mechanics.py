@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Callable
+from collections.abc import Callable
 
 import numpy as np
 
@@ -104,7 +104,9 @@ class StatisticalMechanicsEngine:
             p = p / total
         return -temp * np.log(p + 1e-12)
 
-    def estimate_phase_transition(self, order_parameter: Array, temperature_range: Array) -> dict[str, Array | int | float]:
+    def estimate_phase_transition(
+        self, order_parameter: Array, temperature_range: Array
+    ) -> dict[str, Array | int | float]:
         """Estimate transition temperature from susceptibility peaks.
 
         Args:

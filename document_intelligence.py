@@ -29,8 +29,6 @@ import base64
 import io
 import json
 import logging
-import os
-from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -40,40 +38,47 @@ log = logging.getLogger("massive.document_intelligence")
 
 # ── Detección de dependencias opcionales ─────────────────────────────────────
 
+
 def _try_import(module: str):
     try:
         import importlib
+
         return importlib.import_module(module)
     except ImportError:
         return None
 
-_pdfplumber  = _try_import("pdfplumber")
-_pandas      = _try_import("pandas")
-_PIL         = _try_import("PIL.Image")
-_openpyxl    = _try_import("openpyxl")   # backend de pandas para xlsx
+
+_pdfplumber = _try_import("pdfplumber")
+_pandas = _try_import("pandas")
+_PIL = _try_import("PIL.Image")
+_openpyxl = _try_import("openpyxl")  # backend de pandas para xlsx
 
 
 # ── Modelos Pydantic de salida ────────────────────────────────────────────────
 
+
 class ExtractedTimeSeries(BaseModel):
     """Serie temporal de opinión / actitud extraída del documento."""
+
     label: str = ""
     values: list[float] = Field(default_factory=list)
     timestamps: list[str] = Field(default_factory=list)
-    unit: str = "opinion"            # "opinion", "porcentaje", "likert"
+    unit: str = "opinion"  # "opinion", "porcentaje", "likert"
     source_column: str = ""
 
 
 class ExtractedNetworkInfo(BaseModel):
     """Información de red/comunidades detectada en el documento."""
+
     n_nodes_approx: int | None = None
     n_communities: int | None = None
     density_approx: float | None = None
-    topology_hint: str = ""          # "scale-free", "small-world", "random"
+    topology_hint: str = ""  # "scale-free", "small-world", "random"
 
 
 class ExtractedDemographics(BaseModel):
     """Distribución sociodemográfica detectada."""
+
     religion_pct: float | None = Field(None, ge=0.0, le=1.0)
     education_high_pct: float | None = Field(None, ge=0.0, le=1.0)
     age_young_pct: float | None = Field(None, ge=0.0, le=1.0)
@@ -88,6 +93,7 @@ class MASSIVEExtractedConfig(BaseModel):
     Solo se populan los campos con evidencia explícita o fuerte inferencia.
     Los campos None deben mantenerse en sus defaults del simulador.
     """
+
     # Estado inicial
     opinion_inicial: float | None = Field(None, ge=-1.0, le=1.0)
     confianza_institucional: float | None = Field(None, ge=0.0, le=1.0)
@@ -109,12 +115,10 @@ class MASSIVEExtractedConfig(BaseModel):
     w_economico: float | None = Field(None, ge=0.0, le=1.0)
 
     # Demografía para multilayer
-    demographics: ExtractedDemographics = Field(
-        default_factory=ExtractedDemographics
-    )
+    demographics: ExtractedDemographics = Field(default_factory=ExtractedDemographics)
 
     # Regla sugerida
-    regla_sugerida: str | None = None    # nombre de la regla del simulador
+    regla_sugerida: str | None = None  # nombre de la regla del simulador
     archetype_sugerido: str | None = None  # archetype del Programmatic Architect
 
     # Metadatos de extracción
@@ -123,8 +127,9 @@ class MASSIVEExtractedConfig(BaseModel):
     campos_faltantes: list[str] = Field(default_factory=list)
     notas: str = ""
 
-    @field_validator("opinion_inicial", "propaganda",
-                     "opinion_grupo_a", "opinion_grupo_b", mode="before")
+    @field_validator(
+        "opinion_inicial", "propaganda", "opinion_grupo_a", "opinion_grupo_b", mode="before"
+    )
     @classmethod
     def _clip_bipolar(cls, v):
         if v is not None:
@@ -189,13 +194,21 @@ class MASSIVEExtractedConfig(BaseModel):
         """
         flat = self.to_simular_kwargs()
         estado_keys = {
-            "opinion", "propaganda", "confianza",
-            "opinion_grupo_a", "opinion_grupo_b", "identidad_grupo",
+            "opinion",
+            "propaganda",
+            "confianza",
+            "opinion_grupo_a",
+            "opinion_grupo_b",
+            "identidad_grupo",
             "pertenencia_grupo",
         }
         config_keys = {
-            "homofilia_tasa", "sesgo_confirmacion", "hk_epsilon",
-            "competencia_peso", "umbral_media", "umbral_std",
+            "homofilia_tasa",
+            "sesgo_confirmacion",
+            "hk_epsilon",
+            "competencia_peso",
+            "umbral_media",
+            "umbral_std",
             "cultural_profile",
         }
         estado = {k: flat[k] for k in estado_keys if k in flat}
@@ -212,16 +225,15 @@ class MASSIVEExtractedConfig(BaseModel):
 
 class DocumentContext(BaseModel):
     """Contexto completo extraído de uno o varios archivos."""
+
     filename: str = ""
-    file_type: str = ""              # "pdf", "json", "csv", "xlsx", "image", "text"
-    raw_text: str = ""               # texto plano extraído
+    file_type: str = ""  # "pdf", "json", "csv", "xlsx", "image", "text"
+    raw_text: str = ""  # texto plano extraído
     structured_data: dict = Field(default_factory=dict)  # datos tabulares/JSON
-    image_b64: str | None = None     # imagen (portada, gráfica) en base64
-    charts_description: str = ""     # descripción de gráficas detectadas
+    image_b64: str | None = None  # imagen (portada, gráfica) en base64
+    charts_description: str = ""  # descripción de gráficas detectadas
     time_series: list[ExtractedTimeSeries] = Field(default_factory=list)
-    network_info: ExtractedNetworkInfo = Field(
-        default_factory=ExtractedNetworkInfo
-    )
+    network_info: ExtractedNetworkInfo = Field(default_factory=ExtractedNetworkInfo)
     parse_warnings: list[str] = Field(default_factory=list)
 
     @property
@@ -236,7 +248,7 @@ class DocumentContext(BaseModel):
             parts.append(f"[TEXTO DEL DOCUMENTO]\n{self.raw_text[:6000]}")
         if self.structured_data:
             parts.append(
-                f"[DATOS ESTRUCTURADOS]\n"
+                "[DATOS ESTRUCTURADOS]\n"
                 + json.dumps(self.structured_data, ensure_ascii=False, indent=2)[:3000]
             )
         if self.charts_description:
@@ -259,6 +271,7 @@ class DocumentContext(BaseModel):
 
 
 # ── Parsers por tipo de archivo ───────────────────────────────────────────────
+
 
 class _PDFParser:
     @staticmethod
@@ -312,9 +325,7 @@ class _CSVParser:
     def parse(path: Path) -> DocumentContext:
         ctx = DocumentContext(filename=path.name, file_type="csv")
         if _pandas is None:
-            ctx.parse_warnings.append(
-                "pandas no instalado. Instala con: pip install pandas"
-            )
+            ctx.parse_warnings.append("pandas no instalado. Instala con: pip install pandas")
             return ctx
         try:
             df = _pandas.read_csv(str(path))
@@ -337,9 +348,7 @@ class _XLSXParser:
     def parse(path: Path) -> DocumentContext:
         ctx = DocumentContext(filename=path.name, file_type="xlsx")
         if _pandas is None or _openpyxl is None:
-            ctx.parse_warnings.append(
-                "pandas/openpyxl no instalados: pip install pandas openpyxl"
-            )
+            ctx.parse_warnings.append("pandas/openpyxl no instalados: pip install pandas openpyxl")
             return ctx
         try:
             sheets: dict[str, Any] = {}
@@ -386,10 +395,23 @@ class _TextParser:
 # ── Detección automática de series temporales ─────────────────────────────────
 
 _OPINION_KEYWORDS = {
-    "opinion", "actitud", "attitude", "approval", "aprobacion", "apoyo",
-    "rechazo", "polarizacion", "polarization", "sentiment", "sentimiento",
-    "likert", "score", "indice", "index",
+    "opinion",
+    "actitud",
+    "attitude",
+    "approval",
+    "aprobacion",
+    "apoyo",
+    "rechazo",
+    "polarizacion",
+    "polarization",
+    "sentiment",
+    "sentimiento",
+    "likert",
+    "score",
+    "indice",
+    "index",
 }
+
 
 def _detect_time_series_from_df(df: Any, ctx: DocumentContext) -> None:
     if _pandas is None:
@@ -399,11 +421,13 @@ def _detect_time_series_from_df(df: Any, ctx: DocumentContext) -> None:
         if any(kw in col_lower for kw in _OPINION_KEYWORDS):
             vals = df[col].dropna().tolist()
             if len(vals) >= 3:
-                ctx.time_series.append(ExtractedTimeSeries(
-                    label=str(col),
-                    values=[float(v) for v in vals],
-                    source_column=str(col),
-                ))
+                ctx.time_series.append(
+                    ExtractedTimeSeries(
+                        label=str(col),
+                        values=[float(v) for v in vals],
+                        source_column=str(col),
+                    )
+                )
 
 
 def _detect_time_series_from_dict(data: Any, ctx: DocumentContext) -> None:
@@ -412,31 +436,34 @@ def _detect_time_series_from_dict(data: Any, ctx: DocumentContext) -> None:
     items = data.items() if isinstance(data, dict) else enumerate(data)
     for key, val in items:
         key_lower = str(key).lower()
-        if any(kw in key_lower for kw in _OPINION_KEYWORDS):
-            if isinstance(val, list) and all(
-                isinstance(v, (int, float)) for v in val
-            ):
-                ctx.time_series.append(ExtractedTimeSeries(
+        if (
+            any(kw in key_lower for kw in _OPINION_KEYWORDS)
+            and isinstance(val, list)
+            and all(isinstance(v, (int, float)) for v in val)
+        ):
+            ctx.time_series.append(
+                ExtractedTimeSeries(
                     label=str(key),
                     values=[float(v) for v in val],
                     source_column=str(key),
-                ))
+                )
+            )
 
 
 # ── Clase principal ───────────────────────────────────────────────────────────
 
 _EXT_MAP: dict[str, type] = {
-    ".pdf":  _PDFParser,
+    ".pdf": _PDFParser,
     ".json": _JSONParser,
-    ".csv":  _CSVParser,
+    ".csv": _CSVParser,
     ".xlsx": _XLSXParser,
-    ".xls":  _XLSXParser,
-    ".png":  _ImageParser,
-    ".jpg":  _ImageParser,
+    ".xls": _XLSXParser,
+    ".png": _ImageParser,
+    ".jpg": _ImageParser,
     ".jpeg": _ImageParser,
     ".webp": _ImageParser,
-    ".txt":  _TextParser,
-    ".md":   _TextParser,
+    ".txt": _TextParser,
+    ".md": _TextParser,
 }
 
 # System prompt compartido para todas las llamadas de extracción
@@ -535,6 +562,7 @@ class DocumentIntelligence:
         Escribe a un archivo temporal, parsea y limpia.
         """
         import tempfile
+
         ext = Path(filename).suffix.lower()
         with tempfile.NamedTemporaryFile(suffix=ext, delete=False) as tmp:
             tmp.write(data)
@@ -600,7 +628,7 @@ class DocumentIntelligence:
 
         messages = [
             {"role": "system", "content": _EXTRACTION_SYSTEM_PROMPT},
-            {"role": "user",   "content": user_prompt},
+            {"role": "user", "content": user_prompt},
         ]
 
         # Si hay imagen, usar modelo de visión
@@ -610,9 +638,7 @@ class DocumentIntelligence:
             messages[-1]["content"] = [
                 {
                     "type": "image_url",
-                    "image_url": {
-                        "url": f"data:image/png;base64,{ctx.image_b64}"
-                    },
+                    "image_url": {"url": f"data:image/png;base64,{ctx.image_b64}"},
                 },
                 {"type": "text", "text": user_prompt},
             ]
@@ -661,26 +687,26 @@ class DocumentIntelligence:
         try:
             resp = self._client.chat.completions.create(
                 model=self._vision_model,
-                messages=[{
-                    "role": "user",
-                    "content": [
-                        {
-                            "type": "image_url",
-                            "image_url": {
-                                "url": f"data:image/png;base64,{ctx.image_b64}"
+                messages=[
+                    {
+                        "role": "user",
+                        "content": [
+                            {
+                                "type": "image_url",
+                                "image_url": {"url": f"data:image/png;base64,{ctx.image_b64}"},
                             },
-                        },
-                        {
-                            "type": "text",
-                            "text": (
-                                "Describe detalladamente las gráficas, tablas y "
-                                "visualizaciones que aparecen en esta imagen. "
-                                "Extrae todos los valores numéricos visibles. "
-                                "Responde en español."
-                            ),
-                        },
-                    ],
-                }],
+                            {
+                                "type": "text",
+                                "text": (
+                                    "Describe detalladamente las gráficas, tablas y "
+                                    "visualizaciones que aparecen en esta imagen. "
+                                    "Extrae todos los valores numéricos visibles. "
+                                    "Responde en español."
+                                ),
+                            },
+                        ],
+                    }
+                ],
                 max_tokens=800,
             )
             description = resp.choices[0].message.content
@@ -689,4 +715,3 @@ class DocumentIntelligence:
         except Exception as exc:
             log.warning(f"[DI] describe_charts falló: {exc}")
             return ""
-

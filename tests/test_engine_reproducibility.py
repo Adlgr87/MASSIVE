@@ -23,12 +23,8 @@ def test_simular_seed_bit_equality(seed: int):
 def test_simular_multiples_seed_reproducible():
     estado = {"opinion": 0.5, "propaganda": 0.1}
     cfg = {"proveedor": "heurístico", "seed": 7}
-    a = simular_multiples(
-        estado, pasos=8, cada_n_pasos=4, config=cfg, n_simulaciones=5
-    )
-    b = simular_multiples(
-        estado, pasos=8, cada_n_pasos=4, config=cfg, n_simulaciones=5
-    )
+    a = simular_multiples(estado, pasos=8, cada_n_pasos=4, config=cfg, n_simulaciones=5)
+    b = simular_multiples(estado, pasos=8, cada_n_pasos=4, config=cfg, n_simulaciones=5)
     assert a["media"] == b["media"]
     assert a["std"] == b["std"]
     assert a["percentiles"] == b["percentiles"]
@@ -36,14 +32,9 @@ def test_simular_multiples_seed_reproducible():
     assert a["n_simulaciones"] == b["n_simulaciones"]
 
 
-
 def test_massive_engine_seed_bit_equality():
-    r1 = MassiveSimEngine(N=500, quantize=False, event_driven=False, seed=13).run(
-        steps=8
-    )
-    r2 = MassiveSimEngine(N=500, quantize=False, event_driven=False, seed=13).run(
-        steps=8
-    )
+    r1 = MassiveSimEngine(N=500, quantize=False, event_driven=False, seed=13).run(steps=8)
+    r2 = MassiveSimEngine(N=500, quantize=False, event_driven=False, seed=13).run(steps=8)
     assert r1["mean_opinion"] == r2["mean_opinion"]
 
 

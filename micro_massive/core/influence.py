@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Optional, Sequence
+from collections.abc import Sequence
 
 import numpy as np
 
@@ -17,8 +17,8 @@ class InfluenceMatrix:
         particles: Sequence[SocialParticle],
         base_weight: float = 0.3,
         *,
-        seed: Optional[int] = None,
-        rng: Optional[np.random.Generator] = None,
+        seed: int | None = None,
+        rng: np.random.Generator | None = None,
     ) -> None:
         self.particles = list(particles)
         self.n = len(self.particles)

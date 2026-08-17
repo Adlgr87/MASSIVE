@@ -17,9 +17,9 @@ Modelos:
 Autor: MASSIVE Research
 """
 
+import numpy as np
 import torch
 import torch.nn as nn
-import numpy as np
 
 # Número de regímenes (reglas 0–12 definidas en simulator.py → NOMBRES_REGLAS)
 NUM_REGIMES: int = 13
@@ -66,11 +66,7 @@ class CfCCell(nn.Module):
             Nuevo estado oculto, forma (batch, hidden_size).
         """
         tau = self.tau_net(torch.cat([x, u], dim=-1)) + 1e-3
-        dx = (
-            (-1.0 / tau) * x
-            + self.B(u)
-            + self.C * torch.tanh(self.W_x(x) + self.W_u(u))
-        )
+        dx = (-1.0 / tau) * x + self.B(u) + self.C * torch.tanh(self.W_x(x) + self.W_u(u))
         return x + dt * dx
 
 
@@ -213,10 +209,10 @@ def select_regime(features, history):
     """Pick regime from {stable, oscillatory, critical, collapse}."""
     energy = np.dot(features.ravel(), features.ravel()) / features.size
     if energy < 0.1:
-        return 'stable'
+        return "stable"
     elif energy < 0.5:
-        return 'oscillatory'
+        return "oscillatory"
     elif energy < 1.0:
-        return 'critical'
+        return "critical"
     else:
-        return 'collapse'
+        return "collapse"

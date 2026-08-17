@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass, field
-from typing import Any, Callable, Protocol
+from typing import Any, Protocol
 
 import numpy as np
 
@@ -188,9 +189,7 @@ class AdaptiveStepper:
             or bounds != self._bound_bounds
         )
         if needs_new:
-            self._solver = AdaptiveODESolver(
-                drift=drift, diffusion=diffusion, bounds=bounds
-            )
+            self._solver = AdaptiveODESolver(drift=drift, diffusion=diffusion, bounds=bounds)
             self._bound_drift = drift
             self._bound_diffusion = diffusion
             self._bound_bounds = bounds

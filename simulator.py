@@ -30,6 +30,7 @@ PROVEEDORES LLM:
 Autor: MASSIVE Research
 """
 
+import copy
 import json
 import logging
 import time
@@ -38,8 +39,6 @@ from pathlib import Path
 from typing import Any
 
 import networkx as nx
-import copy
-
 import numpy as np
 import requests
 from scipy import stats
@@ -47,24 +46,22 @@ from scipy.integrate import solve_ivp
 from scipy.special import erf
 
 from benchmarks.butterfly_diagnostic import run_butterfly_diagnostic_core
-from massive_engine import MassiveEngine
-from massive_core.rust_core import langevin_opinion_update_inplace
-from multilayer_engine import MultilayerEngine
-from massive.core.schemas import GamePayoff
-from massive.core.utility_logic import calculate_strategic_force
-from llm_credentials import resolve_provider_api_key
 from empirical_calibration import (
-    MASSIVE_EMPIRICAL_MASTER,
-    MASSIVE_RUNTIME_PARAMS,
     ENGINE_METADATA_KEYS,
-    apply_empirical_profile,
+    MASSIVE_RUNTIME_PARAMS,
     build_empirical_engine_config,
 )
-from empirical_config import MASSIVE_EMPIRICAL_MASTER, MASSIVE_RUNTIME_PARAMS
+from llm_credentials import resolve_provider_api_key
+from massive.core.schemas import GamePayoff
+from massive.core.utility_logic import calculate_strategic_force
+from massive_core.rust_core import langevin_opinion_update_inplace
+from massive_engine import MassiveEngine
+from multilayer_engine import MultilayerEngine
 
 try:
-    from ripser import ripser as ripser_compute
     from persim import wasserstein as wasserstein_dist
+    from ripser import ripser as ripser_compute
+
     TDA_AVAILABLE = True
 except ImportError:
     TDA_AVAILABLE = False
@@ -73,7 +70,8 @@ except ImportError:
     )
 
 try:
-    from extended_models import regla_nash, regla_bayesiana, regla_sir
+    from extended_models import regla_bayesiana, regla_nash, regla_sir
+
     EXTENDED_MODELS_AVAILABLE = True
 except ImportError:
     EXTENDED_MODELS_AVAILABLE = False
@@ -81,6 +79,7 @@ except ImportError:
 # CfC INTEGRATION — fast path neuronal para selector de régimen
 try:
     from cfc_router import CfCRouter
+
     _cfc = CfCRouter.get()
     CFC_AVAILABLE = _cfc.status["regime_selector"]
 except ImportError:
@@ -88,7 +87,8 @@ except ImportError:
 
 # EMPIRICAL INTEGRATION — importar base empírica si está disponible
 try:
-    from empirical_config import MASSIVE_RUNTIME_PARAMS, EMPIRICAL_BASE_LOADED
+    from empirical_config import EMPIRICAL_BASE_LOADED, MASSIVE_RUNTIME_PARAMS  # noqa: F401
+
     EMPIRICAL_AVAILABLE = True
 except ImportError:
     EMPIRICAL_AVAILABLE = False
@@ -114,21 +114,35 @@ log = logging.getLogger("massive")
 # ------------------------------------------------------------
 RANGOS_DISPONIBLES: dict[str, dict] = {
     "[0, 1] — Probabilístico": {
-        "min": 0.0, "max": 1.0, "neutro": 0.5,
+        "min": 0.0,
+        "max": 1.0,
+        "neutro": 0.5,
         "descripcion": "Opinión como probabilidad de apoyo. Neutro=0.5. Modelos SIR, adopción.",
-        "ejemplo_apoyo": 0.8, "ejemplo_rechazo": 0.2, "ejemplo_neutro": 0.5,
+        "ejemplo_apoyo": 0.8,
+        "ejemplo_rechazo": 0.2,
+        "ejemplo_neutro": 0.5,
         "defaults": {
-            "opinion_inicial": 0.50, "propaganda": 0.70, "confianza": 0.40,
-            "opinion_grupo_a": 0.72, "opinion_grupo_b": 0.28,
+            "opinion_inicial": 0.50,
+            "propaganda": 0.70,
+            "confianza": 0.40,
+            "opinion_grupo_a": 0.72,
+            "opinion_grupo_b": 0.28,
         },
     },
     "[-1, 1] — Bipolar": {
-        "min": -1.0, "max": 1.0, "neutro": 0.0,
+        "min": -1.0,
+        "max": 1.0,
+        "neutro": 0.0,
         "descripcion": "Rechazo activo en negativo. Neutro=0. Polarización, campañas, elecciones.",
-        "ejemplo_apoyo": 0.7, "ejemplo_rechazo": -0.7, "ejemplo_neutro": 0.0,
+        "ejemplo_apoyo": 0.7,
+        "ejemplo_rechazo": -0.7,
+        "ejemplo_neutro": 0.0,
         "defaults": {
-            "opinion_inicial": 0.00, "propaganda": 0.40, "confianza": 0.40,
-            "opinion_grupo_a": 0.65, "opinion_grupo_b": -0.55,
+            "opinion_inicial": 0.00,
+            "propaganda": 0.40,
+            "confianza": 0.40,
+            "opinion_grupo_a": 0.65,
+            "opinion_grupo_b": -0.55,
         },
     },
 }
@@ -139,30 +153,36 @@ RANGOS_DISPONIBLES: dict[str, dict] = {
 PROVEEDORES: dict[str, dict] = {
     "heurístico": {
         "descripcion": "Sin LLM — lógica determinista, sin costo ni API key",
-        "requiere_key": False, "base_url": None,
+        "requiere_key": False,
+        "base_url": None,
         "modelos_sugeridos": ["(ninguno)"],
     },
     "ollama": {
         "descripcion": "LLM local con Ollama — privado, sin costo por llamada",
-        "requiere_key": False, "base_url": "http://localhost:11434",
+        "requiere_key": False,
+        "base_url": "http://localhost:11434",
         "modelos_sugeridos": ["llama3:8b", "mistral:7b", "phi3:mini", "gemma2:2b"],
     },
     "groq": {
         "descripcion": "Groq Cloud — muy rápido, tier gratuito generoso",
-        "requiere_key": True, "base_url": "https://api.groq.com/openai/v1",
+        "requiere_key": True,
+        "base_url": "https://api.groq.com/openai/v1",
         "modelos_sugeridos": [
-            "llama-3.1-8b-instant", "llama-3.3-70b-versatile",
+            "llama-3.1-8b-instant",
+            "llama-3.3-70b-versatile",
             "meta-llama/llama-4-scout-17b-16e-instruct",
         ],
     },
     "openai": {
         "descripcion": "OpenAI API — GPT-4o, GPT-4o-mini, etc.",
-        "requiere_key": True, "base_url": "https://api.openai.com/v1",
+        "requiere_key": True,
+        "base_url": "https://api.openai.com/v1",
         "modelos_sugeridos": ["gpt-4o-mini", "gpt-4o", "gpt-4.1-nano"],
     },
     "openrouter": {
         "descripcion": "OpenRouter — acceso a cientos de modelos con una sola key",
-        "requiere_key": True, "base_url": "https://openrouter.ai/api/v1",
+        "requiere_key": True,
+        "base_url": "https://openrouter.ai/api/v1",
         "modelos_sugeridos": [
             "meta-llama/llama-3.3-70b-instruct",
             "google/gemini-flash-1.5",
@@ -207,7 +227,7 @@ DEFAULT_CONFIG: dict[str, Any] = {
     # Umbral Heterogéneo (Granovetter)
     # Media y std de la distribución de umbrales individuales
     "umbral_media": 0.5,
-    "umbral_std":   0.15,
+    "umbral_std": 0.15,
     # Homofilia dinámica
     # Velocidad con la que los pesos de grupo se actualizan según similitud de opinión
     "homofilia_tasa": 0.05,
@@ -247,19 +267,19 @@ DEFAULT_PAYOFF_MATRIX: list[list[float]] = [[1.0, 0.0], [0.0, 1.0]]
 
 # Rangos válidos de parámetros del LLM
 _RANGOS_PARAMS: dict[str, dict[str, tuple]] = {
-    "lineal":               {"a": (0.5, 0.9), "b": (0.1, 0.5)},
-    "umbral":               {"umbral": (0.3, 0.8), "incremento": (0.05, 0.3)},
-    "memoria":              {"alpha": (0.5, 0.8), "beta": (0.1, 0.3), "gamma": (0.05, 0.2)},
-    "backlash":             {"penalizacion": (0.05, 0.3)},
-    "polarizacion":         {"fuerza": (0.05, 0.25)},
-    "hk":                   {"epsilon": (0.1, 0.6)},
+    "lineal": {"a": (0.5, 0.9), "b": (0.1, 0.5)},
+    "umbral": {"umbral": (0.3, 0.8), "incremento": (0.05, 0.3)},
+    "memoria": {"alpha": (0.5, 0.8), "beta": (0.1, 0.3), "gamma": (0.05, 0.2)},
+    "backlash": {"penalizacion": (0.05, 0.3)},
+    "polarizacion": {"fuerza": (0.05, 0.25)},
+    "hk": {"epsilon": (0.1, 0.6)},
     "contagio_competitivo": {"competencia": (0.2, 0.7)},
-    "umbral_heterogeneo":   {"media": (0.3, 0.7), "std": (0.05, 0.25)},
-    "homofilia":            {"tasa": (0.02, 0.15)},
-    "replicador":           {"dt": (0.01, 1.0)},
-    "nash":                 {"c_same": (1.0, 3.0), "c_diff": (0.0, 1.5), "intensity": (0.5, 2.0)},
-    "bayesiano":            {"n_prior": (5.0, 20.0), "n_obs": (2.0, 10.0), "inertia": (0.1, 0.8)},
-    "sir":                  {"beta": (0.05, 0.8), "gamma": (0.01, 0.5), "dt": (0.05, 0.5)},
+    "umbral_heterogeneo": {"media": (0.3, 0.7), "std": (0.05, 0.25)},
+    "homofilia": {"tasa": (0.02, 0.15)},
+    "replicador": {"dt": (0.01, 1.0)},
+    "nash": {"c_same": (1.0, 3.0), "c_diff": (0.0, 1.5), "intensity": (0.5, 2.0)},
+    "bayesiano": {"n_prior": (5.0, 20.0), "n_obs": (2.0, 10.0), "inertia": (0.1, 0.8)},
+    "sir": {"beta": (0.05, 0.8), "gamma": (0.01, 0.5), "dt": (0.05, 0.5)},
 }
 
 # Sliding-window size used by EWS metrics and TDA detection
@@ -284,19 +304,24 @@ _INTEGRATED_TOPOLOGY_INTENSITY_MAX: float = 0.2
 # Toda la lógica de rango pasa por aquí — motor agnóstico al rango.
 # ============================================================
 
+
 def _get_rango(cfg: dict) -> dict:
     nombre = cfg.get("rango", "[0, 1] — Probabilístico")
     return RANGOS_DISPONIBLES.get(nombre, RANGOS_DISPONIBLES["[0, 1] — Probabilístico"])
+
 
 def _clip(val: float, cfg: dict) -> float:
     r = _get_rango(cfg)
     return float(np.clip(val, r["min"], r["max"]))
 
+
 def _neutro(cfg: dict) -> float:
     return _get_rango(cfg)["neutro"]
 
+
 def _es_bipolar(cfg: dict) -> bool:
     return _get_rango(cfg)["min"] < 0
+
 
 def _amplitud(cfg: dict) -> float:
     r = _get_rango(cfg)
@@ -309,6 +334,7 @@ def _amplitud(cfg: dict) -> float:
 # El threshold de "vecinos cerca del neutro" usa 0.2 en rango [-1, 1]
 # (|avg| < 0.2) y la misma magnitud absoluta para [0, 1].
 # ============================================================
+
 
 def _calcular_fuerza_estrategica(estado: dict, cfg: dict) -> float:
     """
@@ -343,8 +369,11 @@ def _calcular_fuerza_estrategica(estado: dict, cfg: dict) -> float:
     # proximity_threshold: 0.2 absolute — correct for [-1,1] (neutral=0)
     # and reasonable for [0,1] (neutral=0.5, checks |avg-0.5|<0.2)
     force = calculate_strategic_force(
-        estado["opinion"], neighbors, payoff,
-        neutral=neutro, proximity_threshold=0.2,
+        estado["opinion"],
+        neighbors,
+        payoff,
+        neutral=neutro,
+        proximity_threshold=0.2,
     )
 
     # Scale to match other per-step forces (efecto_vecinos_peso ≈ 0.05)
@@ -358,8 +387,8 @@ def _calcular_fuerza_estrategica(estado: dict, cfg: dict) -> float:
 # Referencia: Sunstein (2009), Nickerson (1998).
 # ============================================================
 
-def _aplicar_sesgo_confirmacion(propaganda: float, opinion: float,
-                                 cfg: dict) -> float:
+
+def _aplicar_sesgo_confirmacion(propaganda: float, opinion: float, cfg: dict) -> float:
     """
     Reduces the weight of information contrary to the current position.
 
@@ -375,8 +404,8 @@ def _aplicar_sesgo_confirmacion(propaganda: float, opinion: float,
     Returns:
         The attenuated propaganda value.
     """
-    sesgo   = float(np.clip(cfg.get("sesgo_confirmacion", 0.0), 0.0, 1.0))
-    neutro  = _neutro(cfg)
+    sesgo = float(np.clip(cfg.get("sesgo_confirmacion", 0.0), 0.0, 1.0))
+    neutro = _neutro(cfg)
 
     if sesgo == 0.0:
         return propaganda
@@ -396,6 +425,7 @@ def _aplicar_sesgo_confirmacion(propaganda: float, opinion: float,
 # Referencia: Axelrod (1997), Flache et al. (2017).
 # ============================================================
 
+
 def _actualizar_pesos_homofilia(estado: dict, cfg: dict) -> float:
     """
     Calculates new influence weights based on opinion similarity.
@@ -410,16 +440,16 @@ def _actualizar_pesos_homofilia(estado: dict, cfg: dict) -> float:
     Returns:
         The updated group identity/belonging intensity.
     """
-    tasa     = float(np.clip(cfg.get("homofilia_tasa", 0.05), 0.0, 0.3))
-    opinion  = estado["opinion"]
-    op_a     = estado.get("opinion_grupo_a", 0.7)
-    op_b     = estado.get("opinion_grupo_b", 0.3)
-    perten   = estado.get("pertenencia_grupo", 0.6)
+    tasa = float(np.clip(cfg.get("homofilia_tasa", 0.05), 0.0, 0.3))
+    opinion = estado["opinion"]
+    op_a = estado.get("opinion_grupo_a", 0.7)
+    op_b = estado.get("opinion_grupo_b", 0.3)
+    perten = estado.get("pertenencia_grupo", 0.6)
 
     # Similarity = 1 - normalized distance to range
-    amp      = _amplitud(cfg)
-    sim_a    = 1.0 - abs(opinion - op_a) / amp
-    sim_b    = 1.0 - abs(opinion - op_b) / amp
+    amp = _amplitud(cfg)
+    sim_a = 1.0 - abs(opinion - op_a) / amp
+    sim_b = 1.0 - abs(opinion - op_b) / amp
 
     # Update belonging towards the most similar group
     nuevo_perten = perten + tasa * (sim_a - sim_b)
@@ -430,6 +460,7 @@ def _actualizar_pesos_homofilia(estado: dict, cfg: dict) -> float:
 # ============================================================
 # REGLAS DE TRANSICIÓN — ORIGINALES (mejoradas con rango dual)
 # ============================================================
+
 
 def regla_lineal(estado: dict, params: dict, cfg: dict) -> dict:
     """
@@ -444,8 +475,8 @@ def regla_lineal(estado: dict, params: dict, cfg: dict) -> dict:
     Returns:
         Updated state.
     """
-    a, b  = params.get("a", 0.7), params.get("b", 0.3)
-    prop  = _aplicar_sesgo_confirmacion(estado["propaganda"], estado["opinion"], cfg)
+    a, b = params.get("a", 0.7), params.get("b", 0.3)
+    prop = _aplicar_sesgo_confirmacion(estado["propaganda"], estado["opinion"], cfg)
     nuevo = estado.copy()
     nuevo["opinion"] = _clip(a * estado["opinion"] + b * prop, cfg)
     return nuevo
@@ -464,14 +495,14 @@ def regla_umbral(estado: dict, params: dict, cfg: dict) -> dict:
     Returns:
         Updated state.
     """
-    r          = _get_rango(cfg)
-    umbral     = params.get("umbral", 0.65 if not _es_bipolar(cfg) else 0.4)
+    r = _get_rango(cfg)
+    umbral = params.get("umbral", 0.65 if not _es_bipolar(cfg) else 0.4)
     incremento = params.get("incremento", 0.15)
-    prop       = _aplicar_sesgo_confirmacion(estado["propaganda"], estado["opinion"], cfg)
+    prop = _aplicar_sesgo_confirmacion(estado["propaganda"], estado["opinion"], cfg)
     nuevo = estado.copy()
     if abs(prop) > abs(umbral):
         signo = np.sign(prop) if _es_bipolar(cfg) else 1.0
-        val   = estado["opinion"] + signo * incremento * (r["max"] - abs(estado["opinion"]))
+        val = estado["opinion"] + signo * incremento * (r["max"] - abs(estado["opinion"]))
     else:
         val = estado["opinion"]
     nuevo["opinion"] = _clip(val, cfg)
@@ -492,14 +523,12 @@ def regla_memoria(estado: dict, params: dict, cfg: dict) -> dict:
         Updated state.
     """
     alpha = params.get("alpha", 0.7)
-    beta  = params.get("beta",  0.2)
+    beta = params.get("beta", 0.2)
     gamma = params.get("gamma", 0.1)
-    prev  = estado.get("opinion_prev", estado["opinion"])
-    prop  = _aplicar_sesgo_confirmacion(estado["propaganda"], estado["opinion"], cfg)
+    prev = estado.get("opinion_prev", estado["opinion"])
+    prop = _aplicar_sesgo_confirmacion(estado["propaganda"], estado["opinion"], cfg)
     nuevo = estado.copy()
-    nuevo["opinion"] = _clip(
-        alpha * estado["opinion"] + beta * prev + gamma * prop, cfg
-    )
+    nuevo["opinion"] = _clip(alpha * estado["opinion"] + beta * prev + gamma * prop, cfg)
     return nuevo
 
 
@@ -517,7 +546,7 @@ def regla_backlash(estado: dict, params: dict, cfg: dict) -> dict:
         Updated state.
     """
     penalizacion = params.get("penalizacion", 0.15)
-    prop         = _aplicar_sesgo_confirmacion(estado["propaganda"], estado["opinion"], cfg)
+    prop = _aplicar_sesgo_confirmacion(estado["propaganda"], estado["opinion"], cfg)
     nuevo = estado.copy()
     neutro = _neutro(cfg)
     if _es_bipolar(cfg):
@@ -548,11 +577,11 @@ def regla_polarizacion(estado: dict, params: dict, cfg: dict) -> dict:
     Returns:
         Updated state.
     """
-    fuerza  = params.get("fuerza", 0.1)
+    fuerza = params.get("fuerza", 0.1)
     opinion = estado["opinion"]
-    neutro  = _neutro(cfg)
-    r       = _get_rango(cfg)
-    nuevo   = estado.copy()
+    neutro = _neutro(cfg)
+    r = _get_rango(cfg)
+    nuevo = estado.copy()
     if opinion >= neutro:
         val = opinion + fuerza * (r["max"] - opinion)
     else:
@@ -567,6 +596,7 @@ def regla_polarizacion(estado: dict, params: dict, cfg: dict) -> dict:
 # Genera clustering y polarización de forma emergente.
 # Referencia: Hegselmann & Krause (2002).
 # ============================================================
+
 
 def regla_hk(estado: dict, params: dict, cfg: dict) -> dict:
     """
@@ -583,14 +613,14 @@ def regla_hk(estado: dict, params: dict, cfg: dict) -> dict:
     """
     epsilon = params.get("epsilon", cfg.get("hk_epsilon", 0.3))
     opinion = estado["opinion"]
-    op_a    = estado.get("opinion_grupo_a", _get_rango(cfg)["ejemplo_apoyo"])
-    op_b    = estado.get("opinion_grupo_b", _get_rango(cfg)["ejemplo_rechazo"])
-    perten  = estado.get("pertenencia_grupo", 0.6)
-    prop    = _aplicar_sesgo_confirmacion(estado["propaganda"], opinion, cfg)
+    op_a = estado.get("opinion_grupo_a", _get_rango(cfg)["ejemplo_apoyo"])
+    op_b = estado.get("opinion_grupo_b", _get_rango(cfg)["ejemplo_rechazo"])
+    perten = estado.get("pertenencia_grupo", 0.6)
+    prop = _aplicar_sesgo_confirmacion(estado["propaganda"], opinion, cfg)
 
     # Determinar qué grupos están dentro del radio de confianza
     grupos_validos = []
-    pesos_validos  = []
+    pesos_validos = []
 
     if abs(opinion - op_a) <= epsilon:
         grupos_validos.append(op_a)
@@ -603,11 +633,13 @@ def regla_hk(estado: dict, params: dict, cfg: dict) -> dict:
     nuevo = estado.copy()
     if grupos_validos:
         # Promedio ponderado solo de grupos dentro del radio
-        total_peso   = sum(pesos_validos)
-        opinion_ref  = sum(g * p for g, p in zip(grupos_validos, pesos_validos)) / total_peso
+        total_peso = sum(pesos_validos)
+        opinion_ref = (
+            sum(g * p for g, p in zip(grupos_validos, pesos_validos, strict=False)) / total_peso
+        )
         # Convergencia gradual hacia la referencia de confianza
-        alpha        = params.get("alpha", 0.3)
-        val          = opinion + alpha * (opinion_ref - opinion) + 0.05 * prop
+        alpha = params.get("alpha", 0.3)
+        val = opinion + alpha * (opinion_ref - opinion) + 0.05 * prop
     else:
         # Nadie dentro del radio → fragmentación, opinión casi estática
         val = opinion + 0.01 * prop  # influencia mínima de propaganda
@@ -623,6 +655,7 @@ def regla_hk(estado: dict, params: dict, cfg: dict) -> dict:
 # Referencia: Beutel et al. (2012), Gleeson et al. (2014).
 # ============================================================
 
+
 def regla_contagio_competitivo(estado: dict, params: dict, cfg: dict) -> dict:
     """
     Competitive Contagion model based on Beutel et al. (2012).
@@ -636,19 +669,19 @@ def regla_contagio_competitivo(estado: dict, params: dict, cfg: dict) -> dict:
     Returns:
         Updated state.
     """
-    competencia  = params.get("competencia", cfg.get("competencia_peso", 0.4))
-    opinion      = estado["opinion"]
-    narrativa_a  = _aplicar_sesgo_confirmacion(estado["propaganda"], opinion, cfg)
+    competencia = params.get("competencia", cfg.get("competencia_peso", 0.4))
+    opinion = estado["opinion"]
+    narrativa_a = _aplicar_sesgo_confirmacion(estado["propaganda"], opinion, cfg)
     # narrativa_b puede estar en el estado o inferirse como la opuesta
-    narrativa_b  = estado.get("narrativa_b", -narrativa_a if _es_bipolar(cfg) else 1.0 - narrativa_a)
+    narrativa_b = estado.get("narrativa_b", -narrativa_a if _es_bipolar(cfg) else 1.0 - narrativa_a)
 
     # Influencia neta: A gana si es más fuerte que B
     influencia_neta = narrativa_a - competencia * narrativa_b
-    neutro          = _neutro(cfg)
+    neutro = _neutro(cfg)
 
     # La influencia neta empuja la opinión hacia o desde el neutro
     nuevo = estado.copy()
-    val   = opinion + 0.15 * influencia_neta * (1.0 - abs(opinion - neutro) / _amplitud(cfg))
+    val = opinion + 0.15 * influencia_neta * (1.0 - abs(opinion - neutro) / _amplitud(cfg))
     nuevo["opinion"] = _clip(val, cfg)
     return nuevo
 
@@ -659,6 +692,7 @@ def regla_contagio_competitivo(estado: dict, params: dict, cfg: dict) -> dict:
 # La distribución de umbrales genera cascadas sociales.
 # Referencia: Granovetter (1978).
 # ============================================================
+
 
 def regla_umbral_heterogeneo(estado: dict, params: dict, cfg: dict) -> dict:
     """
@@ -673,11 +707,11 @@ def regla_umbral_heterogeneo(estado: dict, params: dict, cfg: dict) -> dict:
     Returns:
         Updated state.
     """
-    media   = params.get("media", cfg.get("umbral_media", 0.5))
-    std     = params.get("std",   cfg.get("umbral_std",   0.15))
+    media = params.get("media", cfg.get("umbral_media", 0.5))
+    std = params.get("std", cfg.get("umbral_std", 0.15))
     opinion = estado["opinion"]
-    neutro  = _neutro(cfg)
-    prop    = _aplicar_sesgo_confirmacion(estado["propaganda"], opinion, cfg)
+    neutro = _neutro(cfg)
+    prop = _aplicar_sesgo_confirmacion(estado["propaganda"], opinion, cfg)
 
     # Fracción de la población que ya superó su umbral personal
     # (modelado con CDF de la normal)
@@ -685,8 +719,8 @@ def regla_umbral_heterogeneo(estado: dict, params: dict, cfg: dict) -> dict:
     fraccion_adoptantes = float(np.clip(fraccion_adoptantes, 0.0, 1.0))
 
     # La fracción de adoptantes genera presión social adicional
-    r    = _get_rango(cfg)
-    val  = opinion + 0.2 * fraccion_adoptantes * (r["max"] - opinion) + 0.05 * prop
+    r = _get_rango(cfg)
+    val = opinion + 0.2 * fraccion_adoptantes * (r["max"] - opinion) + 0.05 * prop
 
     nuevo = estado.copy()
     nuevo["opinion"] = _clip(val, cfg)
@@ -702,6 +736,7 @@ def regla_umbral_heterogeneo(estado: dict, params: dict, cfg: dict) -> dict:
 # Referencia: Axelrod (1997), Centola et al. (2007).
 # ============================================================
 
+
 def regla_homofilia(estado: dict, params: dict, cfg: dict) -> dict:
     """
     Axelrod (1997) - Co-evolutionary Network / Homophily.
@@ -715,32 +750,32 @@ def regla_homofilia(estado: dict, params: dict, cfg: dict) -> dict:
     Returns:
         Updated state.
     """
-    tasa    = params.get("tasa", cfg.get("homofilia_tasa", 0.05))
+    tasa = params.get("tasa", cfg.get("homofilia_tasa", 0.05))
     opinion = estado["opinion"]
-    op_a    = estado.get("opinion_grupo_a", _get_rango(cfg)["ejemplo_apoyo"])
-    op_b    = estado.get("opinion_grupo_b", _get_rango(cfg)["ejemplo_rechazo"])
-    perten  = estado.get("pertenencia_grupo", 0.6)
-    prop    = _aplicar_sesgo_confirmacion(estado["propaganda"], opinion, cfg)
+    op_a = estado.get("opinion_grupo_a", _get_rango(cfg)["ejemplo_apoyo"])
+    op_b = estado.get("opinion_grupo_b", _get_rango(cfg)["ejemplo_rechazo"])
+    perten = estado.get("pertenencia_grupo", 0.6)
+    prop = _aplicar_sesgo_confirmacion(estado["propaganda"], opinion, cfg)
 
-    amp    = _amplitud(cfg)
+    amp = _amplitud(cfg)
     # Similitud normalizada al rango
-    sim_a  = 1.0 - abs(opinion - op_a) / amp
-    sim_b  = 1.0 - abs(opinion - op_b) / amp
+    sim_a = 1.0 - abs(opinion - op_a) / amp
+    sim_b = 1.0 - abs(opinion - op_b) / amp
 
     # Actualizar pertenencia según similitud (homofilia)
     nuevo_perten = float(np.clip(perten + tasa * (sim_a - sim_b), 0.1, 0.9))
 
     # Calcular referencia social con nuevos pesos
-    ref_social   = nuevo_perten * op_a + (1.0 - nuevo_perten) * op_b
-    peso_social  = cfg.get("efecto_vecinos_peso", 0.05)
+    ref_social = nuevo_perten * op_a + (1.0 - nuevo_perten) * op_b
+    peso_social = cfg.get("efecto_vecinos_peso", 0.05)
 
-    val  = opinion + peso_social * (ref_social - opinion) + 0.08 * prop
+    val = opinion + peso_social * (ref_social - opinion) + 0.08 * prop
 
     nuevo = estado.copy()
-    nuevo["opinion"]           = _clip(val, cfg)
+    nuevo["opinion"] = _clip(val, cfg)
     nuevo["pertenencia_grupo"] = nuevo_perten  # persiste al próximo paso
-    nuevo["_sim_grupo_a"]      = round(sim_a, 3)
-    nuevo["_sim_grupo_b"]      = round(sim_b, 3)
+    nuevo["_sim_grupo_a"] = round(sim_a, 3)
+    nuevo["_sim_grupo_b"] = round(sim_b, 3)
     return nuevo
 
 
@@ -750,6 +785,7 @@ def regla_homofilia(estado: dict, params: dict, cfg: dict) -> dict:
 # and skewness computed over a sliding opinion window.
 # References: Scheffer et al. (2009), Dakos et al. (2012).
 # ============================================================
+
 
 def calculate_ews_metrics(window_data: list) -> dict:
     """
@@ -817,6 +853,7 @@ def check_ews_signals(metrics: dict, thresholds: dict) -> dict:
 # Frequencies evolve according to relative payoff.
 # Reference: Taylor & Jonker (1978), Weibull (1995).
 # ============================================================
+
 
 def apply_replicator_equation(
     population_states: np.ndarray,
@@ -911,6 +948,7 @@ def regla_replicador(estado: dict, params: dict, cfg: dict) -> dict:
 # Reference: Carlsson (2009), Perea & Harer (2015).
 # ============================================================
 
+
 def detect_topological_change(
     time_series: np.ndarray,
     prev_diagram: "np.ndarray | None",
@@ -945,7 +983,7 @@ def detect_topological_change(
 
     n = len(time_series) - (embedding_dim - 1) * tau
     embedded = np.array(
-        [time_series[i: i + embedding_dim * tau: tau] for i in range(n)],
+        [time_series[i : i + embedding_dim * tau : tau] for i in range(n)],
         dtype=float,
     )
 
@@ -956,15 +994,9 @@ def detect_topological_change(
         return False, h1
 
     finite_prev = (
-        prev_diagram[np.isfinite(prev_diagram[:, 1])]
-        if len(prev_diagram) > 0
-        else np.empty((0, 2))
+        prev_diagram[np.isfinite(prev_diagram[:, 1])] if len(prev_diagram) > 0 else np.empty((0, 2))
     )
-    finite_curr = (
-        h1[np.isfinite(h1[:, 1])]
-        if len(h1) > 0
-        else np.empty((0, 2))
-    )
+    finite_curr = h1[np.isfinite(h1[:, 1])] if len(h1) > 0 else np.empty((0, 2))
 
     if len(finite_prev) == 0 and len(finite_curr) == 0:
         return False, h1
@@ -1035,6 +1067,7 @@ DESCRIPCIONES_REGLAS = {
 # VALIDADOR DE PARÁMETROS LLM
 # ============================================================
 
+
 def _validar_params(regla_nombre: str, params: dict) -> dict:
     rangos = _RANGOS_PARAMS.get(regla_nombre, {})
     return {
@@ -1047,8 +1080,10 @@ def _validar_params(regla_nombre: str, params: dict) -> dict:
 # CONSTRUCCIÓN DEL PROMPT — consciente del rango y nuevas reglas
 # ============================================================
 
-def _construir_prompt(estado: dict, escenario: str,
-                      historial_reciente: list[dict], cfg: dict) -> str:
+
+def _construir_prompt(
+    estado: dict, escenario: str, historial_reciente: list[dict], cfg: dict
+) -> str:
     """
     Constructs the prompt for the LLM selector.
 
@@ -1062,19 +1097,20 @@ def _construir_prompt(estado: dict, escenario: str,
         The formatted prompt string.
     """
     es_bipolar = _es_bipolar(cfg)
-    tendencia  = [round(h["opinion"], 3) for h in historial_reciente]
-    delta      = round(tendencia[-1] - tendencia[0], 3) if len(tendencia) > 1 else 0.0
-    direccion  = "rising" if delta > 0.02 else ("falling" if delta < -0.02 else "stable")
+    tendencia = [round(h["opinion"], 3) for h in historial_reciente]
+    delta = round(tendencia[-1] - tendencia[0], 3) if len(tendencia) > 1 else 0.0
+    direccion = "rising" if delta > 0.02 else ("falling" if delta < -0.02 else "stable")
 
     estado_fmt = {
         k: round(v, 3) if isinstance(v, float) else v
-        for k, v in estado.items() if not k.startswith("_")
+        for k, v in estado.items()
+        if not k.startswith("_")
     }
 
     rango_desc = (
         "[-1, 1]: 0=neutral, negative=active rejection, positive=support"
-        if es_bipolar else
-        "[0, 1]: 0.5=neutral, 0=total rejection, 1=total support"
+        if es_bipolar
+        else "[0, 1]: 0.5=neutral, 0=total rejection, 1=total support"
     )
 
     ejemplos = """
@@ -1139,9 +1175,10 @@ Fallback: {{"regla": 0, "params": {{}}, "razon": "fallback"}}
 # CAPA LLM
 # ============================================================
 
+
 def _extraer_json(texto: str) -> dict | None:
     inicio = texto.find("{")
-    fin    = texto.rfind("}") + 1
+    fin = texto.rfind("}") + 1
     if inicio == -1 or fin == 0:
         return None
     try:
@@ -1227,7 +1264,7 @@ def _with_retry_and_circuit(fn, cfg: dict, proveedor: str) -> dict | None:
             last_exc = e
             log.warning(f"HTTP error {code} intento {attempt + 1}/{max_retries + 1} '{proveedor}'.")
         if attempt < max_retries:
-            time.sleep(base_delay * (2 ** attempt))
+            time.sleep(base_delay * (2**attempt))
 
     log.error(f"Fallaron {max_retries + 1} reintentos para '{proveedor}': {last_exc}")
     _circuit_breaker.record_failure()
@@ -1274,9 +1311,9 @@ def _llamar_ollama(prompt: str, cfg: dict) -> dict | None:
         resp = requests.post(
             f"{cfg['ollama_host']}/api/generate",
             json={
-                "model":   cfg["modelo"],
-                "prompt":  prompt,
-                "stream":  False,
+                "model": cfg["modelo"],
+                "prompt": prompt,
+                "stream": False,
                 "options": {"temperature": cfg["llm_temperature"]},
             },
             timeout=cfg["llm_timeout"],
@@ -1292,8 +1329,7 @@ def _llamar_ollama(prompt: str, cfg: dict) -> dict | None:
         return None
 
 
-def llamar_llm(estado: dict, escenario: str,
-                historial_reciente: list[dict], cfg: dict) -> dict:
+def llamar_llm(estado: dict, escenario: str, historial_reciente: list[dict], cfg: dict) -> dict:
     """
     Main dispatcher for LLM selectors.
 
@@ -1312,13 +1348,13 @@ def llamar_llm(estado: dict, escenario: str,
         return llamar_llm_heuristico(estado, escenario, historial_reciente, cfg)
 
     prompt = _construir_prompt(estado, escenario, historial_reciente, cfg)
-    data   = None
+    data = None
 
     if proveedor == "ollama":
         data = _llamar_ollama(prompt, cfg)
     elif proveedor in PROVEEDORES:
-        info    = PROVEEDORES[proveedor]
-        modelo  = cfg.get("modelo", "").strip() or info["modelos_sugeridos"][0]
+        info = PROVEEDORES[proveedor]
+        modelo = cfg.get("modelo", "").strip() or info["modelos_sugeridos"][0]
         if not resolve_provider_api_key(proveedor, fallback=cfg.get("api_key", "")):
             log.error(f"'{proveedor}' requiere API key. → heurístico.")
             return llamar_llm_heuristico(estado, escenario, historial_reciente, cfg)
@@ -1345,8 +1381,9 @@ def llamar_llm(estado: dict, escenario: str,
     return {"regla": regla_id, "params": data.get("params", {}), "razon": data.get("razon", "")}
 
 
-def llamar_llm_heuristico(estado: dict, escenario: str,
-                           historial_reciente: list[dict], cfg: dict) -> dict:
+def llamar_llm_heuristico(
+    estado: dict, escenario: str, historial_reciente: list[dict], cfg: dict
+) -> dict:
     """
     Deterministic selector with expanded logic for all rules.
     Works as a baseline or fallback when no LLM is available.
@@ -1360,85 +1397,105 @@ def llamar_llm_heuristico(estado: dict, escenario: str,
     Returns:
         Rule decision dictionary.
     """
-    opinion    = estado["opinion"]
+    opinion = estado["opinion"]
     propaganda = estado["propaganda"]
-    confianza  = estado.get("confianza", 0.5)
-    neutro     = _neutro(cfg)
-    amp        = _amplitud(cfg)
-    op_a       = estado.get("opinion_grupo_a", neutro + 0.3 * amp)
-    op_b       = estado.get("opinion_grupo_b", neutro - 0.3 * amp)
+    confianza = estado.get("confianza", 0.5)
+    neutro = _neutro(cfg)
+    amp = _amplitud(cfg)
+    op_a = estado.get("opinion_grupo_a", neutro + 0.3 * amp)
+    op_b = estado.get("opinion_grupo_b", neutro - 0.3 * amp)
 
-    tendencia  = [h["opinion"] for h in historial_reciente]
-    delta      = tendencia[-1] - tendencia[0] if len(tendencia) > 1 else 0.0
+    tendencia = [h["opinion"] for h in historial_reciente]
+    delta = tendencia[-1] - tendencia[0] if len(tendencia) > 1 else 0.0
 
     zona_rechazo = neutro - 0.35 * amp
-    umbral_prop  = neutro + 0.15 * amp
+    umbral_prop = neutro + 0.15 * amp
     distancia_grupos = abs(op_a - op_b)
 
     # Narrativa B activa → contagio competitivo
     if "narrativa_b" in estado and abs(estado.get("narrativa_b", 0)) > 0.2:
-        return {"regla": 6,
-                "params": {"competencia": cfg.get("competencia_peso", 0.4)},
-                "razon": "contagio_competitivo: narrativa B activa y relevante"}
+        return {
+            "regla": 6,
+            "params": {"competencia": cfg.get("competencia_peso", 0.4)},
+            "razon": "contagio_competitivo: narrativa B activa y relevante",
+        }
 
     # Capa estratégica activa + alta polarización → Replicador EGT
     # Los agentes ya están bajo presión de juego; el modelo evolutivo
     # captura mejor la dinámica de estrategias enfrentadas.
-    if cfg.get("strategic", {}).get("enabled", False) and distancia_grupos > _STRATEGIC_POLARIZATION_THRESHOLD * amp:
-        return {"regla": 9,
-                "params": {"dt": 0.1},
-                "razon": "replicador: capa estratégica activa con alta polarización entre grupos"}
+    if (
+        cfg.get("strategic", {}).get("enabled", False)
+        and distancia_grupos > _STRATEGIC_POLARIZATION_THRESHOLD * amp
+    ):
+        return {
+            "regla": 9,
+            "params": {"dt": 0.1},
+            "razon": "replicador: capa estratégica activa con alta polarización entre grupos",
+        }
 
     # Grupos muy distantes → HK (solo escucha a similares)
     if distancia_grupos > 0.6 * amp:
-        return {"regla": 5,
-                "params": {"epsilon": cfg.get("hk_epsilon", 0.3)},
-                "razon": f"hk: grupos muy distantes ({distancia_grupos:.2f})"}
+        return {
+            "regla": 5,
+            "params": {"epsilon": cfg.get("hk_epsilon", 0.3)},
+            "razon": f"hk: grupos muy distantes ({distancia_grupos:.2f})",
+        }
 
     # Rechazo establecido + propaganda → backlash
     if opinion < zona_rechazo and abs(propaganda) > 0.3:
-        return {"regla": 3,
-                "params": {"penalizacion": 0.12},
-                "razon": f"backlash: rechazo establecido (op={opinion:.2f})"}
+        return {
+            "regla": 3,
+            "params": {"penalizacion": 0.12},
+            "razon": f"backlash: rechazo establecido (op={opinion:.2f})",
+        }
 
     # Tendencia fuerte ya iniciada → polarización
     if abs(delta) > 0.05 * amp:
-        return {"regla": 4,
-                "params": {"fuerza": 0.08},
-                "razon": f"polarizacion: tendencia {'positiva' if delta>0 else 'negativa'} fuerte"}
+        return {
+            "regla": 4,
+            "params": {"fuerza": 0.08},
+            "razon": f"polarizacion: tendencia {'positiva' if delta>0 else 'negativa'} fuerte",
+        }
 
     # Propaganda intensa + baja confianza → umbral
     if abs(propaganda) > abs(umbral_prop) and confianza < 0.5:
-        return {"regla": 1,
-                "params": {"umbral": round(abs(umbral_prop), 2), "incremento": 0.12},
-                "razon": "umbral: propaganda intensa + baja confianza"}
+        return {
+            "regla": 1,
+            "params": {"umbral": round(abs(umbral_prop), 2), "incremento": 0.12},
+            "razon": "umbral: propaganda intensa + baja confianza",
+        }
 
     # Sistema cerca del neutro + grupos similares → homofilia
     if abs(opinion - neutro) < 0.1 * amp and distancia_grupos < 0.4 * amp:
-        return {"regla": 8,
-                "params": {"tasa": cfg.get("homofilia_tasa", 0.05)},
-                "razon": "homofilia: sistema cerca del neutro, grupos convergentes"}
+        return {
+            "regla": 8,
+            "params": {"tasa": cfg.get("homofilia_tasa", 0.05)},
+            "razon": "homofilia: sistema cerca del neutro, grupos convergentes",
+        }
 
     # Sistema estable → memoria
     if abs(delta) < 0.01 * amp:
-        return {"regla": 2,
-                "params": {"alpha": 0.75, "beta": 0.18, "gamma": 0.07},
-                "razon": "memoria: sistema estable, inercia dominante"}
+        return {
+            "regla": 2,
+            "params": {"alpha": 0.75, "beta": 0.18, "gamma": 0.07},
+            "razon": "memoria: sistema estable, inercia dominante",
+        }
 
     # Sistema estable con grupos muy similares → Nash equilibrium
     if EXTENDED_MODELS_AVAILABLE and distancia_grupos < 0.25 * amp and abs(delta) < 0.02 * amp:
-        return {"regla": 10,
-                "params": {"c_same": 2.0, "c_diff": 0.5},
-                "razon": "nash: grupos próximos, equilibrio de coordinación"}
+        return {
+            "regla": 10,
+            "params": {"c_same": 2.0, "c_diff": 0.5},
+            "razon": "nash: grupos próximos, equilibrio de coordinación",
+        }
 
-    return {"regla": 0,
-            "params": {"a": 0.72, "b": 0.28},
-            "razon": "lineal: condiciones moderadas"}
+    return {"regla": 0, "params": {"a": 0.72, "b": 0.28}, "razon": "lineal: condiciones moderadas"}
 
 
 # ============================================================
 # EFECTO DE GRUPOS
 # ============================================================
+
 
 def calcular_efecto_grupos(estado: dict, cfg: dict) -> float:
     """
@@ -1452,17 +1509,18 @@ def calcular_efecto_grupos(estado: dict, cfg: dict) -> float:
     Returns:
         Social influence delta.
     """
-    r      = _get_rango(cfg)
-    op_a   = estado.get("opinion_grupo_a", r["ejemplo_apoyo"])
-    op_b   = estado.get("opinion_grupo_b", r["ejemplo_rechazo"])
+    r = _get_rango(cfg)
+    op_a = estado.get("opinion_grupo_a", r["ejemplo_apoyo"])
+    op_b = estado.get("opinion_grupo_b", r["ejemplo_rechazo"])
     perten = estado.get("pertenencia_grupo", 0.6)
-    ref    = perten * op_a + (1.0 - perten) * op_b
+    ref = perten * op_a + (1.0 - perten) * op_b
     return cfg["efecto_vecinos_peso"] * (ref - estado["opinion"])
 
 
 # ============================================================
 # SIMULADOR PRINCIPAL
 # ============================================================
+
 
 def simular(
     estado_inicial: dict,
@@ -1486,7 +1544,7 @@ def simular(
     Returns:
         A list of state dictionaries (including t=0).
     """
-    cfg         = {**DEFAULT_CONFIG, **(config or {})}
+    cfg = {**DEFAULT_CONFIG, **(config or {})}
     # EMPIRICAL INTEGRATION — aplicar parámetros empíricos como defaults antes que el usuario los sobreescriba
     # Los parámetros del usuario en config tienen prioridad; los valores 0.0 se tratan como neutralidad activa.
     if EMPIRICAL_AVAILABLE and MASSIVE_RUNTIME_PARAMS:
@@ -1514,24 +1572,24 @@ def simular(
                     **payoff_defaults,
                 },
             }
-    r           = _get_rango(cfg)
+    r = _get_rango(cfg)
     alpha_blend = cfg["alpha_blend"]
-    proveedor   = cfg.get("proveedor", "heurístico")
+    proveedor = cfg.get("proveedor", "heurístico")
     # Local RNG for all stochastic updates in this run (no process-global RNG).
-    _seed = cfg.get("seed", None)
+    _seed = cfg.get("seed")
     rng = np.random.default_rng(_seed)
 
     estado = estado_inicial.copy()
-    estado.setdefault("opinion_prev",     estado["opinion"])
-    estado.setdefault("confianza",        0.5)
-    estado.setdefault("opinion_grupo_a",  min(estado["opinion"] + 0.2 * _amplitud(cfg), r["max"]))
-    estado.setdefault("opinion_grupo_b",  max(estado["opinion"] - 0.2 * _amplitud(cfg), r["min"]))
+    estado.setdefault("opinion_prev", estado["opinion"])
+    estado.setdefault("confianza", 0.5)
+    estado.setdefault("opinion_grupo_a", min(estado["opinion"] + 0.2 * _amplitud(cfg), r["max"]))
+    estado.setdefault("opinion_grupo_b", max(estado["opinion"] - 0.2 * _amplitud(cfg), r["min"]))
     estado.setdefault("pertenencia_grupo", 0.6)
 
     historial: list[dict] = [estado.copy()]
-    regla_actual   = 0
+    regla_actual = 0
     params_actuales: dict = {}
-    razon_actual   = "inicial"
+    razon_actual = "inicial"
 
     # EWS: sliding window of scalar opinion values
     opinion_history: deque = deque(maxlen=HISTORY_BUFFER_SIZE)
@@ -1551,17 +1609,15 @@ def simular(
         # CfC fast path — evita llamada LLM cuando hay modelo entrenado y confianza alta
         if CFC_AVAILABLE and len(hist) >= 6:
             opinion_window = [h["opinion"] for h in hist[-6:]]
-            rid, source, conf = _cfc.select_regime(
-                history=opinion_window, state=est
-            )
+            rid, source, conf = _cfc.select_regime(history=opinion_window, state=est)
             if source == "cfc":
                 p = _validar_params(NOMBRES_REGLAS[rid], {})
                 return rid, p, f"cfc (conf={conf:.2f})"
 
-        ventana = hist[-cfg["ventana_historial_llm"]:]
-        dec     = llamar_llm(est, escenario, ventana, cfg)
-        r_id    = dec["regla"]
-        p       = _validar_params(NOMBRES_REGLAS[r_id], dec.get("params", {}))
+        ventana = hist[-cfg["ventana_historial_llm"] :]
+        dec = llamar_llm(est, escenario, ventana, cfg)
+        r_id = dec["regla"]
+        p = _validar_params(NOMBRES_REGLAS[r_id], dec.get("params", {}))
         return r_id, p, dec.get("razon", "")
 
     regla_actual, params_actuales, razon_actual = _seleccionar(estado, historial)
@@ -1582,22 +1638,22 @@ def simular(
                 )
 
         # Aplicar regla elegida
-        regla_func    = REGLAS[escenario].get(regla_actual, regla_lineal)
-        estado_regla  = regla_func(estado, params_actuales, cfg)
+        regla_func = REGLAS[escenario].get(regla_actual, regla_lineal)
+        estado_regla = regla_func(estado, params_actuales, cfg)
         opinion_regla = _clip(estado_regla["opinion"], cfg)
 
         # Tendencia base + blending
         tendencia_base = 0.92 * estado["opinion"] + 0.08 * estado["propaganda"]
-        opinion_blend  = alpha_blend * opinion_regla + (1.0 - alpha_blend) * tendencia_base
+        opinion_blend = alpha_blend * opinion_regla + (1.0 - alpha_blend) * tendencia_base
 
         # Efecto de grupos + fuerza estratégica + ruido adaptativo
-        ruido_std     = cfg["ruido_base"] + cfg["ruido_desconfianza"] * (1.0 - estado["confianza"])
+        ruido_std = cfg["ruido_base"] + cfg["ruido_desconfianza"] * (1.0 - estado["confianza"])
         opinion_final = _clip(
             opinion_blend
             + calcular_efecto_grupos(estado, cfg)
             + _calcular_fuerza_estrategica(estado, cfg)
             + float(rng.normal(0.0, ruido_std)),
-            cfg
+            cfg,
         )
 
         # Construir nuevo estado
@@ -1606,19 +1662,27 @@ def simular(
         if "pertenencia_grupo" in estado_regla:
             nuevo["pertenencia_grupo"] = estado_regla["pertenencia_grupo"]
         # Métricas auxiliares de reglas avanzadas
-        for k in ("_fraccion_adoptantes", "_sim_grupo_a", "_sim_grupo_b",
-                  "_nash_sigma_a", "_nash_sigma_b", "_bayes_uncertainty",
-                  "_sir_S", "_sir_I", "_sir_R"):
+        for k in (
+            "_fraccion_adoptantes",
+            "_sim_grupo_a",
+            "_sim_grupo_b",
+            "_nash_sigma_a",
+            "_nash_sigma_b",
+            "_bayes_uncertainty",
+            "_sir_S",
+            "_sir_I",
+            "_sir_R",
+        ):
             if k in estado_regla:
                 nuevo[k] = estado_regla[k]
 
-        nuevo["opinion_prev"]  = estado["opinion"]
-        nuevo["opinion"]       = opinion_final
-        nuevo["_paso"]         = paso
-        nuevo["_regla"]        = regla_actual
+        nuevo["opinion_prev"] = estado["opinion"]
+        nuevo["opinion"] = opinion_final
+        nuevo["_paso"] = paso
+        nuevo["_regla"] = regla_actual
         nuevo["_regla_nombre"] = NOMBRES_REGLAS[regla_actual]
-        nuevo["_razon"]        = razon_actual
-        nuevo["_rango"]        = cfg["rango"]
+        nuevo["_razon"] = razon_actual
+        nuevo["_rango"] = cfg["rango"]
 
         estado = nuevo
         historial.append(copy.deepcopy(estado))
@@ -1627,11 +1691,11 @@ def simular(
         opinion_history.append(estado["opinion"])
         if len(opinion_history) == HISTORY_BUFFER_SIZE:
             ews_metrics = calculate_ews_metrics(list(opinion_history))
-            ews_flags   = check_ews_signals(ews_metrics, cfg.get("ews_thresholds", {}))
+            ews_flags = check_ews_signals(ews_metrics, cfg.get("ews_thresholds", {}))
             estado["_ews_flags"] = ews_flags
             historial[-1]["ews"] = {
                 "metrics": {k: v.tolist() for k, v in ews_metrics.items()},
-                "flags":   ews_flags,
+                "flags": ews_flags,
             }
 
         # ── TDA: topological change detection every 5 steps ───────────
@@ -1658,6 +1722,7 @@ def simular(
 # SIMULACIÓN MÚLTIPLE
 # ============================================================
 
+
 def simular_multiples(
     estado_inicial: dict,
     escenario: str = "campana",
@@ -1680,11 +1745,11 @@ def simular_multiples(
     Returns:
         Statistics dictionary of the final opinion distribution.
     """
-    cfg        = {**DEFAULT_CONFIG, **(config or {})}
-    r          = _get_rango(cfg)
-    ruido_ini  = cfg["ruido_estado_inicial"]
+    cfg = {**DEFAULT_CONFIG, **(config or {})}
+    r = _get_rango(cfg)
+    ruido_ini = cfg["ruido_estado_inicial"]
     resultados = np.zeros(n_simulaciones)
-    base_seed = cfg.get("seed", None)
+    base_seed = cfg.get("seed")
     root_rng = np.random.default_rng(base_seed)
 
     # Keys whose valid range is [0, 1] regardless of the opinion range.
@@ -1709,29 +1774,40 @@ def simular_multiples(
             else:
                 estado_ruido[k] = v
         run_cfg = {**(config or {}), "seed": rep_seed}
-        hist = simular(estado_ruido, escenario=escenario, pasos=pasos,
-                       cada_n_pasos=cada_n_pasos, config=run_cfg, verbose=False)
+        hist = simular(
+            estado_ruido,
+            escenario=escenario,
+            pasos=pasos,
+            cada_n_pasos=cada_n_pasos,
+            config=run_cfg,
+            verbose=False,
+        )
         resultados[i] = hist[-1]["opinion"]
 
     neutro = _neutro(cfg)
     p10, p25, p50, p75, p90 = np.percentile(resultados, [10, 25, 50, 75, 90])
     return {
-        "media":          float(resultados.mean()),
-        "std":            float(resultados.std()),
+        "media": float(resultados.mean()),
+        "std": float(resultados.std()),
         "p_sobre_neutro": float((resultados > neutro).mean()),
-        "percentiles":    {"p10": float(p10), "p25": float(p25), "p50": float(p50),
-                           "p75": float(p75), "p90": float(p90)},
-        "escenarios":     {"optimista": float(p90), "mediano": float(p50),
-                           "pesimista":  float(p10)},
-        "neutro":         neutro,
+        "percentiles": {
+            "p10": float(p10),
+            "p25": float(p25),
+            "p50": float(p50),
+            "p75": float(p75),
+            "p90": float(p90),
+        },
+        "escenarios": {"optimista": float(p90), "mediano": float(p50), "pesimista": float(p10)},
+        "neutro": neutro,
         "n_simulaciones": n_simulaciones,
-        "rango":          cfg["rango"],
+        "rango": cfg["rango"],
     }
 
 
 # ============================================================
 # SIMULACIÓN MÚLTIPLE — PARALELA CON DASK
 # ============================================================
+
 
 def simular_multiples_dask(
     estado_inicial: dict,
@@ -1759,17 +1835,19 @@ def simular_multiples_dask(
         Same statistics dictionary as simular_multiples, with "parallel" key.
     """
     try:
-        from dask import delayed, compute as dask_compute
+        from dask import compute as dask_compute
+        from dask import delayed
     except ImportError:
         log.warning("Dask no disponible — usando modo secuencial.")
-        return simular_multiples(estado_inicial, escenario, pasos,
-                                 cada_n_pasos, config, n_simulaciones)
+        return simular_multiples(
+            estado_inicial, escenario, pasos, cada_n_pasos, config, n_simulaciones
+        )
 
-    cfg       = {**DEFAULT_CONFIG, **(config or {})}
-    r         = _get_rango(cfg)
+    cfg = {**DEFAULT_CONFIG, **(config or {})}
+    r = _get_rango(cfg)
     ruido_ini = cfg["ruido_estado_inicial"]
-    rng       = np.random.default_rng(seed)
-    noises    = rng.normal(0, ruido_ini, size=(n_simulaciones, len(estado_inicial)))
+    rng = np.random.default_rng(seed)
+    noises = rng.normal(0, ruido_ini, size=(n_simulaciones, len(estado_inicial)))
 
     @delayed
     def _run_one(noise_row: np.ndarray) -> float:
@@ -1781,33 +1859,44 @@ def simular_multiples_dask(
                 estado_ruido[k] = float(np.clip(v + noise_row[idx], r["min"], r["max"]))
             else:
                 estado_ruido[k] = v
-        hist = simular(estado_ruido, escenario=escenario, pasos=pasos,
-                       cada_n_pasos=cada_n_pasos, config=config, verbose=False)
+        hist = simular(
+            estado_ruido,
+            escenario=escenario,
+            pasos=pasos,
+            cada_n_pasos=cada_n_pasos,
+            config=config,
+            verbose=False,
+        )
         return hist[-1]["opinion"]
 
-    tasks      = [_run_one(noises[i]) for i in range(n_simulaciones)]
+    tasks = [_run_one(noises[i]) for i in range(n_simulaciones)]
     resultados = np.array(dask_compute(*tasks))
 
     neutro = _neutro(cfg)
     p10, p25, p50, p75, p90 = np.percentile(resultados, [10, 25, 50, 75, 90])
     return {
-        "media":          float(resultados.mean()),
-        "std":            float(resultados.std()),
+        "media": float(resultados.mean()),
+        "std": float(resultados.std()),
         "p_sobre_neutro": float((resultados > neutro).mean()),
-        "percentiles":    {"p10": float(p10), "p25": float(p25), "p50": float(p50),
-                           "p75": float(p75), "p90": float(p90)},
-        "escenarios":     {"optimista": float(p90), "mediano": float(p50),
-                           "pesimista":  float(p10)},
-        "neutro":         neutro,
+        "percentiles": {
+            "p10": float(p10),
+            "p25": float(p25),
+            "p50": float(p50),
+            "p75": float(p75),
+            "p90": float(p90),
+        },
+        "escenarios": {"optimista": float(p90), "mediano": float(p50), "pesimista": float(p10)},
+        "neutro": neutro,
         "n_simulaciones": n_simulaciones,
-        "rango":          cfg["rango"],
-        "parallel":       True,
+        "rango": cfg["rango"],
+        "parallel": True,
     }
 
 
 # ============================================================
 # UTILIDADES
 # ============================================================
+
 
 def resumen_historial(historial: list[dict], config: dict | None = None) -> dict:
     """
@@ -1820,29 +1909,30 @@ def resumen_historial(historial: list[dict], config: dict | None = None) -> dict
     Returns:
         Dictionary with mean, std, delta, and dominant regime.
     """
-    cfg       = {**DEFAULT_CONFIG, **(config or {})}
-    neutro    = _neutro(cfg)
+    cfg = {**DEFAULT_CONFIG, **(config or {})}
+    neutro = _neutro(cfg)
     opiniones = np.array([h["opinion"] for h in historial])
-    reglas    = [h["_regla_nombre"] for h in historial if "_regla_nombre" in h]
+    reglas = [h["_regla_nombre"] for h in historial if "_regla_nombre" in h]
     return {
-        "opinion_inicial":    float(opiniones[0]),
-        "opinion_final":      float(opiniones[-1]),
-        "delta_total":        float(opiniones[-1] - opiniones[0]),
-        "media":              float(opiniones.mean()),
-        "desviacion":         float(opiniones.std()),
-        "minimo":             float(opiniones.min()),
-        "maximo":             float(opiniones.max()),
+        "opinion_inicial": float(opiniones[0]),
+        "opinion_final": float(opiniones[-1]),
+        "delta_total": float(opiniones[-1] - opiniones[0]),
+        "media": float(opiniones.mean()),
+        "desviacion": float(opiniones.std()),
+        "minimo": float(opiniones.min()),
+        "maximo": float(opiniones.max()),
         "polarizacion_media": float(np.mean(np.abs(opiniones - neutro))),
-        "pasos":              len(historial) - 1,
-        "regla_dominante":    Counter(reglas).most_common(1)[0][0] if reglas else "—",
-        "neutro":             neutro,
-        "rango":              cfg.get("rango", "—"),
+        "pasos": len(historial) - 1,
+        "regla_dominante": Counter(reglas).most_common(1)[0][0] if reglas else "—",
+        "neutro": neutro,
+        "rango": cfg.get("rango", "—"),
     }
 
 
 # ============================================================
 # CHECKPOINTING y RECOVERY
 # ============================================================
+
 
 def save_checkpoint(historial: list[dict], filepath: str | Path) -> None:
     """
@@ -1922,6 +2012,7 @@ def load_checkpoint(filepath: str | Path) -> list[dict]:
 # MÉTRICAS DE GRAFO (NetworkX) — para el Arquitecto Social
 # ============================================================
 
+
 def get_graph_metrics(G: nx.Graph, modo: str = "macro", top_n: int = 5) -> str:
     """
     Calcula centralidad de grado y betweenness sobre un grafo NetworkX
@@ -1950,15 +2041,13 @@ def get_graph_metrics(G: nx.Graph, modo: str = "macro", top_n: int = 5) -> str:
         top_between = top_degree  # fallback si el grafo es trivial
 
     label_influencia = "Nodos más influyentes (grado)"
-    label_puentes    = "Nodos puente (betweenness)"
+    label_puentes = "Nodos puente (betweenness)"
     if modo == "corporativo":
         label_influencia = "Empleados/Directivos con más conexiones directas"
-        label_puentes    = "Líderes informales que controlan el flujo de información"
+        label_puentes = "Líderes informales que controlan el flujo de información"
 
     def fmt(items):
-        return ", ".join(
-            f"{nodo} ({v:.2f})" for nodo, v in items
-        )
+        return ", ".join(f"{nodo} ({v:.2f})" for nodo, v in items)
 
     resumen = (
         f"Red: {G.number_of_nodes()} nodos, {G.number_of_edges()} conexiones.\n"
@@ -1971,6 +2060,7 @@ def get_graph_metrics(G: nx.Graph, modo: str = "macro", top_n: int = 5) -> str:
 # ============================================================
 # SIMULADOR INTEGRADO (MOTORES DINÁMICOS CONDICIONALES)
 # ============================================================
+
 
 class IntegratedSimulator:
     """Coordinador central de dinámica interna con motores contextuales."""
@@ -2133,8 +2223,8 @@ class IntegratedSimulator:
                 _INTEGRATED_TOPOLOGY_INTENSITY_MAX,
             )
         )
-        for layer_name in self.multilayer_engine.layers.keys():
-            if hasattr(self.multilayer_engine, 'dynamic_rewiring'):
+        for layer_name in self.multilayer_engine.layers:
+            if hasattr(self.multilayer_engine, "dynamic_rewiring"):
                 self.multilayer_engine.dynamic_rewiring(
                     layer_name=layer_name,
                     mode=mode,
@@ -2200,6 +2290,7 @@ class IntegratedSimulator:
 # MODO ARQUITECTO SOCIAL (EJECUCIÓN POR ITINERARIO)
 # ============================================================
 
+
 def run_with_schedule(
     estado_inicial: dict,
     strategy_schedule: dict,
@@ -2215,7 +2306,7 @@ def run_with_schedule(
     r = _get_rango(cfg)
     alpha_blend = cfg["alpha_blend"]
     sched_rng = np.random.default_rng(cfg.get("seed"))
-    
+
     estado = estado_inicial.copy()
     estado.setdefault("opinion_prev", estado["opinion"])
     estado.setdefault("confianza", 0.5)
@@ -2224,23 +2315,26 @@ def run_with_schedule(
     estado.setdefault("pertenencia_grupo", 0.6)
 
     historial: list[dict] = [estado.copy()]
-    
+
     name_to_id = {v: k for k, v in NOMBRES_REGLAS.items()}
-    
+
     paso_actual = 1
     for fase in strategy_schedule.get("interventions", []):
         start = max(paso_actual, fase["time_start"])
         end = fase["time_end"]
         # Parsing fallback for manual LLM responses
         regla_nombre = fase["model_name"].lower().strip()
-        if "degroot" in regla_nombre: regla_nombre = "memoria"
-        if "granovetter" in regla_nombre: regla_nombre = "umbral_heterogeneo"
-        if "hegselmann" in regla_nombre or "hk" in regla_nombre: regla_nombre = "hk"
-        
-        regla_id = name_to_id.get(regla_nombre, 0) # Fallback a lineal(0)
+        if "degroot" in regla_nombre:
+            regla_nombre = "memoria"
+        if "granovetter" in regla_nombre:
+            regla_nombre = "umbral_heterogeneo"
+        if "hegselmann" in regla_nombre or "hk" in regla_nombre:
+            regla_nombre = "hk"
+
+        regla_id = name_to_id.get(regla_nombre, 0)  # Fallback a lineal(0)
         params = _validar_params(NOMBRES_REGLAS.get(regla_id, "lineal"), fase.get("parameters", {}))
         razon = fase.get("fase_rationale", "")
-        
+
         # Extraer target_nodes desde parameters o desde la fase directamente
         target_nodes = params.pop("target_nodes", None) or fase.get("target_nodes", None)
 
@@ -2262,9 +2356,8 @@ def run_with_schedule(
                 proporcion_target = min(1.0, len(target_nodes) / max(1, cfg.get("_n_nodos", 20)))
                 # La opinión de los nodos target jala la opinión global con extra peso
                 opinion_regla = _clip(
-                    opinion_regla + 0.12 * proporcion_target * (
-                        estado.get("propaganda", 0.5) - opinion_regla
-                    ),
+                    opinion_regla
+                    + 0.12 * proporcion_target * (estado.get("propaganda", 0.5) - opinion_regla),
                     cfg,
                 )
 
@@ -2283,20 +2376,28 @@ def run_with_schedule(
             nuevo = copy.deepcopy(estado)
             if "pertenencia_grupo" in estado_regla:
                 nuevo["pertenencia_grupo"] = estado_regla["pertenencia_grupo"]
-            for k in ("_fraccion_adoptantes", "_sim_grupo_a", "_sim_grupo_b",
-                      "_nash_sigma_a", "_nash_sigma_b", "_bayes_uncertainty",
-                      "_sir_S", "_sir_I", "_sir_R"):
+            for k in (
+                "_fraccion_adoptantes",
+                "_sim_grupo_a",
+                "_sim_grupo_b",
+                "_nash_sigma_a",
+                "_nash_sigma_b",
+                "_bayes_uncertainty",
+                "_sir_S",
+                "_sir_I",
+                "_sir_R",
+            ):
                 if k in estado_regla:
                     nuevo[k] = estado_regla[k]
 
-            nuevo["opinion_prev"]   = estado["opinion"]
-            nuevo["opinion"]        = opinion_final
-            nuevo["_paso"]          = paso
-            nuevo["_regla"]         = regla_id
-            nuevo["_regla_nombre"]  = NOMBRES_REGLAS.get(regla_id, regla_nombre)
-            nuevo["_razon"]         = razon
-            nuevo["_rango"]         = cfg["rango"]
-            nuevo["_target_nodes"]  = target_nodes  # trazabilidad
+            nuevo["opinion_prev"] = estado["opinion"]
+            nuevo["opinion"] = opinion_final
+            nuevo["_paso"] = paso
+            nuevo["_regla"] = regla_id
+            nuevo["_regla_nombre"] = NOMBRES_REGLAS.get(regla_id, regla_nombre)
+            nuevo["_razon"] = razon
+            nuevo["_rango"] = cfg["rango"]
+            nuevo["_target_nodes"] = target_nodes  # trazabilidad
 
             estado = nuevo
             historial.append(estado.copy())
@@ -2316,21 +2417,21 @@ if __name__ == "__main__":
         print(f"{'='*65}")
 
         estado = {
-            "opinion":          r["defaults"]["opinion_inicial"],
-            "propaganda":       r["defaults"]["propaganda"],
-            "confianza":        r["defaults"]["confianza"],
-            "opinion_grupo_a":  r["defaults"]["opinion_grupo_a"],
-            "opinion_grupo_b":  r["defaults"]["opinion_grupo_b"],
+            "opinion": r["defaults"]["opinion_inicial"],
+            "propaganda": r["defaults"]["propaganda"],
+            "confianza": r["defaults"]["confianza"],
+            "opinion_grupo_a": r["defaults"]["opinion_grupo_a"],
+            "opinion_grupo_b": r["defaults"]["opinion_grupo_b"],
             "pertenencia_grupo": 0.65,
-            "narrativa_b":      -0.3 if r["min"] < 0 else 0.3,
+            "narrativa_b": -0.3 if r["min"] < 0 else 0.3,
         }
 
         config = {
-            "rango":              nombre_rango,
+            "rango": nombre_rango,
             "sesgo_confirmacion": 0.3,
-            "hk_epsilon":         0.3,
+            "hk_epsilon": 0.3,
         }
-        hist  = simular(estado, pasos=20, cada_n_pasos=5, config=config, verbose=True)
+        hist = simular(estado, pasos=20, cada_n_pasos=5, config=config, verbose=True)
         stats = resumen_historial(hist, config)
 
         print(f"\n  opinion: {stats['opinion_inicial']:+.3f} → {stats['opinion_final']:+.3f}")

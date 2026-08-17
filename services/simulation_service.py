@@ -75,9 +75,11 @@ def run_multilayer_simulation(
         "landscape": engine.get_landscape(),
         "n_steps": len(history) - 1,
         "n_agents": n_agents,
-        "series": {"social": opinion_trajectory,
-                   "digital": opinion_trajectory,
-                   "economic": opinion_trajectory},
+        "series": {
+            "social": opinion_trajectory,
+            "digital": opinion_trajectory,
+            "economic": opinion_trajectory,
+        },
         "diagnostics": engine.diagnose(),
     }
 

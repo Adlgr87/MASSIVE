@@ -20,9 +20,14 @@ class TestEmpiricalIntegration(unittest.TestCase):
     def test_all_runtime_values_in_range(self):
         """Todos los valores numéricos de MASSIVE_RUNTIME_PARAMS están en [-1.0, 1.0]."""
         numeric_keys = [
-            "temperature", "social_influence_lambda", "attractor_depth",
-            "repeller_strength", "payoff_coordination", "payoff_defection",
-            "narrative_decay_rate", "saturation_threshold",
+            "temperature",
+            "social_influence_lambda",
+            "attractor_depth",
+            "repeller_strength",
+            "payoff_coordination",
+            "payoff_defection",
+            "narrative_decay_rate",
+            "saturation_threshold",
         ]
         for key in numeric_keys:
             value = MASSIVE_RUNTIME_PARAMS[key]
@@ -69,10 +74,16 @@ class TestEmpiricalIntegration(unittest.TestCase):
         params = get_runtime_params("mixed")
         self.assertIsInstance(params, dict)
         required_keys = [
-            "temperature", "social_influence_lambda", "attractor_depth",
-            "repeller_strength", "payoff_coordination", "payoff_defection",
-            "narrative_decay_rate", "saturation_threshold",
-            "cultural_profile", "validation_flags",
+            "temperature",
+            "social_influence_lambda",
+            "attractor_depth",
+            "repeller_strength",
+            "payoff_coordination",
+            "payoff_defection",
+            "narrative_decay_rate",
+            "saturation_threshold",
+            "cultural_profile",
+            "validation_flags",
         ]
         for key in required_keys:
             self.assertIn(key, params)
@@ -107,9 +118,15 @@ class TestEmpiricalIntegration(unittest.TestCase):
     def test_master_dict_has_required_categories(self):
         """MASSIVE_EMPIRICAL_MASTER contiene las categorías esperadas."""
         expected_categories = {
-            "meta", "network_dynamics", "temporal", "individual_psychology",
-            "mass_psychology", "cultural_variables", "social_status",
-            "gender", "game_theory",
+            "meta",
+            "network_dynamics",
+            "temporal",
+            "individual_psychology",
+            "mass_psychology",
+            "cultural_variables",
+            "social_status",
+            "gender",
+            "game_theory",
         }
         for cat in expected_categories:
             self.assertIn(

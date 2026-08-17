@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import hmac
 import logging
-from typing import Optional
 
 from fastapi import Header, HTTPException, Request
 
@@ -26,13 +25,10 @@ def _load_keys() -> list[str]:
 
 
 def api_key_is_valid(provided: str, valid_keys: list[str]) -> bool:
-    for valid in valid_keys:
-        if hmac.compare_digest(provided.encode(), valid.encode()):
-            return True
-    return False
+    return any(hmac.compare_digest(provided.encode(), valid.encode()) for valid in valid_keys)
 
 
-def get_api_key(request: Request, api_key: Optional[str] = Header(None, alias="X-API-Key")) -> None:
+def get_api_key(request: Request, api_key: str | None = Header(None, alias="X-API-Key")) -> None:
     """Validate the X-API-Key header when keys are configured."""
     global _warned
     keys: list[str] = getattr(request.app.state, "api_keys", None) or _load_keys()

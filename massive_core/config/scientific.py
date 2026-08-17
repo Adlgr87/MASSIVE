@@ -24,7 +24,7 @@ class ScientificRuntimeConfig:
     enable_scientific_report: bool = False
 
     @classmethod
-    def from_dict(cls, config: dict[str, Any] | None) -> "ScientificRuntimeConfig":
+    def from_dict(cls, config: dict[str, Any] | None) -> ScientificRuntimeConfig:
         """Build config from an optional dictionary.
 
         Args:

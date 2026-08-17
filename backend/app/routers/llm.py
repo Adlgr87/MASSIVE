@@ -62,7 +62,6 @@ async def v1_llm_run_simulation(
 
     # Early ambiguity check: if motor was not supplied, classify and detect.
     motor_hint = payload.motor
-    country = payload.country
     ambiguities: list[str] = []
 
     if not motor_hint:
@@ -72,9 +71,7 @@ async def v1_llm_run_simulation(
         # Per contract, missing country for energy_engine/forecast may be
         # resolved via defaults, but a missing temporal horizon for a
         # forecast-intent blocks execution and requires user clarification.
-    if ambiguities and any(
-        a in ambiguities for a in ("temporal_horizon_days",)
-    ) and not motor_hint:
+    if ambiguities and any(a in ambiguities for a in ("temporal_horizon_days",)) and not motor_hint:
         # If the intent strongly implies a temporal forecast but neither
         # horizon nor country is given, prompt the LLM client to clarify.
         raise HTTPException(
@@ -99,11 +96,11 @@ async def v1_llm_run_simulation(
         )
     except ValueError as exc:
         log.warning("LLM run_simulation validation error: %s", exc)
-        raise HTTPException(status_code=400, detail=str(exc))
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
     except RuntimeError as exc:
         # LLM prerequisite missing for engine types that are inherently LLM-driven.
         log.warning("LLM run_simulation runtime error: %s", exc)
-        raise HTTPException(status_code=503, detail=str(exc))
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
 
     # Assemble the response DTO; ``results`` is a normalized envelope.
     return LLMRunResponse(

@@ -3,11 +3,11 @@ social_connectors.py — Conectores de redes sociales para MASSIVE
 Soporta: Twitter/X (tweepy v4) y Reddit (praw).
 Credenciales configurables por el usuario en la UI.
 """
+
 from __future__ import annotations
 
 import logging
 import re
-from typing import Optional
 
 import numpy as np
 
@@ -16,12 +16,14 @@ log = logging.getLogger("massive")
 # ── Importaciones opcionales ──────────────────────────────────────────────────
 try:
     import tweepy
+
     TWEEPY_AVAILABLE = True
 except ImportError:
     TWEEPY_AVAILABLE = False
 
 try:
     import praw
+
     PRAW_AVAILABLE = True
 except ImportError:
     PRAW_AVAILABLE = False
@@ -33,19 +35,83 @@ except ImportError:
 # ─────────────────────────────────────────────────────────────────────────────
 
 _POSITIVE_WORDS = {
-    "love", "great", "excellent", "good", "awesome", "best", "happy", "support",
-    "agree", "yes", "win", "success", "positive", "amazing", "wonderful", "like",
-    "thanks", "thank", "perfect", "brilliant", "hope", "trust", "unite", "peace",
-    "bueno", "excelente", "amor", "apoya", "feliz", "genial", "gracias", "bien",
-    "acuerdo", "progreso", "unidad", "paz", "confianza",
+    "love",
+    "great",
+    "excellent",
+    "good",
+    "awesome",
+    "best",
+    "happy",
+    "support",
+    "agree",
+    "yes",
+    "win",
+    "success",
+    "positive",
+    "amazing",
+    "wonderful",
+    "like",
+    "thanks",
+    "thank",
+    "perfect",
+    "brilliant",
+    "hope",
+    "trust",
+    "unite",
+    "peace",
+    "bueno",
+    "excelente",
+    "amor",
+    "apoya",
+    "feliz",
+    "genial",
+    "gracias",
+    "bien",
+    "acuerdo",
+    "progreso",
+    "unidad",
+    "paz",
+    "confianza",
 }
 _NEGATIVE_WORDS = {
-    "hate", "bad", "awful", "terrible", "worst", "corrupt", "lie", "liar", "fake",
-    "no", "fail", "crisis", "wrong", "against", "reject", "disgrace", "fear",
-    "angry", "sad", "unfair", "protest", "violence", "evil", "fraud", "scam",
-    "malo", "odio", "corrupción", "mentira", "fraude", "crisis", "miedo", "triste",
-    "rechazo", "protesta", "violencia", "injusto",
+    "hate",
+    "bad",
+    "awful",
+    "terrible",
+    "worst",
+    "corrupt",
+    "lie",
+    "liar",
+    "fake",
+    "no",
+    "fail",
+    "crisis",
+    "wrong",
+    "against",
+    "reject",
+    "disgrace",
+    "fear",
+    "angry",
+    "sad",
+    "unfair",
+    "protest",
+    "violence",
+    "evil",
+    "fraud",
+    "scam",
+    "malo",
+    "odio",
+    "corrupción",
+    "mentira",
+    "fraude",
+    "miedo",
+    "triste",
+    "rechazo",
+    "protesta",
+    "violencia",
+    "injusto",
 }
+
 
 def _score_text(text: str) -> float:
     """
@@ -75,6 +141,7 @@ def _opinions_to_range(scores: np.ndarray, range_type: str = "bipolar") -> np.nd
 # ─────────────────────────────────────────────────────────────────────────────
 # TWITTER / X CONNECTOR
 # ─────────────────────────────────────────────────────────────────────────────
+
 
 class TwitterConnector:
     """
@@ -164,6 +231,7 @@ class TwitterConnector:
 # REDDIT CONNECTOR
 # ─────────────────────────────────────────────────────────────────────────────
 
+
 class RedditConnector:
     """
     Fetches posts/comments from a subreddit and converts them to opinion scores.
@@ -252,7 +320,7 @@ class RedditConnector:
 
         opinions = _opinions_to_range(raw_scores, range_type)
         weighted_mean = float(np.sum(opinions * weights))
-        weighted_std  = float(np.sqrt(np.sum(weights * (opinions - weighted_mean) ** 2)))
+        weighted_std = float(np.sqrt(np.sum(weights * (opinions - weighted_mean) ** 2)))
 
         return {
             "opinions": opinions,

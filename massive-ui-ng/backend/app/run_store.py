@@ -16,7 +16,7 @@ import threading
 import time
 import uuid
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 log = logging.getLogger("massive.ui_ng.run_store")
 
@@ -49,11 +49,11 @@ def _headline(engine: str, summary: dict[str, Any]) -> str:
 class RunStore:
     """Thread-safe run store (SQLite when ``db_path`` is set)."""
 
-    def __init__(self, db_path: Optional[Path] = None, capacity: int = 500) -> None:
+    def __init__(self, db_path: Path | None = None, capacity: int = 500) -> None:
         self._db_path = db_path
         self._capacity = max(capacity, 1)
         self._lock = threading.Lock()
-        self._memory: "collections.OrderedDict[str, dict[str, Any]]" = collections.OrderedDict()
+        self._memory: collections.OrderedDict[str, dict[str, Any]] = collections.OrderedDict()
         if db_path is not None:
             db_path.parent.mkdir(parents=True, exist_ok=True)
             self._init_db()
@@ -106,16 +106,18 @@ class RunStore:
                             payload.get("mode", "heuristic"),
                             _headline(payload["engine"], payload.get("summary", {})),
                             json.dumps(payload.get("summary", {}), ensure_ascii=False),
-                            json.dumps(payload.get("scientific_report"), ensure_ascii=False)
-                            if payload.get("scientific_report") is not None
-                            else None,
+                            (
+                                json.dumps(payload.get("scientific_report"), ensure_ascii=False)
+                                if payload.get("scientific_report") is not None
+                                else None
+                            ),
                             json.dumps(payload.get("series", {}), ensure_ascii=False),
                             json.dumps(payload.get("meta", {}), ensure_ascii=False),
                         ),
                     )
         return run_id
 
-    def get(self, run_id: str) -> Optional[dict[str, Any]]:
+    def get(self, run_id: str) -> dict[str, Any] | None:
         with self._lock:
             if self._db_path is None:
                 return self._memory.get(run_id)

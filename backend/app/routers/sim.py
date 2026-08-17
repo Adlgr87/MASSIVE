@@ -9,12 +9,12 @@ from __future__ import annotations
 
 from typing import Any
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import ValidationError
 
 from backend.app.models import SimSnapshotMessage  # noqa: F401 (re-export for routers)
 from backend.app.security import get_api_key, rate_limit_dependency
-from services.simulation_service import run_scalar_simulation, run_multilayer_simulation
+from services.simulation_service import run_scalar_simulation
 
 router = APIRouter(
     prefix="/simulate",
@@ -50,7 +50,8 @@ async def v1_simulate(request: Request, payload: dict[str, Any]) -> dict[str, An
         raise
     except ValidationError:
         raise
-    except Exception as exc:
+    except Exception as _exc:
         import logging
+
         logging.getLogger("massive.backend.routers.simulation").exception("v1/simulate error")
-        raise HTTPException(status_code=500, detail="Internal simulation error")
+        raise HTTPException(status_code=500, detail="Internal simulation error") from _exc

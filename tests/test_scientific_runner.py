@@ -3,7 +3,6 @@ import numpy as np
 from massive_core import ScientificSimulationResult, run_scientific_simulation
 from massive_core.config import ScientificRuntimeConfig
 
-
 BASE_STATE = {
     "opinion": 0.5,
     "propaganda": 0.7,

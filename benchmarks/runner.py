@@ -20,6 +20,7 @@ Design principles
 - LLM mode gracefully skips and warns when secrets are absent.
 - Real mode: actual MASSIVE simulator with 2-param linear calibration on train.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -27,7 +28,7 @@ import json
 import logging
 import os
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import numpy as np
@@ -56,6 +57,7 @@ TRAIN_RATIO = 0.7  # 70 % train, 30 % test (no val in offline mode)
 
 
 # ── MASSIVE offline forecast (deterministic proxy) ───────────────────────
+
 
 def _massive_offline_forecast(
     train: np.ndarray,
@@ -176,12 +178,14 @@ def _massive_real_forecast(
     except Exception as exc:  # noqa: BLE001
         log.warning(
             "Real MASSIVE forecast failed for '%s': %s",
-            case.get("name", "?"), exc,
+            case.get("name", "?"),
+            exc,
         )
         return None
 
 
 # ── Per-case evaluation ───────────────────────────────────────────────────────
+
 
 def _json_safe(obj):
     """Recursively convert NaN/Inf to None for strict JSON."""
@@ -310,25 +314,28 @@ def evaluate_case(
             except Exception as exc:  # noqa: BLE001
                 log.debug("MASSIVE walk-forward failed: %s", exc)
 
-    return _json_safe({
-        "case": case["name"],
-        "cluster_id": cluster,
-        "scenario_type": meta.get("scenario_type"),
-        "target": target.to_dict(),
-        "n_total": n,
-        "n_train": split,
-        "n_test": horizon,
-        "baselines": baseline_results,
-        "walk_forward": walk_forward,
-        "massive": bs_metrics,
-        "massive_walk_forward": massive_walk,
-        "dm_tests": dm_results,
-        "turning_points": tp_result,
-        "skipped": False,
-    })
+    return _json_safe(
+        {
+            "case": case["name"],
+            "cluster_id": cluster,
+            "scenario_type": meta.get("scenario_type"),
+            "target": target.to_dict(),
+            "n_total": n,
+            "n_train": split,
+            "n_test": horizon,
+            "baselines": baseline_results,
+            "walk_forward": walk_forward,
+            "massive": bs_metrics,
+            "massive_walk_forward": massive_walk,
+            "dm_tests": dm_results,
+            "turning_points": tp_result,
+            "skipped": False,
+        }
+    )
 
 
 # ── Report generation ─────────────────────────────────────────────────────────
+
 
 def _format_float(v) -> str:
     if v is None or (isinstance(v, float) and (v != v)):  # nan check
@@ -338,7 +345,7 @@ def _format_float(v) -> str:
 
 def generate_report(results: list[dict], mode: str, seed: int) -> str:
     """Build a Markdown summary report from the list of case results."""
-    run_ts = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    run_ts = datetime.now(UTC).strftime("%Y-%m-%dT%H:%M:%SZ")
     lines = [
         "# PVU-BS Benchmark Report",
         "",
@@ -388,8 +395,8 @@ def generate_report(results: list[dict], mode: str, seed: int) -> str:
                 "",
                 "### MASSIVE metrics (test split)",
                 "",
-                f"| MAE | RMSE | MAPE (%) | Dir. Acc. |",
-                f"|-----|------|----------|-----------|",
+                "| MAE | RMSE | MAPE (%) | Dir. Acc. |",
+                "|-----|------|----------|-----------|",
                 f"| {_format_float(bs.get('mae'))} "
                 f"| {_format_float(bs.get('rmse'))} "
                 f"| {_format_float(bs.get('mape'))} "
@@ -433,6 +440,7 @@ def generate_report(results: list[dict], mode: str, seed: int) -> str:
 
 
 # ── CLI ───────────────────────────────────────────────────────────────────────
+
 
 def _parse_args(argv=None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(

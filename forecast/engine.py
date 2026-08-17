@@ -62,7 +62,11 @@ def _extract_series(simulation_state: dict) -> list[float]:
     if not isinstance(simulation_state, dict):
         return []
     if "historial" in simulation_state and isinstance(simulation_state["historial"], list):
-        return [float(h.get("opinion", 0.0)) for h in simulation_state["historial"] if isinstance(h, dict)]
+        return [
+            float(h.get("opinion", 0.0))
+            for h in simulation_state["historial"]
+            if isinstance(h, dict)
+        ]
     if "opinions" in simulation_state and isinstance(simulation_state["opinions"], list):
         return [float(v) for v in simulation_state["opinions"]]
     if "opinion" in simulation_state:
@@ -86,7 +90,9 @@ def _compute_analytical(
 
     temporal_block = MASSIVE_EMPIRICAL_MASTER.get("temporal", {})
     cycle_speed = float(temporal_block.get("CICLO_ATENCION", {}).get("value", 0.42))
-    trust_elasticity = abs(float(temporal_block.get("ELASTICIDAD_CONFIANZA", {}).get("value", -0.25)))
+    trust_elasticity = abs(
+        float(temporal_block.get("ELASTICIDAD_CONFIANZA", {}).get("value", -0.25))
+    )
 
     beta0 = -1.20
     beta_var = 2.10
@@ -102,7 +108,7 @@ def _compute_analytical(
     steps_to_event = None
     days_to_event = None
     if len(series) >= 2:
-        velocity = float(np.mean(np.diff(series[-min(_VELOCITY_LOOKBACK_WINDOW, len(series)):])))
+        velocity = float(np.mean(np.diff(series[-min(_VELOCITY_LOOKBACK_WINDOW, len(series)) :])))
         current = float(series[-1])
         if velocity > 1e-6 and current < threshold:
             est_steps = int(math.ceil((threshold - current) / velocity))
@@ -151,7 +157,7 @@ def _compute_monte_carlo(
     series = _extract_series(simulation_state)
     current = float(series[-1]) if series else float(simulation_state.get("opinion", 0.5))
     if len(series) >= 2:
-        drift = float(np.mean(np.diff(series[-min(_VELOCITY_LOOKBACK_WINDOW, len(series)):])))
+        drift = float(np.mean(np.diff(series[-min(_VELOCITY_LOOKBACK_WINDOW, len(series)) :])))
     else:
         drift = float(simulation_state.get("drift", 0.0))
 

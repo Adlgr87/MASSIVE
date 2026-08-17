@@ -2,12 +2,12 @@
 Test script for CIA World Factbook integration in MASSIVE.
 Tests all 5 integration points.
 """
+
 import logging
 import sys
 from pathlib import Path
 
 import numpy as np
-import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
@@ -18,6 +18,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(me
 class TestFactbookContext:
     def test_load_countries(self):
         from massive.core.factbook import FactbookContext
+
         context = FactbookContext()
         for country_code in ["US", "CH", "GM"]:
             country = context.load_country(country_code)
@@ -27,6 +28,7 @@ class TestFactbookContext:
 
     def test_helper_methods(self):
         from massive.core.factbook import FactbookContext
+
         context = FactbookContext()
         assert context.get_social_pressure_weights("US") is not None
         dm = context.get_demographic_matrix("US")
@@ -38,12 +40,14 @@ class TestFactbookContext:
 class TestFactbookDataLoader:
     def test_country_code_resolution(self):
         from massive.core.factbook.loader import FactbookDataLoader
+
         loader = FactbookDataLoader("data/factbook/factbook_sample.json")
         assert loader.resolve_country_code("United States") == "US"
         assert loader.resolve_country_code("CN") == "CH"
 
     def test_data_retrieval(self):
         from massive.core.factbook.loader import FactbookDataLoader
+
         loader = FactbookDataLoader("data/factbook/factbook_sample.json")
         us_data = loader.get_country_data("US")
         assert us_data is not None
@@ -52,14 +56,16 @@ class TestFactbookDataLoader:
 
     def test_list_countries(self):
         from massive.core.factbook.loader import FactbookDataLoader
+
         loader = FactbookDataLoader("data/factbook/factbook_sample.json")
         assert len(loader.list_countries()) >= 3
 
 
 class TestSocialPressureIntegration:
     def test_social_pressure_calculation(self):
-        from massive.core.utility_logic import calculate_social_pressure
         from massive.core.factbook import FactbookContext
+        from massive.core.utility_logic import calculate_social_pressure
+
         context = FactbookContext()
         weights = context.get_social_pressure_weights("US")
         pressure = calculate_social_pressure(
@@ -70,8 +76,9 @@ class TestSocialPressureIntegration:
         log.info(f"social pressure: {pressure:.4f}")
 
     def test_country_consensus_pressure(self):
-        from massive.core.utility_logic import calculate_social_pressure
         from massive.core.factbook import FactbookContext
+        from massive.core.utility_logic import calculate_social_pressure
+
         context = FactbookContext()
         for cc in ["US", "CH", "GM"]:
             weights = context.get_social_pressure_weights(cc)
@@ -79,8 +86,9 @@ class TestSocialPressureIntegration:
             log.info(f"{cc} consensus pressure: {p:.4f}")
 
     def test_country_polarized_pressure(self):
-        from massive.core.utility_logic import calculate_social_pressure
         from massive.core.factbook import FactbookContext
+        from massive.core.utility_logic import calculate_social_pressure
+
         context = FactbookContext()
         for cc in ["US", "CH", "GM"]:
             weights = context.get_social_pressure_weights(cc)
@@ -88,9 +96,10 @@ class TestSocialPressureIntegration:
             log.info(f"{cc} polarized pressure: {p:.4f}")
 
     def test_demographic_strategic_force(self):
-        from massive.core.utility_logic import calculate_demographic_strategic_force
-        from massive.core.schemas import GamePayoff
         from massive.core.factbook import FactbookContext
+        from massive.core.schemas import GamePayoff
+        from massive.core.utility_logic import calculate_demographic_strategic_force
+
         context = FactbookContext()
         dm = context.get_demographic_matrix("US")
         matrix = GamePayoff(cc=2.0, cd=1.0, dc=1.5, dd=0.5)
@@ -108,10 +117,11 @@ class TestEnergyEngineIntegration:
     def test_energy_engine_gini_adjusted_landscape(self):
         from energy_engine import SocialEnergyEngine
         from massive.core.factbook import FactbookContext
+
         context = FactbookContext()
         for cc in ["US", "CH", "GM"]:
             context.load_country(cc)
-            country = context.get_country(cc)
+            context.get_country(cc)
             engine = SocialEnergyEngine(
                 range_type="bipolar",
                 temperature=0.05,
@@ -126,13 +136,15 @@ class TestEnergyEngineIntegration:
             log.info(f"{cc} adjusted attractor strength: {adj_a[0]['strength']:.3f}")
 
     def test_energy_engine_step(self):
+        import numpy as np
+
         from energy_engine import SocialEnergyEngine
         from massive.core.factbook import FactbookContext
-        import numpy as np
+
         context = FactbookContext()
         for cc in ["US", "CH", "GM"]:
             context.load_country(cc)
-            country = context.get_country(cc)
+            context.get_country(cc)
             engine = SocialEnergyEngine(
                 range_type="bipolar",
                 temperature=0.05,
@@ -157,6 +169,7 @@ class TestEnergyEngineIntegration:
     def test_energy_engine_economic_landscape(self):
         from energy_engine import SocialEnergyEngine
         from massive.core.factbook import FactbookContext
+
         context = FactbookContext()
         for cc in ["US", "CH", "GM"]:
             context.load_country(cc)
@@ -180,13 +193,16 @@ class TestEnergyEngineIntegration:
 
 class TestInterventionOptimizerIntegration:
     def test_optimize_interventions(self):
-        from massive.core.intervention_optimizer import optimize_interventions
-        from massive.core.factbook import FactbookContext
         import numpy as np
+
+        from massive.core.factbook import FactbookContext
+        from massive.core.intervention_optimizer import optimize_interventions
+
         def evaluate_fn(interventions):
             avg = np.mean(interventions)
             consistency = 1.0 - np.std(interventions) * 2.0
             return float(consistency * (1.0 + abs(avg)))
+
         context = FactbookContext()
         for cc in ["US", "CH", "GM"]:
             context.load_country(cc)
@@ -206,8 +222,9 @@ class TestInterventionOptimizerIntegration:
             assert "interventions" in result
 
     def test_estimate_intervention_cost(self):
-        from massive.core.intervention_optimizer import estimate_intervention_cost
         from massive.core.factbook import FactbookContext
+        from massive.core.intervention_optimizer import estimate_intervention_cost
+
         context = FactbookContext()
         for cc in ["US", "CH", "GM"]:
             constraints = context.get_intervention_constraints(cc)
@@ -220,12 +237,15 @@ class TestInterventionOptimizerIntegration:
             assert cost >= 0
 
     def test_economic_aware_optimizer(self):
-        from massive.core.intervention_optimizer import create_economic_aware_optimizer
         import numpy as np
+
+        from massive.core.intervention_optimizer import create_economic_aware_optimizer
+
         def evaluate_fn(interventions):
             avg = np.mean(interventions)
             consistency = 1.0 - np.std(interventions) * 2.0
             return float(consistency * (1.0 + abs(avg)))
+
         opt = create_economic_aware_optimizer("US")
         result = opt(evaluate_fn, n_agents=100, n_phases=5, max_iter=50)
         assert result is not None
@@ -235,32 +255,50 @@ class TestInterventionOptimizerIntegration:
 class TestValidationFramework:
     def test_validate_simulation(self):
         from massive.core.factbook.validator import FactbookValidator
+
         validator = FactbookValidator()
         sim = {
             "population": 335000000,
-            "age_structure": {"0-14_years": 18.0, "15-24_years": 13.0, "25-54_years": 39.0, "55-64_years": 12.0, "65_years_and_over": 18.0},
+            "age_structure": {
+                "0-14_years": 18.0,
+                "15-24_years": 13.0,
+                "25-54_years": 39.0,
+                "55-64_years": 12.0,
+                "65_years_and_over": 18.0,
+            },
             "gini_index": 40.0,
             "gdp_per_capita": 75000.0,
             "unemployment_rate": 3.8,
             "ethnic_diversity": 0.65,
             "religious_diversity": 0.60,
         }
-        report = validator.validate_simulation(simulation_results=sim, country_identifier="US", config={"test": True})
+        report = validator.validate_simulation(
+            simulation_results=sim, country_identifier="US", config={"test": True}
+        )
         log.info(f"overall score: {report.overall_score:.2f}")
 
     def test_report_summary(self):
         from massive.core.factbook.validator import FactbookValidator
+
         validator = FactbookValidator()
         sim = {
             "population": 335000000,
-            "age_structure": {"0-14_years": 18.0, "15-24_years": 13.0, "25-54_years": 39.0, "55-64_years": 12.0, "65_years_and_over": 18.0},
+            "age_structure": {
+                "0-14_years": 18.0,
+                "15-24_years": 13.0,
+                "25-54_years": 39.0,
+                "55-64_years": 12.0,
+                "65_years_and_over": 18.0,
+            },
             "gini_index": 40.0,
             "gdp_per_capita": 75000.0,
             "unemployment_rate": 3.8,
             "ethnic_diversity": 0.65,
             "religious_diversity": 0.60,
         }
-        report = validator.validate_simulation(simulation_results=sim, country_identifier="US", config={"test": True})
+        report = validator.validate_simulation(
+            simulation_results=sim, country_identifier="US", config={"test": True}
+        )
         summary = report.get_summary()
         log.info(f"summary: {summary}")
         bw = report.get_best_worst(3)
@@ -271,10 +309,17 @@ class TestValidationFramework:
 
     def test_accuracy_check(self):
         from massive.core.factbook.validator import FactbookValidator
+
         validator = FactbookValidator()
         sim = {
             "population": 335000000,
-            "age_structure": {"0-14_years": 18.0, "15-24_years": 13.0, "25-54_years": 39.0, "55-64_years": 12.0, "65_years_and_over": 18.0},
+            "age_structure": {
+                "0-14_years": 18.0,
+                "15-24_years": 13.0,
+                "25-54_years": 39.0,
+                "55-64_years": 12.0,
+                "65_years_and_over": 18.0,
+            },
             "gini_index": 40.0,
             "gdp_per_capita": 75000.0,
             "unemployment_rate": 3.8,
@@ -286,17 +331,26 @@ class TestValidationFramework:
 
     def test_report_saving(self):
         from massive.core.factbook.validator import FactbookValidator
+
         validator = FactbookValidator()
         sim = {
             "population": 335000000,
-            "age_structure": {"0-14_years": 18.0, "15-24_years": 13.0, "25-54_years": 39.0, "55-64_years": 12.0, "65_years_and_over": 18.0},
+            "age_structure": {
+                "0-14_years": 18.0,
+                "15-24_years": 13.0,
+                "25-54_years": 39.0,
+                "55-64_years": 12.0,
+                "65_years_and_over": 18.0,
+            },
             "gini_index": 40.0,
             "gdp_per_capita": 75000.0,
             "unemployment_rate": 3.8,
             "ethnic_diversity": 0.65,
             "religious_diversity": 0.60,
         }
-        report = validator.validate_simulation(simulation_results=sim, country_identifier="US", config={"test": True})
+        report = validator.validate_simulation(
+            simulation_results=sim, country_identifier="US", config={"test": True}
+        )
         report_path = report.save()
         log.info(f"report saved to: {report_path}")
 
@@ -305,6 +359,7 @@ class TestAgentInitialization:
     def test_engine_creation(self):
         from massive.core.factbook import FactbookContext
         from massive_engine import MassiveEngine
+
         context = FactbookContext()
         for cc in ["US", "CH", "GM"]:
             context.load_country(cc)

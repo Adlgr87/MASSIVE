@@ -6,8 +6,8 @@ import json
 
 import numpy as np
 
-from benchmarks.baselines import get_all_baselines, RandomForestBaseline, GradientBoostingBaseline
-from benchmarks.runner import evaluate_case, _json_safe
+from benchmarks.baselines import GradientBoostingBaseline, RandomForestBaseline, get_all_baselines
+from benchmarks.runner import _json_safe, evaluate_case
 
 
 def test_baselines_include_rf_and_gbm_when_sklearn_available():
@@ -51,7 +51,5 @@ def test_evaluate_case_includes_target_and_walk_forward():
     assert isinstance(result["walk_forward"], dict)
     assert len(result["walk_forward"]) >= 1
     # at least one baseline fold
-    any_folds = any(
-        (v or {}).get("n_folds", 0) >= 1 for v in result["walk_forward"].values()
-    )
+    any_folds = any((v or {}).get("n_folds", 0) >= 1 for v in result["walk_forward"].values())
     assert any_folds

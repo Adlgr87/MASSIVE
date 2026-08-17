@@ -7,21 +7,21 @@ Soporta dos modos:
   - "macro"       → política, redes sociales masivas, polarización pública
   - "corporativo" → RRHH, cambio organizacional, líderes formales/informales
 """
+
 import json
 import logging
 import os
-from pydantic import ValidationError
 
-from massive.core.schemas import StrategyMatrix
-from simulator import run_with_schedule, resumen_historial, DEFAULT_CONFIG
-from massive.core.intervention_optimizer import optimize_interventions
 from forecast import TemporalConfig, forecast
+from massive.core.intervention_optimizer import optimize_interventions
+from simulator import DEFAULT_CONFIG, resumen_historial, run_with_schedule
 
 log = logging.getLogger("massive")
 
 # CfC INTEGRATION — primer intento sin llamada LLM si el modelo está disponible
 try:
     from cfc_router import CfCRouter
+
     _cfc = CfCRouter.get()
     CFC_AVAILABLE = _cfc.status["architect_policy"]
 except ImportError:
@@ -51,6 +51,7 @@ def find_optimal_interventions(evaluate_fn, n_agents, n_phases, max_iter=100):
 # ============================================================
 # CLIENTE LLM
 # ============================================================
+
 
 def setup_client():
     """Inicializa el cliente OpenAI-compatible con la key disponible.
@@ -84,6 +85,7 @@ def setup_client():
 # EVALUADOR DE RESULTADOS
 # ============================================================
 
+
 def evaluar_resultado(historial, objetivo_usuario, config):
     """
     Calcula un score (0 a 100) y genera texto de feedback para el LLM.
@@ -107,9 +109,12 @@ def evaluar_resultado(historial, objetivo_usuario, config):
     )
 
     obj_lower = objetivo_usuario.lower()
-    if any(palabra in obj_lower for palabra in ["consenso", "despolarizar", "apaciguar", "alinear", "cohesión"]):
+    if any(
+        palabra in obj_lower
+        for palabra in ["consenso", "despolarizar", "apaciguar", "alinear", "cohesión"]
+    ):
         score = max(0, min(100, 100 - (polarizacion * 100 * 2)))
-        if stats['desviacion'] < 0.15:
+        if stats["desviacion"] < 0.15:
             score += 20
     elif any(palabra in obj_lower for palabra in ["polariza", "dividir"]):
         score = min(100, polarizacion * 100 * 2)
@@ -190,6 +195,7 @@ def _build_temporal_forecast(
 # ============================================================
 # CONSTRUCTORES DE SISTEMA DE PROMPTS — conscientes del modo
 # ============================================================
+
 
 def _system_prompt_macro() -> str:
     return (
@@ -278,6 +284,7 @@ usa "target_nodes": ["NodoA", "NodoC"] en lugar de null.
 # NARRATIVA FINAL — consciente del modo
 # ============================================================
 
+
 def generar_narrativa_final(
     estrategia_json: dict,
     objetivo_usuario: str,
@@ -301,7 +308,8 @@ def generar_narrativa_final(
     """
     if use_langchain:
         try:
-            from langchain_workflows import build_llm, LangChainSocialArchitect, LANGCHAIN_AVAILABLE
+            from langchain_workflows import LANGCHAIN_AVAILABLE, LangChainSocialArchitect, build_llm
+
             if LANGCHAIN_AVAILABLE:
                 llm = build_llm(
                     os.getenv("LLM_PROVIDER", "groq"),
@@ -361,6 +369,7 @@ Pronóstico temporal: {json.dumps(temporal_forecast or {}, indent=2)}
 # CfC HELPERS — codificación de objetivo y decodificación de estrategia
 # ============================================================
 
+
 def _encode_goal(objetivo: str) -> list:
     """
     Codifica un objetivo en texto libre en un vector de 5 floats
@@ -373,21 +382,21 @@ def _encode_goal(objetivo: str) -> list:
         Lista de 5 floats normalizada al rango [-1, 1].
     """
     kw = {
-        "consenso":     [ 1.0,  0.0, -0.5,  0.0,  0.0],
-        "polarizacion": [ 0.0,  1.0,  0.5,  0.0,  0.0],
-        "moderado":     [ 0.5,  0.0, -0.3,  0.0,  0.0],
-        "cambio":       [ 0.0,  0.0,  0.0,  1.0,  0.5],
-        "resistencia":  [ 0.0,  0.0,  0.0, -1.0,  0.5],
-        "despolarizar": [ 1.0, -0.5,  0.0,  0.0,  0.0],
-        "radicalizar":  [-0.5,  1.0,  0.5,  0.0,  0.0],
-        "alinear":      [ 0.8,  0.0, -0.2,  0.5,  0.0],
-        "cohesion":     [ 0.7,  0.0, -0.3,  0.3,  0.0],
+        "consenso": [1.0, 0.0, -0.5, 0.0, 0.0],
+        "polarizacion": [0.0, 1.0, 0.5, 0.0, 0.0],
+        "moderado": [0.5, 0.0, -0.3, 0.0, 0.0],
+        "cambio": [0.0, 0.0, 0.0, 1.0, 0.5],
+        "resistencia": [0.0, 0.0, 0.0, -1.0, 0.5],
+        "despolarizar": [1.0, -0.5, 0.0, 0.0, 0.0],
+        "radicalizar": [-0.5, 1.0, 0.5, 0.0, 0.0],
+        "alinear": [0.8, 0.0, -0.2, 0.5, 0.0],
+        "cohesion": [0.7, 0.0, -0.3, 0.3, 0.0],
     }
     v = [0.0] * 5
     obj_lower = objetivo.lower()
     for k, e in kw.items():
         if k in obj_lower:
-            v = [a + b for a, b in zip(v, e)]
+            v = [a + b for a, b in zip(v, e, strict=False)]
     norm = max(abs(x) for x in v) or 1.0
     return [x / norm for x in v]
 
@@ -411,14 +420,15 @@ def _decode_strategy(propuesta: dict, total_pasos: int = 60) -> dict:
         ``run_with_schedule()``.
     """
     import numpy as np
-    from simulator import NOMBRES_REGLAS, _RANGOS_PARAMS
 
-    regime_logits = propuesta["regime_logits"][0]          # (n_regimes,)
-    durations = propuesta["durations"][0]                   # (n_phases,)
+    from simulator import _RANGOS_PARAMS, NOMBRES_REGLAS
+
+    regime_logits = propuesta["regime_logits"][0]  # (n_regimes,)
+    durations = propuesta["durations"][0]  # (n_phases,)
     # params shape: (n_phases, 4) — 4 floats per phase from the model
     raw_params = propuesta.get("params")
     if raw_params is not None:
-        raw_params = np.asarray(raw_params[0])             # (n_phases, 4)
+        raw_params = np.asarray(raw_params[0])  # (n_phases, 4)
     n_phases = len(durations)
 
     # Régimen más probable (compartido entre fases — arquitectura CfCArchitectPolicy)
@@ -456,14 +466,16 @@ def _decode_strategy(propuesta: dict, total_pasos: int = 60) -> dict:
                 lo, hi = rangos[key]
                 phase_parameters[key] = float(lo + norm[j] * (hi - lo))
 
-        interventions.append({
-            "time_start": t,
-            "time_end": end,
-            "model_name": regla_nombre,
-            "parameters": phase_parameters,
-            "fase_rationale": f"CfC fase {i + 1}: régimen {regla_nombre}",
-            "target_nodes": None,
-        })
+        interventions.append(
+            {
+                "time_start": t,
+                "time_end": end,
+                "model_name": regla_nombre,
+                "parameters": phase_parameters,
+                "fase_rationale": f"CfC fase {i + 1}: régimen {regla_nombre}",
+                "target_nodes": None,
+            }
+        )
         t = end + 1
         if t > total_pasos:
             break
@@ -474,6 +486,7 @@ def _decode_strategy(propuesta: dict, total_pasos: int = 60) -> dict:
 # ============================================================
 # ÁRQUITECTO SOCIAL — BÚSQUEDA INVERSA PRINCIPAL
 # ============================================================
+
 
 def buscar_estrategia_inversa(
     estado_inicial: dict,
@@ -515,12 +528,8 @@ def buscar_estrategia_inversa(
             if propuesta is not None:
                 pasos_cfg = cfg.get("pasos", 60)
                 estrategia_cfc = _decode_strategy(propuesta, total_pasos=pasos_cfg)
-                historial_cfc = run_with_schedule(
-                    estado_inicial, estrategia_cfc, config=cfg
-                )
-                score_cfc, fb_cfc = evaluar_resultado(
-                    historial_cfc, objetivo_usuario, cfg
-                )
+                historial_cfc = run_with_schedule(estado_inicial, estrategia_cfc, config=cfg)
+                score_cfc, fb_cfc = evaluar_resultado(historial_cfc, objetivo_usuario, cfg)
                 log.info(f"[CfC Architect] Intento 0: score={score_cfc:.1f}")
                 if score_cfc >= 90:
                     temporal = _build_temporal_forecast(historial_cfc, cfg, estado_inicial)
@@ -540,10 +549,11 @@ def buscar_estrategia_inversa(
     # ── LangChain path ────────────────────────────────────────────────────────
     if use_langchain:
         try:
-            from langchain_workflows import build_llm, LangChainSocialArchitect, LANGCHAIN_AVAILABLE
+            from langchain_workflows import LANGCHAIN_AVAILABLE, LangChainSocialArchitect, build_llm
+
             if LANGCHAIN_AVAILABLE:
                 provider = cfg.get("proveedor", "groq")
-                modelo   = cfg.get("modelo", "")
+                modelo = cfg.get("modelo", "")
                 llm = build_llm(provider, model=modelo, temperature=0.0)
                 if llm is not None:
                     architect = LangChainSocialArchitect(llm)
@@ -556,14 +566,19 @@ def buscar_estrategia_inversa(
                     for intento in range(max_intentos):
                         try:
                             estrategia_json = architect.generate_strategy(
-                                estado_inicial, objetivo_usuario,
-                                historial_feedback, modo_simulacion, metricas_red,
+                                estado_inicial,
+                                objetivo_usuario,
+                                historial_feedback,
+                                modo_simulacion,
+                                metricas_red,
                             )
                         except Exception as e:
                             historial_feedback.append(f"Intento {intento+1}: LangChain error: {e}")
                             continue
 
-                        historial_sim = run_with_schedule(estado_inicial, estrategia_json, config=cfg)
+                        historial_sim = run_with_schedule(
+                            estado_inicial, estrategia_json, config=cfg
+                        )
                         score, feedback = evaluar_resultado(historial_sim, objetivo_usuario, cfg)
 
                         if score > mejor_score:
@@ -576,21 +591,27 @@ def buscar_estrategia_inversa(
                             estrategia_json = dict(estrategia_json)
                             estrategia_json["temporal_forecast"] = temporal
                             narrativa = architect.generate_narrative(
-                                estrategia_json, objetivo_usuario,
-                                modo_simulacion, metricas_red,
+                                estrategia_json,
+                                objetivo_usuario,
+                                modo_simulacion,
+                                metricas_red,
                             )
                             return estrategia_json, narrativa, intento + 1, historial_sim
                         else:
                             historial_feedback.append(f"Intento {intento+1}: {feedback}")
 
                     if mejor_score >= 0:
-                        temporal = _build_temporal_forecast(mejor_historial or [], cfg, estado_inicial)
+                        temporal = _build_temporal_forecast(
+                            mejor_historial or [], cfg, estado_inicial
+                        )
                         mejor_estrategia = dict(mejor_estrategia)
                         mejor_estrategia["temporal_forecast"] = temporal
                         narrativa = (
                             architect.generate_narrative(
-                                mejor_estrategia, objetivo_usuario,
-                                modo_simulacion, metricas_red,
+                                mejor_estrategia,
+                                objetivo_usuario,
+                                modo_simulacion,
+                                metricas_red,
                             )
                             + "\n\n*(La estrategia es la mejor aproximación).* "
                         )
@@ -633,7 +654,7 @@ def buscar_estrategia_inversa(
                 model=model_llm,
                 messages=[
                     {"role": "system", "content": system_prompt},
-                    {"role": "user",   "content": user_prompt},
+                    {"role": "user", "content": user_prompt},
                 ],
                 response_format={"type": "json_object"},
             )

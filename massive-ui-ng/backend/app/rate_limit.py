@@ -17,7 +17,6 @@ import logging
 import threading
 import time
 from collections import defaultdict, deque
-from typing import Optional
 
 from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoint
 from starlette.requests import Request
@@ -70,8 +69,15 @@ class SlidingWindowLimiter:
 class RateLimitMiddleware(BaseHTTPMiddleware):
     """Apply per-minute limits; simulations use a stricter budget."""
 
-    def __init__(self, app, *, enabled: bool, default_limit: int, simulate_limit: int,
-                 trust_proxy: bool = False) -> None:
+    def __init__(
+        self,
+        app,
+        *,
+        enabled: bool,
+        default_limit: int,
+        simulate_limit: int,
+        trust_proxy: bool = False,
+    ) -> None:
         super().__init__(app)
         self.enabled = enabled
         self.trust_proxy = trust_proxy
@@ -82,18 +88,17 @@ class RateLimitMiddleware(BaseHTTPMiddleware):
         if not self.enabled:
             return await call_next(request)
         path = request.url.path
-        limiter = (
-            self._simulate
-            if path.startswith(_SIMULATE_PREFIXES)
-            else self._default
-        )
+        limiter = self._simulate if path.startswith(_SIMULATE_PREFIXES) else self._default
         key = _client_ip(request, self.trust_proxy)
         allowed, retry_after = limiter.allow(key)
         if not allowed:
             log.warning("Rate limit hit for %s on %s", key, path)
             from backend.app.metrics import registry
 
-            registry.inc("rate_limit_hits_total", {"group": "simulate" if path.startswith(_SIMULATE_PREFIXES) else "general"})
+            registry.inc(
+                "rate_limit_hits_total",
+                {"group": "simulate" if path.startswith(_SIMULATE_PREFIXES) else "general"},
+            )
             return JSONResponse(
                 status_code=429,
                 content={"detail": "Too many requests"},

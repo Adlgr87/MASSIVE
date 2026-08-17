@@ -15,10 +15,7 @@ def _to_dense_mean_adjacency(graphs: dict | None, n_agents: int) -> np.ndarray:
         return np.eye(n_agents, dtype=np.float64)
     mats: list[np.ndarray] = []
     for matrix in graphs.values():
-        if sparse.issparse(matrix):
-            arr = matrix.toarray()
-        else:
-            arr = np.asarray(matrix, dtype=np.float64)
+        arr = matrix.toarray() if sparse.issparse(matrix) else np.asarray(matrix, dtype=np.float64)
         if arr.shape == (n_agents, n_agents):
             mats.append(arr)
     if not mats:
@@ -58,12 +55,16 @@ def run_butterfly_diagnostic_core(
 
     for _ in range(horizon):
         base = np.clip(
-            _SELF_WEIGHT * base + _NETWORK_WEIGHT * (adjacency @ base) + _NONLINEAR_WEIGHT * np.tanh(base),
+            _SELF_WEIGHT * base
+            + _NETWORK_WEIGHT * (adjacency @ base)
+            + _NONLINEAR_WEIGHT * np.tanh(base),
             -1.0,
             1.0,
         )
         shadow = np.clip(
-            _SELF_WEIGHT * shadow + _NETWORK_WEIGHT * (adjacency @ shadow) + _NONLINEAR_WEIGHT * np.tanh(shadow),
+            _SELF_WEIGHT * shadow
+            + _NETWORK_WEIGHT * (adjacency @ shadow)
+            + _NONLINEAR_WEIGHT * np.tanh(shadow),
             -1.0,
             1.0,
         )

@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import sys
 from pathlib import Path
-from typing import Any, Dict, List
+from typing import Any
 
 # ---------------------------------------------------------------------------
 # Path setup — make the repository root importable
@@ -41,14 +41,14 @@ from backend.app.models import (  # noqa: E402
     SimSnapshotMessage,
     SimulationSnapshotPayload,
     SnapshotRecord,
-    TimelineTick,
     TimelineResponse,
+    TimelineTick,
 )
 
 # Ordered list: enums first, then models (dependency order so TS is valid).
-_ENUMS: List[Any] = [SimMode, SimEventKind]
+_ENUMS: list[Any] = [SimMode, SimEventKind]
 
-_MODELS: List[Any] = [
+_MODELS: list[Any] = [
     SimAgentLite,
     SimAggregateMetrics,
     SimulationSnapshotPayload,
@@ -72,7 +72,7 @@ _OUT = ROOT / "frontend" / "src" / "types" / "api.generated.ts"
 # ---------------------------------------------------------------------------
 
 
-def _schema_to_ts(schema: Dict[str, Any], defs: Dict[str, Any]) -> str:
+def _schema_to_ts(schema: dict[str, Any], defs: dict[str, Any]) -> str:
     """Recursively convert a JSON Schema fragment to a TypeScript type string."""
 
     # --- direct $ref ---
@@ -132,10 +132,10 @@ def _schema_to_ts(schema: Dict[str, Any], defs: Dict[str, Any]) -> str:
     return "unknown"
 
 
-def _model_to_interface(model_cls: Any, defs: Dict[str, Any]) -> str:
+def _model_to_interface(model_cls: Any, defs: dict[str, Any]) -> str:
     """Render a Pydantic model as a TypeScript ``export interface`` block."""
     schema = model_cls.model_json_schema()
-    properties: Dict[str, Any] = schema.get("properties", {})
+    properties: dict[str, Any] = schema.get("properties", {})
     required_set = set(schema.get("required", []))
 
     lines = [f"export interface {model_cls.__name__} {{"]
@@ -163,12 +163,12 @@ def _enum_to_ts(enum_cls: Any) -> str:
 
 def main() -> int:
     # Collect all $defs from all model schemas (for cross-model $ref resolution).
-    all_defs: Dict[str, Any] = {}
+    all_defs: dict[str, Any] = {}
     for model_cls in _MODELS:
         schema = model_cls.model_json_schema()
         all_defs.update(schema.get("$defs", {}))
 
-    sections: List[str] = [
+    sections: list[str] = [
         "// ============================================================",
         "// AUTO-GENERATED — do not edit manually.",
         "// Source of truth: backend/app/models (Pydantic v2).",

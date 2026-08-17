@@ -88,7 +88,9 @@ def _collect_ws(client: TestClient, url: str) -> list[dict]:
 
 
 def test_ws_live_energy_stream(client):
-    url = "/ws/live?engine=energy&n_agents=8&pasos=6&tick_interval_ms=0&seed=7&user_goal=caos_social"
+    url = (
+        "/ws/live?engine=energy&n_agents=8&pasos=6&tick_interval_ms=0&seed=7&user_goal=caos_social"
+    )
     msgs = _collect_ws(client, url)
     events = [m for m in msgs if m["type"] == "event"]
     snaps = [m for m in msgs if m["type"] == "snapshot"]

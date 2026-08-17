@@ -14,7 +14,6 @@ from massive_core.data_assimilation.kalman import SparseEnsembleKalmanFilter
 from massive_core.numerics.solvers import AdaptiveODESolver
 from massive_core.numerics.stability import SparseStabilityAnalyzer
 
-
 REPO = Path(__file__).resolve().parents[1]
 
 

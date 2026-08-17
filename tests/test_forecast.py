@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from copy import deepcopy
 
-from forecast import TemporalConfig, forecast, apply_intervention, compare_scenarios
+from forecast import TemporalConfig, apply_intervention, compare_scenarios, forecast
 from forecast.scenarios import ScenarioSpec
 from massive.core.schemas import Intervention
 

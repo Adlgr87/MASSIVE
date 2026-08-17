@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional, Sequence, Union
+from collections.abc import Sequence
+from typing import Any
 
 import numpy as np
 
@@ -10,7 +11,7 @@ from benchmarks.baselines import get_all_baselines
 from benchmarks.walk_forward import walk_forward_scores
 from forecast.targets import all_targets, resolve_target
 
-ArrayLike = Union[Sequence[float], np.ndarray]
+ArrayLike = Sequence[float] | np.ndarray
 
 
 def list_targets() -> list[dict[str, Any]]:
@@ -19,8 +20,8 @@ def list_targets() -> list[dict[str, Any]]:
 
 
 def target_for_case(
-    cluster_id: Optional[str] = None,
-    scenario_type: Optional[str] = None,
+    cluster_id: str | None = None,
+    scenario_type: str | None = None,
 ) -> dict[str, Any]:
     """Resolve the semantic target for a PVU cluster / scenario.
 
@@ -55,9 +56,7 @@ def baseline_forecast(
     y = np.asarray(series, dtype=float).ravel()
     baselines = {b.name: b for b in get_all_baselines()}
     if baseline_name not in baselines:
-        raise ValueError(
-            f"Unknown baseline '{baseline_name}'. Available: {sorted(baselines)}"
-        )
+        raise ValueError(f"Unknown baseline '{baseline_name}'. Available: {sorted(baselines)}")
     pred = baselines[baseline_name].predict(y, int(horizon))
     return {
         "baseline": baseline_name,

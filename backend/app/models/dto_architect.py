@@ -8,7 +8,7 @@ All models use ``extra="forbid"`` to prevent silent schema drift.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Literal
 
 from pydantic import BaseModel
 
@@ -34,9 +34,9 @@ class InterventionRecord(BaseModel):
     time_start: int
     time_end: int
     model_name: str
-    parameters: Dict[str, Any]
-    target_nodes: Optional[List[str]] = None
-    rationale: Optional[str] = None
+    parameters: dict[str, Any]
+    target_nodes: list[str] | None = None
+    rationale: str | None = None
 
 
 class InterventionLogEntry(BaseModel):
@@ -58,7 +58,7 @@ class InterventionLogEntry(BaseModel):
     tick: int
     timestamp: datetime
     effect_delta: float
-    notes: Optional[str] = None
+    notes: str | None = None
 
 
 class ArchitectEventMessage(BaseModel):
@@ -78,4 +78,4 @@ class ArchitectEventMessage(BaseModel):
     sim_id: str
     intervention: InterventionRecord
     timestamp: datetime
-    schema_version: Optional[str] = None
+    schema_version: str | None = None

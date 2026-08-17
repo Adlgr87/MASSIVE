@@ -7,13 +7,13 @@ See also CLAUDE.md §8 (reproducibility).
 
 from __future__ import annotations
 
+from collections.abc import Iterator
 from contextlib import contextmanager
-from typing import Iterator, Optional
 
 import numpy as np
 
 
-def get_default_rng(seed: Optional[int] = None) -> np.random.Generator:
+def get_default_rng(seed: int | None = None) -> np.random.Generator:
     """Return a NumPy Generator, optionally seeded.
 
     Args:
@@ -46,8 +46,8 @@ def create_seed_sequence(seed: int, n_children: int) -> list[int]:
 
 @contextmanager
 def with_rng(
-    rng: Optional[np.random.Generator] = None,
-    seed: Optional[int] = None,
+    rng: np.random.Generator | None = None,
+    seed: int | None = None,
 ) -> Iterator[np.random.Generator]:
     """Yield a temporary RNG for a code block.
 
@@ -65,8 +65,8 @@ def with_rng(
 
 
 def ensure_rng(
-    rng: Optional[np.random.Generator] = None,
-    seed: Optional[int] = None,
+    rng: np.random.Generator | None = None,
+    seed: int | None = None,
 ) -> np.random.Generator:
     """Return ``rng`` or create a new generator from ``seed``.
 

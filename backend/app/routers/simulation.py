@@ -152,9 +152,7 @@ def _run_energy(req: SimulateRequest) -> dict[str, Any]:
     from energy_runner import run_energy_simulation
 
     overrides = {
-        k: req.config[k]
-        for k in ("temperature", "lambda_social", "eta")
-        if k in req.config
+        k: req.config[k] for k in ("temperature", "lambda_social", "eta") if k in req.config
     }
     n_agents = req.n_agents or 50
     out = run_energy_simulation(
@@ -315,9 +313,7 @@ def _execute(req: SimulateRequest, store: RunStore) -> SimulateResponse:
         raise HTTPException(status_code=500, detail="simulation failed") from exc
 
     mode = (
-        "llm"
-        if out.get("proveedor", "heurístico") not in ("heurístico", "", None)
-        else "heuristic"
+        "llm" if out.get("proveedor", "heurístico") not in ("heurístico", "", None) else "heuristic"
     )
     narrative, highlights = build_narrative(
         engine=req.engine,
@@ -361,13 +357,17 @@ def _execute(req: SimulateRequest, store: RunStore) -> SimulateResponse:
 
 
 @router.post("/api/simulate", response_model=SimulateResponse)
-def api_simulate(req: SimulateRequest, store: RunStore = Depends(get_run_store)) -> SimulateResponse:
+def api_simulate(
+    req: SimulateRequest, store: RunStore = Depends(get_run_store)  # noqa: B008
+) -> SimulateResponse:
     """Run a simulation on the chosen engine and translate the results."""
     return _execute(req, store)
 
 
 @router.post("/api/simulate/stream")
-def api_simulate_stream(req: SimulateRequest, store: RunStore = Depends(get_run_store)) -> StreamingResponse:
+def api_simulate_stream(
+    req: SimulateRequest, store: RunStore = Depends(get_run_store)  # noqa: B008
+) -> StreamingResponse:
     """SSE variant: progress events while the engine runs, then the full result.
 
     Events: ``status`` (queued/running), ``progress`` (elapsed seconds),
@@ -417,7 +417,9 @@ def api_simulate_stream(req: SimulateRequest, store: RunStore = Depends(get_run_
 
 
 @router.post("/api/explain", response_model=ExplainResponse)
-def api_explain(req: ExplainRequest, store: RunStore = Depends(get_run_store)) -> ExplainResponse:
+def api_explain(
+    req: ExplainRequest, store: RunStore = Depends(get_run_store)  # noqa: B008
+) -> ExplainResponse:
     """Re-narrate a stored run for a different audience/language.
 
     Uses an LLM when a provider is configured; otherwise the deterministic
@@ -494,7 +496,7 @@ def api_explain(req: ExplainRequest, store: RunStore = Depends(get_run_store)) -
 
 
 @router.get("/api/runs", response_model=list[RunListItem])
-def api_runs(store: RunStore = Depends(get_run_store)) -> list[RunListItem]:
+def api_runs(store: RunStore = Depends(get_run_store)) -> list[RunListItem]:  # noqa: B008
     """List stored runs (most recent first)."""
     items: list[RunListItem] = []
     for entry in store.list():
@@ -503,15 +505,17 @@ def api_runs(store: RunStore = Depends(get_run_store)) -> list[RunListItem]:
             f"{entry['engine']}: {summary.get('opinion_inicial', 0):+.2f} → "
             f"{summary.get('opinion_final', 0):+.2f}"
         )
-        items.append(RunListItem(
-            run_id=entry["run_id"],
-            engine=entry["engine"],
-            language=entry.get("language", "es"),
-            headline=headline,
-            final_opinion=summary.get("opinion_final"),
-            dominant_rule=summary.get("regla_dominante"),
-            mode=entry.get("mode", "heuristic"),
-        ))
+        items.append(
+            RunListItem(
+                run_id=entry["run_id"],
+                engine=entry["engine"],
+                language=entry.get("language", "es"),
+                headline=headline,
+                final_opinion=summary.get("opinion_final"),
+                dominant_rule=summary.get("regla_dominante"),
+                mode=entry.get("mode", "heuristic"),
+            )
+        )
     return items
 
 
@@ -521,7 +525,7 @@ def api_run_detail(
     request: Request,
     language: str = "es",
     audience: str = "general",
-    store: RunStore = Depends(get_run_store),
+    store: RunStore = Depends(get_run_store),  # noqa: B008,
 ) -> SimulateResponse:
     """Return the full stored payload of one run, narrated on demand."""
     payload = store.get(run_id)
@@ -554,7 +558,7 @@ def api_run_detail(
 
 
 @router.delete("/api/runs/{run_id}")
-def api_run_delete(run_id: str, store: RunStore = Depends(get_run_store)) -> dict:
+def api_run_delete(run_id: str, store: RunStore = Depends(get_run_store)) -> dict:  # noqa: B008
     """Delete a stored run."""
     if not store.delete(run_id):
         raise HTTPException(status_code=404, detail="run not found")

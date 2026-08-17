@@ -9,7 +9,7 @@ import pytest
 from pydantic import ValidationError
 
 from massive.core.schemas import Intervention
-from massive_core.config import ScientificRuntimeConfig, get_app_settings, clear_settings_cache
+from massive_core.config import ScientificRuntimeConfig, clear_settings_cache, get_app_settings
 from massive_core.numerics.steppers import EulerMaruyamaStepper
 
 

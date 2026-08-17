@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable, Optional, Union
 
 import numpy as np
 
@@ -23,6 +23,7 @@ class StabilityReport:
         max_real_eigenvalue: Largest real part across eigenvalues.
         stable: Whether all real parts are negative within tolerance.
     """
+
     eigenvalues: Array
     spectral_radius: float
     max_real_eigenvalue: float
@@ -48,6 +49,7 @@ class PerturbationResult:
     iterations :
         Number of iterations performed.
     """
+
     unperturbed_state: np.ndarray
     perturbed_state: np.ndarray
     displacement: float
@@ -75,7 +77,8 @@ class ParameterSensitivity:
     sensitivity_coefficient :
         Normalised sensitivity (relative effect / relative perturbation).
     """
-    parameter: Union[str, int]
+
+    parameter: str | int
     nominal_value: float
     perturbed_value: float
     effect_size: float
@@ -97,8 +100,9 @@ class PerturbationTheorySolver:
         bounds: Optional clipping range for bounded states.
     """
 
-    def __init__(self, dt: float = 0.01, n_steps: int = 100,
-                 bounds: Optional[tuple[float, float]] = None) -> None:
+    def __init__(
+        self, dt: float = 0.01, n_steps: int = 100, bounds: tuple[float, float] | None = None
+    ) -> None:
         if dt <= 0.0:
             raise ValueError("dt must be positive")
         if n_steps < 1:
@@ -139,7 +143,7 @@ class PerturbationTheorySolver:
             if order >= 1:
                 drift = drift + strength * np.asarray(perturbation(state), dtype=float)
             if order >= 2:
-                drift = drift + 0.5 * (strength ** 2) * self._directional_correction(
+                drift = drift + 0.5 * (strength**2) * self._directional_correction(
                     state, perturbation
                 )
             state = state + self.dt * drift
@@ -148,8 +152,9 @@ class PerturbationTheorySolver:
             trajectory.append(state.copy())
         return np.asarray(trajectory)
 
-    def compute_green_function(self, operator: Array, source: Array,
-                                regularization: float = 1e-2) -> Array:
+    def compute_green_function(
+        self, operator: Array, source: Array, regularization: float = 1e-2
+    ) -> Array:
         """Solve a regularized linear response problem.
 
         Args:
@@ -167,8 +172,9 @@ class PerturbationTheorySolver:
         shifted = mat + regularization * np.eye(mat.shape[0])
         return np.linalg.solve(shifted, np.asarray(source, dtype=float))
 
-    def _directional_correction(self, state: Array,
-                                 perturbation: Callable[[Array], Array]) -> Array:
+    def _directional_correction(
+        self, state: Array, perturbation: Callable[[Array], Array]
+    ) -> Array:
         eps = 1e-6
         direction = np.asarray(perturbation(state), dtype=float)
         norm = np.linalg.norm(direction)
@@ -208,10 +214,10 @@ class EquilibriumPerturbationSolver:
 
     def __init__(
         self,
-        system_fn: Optional[Callable[[Array], Array]] = None,
-        equilibrium: Optional[Array] = None,
-        jacobian_fn: Optional[Callable[[Array], Array]] = None,
-        rng: Optional[np.random.Generator] = None,
+        system_fn: Callable[[Array], Array] | None = None,
+        equilibrium: Array | None = None,
+        jacobian_fn: Callable[[Array], Array] | None = None,
+        rng: np.random.Generator | None = None,
         tolerance: float = 1e-4,
     ) -> None:
         self.system_fn = system_fn
@@ -237,8 +243,7 @@ class EquilibriumPerturbationSolver:
             jacobian[:, i] = (system_fn(perturbed) - base) / eps
         return jacobian
 
-    def get_jacobian(self, state: Optional[Array] = None,
-                     eps: float = 1e-6) -> Array:
+    def get_jacobian(self, state: Array | None = None, eps: float = 1e-6) -> Array:
         """Return the Jacobian at the given state."""
         state = state or self.equilibrium
         if state is None:
@@ -247,9 +252,9 @@ class EquilibriumPerturbationSolver:
             return self.jacobian_fn(state)
         return self._compute_jacobian(state, eps)
 
-    def perturb_state(self, magnitude: float,
-                      perturbation_type: str = "uniform",
-                      max_iterations: int = 100) -> PerturbationResult:
+    def perturb_state(
+        self, magnitude: float, perturbation_type: str = "uniform", max_iterations: int = 100
+    ) -> PerturbationResult:
         """Apply a perturbation to the current state."""
         if self.equilibrium is None:
             raise ValueError("equilibrium must be set")
@@ -303,15 +308,20 @@ class EquilibriumPerturbationSolver:
 
         logger.info(
             "State perturbation applied: displacement=%.6f, relative=%.6f, stable=%s",
-            displacement, relative_displacement, stability,
+            displacement,
+            relative_displacement,
+            stability,
         )
 
         return result
 
-    def analyze_parameter_sensitivity(self, parameter_index: int,
-                                       nominal_value: float,
-                                       perturbation_fraction: float = 0.01,
-                                       state: Optional[Array] = None) -> ParameterSensitivity:
+    def analyze_parameter_sensitivity(
+        self,
+        parameter_index: int,
+        nominal_value: float,
+        perturbation_fraction: float = 0.01,
+        state: Array | None = None,
+    ) -> ParameterSensitivity:
         """Analyse the sensitivity of the system to parameter changes."""
         if self.equilibrium is None:
             raise ValueError("equilibrium must be set")
@@ -328,7 +338,9 @@ class EquilibriumPerturbationSolver:
         effect_size = float(np.linalg.norm(response - nominal_response))
         response_norm = float(np.linalg.norm(nominal_response))
         relative_effect = effect_size / response_norm if response_norm > 0 else float("inf")
-        sensitivity = (relative_effect / perturbation_fraction) if perturbation_fraction != 0 else 0.0
+        sensitivity = (
+            (relative_effect / perturbation_fraction) if perturbation_fraction != 0 else 0.0
+        )
 
         return ParameterSensitivity(
             parameter=parameter_index,
@@ -339,20 +351,23 @@ class EquilibriumPerturbationSolver:
             sensitivity_coefficient=sensitivity,
         )
 
-    def analyze_all_parameters(self, nominal_values: Array,
-                                perturbation_fraction: float = 0.01,
-                                state: Optional[Array] = None) -> list[ParameterSensitivity]:
+    def analyze_all_parameters(
+        self, nominal_values: Array, perturbation_fraction: float = 0.01, state: Array | None = None
+    ) -> list[ParameterSensitivity]:
         """Analyse sensitivity for all parameters simultaneously."""
         results: list[ParameterSensitivity] = []
         n_params = int(np.asarray(nominal_values).shape[0])
         for i in range(n_params):
             result = self.analyze_parameter_sensitivity(
-                i, nominal_values[i], perturbation_fraction, state,
+                i,
+                nominal_values[i],
+                perturbation_fraction,
+                state,
             )
             results.append(result)
         return results
 
-    def stability_analysis(self, state: Optional[Array] = None) -> StabilityReport:
+    def stability_analysis(self, state: Array | None = None) -> StabilityReport:
         """Perform a stability analysis of the system at *state*."""
         if self.equilibrium is None:
             raise ValueError("equilibrium must be set")

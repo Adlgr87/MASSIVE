@@ -7,8 +7,6 @@ silent schema drift.
 
 from __future__ import annotations
 
-from typing import List, Optional
-
 from pydantic import BaseModel, Field
 
 
@@ -45,7 +43,7 @@ class Feasibility(BaseModel):
 
     score: float = Field(..., ge=0.0, le=1.0)
     label: str
-    rationale: Optional[str] = None
+    rationale: str | None = None
 
 
 class ForecastResponse(BaseModel):
@@ -62,5 +60,5 @@ class ForecastResponse(BaseModel):
 
     sim_id: str
     horizon_ticks: int
-    points: List[ForecastPoint]
+    points: list[ForecastPoint]
     feasibility: Feasibility

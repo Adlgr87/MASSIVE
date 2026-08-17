@@ -3,8 +3,8 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Callable, Optional
 
 import numpy as np
 from scipy.sparse.linalg import eigsh
@@ -39,13 +39,13 @@ class StabilityAnalyzer:
             methods when a method-specific function is not supplied.
     """
 
-    def __init__(self, vector_field: Optional[Callable[[Array], Array]] = None) -> None:
+    def __init__(self, vector_field: Callable[[Array], Array] | None = None) -> None:
         self.vector_field = vector_field
 
     def compute_jacobian(
         self,
         x: Array,
-        vector_field: Optional[Callable[[Array], Array]] = None,
+        vector_field: Callable[[Array], Array] | None = None,
         eps: float = 1e-6,
     ) -> Array:
         """Estimate a dense Jacobian by central finite differences.
@@ -80,7 +80,7 @@ class StabilityAnalyzer:
     def analyze_linear_stability(
         self,
         x: Array,
-        vector_field: Optional[Callable[[Array], Array]] = None,
+        vector_field: Callable[[Array], Array] | None = None,
         tolerance: float = 1e-9,
     ) -> StabilityReport:
         """Classify local linear stability from Jacobian eigenvalues.
@@ -100,7 +100,9 @@ class StabilityAnalyzer:
         max_real = float(np.max(eigenvalues.real)) if eigenvalues.size else 0.0
         return StabilityReport(eigenvalues, spectral_radius, max_real, max_real < -tolerance)
 
-    def compute_spectral_radius(self, matrix: Array, iterations: int = 100, tol: float = 1e-10) -> float:
+    def compute_spectral_radius(
+        self, matrix: Array, iterations: int = 100, tol: float = 1e-10
+    ) -> float:
         """Estimate spectral radius with power iteration.
 
         Args:
@@ -170,7 +172,9 @@ class StabilityAnalyzer:
 
         data = np.asarray(trajectory, dtype=float)
         flat = data.reshape(data.shape[0], -1)
-        return np.array([self.compute_lyapunov_exponent(flat[:, i], dt) for i in range(flat.shape[1])])
+        return np.array(
+            [self.compute_lyapunov_exponent(flat[:, i], dt) for i in range(flat.shape[1])]
+        )
 
 
 # ---------------------------------------------------------------------------
@@ -202,11 +206,11 @@ class SparseStabilityAnalyzer:
 
     def __init__(
         self,
-        system_fn: Optional[Callable[[Array], Array]] = None,
-        equilibrium: Optional[Array] = None,
-        jacobian_fn: Optional[Callable[[Array], Array]] = None,
+        system_fn: Callable[[Array], Array] | None = None,
+        equilibrium: Array | None = None,
+        jacobian_fn: Callable[[Array], Array] | None = None,
         n_random_perturbations: int = 5,
-        rng: Optional[np.random.Generator] = None,
+        rng: np.random.Generator | None = None,
     ) -> None:
         self._legacy = StabilityAnalyzer(system_fn)
         self.equilibrium = equilibrium
@@ -221,7 +225,7 @@ class SparseStabilityAnalyzer:
     def compute_jacobian(
         self,
         x: Array,
-        vector_field: Optional[Callable[[Array], Array]] = None,
+        vector_field: Callable[[Array], Array] | None = None,
         eps: float = 1e-6,
     ) -> Array:
         """Delegate to :meth:`StabilityAnalyzer.compute_jacobian`."""
@@ -230,7 +234,7 @@ class SparseStabilityAnalyzer:
     def analyze_linear_stability(
         self,
         x: Array,
-        vector_field: Optional[Callable[[Array], Array]] = None,
+        vector_field: Callable[[Array], Array] | None = None,
         tolerance: float = 1e-9,
     ) -> StabilityReport:
         """Delegate to :meth:`StabilityAnalyzer.analyze_linear_stability`."""
@@ -245,18 +249,19 @@ class SparseStabilityAnalyzer:
         tol: float = 1e-10,
     ) -> float:
         """Delegate to :meth:`StabilityAnalyzer.compute_spectral_radius`."""
-        return self._legacy.compute_spectral_radius(
-            matrix, iterations=iterations, tol=tol
-        )
+        return self._legacy.compute_spectral_radius(matrix, iterations=iterations, tol=tol)
 
     # ------------------------------------------------------------------
     # Extended diagnostics
     # ------------------------------------------------------------------
 
-    def analyze(self, state: Optional[Array] = None,
-                eps: float = 1e-6,
-                sparse: bool = False,
-                k: Optional[int] = None) -> StabilityReport:
+    def analyze(
+        self,
+        state: Array | None = None,
+        eps: float = 1e-6,
+        sparse: bool = False,
+        k: int | None = None,
+    ) -> StabilityReport:
         """Perform a full stability analysis.
 
         Parameters
@@ -300,13 +305,15 @@ class SparseStabilityAnalyzer:
 
         logger.info(
             "Stability analysis complete. Stable: %s, Dominant eigenvalue: %.4f",
-            max_real < -1e-9, max_real,
+            max_real < -1e-9,
+            max_real,
         )
 
         return StabilityReport(eigenvalues, spectral_radius, max_real, max_real < -1e-9)
 
-    def scan_initial_conditions(self, n_samples: Optional[int] = None,
-                                 eps: float = 1e-6) -> list[StabilityReport]:
+    def scan_initial_conditions(
+        self, n_samples: int | None = None, eps: float = 1e-6
+    ) -> list[StabilityReport]:
         """Scan multiple initial conditions to assess global stability.
 
         Parameters
@@ -338,13 +345,15 @@ class SparseStabilityAnalyzer:
 
             logger.info(
                 "Scan %d/%d: Stable=%s, Dominant eigenvalue=%.4f",
-                i + 1, n_samples, report.stable, report.max_real_eigenvalue,
+                i + 1,
+                n_samples,
+                report.stable,
+                report.max_real_eigenvalue,
             )
 
         return reports
 
-    def get_stability_status(self, state: Optional[Array] = None,
-                             eps: float = 1e-6) -> str:
+    def get_stability_status(self, state: Array | None = None, eps: float = 1e-6) -> str:
         """Return a human-readable stability status string."""
         report = self.analyze(state, eps)
         if report.stable:

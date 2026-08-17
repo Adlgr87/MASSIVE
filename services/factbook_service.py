@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 
-def get_context(data_path: Optional[str] = None) -> Any:
+def get_context(data_path: str | None = None) -> Any:
     """Return a FactbookContext instance.
 
     Args:
@@ -21,7 +21,7 @@ def get_context(data_path: Optional[str] = None) -> Any:
     return get_factbook_context()
 
 
-def country_params(country: str, data_path: Optional[str] = None) -> dict[str, Any]:
+def country_params(country: str, data_path: str | None = None) -> dict[str, Any]:
     """Derive MASSIVE parameters for a country code or name.
 
     Args:
@@ -36,12 +36,13 @@ def country_params(country: str, data_path: Optional[str] = None) -> dict[str, A
     # Sanitize numpy types (ndarrays/np.float64) so downstream Pydantic
     # models (LLMRunResponse) never raise PydanticSerializationError. Fixes BUG-02.
     from massive.core.utils.serialize import to_jsonable
+
     return to_jsonable(dict(raw))
 
 
 def intervention_constraints(
     country: str,
-    data_path: Optional[str] = None,
+    data_path: str | None = None,
 ) -> dict[str, Any]:
     """Load economic constraints for intervention optimization.
 
@@ -59,9 +60,9 @@ def intervention_constraints(
 def build_engine_from_country(
     country: str,
     *,
-    n_agents: Optional[int] = None,
+    n_agents: int | None = None,
     seed: int = 42,
-    data_path: Optional[str] = None,
+    data_path: str | None = None,
     **overrides: Any,
 ) -> Any:
     """Construct ``MassiveEngine.from_factbook`` for UI/API callers.

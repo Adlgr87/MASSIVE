@@ -28,9 +28,7 @@ def _clip_signed(value: float) -> float:
     return float(max(-1.0, min(1.0, value)))
 
 
-def _normalize_attention_half_life(
-    hours: float, max_hours: float = _ATTENTION_MAX_HOURS
-) -> float:
+def _normalize_attention_half_life(hours: float, max_hours: float = _ATTENTION_MAX_HOURS) -> float:
     """
     Maps shorter digital attention half-lives to larger positive values.
 
@@ -526,9 +524,7 @@ MASSIVE_RUNTIME_PARAMS: dict = {
         ),
         3,
     ),
-    "payoff_defection": round(
-        float(_get_entry("game_theory", "COSTO_DISIDENCIA")["value"]), 3
-    ),
+    "payoff_defection": round(float(_get_entry("game_theory", "COSTO_DISIDENCIA")["value"]), 3),
     # Decaimiento narrativo: media-vida digital + aceleración del ciclo + fatiga.
     "narrative_decay_rate": round(
         _weighted_mean(
@@ -563,9 +559,7 @@ _NULL_PARAMS: list = []
 for _cat, _pid in _NULL_PARAMS:
     _entry = MASSIVE_EMPIRICAL_MASTER.get(_cat, {}).get(_pid, {})
     if _entry.get("value") is None:
-        MASSIVE_RUNTIME_PARAMS["validation_flags"].append(
-            f"{_cat}.{_pid}: pending_empirical_data"
-        )
+        MASSIVE_RUNTIME_PARAMS["validation_flags"].append(f"{_cat}.{_pid}: pending_empirical_data")
 
 
 # ============================================================
@@ -605,9 +599,7 @@ def get_runtime_params(cultural_profile: str = "mixed") -> dict:
         cultural_val = deriva["cultural_variance"][cultural_profile]
         base_val = deriva["value"]
         delta = cultural_val - base_val
-        params["temperature"] = float(
-            max(-1.0, min(1.0, params["temperature"] + delta))
-        )
+        params["temperature"] = float(max(-1.0, min(1.0, params["temperature"] + delta)))
 
     # INFLUENCIA_PARASOCIAL → social_influence_lambda
     parasocial = MASSIVE_EMPIRICAL_MASTER["network_dynamics"]["INFLUENCIA_PARASOCIAL"]

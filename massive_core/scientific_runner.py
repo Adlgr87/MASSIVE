@@ -114,6 +114,7 @@ def run_scientific_simulation(
         scientific_config=runtime_config,
     )
 
+
 @dataclass(frozen=True)
 class ScientificEngineResult:
     """Serializable result for non-legacy scientific engine runs.
@@ -192,10 +193,16 @@ def run_energy_scientific_simulation(
     history = [state.copy()]
     diagnostics = []
     for _ in range(steps):
-        state = engine.step(state, np.asarray(adj, dtype=float), attractors or [], repellers or [], eta=eta)
+        state = engine.step(
+            state, np.asarray(adj, dtype=float), attractors or [], repellers or [], eta=eta
+        )
         history.append(state.copy())
         diagnostics.append(_diagnostics_to_dict(engine.last_numerical_diagnostics))
-    report = build_scientific_report(history, dt=eta) if runtime_config.enable_scientific_report else None
+    report = (
+        build_scientific_report(history, dt=eta)
+        if runtime_config.enable_scientific_report
+        else None
+    )
     return ScientificEngineResult(history, report, diagnostics, runtime_config)
 
 
@@ -226,7 +233,11 @@ def run_multilayer_scientific_simulation(
     for _ in range(steps):
         history.append(engine.step().copy())
         diagnostics.append(_diagnostics_to_dict(engine.last_numerical_diagnostics))
-    report = build_scientific_report(history, dt=engine.dt) if runtime_config.enable_scientific_report else None
+    report = (
+        build_scientific_report(history, dt=engine.dt)
+        if runtime_config.enable_scientific_report
+        else None
+    )
     return ScientificEngineResult(history, report, diagnostics, runtime_config)
 
 

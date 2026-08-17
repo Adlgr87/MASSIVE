@@ -4,7 +4,6 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass, field
-from typing import Optional
 
 import numpy as np
 from scipy.optimize import differential_evolution
@@ -31,6 +30,7 @@ class ReconstructionResult:
     missingness :
         Fraction of entries that were *not* observed.
     """
+
     reconstructed_matrix: np.ndarray
     error: float
     iterations: int
@@ -45,8 +45,8 @@ class ReconstructionResult:
 # Internal helpers
 # ---------------------------------------------------------------------------
 
-def _squared_penalty(matrix: np.ndarray, indices: np.ndarray,
-                     target: np.ndarray) -> np.ndarray:
+
+def _squared_penalty(matrix: np.ndarray, indices: np.ndarray, target: np.ndarray) -> np.ndarray:
     """Return squared residuals on observed entries.
 
     Parameters
@@ -103,7 +103,7 @@ class NetworkReconstructor:
         self,
         method: str = "de",
         bounds: tuple[float, float] = (0.0, 1.0),
-        de_options: Optional[dict] = None,
+        de_options: dict | None = None,
         cg_tol: float = 1e-8,
         cg_max_iter: int = 1000,
     ) -> None:
@@ -121,8 +121,7 @@ class NetworkReconstructor:
     # Legacy API — correlation-based
     # ================================================================
 
-    def reconstruct_correlation_based(self, trajectories: Array,
-                                       threshold: float = 0.3) -> Array:
+    def reconstruct_correlation_based(self, trajectories: Array, threshold: float = 0.3) -> Array:
         """Infer undirected links from absolute Pearson correlation.
 
         Args:
@@ -143,8 +142,9 @@ class NetworkReconstructor:
         np.fill_diagonal(adjacency, 0.0)
         return adjacency
 
-    def reconstruct_transfer_entropy(self, trajectories: Array, lag: int = 1,
-                                     bins: int = 10) -> Array:
+    def reconstruct_transfer_entropy(
+        self, trajectories: Array, lag: int = 1, bins: int = 10
+    ) -> Array:
         """Estimate directed links with discrete transfer entropy.
 
         Args:
@@ -161,17 +161,22 @@ class NetworkReconstructor:
         data = np.asarray(trajectories, dtype=float)
         if data.ndim != 2 or data.shape[0] <= lag + 1:
             raise ValueError("trajectories must have enough time points")
-        discrete = np.column_stack([self._discretize(data[:, i], bins) for i in range(data.shape[1])])
+        discrete = np.column_stack(
+            [self._discretize(data[:, i], bins) for i in range(data.shape[1])]
+        )
         n_agents = data.shape[1]
         scores = np.zeros((n_agents, n_agents), dtype=float)
         for source in range(n_agents):
             for target in range(n_agents):
                 if source != target:
-                    scores[source, target] = self._transfer_entropy(discrete[:, source], discrete[:, target], lag)
+                    scores[source, target] = self._transfer_entropy(
+                        discrete[:, source], discrete[:, target], lag
+                    )
         return scores
 
-    def reconstruct_granger_causality(self, trajectories: Array, max_lag: int = 5,
-                                      alpha: float = 0.05) -> Array:
+    def reconstruct_granger_causality(
+        self, trajectories: Array, max_lag: int = 5, alpha: float = 0.05
+    ) -> Array:
         """Infer linear directed influence from lagged regression improvement.
 
         Args:
@@ -195,7 +200,9 @@ class NetworkReconstructor:
         for source in range(n_agents):
             for target in range(n_agents):
                 if source != target:
-                    scores[source, target] = self._granger_score(data[:, source], data[:, target], max_lag)
+                    scores[source, target] = self._granger_score(
+                        data[:, source], data[:, target], max_lag
+                    )
         return scores
 
     def _discretize(self, values: Array, bins: int) -> Array:
@@ -211,9 +218,9 @@ class NetworkReconstructor:
         return max(self._conditional_mutual_information(y_next, x_past, y_past), 0.0)
 
     def _conditional_mutual_information(self, y: Array, x: Array, z: Array) -> float:
-        xyz = list(zip(x, y, z))
-        xz = list(zip(x, z))
-        yz = list(zip(y, z))
+        xyz = list(zip(x, y, z, strict=False))
+        xz = list(zip(x, z, strict=False))
+        yz = list(zip(y, z, strict=False))
         z_values = list(z)
         n = float(len(y))
         score = 0.0
@@ -244,7 +251,7 @@ class NetworkReconstructor:
         design = np.column_stack([np.ones(predictors.shape[0]), predictors])
         coefficients = np.linalg.lstsq(design, target, rcond=None)[0]
         residual = target - design @ coefficients
-        return float(np.sum(residual ** 2))
+        return float(np.sum(residual**2))
 
     # ================================================================
     # Sparse constrained optimisation
@@ -256,11 +263,12 @@ class NetworkReconstructor:
         indices = np.argwhere(observed_mask)
         target = known_matrix[observed_mask]
         dim = known_matrix.shape[0]
-        index_map = indices[:, 0] * dim + indices[:, 1]
+        indices[:, 0] * dim + indices[:, 1]
         return observed_mask, indices, target
 
-    def _reconstruct_de(self, known_matrix: np.ndarray,
-                        indices: np.ndarray) -> ReconstructionResult:
+    def _reconstruct_de(
+        self, known_matrix: np.ndarray, indices: np.ndarray
+    ) -> ReconstructionResult:
         """Reconstruct via differential evolution."""
         dim = known_matrix.shape[0]
         flat_target = known_matrix[~np.isnan(known_matrix)]
@@ -298,8 +306,9 @@ class NetworkReconstructor:
             missingness=float(missingness),
         )
 
-    def _reconstruct_cg(self, known_matrix: np.ndarray,
-                        indices: np.ndarray) -> ReconstructionResult:
+    def _reconstruct_cg(
+        self, known_matrix: np.ndarray, indices: np.ndarray
+    ) -> ReconstructionResult:
         """Reconstruct via conjugate-gradient."""
         dim = known_matrix.shape[0]
         n_obs = len(indices)
@@ -309,6 +318,7 @@ class NetworkReconstructor:
         A_vals = np.ones(n_obs)
 
         from scipy.sparse import csr_matrix
+
         A_obs = csr_matrix((A_vals, (A_rows, A_cols)), shape=(n_obs, dim * dim))
 
         b_obs = known_matrix[~np.isnan(known_matrix)]
@@ -317,7 +327,7 @@ class NetworkReconstructor:
 
         AtA = AtA + 1e-6 * np.eye(dim * dim)
 
-        x0 = np.zeros(dim * dim)
+        np.zeros(dim * dim)
         solution = self._solve_cg(AtA.toarray() if hasattr(AtA, "toarray") else AtA, Atb)
 
         reconstructed = _matrix_reshape(solution, dim)
@@ -338,8 +348,9 @@ class NetworkReconstructor:
             missingness=float(missingness),
         )
 
-    def _solve_cg(self, A: Array, b: Array, x0: Optional[Array] = None,
-                  tol: float = 1e-8, max_iter: int = 1000) -> Array:
+    def _solve_cg(
+        self, A: Array, b: Array, x0: Array | None = None, tol: float = 1e-8, max_iter: int = 1000
+    ) -> Array:
         """Minimal conjugate-gradient solver."""
         n = A.shape[0]
         x = x0.copy() if x0 is not None else np.zeros(n)
@@ -394,8 +405,9 @@ class NetworkReconstructor:
         else:
             raise ValueError(f"Unknown reconstruction method: {self.method!r}")
 
-    def get_reconstruction_error(self, known_matrix: np.ndarray,
-                                 reconstructed: np.ndarray) -> float:
+    def get_reconstruction_error(
+        self, known_matrix: np.ndarray, reconstructed: np.ndarray
+    ) -> float:
         """Mean squared error between known entries and reconstructed values."""
         observed_mask = ~np.isnan(known_matrix)
         if not np.any(observed_mask):

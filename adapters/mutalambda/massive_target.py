@@ -6,12 +6,13 @@ This is a thin, stable interface for external multi-objective optimizers
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Callable
+from typing import Any
 
 import numpy as np
 
-from forecast.targets import TargetDefinition, POLARIZATION_INDEX, resolve_target
+from forecast.targets import POLARIZATION_INDEX, TargetDefinition, resolve_target
 
 
 @dataclass
@@ -52,7 +53,7 @@ def evaluate_massive_vector(
       [3] layer_weight digital
       [4] layer_weight economic
     """
-    from multilayer_engine import MultilayerEngine, COL_OPINION
+    from multilayer_engine import COL_OPINION, MultilayerEngine
 
     x = np.asarray(decision, dtype=float).ravel()
     if x.size < 1:

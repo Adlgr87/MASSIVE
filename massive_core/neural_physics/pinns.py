@@ -38,7 +38,9 @@ class PhysicsInformedNeuralNetwork(nn.Module):
 
         return self.net(inputs)
 
-    def physics_loss(self, x: torch.Tensor, t: torch.Tensor, social_force: torch.Tensor | None = None) -> torch.Tensor:
+    def physics_loss(
+        self, x: torch.Tensor, t: torch.Tensor, social_force: torch.Tensor | None = None
+    ) -> torch.Tensor:
         """Compute a Langevin-like residual loss.
 
         Args:

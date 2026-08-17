@@ -68,9 +68,9 @@ class CfCRouter:
     _instance: Optional["CfCRouter"] = None
 
     def __init__(self) -> None:
-        self._sel = None    # CfCRegimeSelector
-        self._tau = None    # CfCTauMatrix
-        self._arch = None   # CfCArchitectPolicy
+        self._sel = None  # CfCRegimeSelector
+        self._tau = None  # CfCTauMatrix
+        self._arch = None  # CfCArchitectPolicy
         self._torch_available = False
         self._load()
 
@@ -88,12 +88,13 @@ class CfCRouter:
     def _load(self) -> None:
         try:
             import torch
+
             self._torch_available = True
         except ImportError:
             log.debug("[CfC] PyTorch no disponible — CfC desactivado.")
             return
 
-        from cfc_engine import CfCRegimeSelector, CfCTauMatrix, CfCArchitectPolicy, NUM_REGIMES
+        from cfc_engine import NUM_REGIMES, CfCArchitectPolicy, CfCRegimeSelector, CfCTauMatrix
 
         base = Path("models")
 
@@ -103,9 +104,7 @@ class CfCRouter:
                 return None
             try:
                 m = model_cls(*args, **kwargs)
-                m.load_state_dict(
-                    torch.load(path, map_location="cpu", weights_only=True)
-                )
+                m.load_state_dict(torch.load(path, map_location="cpu", weights_only=True))
                 m.eval()
                 log.info(f"[CfC] Modelo cargado: {filename}")
                 return m
@@ -114,16 +113,26 @@ class CfCRouter:
                 return None
 
         self._sel = _try_load(
-            "cfc_selector.pt", CfCRegimeSelector,
-            window_size=6, state_dim=8, hidden=64,
+            "cfc_selector.pt",
+            CfCRegimeSelector,
+            window_size=6,
+            state_dim=8,
+            hidden=64,
         )
         self._tau = _try_load(
-            "cfc_tau.pt", CfCTauMatrix,
-            attr_dim=4, behavior_dim=5,
+            "cfc_tau.pt",
+            CfCTauMatrix,
+            attr_dim=4,
+            behavior_dim=5,
         )
         self._arch = _try_load(
-            "cfc_architect.pt", CfCArchitectPolicy,
-            state_dim=10, goal_dim=5, hidden=128, n_phases=5, n_regimes=NUM_REGIMES,
+            "cfc_architect.pt",
+            CfCArchitectPolicy,
+            state_dim=10,
+            goal_dim=5,
+            hidden=128,
+            n_phases=5,
+            n_regimes=NUM_REGIMES,
         )
 
     # ── API pública ──────────────────────────────────────────────────────────
@@ -166,7 +175,7 @@ class CfCRouter:
             return int(rid.item()), "cfc", cf
         return -1, "llm_fallback", cf
 
-    def compute_tau_matrix(self, attributes: np.ndarray) -> Optional[np.ndarray]:
+    def compute_tau_matrix(self, attributes: np.ndarray) -> np.ndarray | None:
         """
         Genera la matriz de modulación τ sociodemográfica.
 
@@ -184,16 +193,14 @@ class CfCRouter:
         import torch
 
         with torch.no_grad():
-            result = self._tau(
-                torch.tensor(attributes, dtype=torch.float32)
-            )
+            result = self._tau(torch.tensor(attributes, dtype=torch.float32))
         return result.numpy()
 
     def propose_strategy(
         self,
         initial_state: dict,
         goal_embedding: list,
-    ) -> Optional[dict]:
+    ) -> dict | None:
         """
         Propone una estrategia de intervención sin llamar a la API LLM.
 

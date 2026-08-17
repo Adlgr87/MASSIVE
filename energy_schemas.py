@@ -2,8 +2,8 @@
 energy_schemas.py — Modelos Pydantic v2 para MASSIVE Energy Engine
 Validación estricta, autocompletado IDE, serialización segura.
 """
-from pydantic import BaseModel, Field, ConfigDict, field_validator
-from typing import List
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class Attractor(BaseModel):
@@ -24,21 +24,25 @@ class Dynamics(BaseModel):
     model_config = ConfigDict(extra="forbid")
     temperature: float = Field(..., ge=0.01, le=0.20, description="Nivel de caos / libre albedrío")
     eta: float = Field(default=0.01, ge=0.001, le=0.1, description="Tamaño del paso de integración")
-    lambda_social: float = Field(..., ge=0.0, le=1.0, description="Balance red (1.0) vs escenario (0.0)")
+    lambda_social: float = Field(
+        ..., ge=0.0, le=1.0, description="Balance red (1.0) vs escenario (0.0)"
+    )
 
 
 class EnergyParams(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    attractors: List[Attractor] = Field(default_factory=list)
-    repellers: List[Repeller] = Field(default_factory=list)
+    attractors: list[Attractor] = Field(default_factory=list)
+    repellers: list[Repeller] = Field(default_factory=list)
     dynamics: Dynamics
 
     @field_validator("attractors", "repellers")
     @classmethod
-    def check_unique_positions(cls, v: List) -> List:
+    def check_unique_positions(cls, v: list) -> list:
         positions = [item.position for item in v]
         if len(positions) != len(set(positions)):
-            raise ValueError("Existen atractores/repulsores con la misma posición. Solapa pozos/picos.")
+            raise ValueError(
+                "Existen atractores/repulsores con la misma posición. Solapa pozos/picos."
+            )
         return v
 
 

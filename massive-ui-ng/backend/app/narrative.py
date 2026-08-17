@@ -116,16 +116,22 @@ def _polarization_verdict(pol: float, lang: str) -> str:
     if pol is None:
         return ""
     if pol < 0.15:
-        return ("la población quedó poco polarizada: las posiciones se mantuvieron cercanas al centro"
-                if lang == "es" else
-                "the population ended with low polarization: positions stayed near the center")
+        return (
+            "la población quedó poco polarizada: las posiciones se mantuvieron cercanas al centro"
+            if lang == "es"
+            else "the population ended with low polarization: positions stayed near the center"
+        )
     if pol < 0.35:
-        return ("quedó una polarización moderada: hay bloques definidos pero no extremos"
-                if lang == "es" else
-                "moderate polarization remained: defined blocs, but nothing extreme")
-    return ("la polarización fue alta: la población terminó dividida en extremos"
-            if lang == "es" else
-            "polarization was high: the population ended split between extremes")
+        return (
+            "quedó una polarización moderada: hay bloques definidos pero no extremos"
+            if lang == "es"
+            else "moderate polarization remained: defined blocs, but nothing extreme"
+        )
+    return (
+        "la polarización fue alta: la población terminó dividida en extremos"
+        if lang == "es"
+        else "polarization was high: the population ended split between extremes"
+    )
 
 
 def _ews_meaning(flags: dict[str, Any], lang: str) -> str:
@@ -152,35 +158,47 @@ def _engine_intro(engine: str, meta: dict[str, Any], lang: str) -> str:
     if engine == "scalar":
         return ""
     if engine == "energy" and lang == "es":
-        return (f"Se simularon {n} agentes sobre un paisaje de energía social "
-                "(dinámica de Langevin): cada agente se movió entre atractores, "
-                "influencia de vecinos y ruido.")
+        return (
+            f"Se simularon {n} agentes sobre un paisaje de energía social "
+            "(dinámica de Langevin): cada agente se movió entre atractores, "
+            "influencia de vecinos y ruido."
+        )
     if engine == "energy":
-        return (f"We simulated {n} agents over a social-energy landscape "
-                "(Langevin dynamics): each agent moved between attractors, "
-                "neighbor influence and noise.")
+        return (
+            f"We simulated {n} agents over a social-energy landscape "
+            "(Langevin dynamics): each agent moved between attractors, "
+            "neighbor influence and noise."
+        )
     if engine == "multilayer" and lang == "es":
-        return (f"Se simularon {n} agentes en tres capas (social, digital, económica) "
-                "con atributos sociodemográficos: opinión, cooperación, jerarquía, "
-                "ingreso y acceso a información.")
+        return (
+            f"Se simularon {n} agentes en tres capas (social, digital, económica) "
+            "con atributos sociodemográficos: opinión, cooperación, jerarquía, "
+            "ingreso y acceso a información."
+        )
     if engine == "multilayer":
-        return (f"We simulated {n} agents across three layers (social, digital, economic) "
-                "with sociodemographic attributes: opinion, cooperation, hierarchy, "
-                "income and information access.")
+        return (
+            f"We simulated {n} agents across three layers (social, digital, economic) "
+            "with sociodemographic attributes: opinion, cooperation, hierarchy, "
+            "income and information access."
+        )
     if engine == "massive" and lang == "es":
         m = meta.get("n_clusters", "?")
         saving = meta.get("memory_savings_pct")
         saving_txt = f" (con {saving:.0f}% de ahorro de RAM)" if saving else ""
-        return (f"Se simuló una población de {n} agentes agrupada en {m} super-agentes"
-                f"{saving_txt}: los agentes en consenso 'duermen' y solo se actualizan "
-                "los activos (simulación dirigida por eventos).")
+        return (
+            f"Se simuló una población de {n} agentes agrupada en {m} super-agentes"
+            f"{saving_txt}: los agentes en consenso 'duermen' y solo se actualizan "
+            "los activos (simulación dirigida por eventos)."
+        )
     if engine == "massive":
         m = meta.get("n_clusters", "?")
         saving = meta.get("memory_savings_pct")
         saving_txt = f" (with {saving:.0f}% RAM savings)" if saving else ""
-        return (f"We simulated a population of {n} agents grouped into {m} super-agents"
-                f"{saving_txt}: agents in consensus 'sleep' and only active ones are "
-                "updated (event-driven simulation).")
+        return (
+            f"We simulated a population of {n} agents grouped into {m} super-agents"
+            f"{saving_txt}: agents in consensus 'sleep' and only active ones are "
+            "updated (event-driven simulation)."
+        )
     return ""
 
 
@@ -284,16 +302,16 @@ def build_narrative(
         if lang == "es":
             lines.append(f"## {t['why']}")
             lines.append(
-                f"El mecanismo dominante fue **{rule}**" +
-                (f": {meaning}." if meaning else ".") +
-                " Es la fuerza que más moldeó la trayectoria durante la corrida."
+                f"El mecanismo dominante fue **{rule}**"
+                + (f": {meaning}." if meaning else ".")
+                + " Es la fuerza que más moldeó la trayectoria durante la corrida."
             )
         else:
             lines.append(f"## {t['why']}")
             lines.append(
-                f"The dominant mechanism was **{rule}**" +
-                (f": {meaning}." if meaning else ".") +
-                " It is the force that most shaped the trajectory during the run."
+                f"The dominant mechanism was **{rule}**"
+                + (f": {meaning}." if meaning else ".")
+                + " It is the force that most shaped the trajectory during the run."
             )
         lines.append("")
         # Rule timeline support from series.
@@ -319,8 +337,8 @@ def build_narrative(
             if tech:
                 lines.append(
                     f"- Polarización media (|op − neutro|): **{_fmt(pol)}**."
-                    if lang == "es" else
-                    f"- Mean polarization (|op − neutral|): **{_fmt(pol)}**."
+                    if lang == "es"
+                    else f"- Mean polarization (|op − neutral|): **{_fmt(pol)}**."
                 )
             lines.append("")
 
@@ -332,13 +350,11 @@ def build_narrative(
             ev = scientific_report["max_real_eigenvalue"]
             lines.append(
                 f"Etiqueta: **{stab}** (eigenvalor real máximo {_fmt(ev, 3)}){f' — {meaning}' if meaning else ''}."
-                if lang == "es" else
-                f"Label: **{stab}** (max real eigenvalue {_fmt(ev, 3)}){f' — {meaning}' if meaning else ''}."
+                if lang == "es"
+                else f"Label: **{stab}** (max real eigenvalue {_fmt(ev, 3)}){f' — {meaning}' if meaning else ''}."
             )
         else:
-            lines.append(
-                f"Estado: **{stab}**{f' — {meaning}' if meaning else ''}."
-            )
+            lines.append(f"Estado: **{stab}**{f' — {meaning}' if meaning else ''}.")
         lines.append("")
     ews = _ews_meaning(flags, lang)
     if ews:
@@ -351,22 +367,22 @@ def build_narrative(
         s = meta["memory_savings_pct"]
         extras.append(
             f"Ahorro de RAM vs. float64: **{s:.1f}%** (estado cuantizado + super-agentes)."
-            if lang == "es" else
-            f"RAM savings vs. float64: **{s:.1f}%** (quantized state + super-agents)."
+            if lang == "es"
+            else f"RAM savings vs. float64: **{s:.1f}%** (quantized state + super-agents)."
         )
         if meta.get("steps_per_second"):
             extras.append(
                 f"Rendimiento: **{meta['steps_per_second']:,.0f}** pasos/segundo."
-                if lang == "es" else
-                f"Throughput: **{meta['steps_per_second']:,.0f}** steps/second."
+                if lang == "es"
+                else f"Throughput: **{meta['steps_per_second']:,.0f}** steps/second."
             )
     if engine == "massive" and meta.get("active_history"):
         act = meta["active_history"]
         frac = act[-1] if act else 1.0
         extras.append(
             f"Fracción activa al final: **{frac * 100:.0f}%** de los super-agentes."
-            if lang == "es" else
-            f"Active fraction at the end: **{frac * 100:.0f}%** of super-agents."
+            if lang == "es"
+            else f"Active fraction at the end: **{frac * 100:.0f}%** of super-agents."
         )
     if extras:
         lines.append(f"## {t['scale']}")
@@ -383,31 +399,50 @@ def build_narrative(
     # ── Highlights (compact cards for the UI) ─────────────────────────────
     highlights: list[Highlight] = []
     if opin_fin is not None:
-        highlights.append(Highlight(
-            label=t["opinion_final"], value=_fmt(opin_fin),
-            meaning=(f"respecto al neutro {_fmt(neutro, 1)}" if lang == "es"
-                     else f"relative to neutral {_fmt(neutro, 1)}"),
-        ))
+        highlights.append(
+            Highlight(
+                label=t["opinion_final"],
+                value=_fmt(opin_fin),
+                meaning=(
+                    f"respecto al neutro {_fmt(neutro, 1)}"
+                    if lang == "es"
+                    else f"relative to neutral {_fmt(neutro, 1)}"
+                ),
+            )
+        )
     if delta is not None:
-        highlights.append(Highlight(
-            label=t["change"], value=_fmt(delta),
-            meaning=(_direction(delta, neutro, lang)),
-        ))
+        highlights.append(
+            Highlight(
+                label=t["change"],
+                value=_fmt(delta),
+                meaning=(_direction(delta, neutro, lang)),
+            )
+        )
     if pol is not None:
-        highlights.append(Highlight(
-            label=t["polarization"], value=_fmt(pol),
-            meaning=_polarization_verdict(pol, lang),
-        ))
+        highlights.append(
+            Highlight(
+                label=t["polarization"],
+                value=_fmt(pol),
+                meaning=_polarization_verdict(pol, lang),
+            )
+        )
     if rule:
         meaning = _RULE_MEANING.get(rule, {}).get(lang, "")
-        highlights.append(Highlight(
-            label=t["mechanism"], value=rule, meaning=meaning,
-        ))
+        highlights.append(
+            Highlight(
+                label=t["mechanism"],
+                value=rule,
+                meaning=meaning,
+            )
+        )
     if stab:
-        highlights.append(Highlight(
-            label=t["stability_label"], value=stab,
-            meaning=_STABILITY_MEANING.get(stab, {}).get(lang, ""),
-        ))
+        highlights.append(
+            Highlight(
+                label=t["stability_label"],
+                value=stab,
+                meaning=_STABILITY_MEANING.get(stab, {}).get(lang, ""),
+            )
+        )
 
     return narrative, highlights
 
