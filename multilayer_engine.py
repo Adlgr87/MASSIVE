@@ -695,21 +695,46 @@ class MultilayerEngine:
         self._refresh_mps_state()
         return self.x
 
-    def run(self, steps: int = 100) -> list[np.ndarray]:
+    def run(self, steps: int = 100, store_history: bool = True) -> list[np.ndarray]:
         """
         Ejecuta la simulación por `steps` pasos.
 
         Args:
             steps: Número de pasos de integración.
+            store_history: Cuando ``False`` no se conservan las snapshots
+                completas ``(N, K)`` en ``self._history``; en su lugar se
+                guardan solo los agregados de opinión (media, std, polarización)
+                por paso, reduciendo el uso de memoria de O(steps·N·K) a
+                O(steps·4).  Backward-compatible: el valor predeterminado
+                ``True`` preserva el comportamiento original.
 
         Returns:
             Lista de matrices de estado (N, K), de longitud steps + 1
-            (incluye el estado inicial).
+            (incluye el estado inicial) — o, cuando ``store_history=False``,
+            una lista de agregados de opinión (dicts) de la misma longitud.
         """
         if steps < 1:
             raise ValueError("steps debe ser ≥ 1")
+        prev = len(self._history)
         for _ in range(steps):
             self.step()
+        if not store_history and len(self._history) > 1:
+            # Replace full snapshots with compact aggregates (PERF-01).
+            # We keep only the opinion column's per-step summary; the full
+            # ``self.x`` final state remains accessible via ``self.x``.
+            aggregates = []
+            for snap in self._history:
+                ops = snap[:, COL_OPINION]
+                aggregates.append({
+                    "mean_opinion": float(ops.mean()),
+                    "std_opinion": float(ops.std()),
+                    "polarization": float(np.mean(np.abs(ops))),
+                    "sample_size": int(ops.size),
+                })
+            # Free the large snapshots; keep compact aggregates + final state.
+            self._history_compact = aggregates
+            self._history = [self.x.copy()]  # retain only the last full snapshot
+            return aggregates  # length steps+1 (backward-compatible with service layer)
         return self._history
 
     def get_landscape(self) -> dict:
@@ -776,6 +801,33 @@ class MultilayerEngine:
         if self.mps_state is not None:
             return decompress_agent_states(self.mps_state)
         return self.x
+
+    def diagnose(self) -> dict[str, float]:
+        """Return observability metrics for the engine's current run.
+
+        Includes:
+            - n_agents: population size N.
+            - n_features: K (columns per agent).
+            - n_steps_recorded: how many history snapshots/aggregates exist.
+            - state_bytes: memory used by ``self.x`` state matrix in bytes.
+            - opinion_mean: current mean opinion.
+            - opinion_std: current opinion std-dev.
+            - opinion_min / opinion_max: current opinion envelope.
+
+        Useful for instrumentation hooks, health checks and dashboards.
+        """
+        n_steps = len(self._history_compact) if hasattr(self, "_history_compact") and self._history_compact else len(self._history)
+        ops = self.x[:, COL_OPINION]
+        return {
+            "n_agents": int(self.N),
+            "n_features": int(self.x.shape[1]),
+            "n_steps_recorded": int(n_steps),
+            "state_bytes": int(self.x.nbytes),
+            "opinion_mean": float(ops.mean()),
+            "opinion_std": float(ops.std()),
+            "opinion_min": float(ops.min()),
+            "opinion_max": float(ops.max()),
+        }
 
     @property
     def graphs(self) -> dict[str, sparse.csr_matrix]:

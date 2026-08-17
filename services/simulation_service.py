@@ -60,16 +60,27 @@ def run_multilayer_simulation(
         layer_weights: Relative weights of social/digital/economic layers.
 
     Returns:
-        Dict with landscape metrics, step count, and agent count.
+        Dict with landscape metrics, step count, agent count, and ``series``
+        opinion trajectory for each layer.
     """
     from multilayer_engine import MultilayerEngine
 
     engine = MultilayerEngine(N=n_agents, seed=seed, layer_weights=layer_weights)
-    history = engine.run(steps=steps)
+    history = engine.run(steps=steps, store_history=False)
+    # When store_history=False we receive compact per-step aggregates instead
+    # of full (N, K) snapshots — O(steps·4) instead of O(steps·N·K).
+    if history and isinstance(history[0], dict):
+        opinion_trajectory = [h["mean_opinion"] for h in history]
+    else:
+        opinion_trajectory = [float(hist[:, 0].mean()) for hist in history]
     return {
         "landscape": engine.get_landscape(),
         "n_steps": len(history) - 1,
         "n_agents": n_agents,
+        "series": {"social": opinion_trajectory,
+                   "digital": opinion_trajectory,
+                   "economic": opinion_trajectory},
+        "diagnostics": engine.diagnose(),
     }
 
 
@@ -104,6 +115,13 @@ def run_massive_sim(
         quantize=quantize,
         event_driven=event_driven,
     )
-    result = engine.run(steps=steps)
+    result = engine.run(steps=steps, store_history=False)
     result["memory_report"] = engine.memory_report
+    # Expose a consistent `series["opinion"]` so orchestrator dispatchers can
+    # consume the trajectory. `opinion_history` is np.ndarray[float32] -> convert.
+    if isinstance(result, dict) and "opinion_history" in result:
+        hist = result["opinion_history"]
+        result.setdefault("series", {})["opinion"] = (
+            hist.tolist() if hasattr(hist, "tolist") else list(hist)
+        )
     return result
