@@ -49,3 +49,4 @@ reports/validation/local/
 frontend/dist
 frontend/dist/
 massive-ui-ng/frontend/dist/
+.codebuff/
