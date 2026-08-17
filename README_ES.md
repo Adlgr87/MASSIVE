@@ -99,11 +99,14 @@ Variables de entorno opcionales en `.env.example`. Para Ollama local, configura
 # 1. Instalar dependencias backend
 pip install -r requirements.txt
 
-# 2. Compilar el frontend UI-NG (una vez) — genera frontend/dist
-cd frontend && npm ci && npm run build && cd ..
+# 2. Compilar el frontend UI-NG (una vez) — genera massive-ui-ng/frontend/dist
+cd massive-ui-ng/frontend && npm ci && npm run build && cd ../..
+
+# 2b. Enlazar el build al path que sirve el backend (frontend/dist)
+ln -snf ../massive-ui-ng/frontend/dist frontend/dist
 
 # 3. Servir todo (API en :8000, frontend en /)
-uvicorn backend.app.main:app --host 0.0.0.0 --port 8000
+MASSIVE_SERVE_FRONTEND=1 uvicorn backend.app.main:app --host 0.0.0.0 --port 8000
 ```
 
 Abre `http://localhost:8000` para la app UI-NG. La documentación OpenAPI está en `/docs`.
