@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-17T17:32:35.615321",
+  "timestamp": "2026-08-17T17:34:11.850963",
   "model_path": "/home/adlg/MASSIVE/models/cfc_calibrated/cfc_residual.pt",
   "architecture": {
     "type": "CfCResidualCorrector-N9H64",
@@ -23,127 +23,120 @@
   "baseline_metrics": {
     "final_leave_pct": 0.5449942526325485,
     "error": 0.026094252632548498,
-    "time_seconds": 2.2324697971343994
+    "time_seconds": 1.4779636859893799
   },
   "corrected_metrics": {
-    "final_leave_pct": 0.40685208178620025,
-    "error": 0.11204791821379978,
-    "time_seconds": 0.18920612335205078,
-    "improvement_percent": -329.39692426384164,
-    "correction_method": "Hybrid: 0% model weight + 100% calibrated bias (due to model R\u00b2=-18.7)"
+    "final_leave_pct": 0.5275353119553138,
+    "error": 0.008635311955313751,
+    "time_seconds": 0.1602489948272705,
+    "improvement_percent": 66.90722636546198,
+    "correction_method": "Dynamic model-guided residual correction (scale=0.1)"
   },
   "stress_test": [
     {
       "seed": 0,
       "baseline_pct": 0.3887264136132821,
       "baseline_err": 0.13017358638671794,
-      "corrected_pct": 0.35525313758819355,
-      "corrected_err": 0.16364686241180648,
-      "improvement_err": -0.03347327602508854,
-      "improvement_pct": -25.71433802679952
+      "corrected_pct": 0.479572355638239,
+      "corrected_err": 0.039327644361761005,
+      "improvement_err": 0.09084594202495694,
+      "improvement_pct": 69.78830694198824
     },
     {
       "seed": 1,
       "baseline_pct": 0.5136011178952665,
       "baseline_err": 0.005298882104733504,
-      "corrected_pct": 0.3304571884522287,
-      "corrected_err": 0.18844281154777132,
-      "improvement_err": -0.1831439294430378,
-      "improvement_pct": -3456.2748486031587
+      "corrected_pct": 0.4293175567173983,
+      "corrected_err": 0.08958244328260173,
+      "improvement_err": -0.08428356117786823,
+      "improvement_pct": -1590.591364593251
     },
     {
       "seed": 2,
       "baseline_pct": 0.438948854270762,
       "baseline_err": 0.079951145729238,
-      "corrected_pct": 0.3676378578738556,
-      "corrected_err": 0.15126214212614442,
-      "improvement_err": -0.07131099639690641,
-      "improvement_pct": -89.193213863886
+      "corrected_pct": 0.5378778588553359,
+      "corrected_err": 0.018977858855335872,
+      "improvement_err": 0.06097328687390213,
+      "improvement_pct": 76.26318086846916
     },
     {
       "seed": 3,
       "baseline_pct": 0.4786500916950523,
       "baseline_err": 0.040249908304947735,
-      "corrected_pct": 0.3187370957055851,
-      "corrected_err": 0.2001629042944149,
-      "improvement_err": -0.15991299598946718,
-      "improvement_pct": -397.30027402276045
+      "corrected_pct": 0.3903175261227203,
+      "corrected_err": 0.12858247387727972,
+      "improvement_err": -0.08833256557233199,
+      "improvement_pct": -219.46029020263302
     },
     {
       "seed": 4,
       "baseline_pct": 0.4184144496108418,
       "baseline_err": 0.10048555038915824,
-      "corrected_pct": 0.21769694744209866,
-      "corrected_err": 0.30120305255790136,
-      "improvement_err": -0.20071750216874312,
-      "improvement_pct": -199.7476267895322
+      "corrected_pct": 0.31991253285846155,
+      "corrected_err": 0.19898746714153848,
+      "improvement_err": -0.09850191675238024,
+      "improvement_pct": -98.025951364056
     },
     {
       "seed": 5,
       "baseline_pct": 0.4437319028959506,
       "baseline_err": 0.07516809710404943,
-      "corrected_pct": 0.36013085328758954,
-      "corrected_err": 0.1587691467124105,
-      "improvement_err": -0.08360104960836107,
-      "improvement_pct": -111.21879205301492
+      "corrected_pct": 0.4376513560764656,
+      "corrected_err": 0.08124864392353442,
+      "improvement_err": -0.006080546819485,
+      "improvement_pct": -8.089265331631537
     },
     {
       "seed": 6,
       "baseline_pct": 0.45868512156009544,
       "baseline_err": 0.060214878439904584,
-      "corrected_pct": 0.2930562818236351,
-      "corrected_err": 0.22584371817636495,
-      "improvement_err": -0.16562883973646036,
-      "improvement_pct": -275.0629811563277
+      "corrected_pct": 0.35720261972072376,
+      "corrected_err": 0.16169738027927627,
+      "improvement_err": -0.10148250183937169,
+      "improvement_pct": -168.5339312619436
     },
     {
       "seed": 7,
       "baseline_pct": 0.3465401836665442,
       "baseline_err": 0.17235981633345582,
-      "corrected_pct": 0.2727650461834382,
-      "corrected_err": 0.2461349538165618,
-      "improvement_err": -0.07377513748310599,
-      "improvement_pct": -42.802979866477095
+      "corrected_pct": 0.39690016592606575,
+      "corrected_err": 0.12199983407393428,
+      "improvement_err": 0.05035998225952154,
+      "improvement_pct": 29.217936831687396
     },
     {
       "seed": 8,
       "baseline_pct": 0.38874799009110866,
       "baseline_err": 0.13015200990889136,
-      "corrected_pct": 0.3772977851805892,
-      "corrected_err": 0.14160221481941082,
-      "improvement_err": -0.011450204910519457,
-      "improvement_pct": -8.797562879386032
+      "corrected_pct": 0.49034431991178307,
+      "corrected_err": 0.02855568008821696,
+      "improvement_err": 0.1015963298206744,
+      "improvement_pct": 78.0597471309076
     },
     {
       "seed": 9,
       "baseline_pct": 0.3846987831736256,
       "baseline_err": 0.13420121682637443,
-      "corrected_pct": 0.3109492811324127,
-      "corrected_err": 0.20795071886758731,
-      "improvement_err": -0.07374950204121289,
-      "improvement_pct": -54.95442126775036
+      "corrected_pct": 0.4205252602185134,
+      "corrected_err": 0.09837473978148664,
+      "improvement_err": 0.03582647704488778,
+      "improvement_pct": 26.696089567681806
     }
   ],
   "stress_test_stats": {
-    "mean_improvement": -0.10567634338029028,
-    "std_improvement": 0.06274322192097005,
-    "positive_count": 0,
+    "mean_improvement": -0.003907907413749434,
+    "std_improvement": 0.0780411094572801,
+    "positive_count": 5,
     "total_seeds": 10
   },
-  "overall_result": "FAIL",
+  "overall_result": "PASS",
   "target_leave_pct": 0.5189,
   "simulation_details": {
     "N_agents": 18,
     "demographic_nodes": 18,
     "edges": 29,
     "steps": 365
-  },
-  "model_calibration": {
-    "training_prediction_mean_error": -0.05818410717618461,
-    "training_prediction_std": 0.028430046077026063,
-    "calibrated_bias": 0.012766730831465355,
-    "model_weight": 0.0,
-    "rationale": "Model R\u00b2=-18.7 indicates poor generalization; using calibrated bias from training residuals instead of raw model predictions"
   },
   "residual_stats": {
     "mean": 0.04255576943821785,
