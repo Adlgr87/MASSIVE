@@ -77,6 +77,15 @@ def test_energy_with_factbook_brasil(client: TestClient):
     assert data["classified_motor"] == "energy_engine"
     assert data["country_code_resolved"] == "BR"
     assert any("Brasil" in a or "BR" in a for a in data["assumptions"])
+    # Assert energy-specific output to guard against silent scalar fallback.
+    payload = data["result"]["payload"]
+    assert "metrics_timeline" in payload, (
+        "energy_engine dispatch must return metrics_timeline; "
+        "got scalar fallback or wrong engine"
+    )
+    assert payload.get("summary", {}).get("regla_dominante") == "langevin_energy", (
+        "energy_engine summary must carry regla_dominante='langevin_energy'"
+    )
 
 
 def test_forecast(client: TestClient):

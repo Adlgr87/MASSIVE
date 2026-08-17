@@ -39,7 +39,15 @@ def test_energy_intervention_scenario(client):
         },
     )
     assert resp.status_code == 200, resp.text
-    assert resp.json()["classified_motor"] == "energy_engine"
+    data = resp.json()
+    assert data["classified_motor"] == "energy_engine"
+    # Assert energy-specific output to guard against silent scalar fallback.
+    payload = data["result"]["payload"]
+    assert "metrics_timeline" in payload, (
+        "energy_engine dispatch must return metrics_timeline; "
+        "got scalar fallback or wrong engine"
+    )
+    assert payload.get("summary", {}).get("regla_dominante") == "langevin_energy"
 
 
 def test_massive_engine_dispatch(client):
