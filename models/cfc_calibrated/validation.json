@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-17T17:20:38.921220",
+  "timestamp": "2026-08-17T17:20:43.782772",
   "model_path": "/home/adlg/MASSIVE/models/cfc_calibrated/cfc_residual.pt",
   "architecture": {
     "type": "CfCResidualCorrector-N9H64",
@@ -16,12 +16,12 @@
   "baseline_metrics": {
     "final_leave_pct": 0.5449942526325485,
     "error": 0.026094252632548498,
-    "time_seconds": 0.5592944622039795
+    "time_seconds": 0.5087308883666992
   },
   "corrected_metrics": {
     "final_leave_pct": 0.554151375477271,
     "error": 0.035251375477270974,
-    "time_seconds": 0.008899211883544922,
+    "time_seconds": 0.007594585418701172,
     "temperature_adjustment": 0.04255576943821785,
     "improvement_percent": -35.092489421599296,
     "correction_method": "Temperature scaling using residual mean"
@@ -34,8 +34,8 @@
       "corrected_pct": 0.3878593779064522,
       "corrected_err": 0.13104062209354783,
       "improvement_err": -0.0008670357068298884,
-      "baseline_time_s": 0.008794069290161133,
-      "corrected_time_s": 0.008785724639892578
+      "baseline_time_s": 0.007537841796875,
+      "corrected_time_s": 0.007553577423095703
     },
     {
       "seed": 1,
@@ -44,8 +44,8 @@
       "corrected_pct": 0.5183224893534061,
       "corrected_err": 0.0005775106465939484,
       "improvement_err": 0.004721371458139556,
-      "baseline_time_s": 0.008797168731689453,
-      "corrected_time_s": 0.008788824081420898
+      "baseline_time_s": 0.007549285888671875,
+      "corrected_time_s": 0.007525920867919922
     },
     {
       "seed": 2,
@@ -54,8 +54,8 @@
       "corrected_pct": 0.4411571823502751,
       "corrected_err": 0.0777428176497249,
       "improvement_err": 0.0022083280795131,
-      "baseline_time_s": 0.00883793830871582,
-      "corrected_time_s": 0.008803367614746094
+      "baseline_time_s": 0.007576465606689453,
+      "corrected_time_s": 0.007526397705078125
     },
     {
       "seed": 3,
@@ -64,8 +64,8 @@
       "corrected_pct": 0.48686818220271916,
       "corrected_err": 0.03203181779728087,
       "improvement_err": 0.008218090507666864,
-      "baseline_time_s": 0.008862495422363281,
-      "corrected_time_s": 0.008803844451904297
+      "baseline_time_s": 0.007544279098510742,
+      "corrected_time_s": 0.007543802261352539
     },
     {
       "seed": 4,
@@ -74,8 +74,8 @@
       "corrected_pct": 0.42450835225226535,
       "corrected_err": 0.09439164774773467,
       "improvement_err": 0.006093902641423565,
-      "baseline_time_s": 0.008437871932983398,
-      "corrected_time_s": 0.00842738151550293
+      "baseline_time_s": 0.007519960403442383,
+      "corrected_time_s": 0.007532596588134766
     },
     {
       "seed": 5,
@@ -84,8 +84,8 @@
       "corrected_pct": 0.44581771465853914,
       "corrected_err": 0.07308228534146088,
       "improvement_err": 0.002085811762588541,
-      "baseline_time_s": 0.008439064025878906,
-      "corrected_time_s": 0.00839996337890625
+      "baseline_time_s": 0.007276773452758789,
+      "corrected_time_s": 0.007259845733642578
     },
     {
       "seed": 6,
@@ -94,8 +94,8 @@
       "corrected_pct": 0.4677980162542783,
       "corrected_err": 0.051101983745721724,
       "improvement_err": 0.00911289469418286,
-      "baseline_time_s": 0.008438587188720703,
-      "corrected_time_s": 0.008397340774536133
+      "baseline_time_s": 0.007302522659301758,
+      "corrected_time_s": 0.007290363311767578
     },
     {
       "seed": 7,
@@ -104,8 +104,8 @@
       "corrected_pct": 0.3561579746917617,
       "corrected_err": 0.16274202530823834,
       "improvement_err": 0.009617791025217481,
-      "baseline_time_s": 0.008399248123168945,
-      "corrected_time_s": 0.008453607559204102
+      "baseline_time_s": 0.007290363311767578,
+      "corrected_time_s": 0.007295846939086914
     },
     {
       "seed": 8,
@@ -114,8 +114,8 @@
       "corrected_pct": 0.3900128690075713,
       "corrected_err": 0.1288871309924287,
       "improvement_err": 0.0012648789164626528,
-      "baseline_time_s": 0.008414983749389648,
-      "corrected_time_s": 0.00844717025756836
+      "baseline_time_s": 0.007277488708496094,
+      "corrected_time_s": 0.007318735122680664
     },
     {
       "seed": 9,
@@ -124,8 +124,8 @@
       "corrected_pct": 0.3902238808800548,
       "corrected_err": 0.12867611911994525,
       "improvement_err": 0.005525097706429172,
-      "baseline_time_s": 0.008447885513305664,
-      "corrected_time_s": 0.008428096771240234
+      "baseline_time_s": 0.00731348991394043,
+      "corrected_time_s": 0.007295131683349609
     }
   ],
   "stress_test_stats": {
