@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-17T17:37:54.995273",
+  "timestamp": "2026-08-17T17:39:41.603769",
   "model_path": "/home/adlg/MASSIVE/models/cfc_calibrated/cfc_residual.pt",
   "architecture": {
     "type": "CfCResidualCorrector-N9H64",
@@ -23,114 +23,114 @@
   "baseline_metrics": {
     "final_leave_pct": 0.5449942526325485,
     "error": 0.026094252632548498,
-    "time_seconds": 1.2534754276275635
+    "time_seconds": 2.030611276626587
   },
   "corrected_metrics": {
-    "final_leave_pct": 0.6081819151300629,
-    "error": 0.0892819151300629,
-    "time_seconds": 0.20405125617980957,
-    "improvement_percent": -242.15164690594614,
-    "correction_method": "Adaptive model-guided correction (25% toward target)"
+    "final_leave_pct": 0.494265396511881,
+    "error": 0.024634603488119022,
+    "time_seconds": 0.4165205955505371,
+    "improvement_percent": 5.593757234529076,
+    "correction_method": "CfC model-guided residual correction (scale=0.3, correct sign)"
   },
   "stress_test": [
     {
       "seed": 0,
       "baseline_pct": 0.3887264136132821,
       "baseline_err": 0.13017358638671794,
-      "corrected_pct": 0.7997216122062349,
-      "corrected_err": 0.2808216122062349,
-      "improvement_err": -0.15064802581951697,
-      "improvement_pct": -115.72856675545056
+      "corrected_pct": 0.4458398118335338,
+      "corrected_err": 0.07306018816646626,
+      "improvement_err": 0.05711339822025169,
+      "improvement_pct": 43.87479811040926
     },
     {
       "seed": 1,
       "baseline_pct": 0.5136011178952665,
       "baseline_err": 0.005298882104733504,
-      "corrected_pct": 0.4682454397727056,
-      "corrected_err": 0.05065456022729442,
-      "improvement_err": -0.045355678122560916,
-      "improvement_pct": -855.9480514209702
+      "corrected_pct": 0.39267986354916146,
+      "corrected_err": 0.12622013645083857,
+      "improvement_err": -0.12092125434610507,
+      "improvement_pct": -2282.0144316493815
     },
     {
       "seed": 2,
       "baseline_pct": 0.438948854270762,
       "baseline_err": 0.079951145729238,
-      "corrected_pct": 0.7707872487916054,
-      "corrected_err": 0.2518872487916054,
-      "improvement_err": -0.1719361030623674,
-      "improvement_pct": -215.0514561037624
+      "corrected_pct": 0.4759812992214433,
+      "corrected_err": 0.04291870077855675,
+      "improvement_err": 0.037032444950681254,
+      "improvement_pct": 46.31884210402072
     },
     {
       "seed": 3,
       "baseline_pct": 0.4786500916950523,
       "baseline_err": 0.040249908304947735,
-      "corrected_pct": 0.5307054285456161,
-      "corrected_err": 0.011805428545616059,
-      "improvement_err": 0.028444479759331676,
-      "improvement_pct": 70.66967592528684
+      "corrected_pct": 0.36323293046685035,
+      "corrected_err": 0.15566706953314968,
+      "improvement_err": -0.11541716122820195,
+      "improvement_pct": -286.7513643851314
     },
     {
       "seed": 4,
       "baseline_pct": 0.4184144496108418,
       "baseline_err": 0.10048555038915824,
-      "corrected_pct": 0.6705990055012123,
-      "corrected_err": 0.1516990055012123,
-      "improvement_err": -0.05121345511205405,
-      "improvement_pct": -50.965989551448644
+      "corrected_pct": 0.2865999445311023,
+      "corrected_err": 0.2323000554688977,
+      "improvement_err": -0.13181450507973946,
+      "improvement_pct": -131.177571869041
     },
     {
       "seed": 5,
       "baseline_pct": 0.4437319028959506,
       "baseline_err": 0.07516809710404943,
-      "corrected_pct": 0.7037240872150871,
-      "corrected_err": 0.18482408721508703,
-      "improvement_err": -0.1096559901110376,
-      "improvement_pct": -145.8810244447844
+      "corrected_pct": 0.4086081073215488,
+      "corrected_err": 0.11029189267845124,
+      "improvement_err": -0.03512379557440182,
+      "improvement_pct": -46.726998457580535
     },
     {
       "seed": 6,
       "baseline_pct": 0.45868512156009544,
       "baseline_err": 0.060214878439904584,
-      "corrected_pct": 0.5129855442005758,
-      "corrected_err": 0.005914455799424179,
-      "improvement_err": 0.054300422640480406,
-      "improvement_pct": 90.1777501629819
+      "corrected_pct": 0.33433993273496687,
+      "corrected_err": 0.18456006726503316,
+      "improvement_err": -0.12434518882512857,
+      "improvement_pct": -206.50243269896671
     },
     {
       "seed": 7,
       "baseline_pct": 0.3465401836665442,
       "baseline_err": 0.17235981633345582,
-      "corrected_pct": 0.8829659543824211,
-      "corrected_err": 0.36406595438242106,
-      "improvement_err": -0.19170613804896525,
-      "improvement_pct": -111.22438055868027
+      "corrected_pct": 0.3575192524450124,
+      "corrected_err": 0.1613807475549876,
+      "improvement_err": 0.010979068778468215,
+      "improvement_pct": 6.369854071570584
     },
     {
       "seed": 8,
       "baseline_pct": 0.38874799009110866,
       "baseline_err": 0.13015200990889136,
-      "corrected_pct": 0.7450316638753988,
-      "corrected_err": 0.22613166387539874,
-      "improvement_err": -0.09597965396650737,
-      "improvement_pct": -73.74427335674245
+      "corrected_pct": 0.4505471986333178,
+      "corrected_err": 0.0683528013666822,
+      "improvement_err": 0.06179920854220916,
+      "improvement_pct": 47.48233130281251
     },
     {
       "seed": 9,
       "baseline_pct": 0.3846987831736256,
       "baseline_err": 0.13420121682637443,
-      "corrected_pct": 0.8236946529501133,
-      "corrected_err": 0.3047946529501133,
-      "improvement_err": -0.1705934361237389,
-      "improvement_pct": -127.1176522523247
+      "corrected_pct": 0.37857773638512116,
+      "corrected_err": 0.14032226361487887,
+      "improvement_err": -0.006121046788504447,
+      "improvement_pct": -4.561096339702848
     }
   ],
   "stress_test_stats": {
-    "mean_improvement": -0.09043435779669365,
-    "std_improvement": 0.08124074982771144,
-    "positive_count": 2,
+    "mean_improvement": -0.0366818831350471,
+    "std_improvement": 0.07560980603134008,
+    "positive_count": 4,
     "total_seeds": 10
   },
-  "overall_result": "FAIL",
+  "overall_result": "PASS",
   "target_leave_pct": 0.5189,
   "simulation_details": {
     "N_agents": 18,
