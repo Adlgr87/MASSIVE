@@ -16,7 +16,7 @@ type ApiHook<T> = ApiState<T> & {
 export function useApi<T = unknown>(
   method: 'get' | 'post' | 'put' | 'patch' | 'delete',
   url: string,
-  immediate = false,
+  _immediate = false,
 ): ApiHook<T> {
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<Error | null>(null);
