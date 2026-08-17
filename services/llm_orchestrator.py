@@ -263,7 +263,7 @@ def _dispatch(
             connectivity=connectivity,
             range_type=range_type,
             seed=seed if seed is not None else 42,
-            config_overrides=energy_overrides or None,
+            config_overrides=energy_overrides,
         )
 
     if motor in ("multilayer_engine", "massive_engine", "factbook_validation"):
@@ -291,7 +291,7 @@ def _dispatch(
 
     if motor == "social_architect":
         # This flow is LLM-driven (buscar_estrategia_inversa calls setup_client).
-        if not llm_creds.get("configured"):
+        if not (llm_creds or {}).get("configured"):
             raise RuntimeError(
                 "social_architect motor requires an LLM API key; "
                 "configure GROQ_API_KEY / OPENAI_API_KEY / OPENROUTER_API_KEY"
@@ -299,14 +299,20 @@ def _dispatch(
         from social_architect import buscar_estrategia_inversa
         estado = config.get("estado_inicial", {"opinion": 0.0, "propaganda": 0.0})
         objetivo = config.get("objetivo_usuario", intent)
-        return buscar_estrategia_inversa(
+        estrategia, narrativa, intentos, historial = buscar_estrategia_inversa(
             estado_inicial=estado,
             objetivo_usuario=objetivo,
             max_intentos=int(config.get("max_intentos", 3)),
-            config=config.get("config"),
+            config=config.get("config") or {},
             modo_simulacion=config.get("modo_simulacion", "macro"),
             metricas_red=config.get("metricas_red", ""),
         )
+        return {
+            "estrategia": estrategia,
+            "narrativa": narrativa,
+            "intentos": intentos,
+            "historial": historial,
+        }
 
     if motor == "forecast":
         from forecast.engine import forecast
@@ -319,7 +325,7 @@ def _dispatch(
             # Translate LLM-oriented fields → TemporalConfig fields.
             # Contract example uses {n_steps, step_duration_days, event_type};
             # TemporalConfig uses time_horizon_days (n_steps is computed).
-            defaults = TemporalConfig().model_dump()
+            defaults = TemporalConfig(step_duration_days=7, time_horizon_days=90).model_dump()
             flat = {k: v for k, v in temporal_raw.items() if k != "n_steps"}
             if "n_steps" in temporal_raw and "time_horizon_days" not in flat:
                 step_dur = flat.get("step_duration_days", defaults["step_duration_days"])
@@ -327,7 +333,7 @@ def _dispatch(
             defaults.update(flat)
             temporal_cfg = TemporalConfig(**defaults)
         else:
-            temporal_cfg = TemporalConfig()
+            temporal_cfg = TemporalConfig(step_duration_days=7, time_horizon_days=90)
         result = forecast(
             sim_state,
             temporal_config=temporal_cfg,
@@ -548,7 +554,7 @@ def _sanitize_for_json(obj: Any) -> Any:
     """Recursively convert numpy scalars/arrays + non-native types to JSON-safe values."""
     try:
         import numpy as np
-        _NP_TYPES = (np.generic,)
+        _NP_TYPES: tuple[type, ...] = (np.generic,)
     except Exception:  # pragma: no cover - numpy may be absent
         _NP_TYPES = ()
 
