@@ -227,9 +227,7 @@ curl -X POST http://localhost:8000/v1/llm/run_simulation \
 Response includes `simulation_id`, `classified_motor`, `result.metrics`,
 `narrative_summary`, `assumptions`, and `confidence_bounds`.
 
-**Country detection** — the orchestrator auto-detects 95+ countries from NL text
-(ISO2→CIA mapping via FactbookContext). When a country is identified, the engine
-is automatically parametrized with real demographic/economic data.
+**Country detection** — the orchestrator auto-detects a limited set of common countries from NL text (ISO2 detection + name keywords), and can be extended by expanding the country name/code mappings. When a country is identified, the engine is automatically parametrized with real demographic/economic data.
 
 ---
 
