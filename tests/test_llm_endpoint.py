@@ -83,9 +83,9 @@ def test_energy_with_factbook_brasil(client: TestClient):
         "energy_engine dispatch must return metrics_timeline; "
         "got scalar fallback or wrong engine"
     )
-    assert payload.get("summary", {}).get("regla_dominante") == "langevin_energy", (
-        "energy_engine summary must carry regla_dominante='langevin_energy'"
-    )
+    assert (
+        payload.get("summary", {}).get("regla_dominante") == "langevin_energy"
+    ), "energy_engine summary must carry regla_dominante='langevin_energy'"
 
 
 def test_forecast(client: TestClient):

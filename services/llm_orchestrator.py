@@ -308,6 +308,7 @@ def _dispatch(
 
     if motor == "energy_engine":
         from energy_runner import run_energy_simulation
+
         n_steps = int(steps or config.get("pasos") or _DEFAULT_STEPS.get(motor, 100))
         n_agents = int(config.get("n_agents") or 50)
         connectivity = float(config.get("connectivity") or 0.3)
@@ -315,7 +316,8 @@ def _dispatch(
         if range_type not in ("bipolar", "unipolar"):
             range_type = "bipolar"
         energy_overrides = {
-            k: v for k, v in overrides.items()
+            k: v
+            for k, v in overrides.items()
             if k in ("temperature", "lambda_social", "eta") and v is not None
         }
         return run_energy_simulation(
@@ -668,6 +670,7 @@ def _sanitize_for_json(obj: Any) -> Any:
     """Recursively convert numpy scalars/arrays + non-native types to JSON-safe values."""
     try:
         import numpy as np
+
         _NP_TYPES: tuple[type, ...] = (np.generic,)
     except Exception:  # pragma: no cover - numpy may be absent
         _NP_TYPES = ()
