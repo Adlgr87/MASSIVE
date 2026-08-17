@@ -8,22 +8,6 @@ The guiding principle is backward compatibility: the classic APIs (`simular`, `s
 
 ---
 
-## The ocean is not in a single water molecule
-
-MASSIVE does not simulate individuals — it models the **emergent behavior of millions of people in interaction**. Just as the ocean is not contained in a single water molecule but in the collective, the phenomena MASSIVE captures only arise at scale.
-
-Objecting that "humans are unpredictable" misses the point: MASSIVE models *collective* phenomena — opinion cascades, polarization, phase transitions — that have no meaning at the individual level. Meteorology does not predict individual air molecules; it maps pressure fields and temperature gradients. MASSIVE does the same for societies: it identifies **patterns and bifurcation points** that only surface when millions of decisions converge.
-
-The theoretical foundation is the **ontology of levels**: social phenomena are irreducible to the sum of individual choices. MASSIVE is not an oracle, and it does not model consciousness. It is a tool for:
-
-- **Exploring scenarios** before they crystallize into reality.
-- **Testing interventions** in a safe, quantitative sandbox.
-- **Detecting early signals** of instability and tipping points.
-
-It sits at the intersection of complex-systems physics and quantitative social science — the same intellectual tradition that gave us thermodynamics, epidemiological models, and statistical mechanics applied to human collective behavior.
-
----
-
 ## Why MASSIVE is different
 
 - **Hybrid regime reasoning:** heuristic, LLM-compatible and optional CfC neural regime selection paths coexist with safe fallbacks.
@@ -243,9 +227,7 @@ curl -X POST http://localhost:8000/v1/llm/run_simulation \
 Response includes `simulation_id`, `classified_motor`, `result.metrics`,
 `narrative_summary`, `assumptions`, and `confidence_bounds`.
 
-**Country detection** — the orchestrator auto-detects 95+ countries from NL text
-(ISO2→CIA mapping via FactbookContext). When a country is identified, the engine
-is automatically parametrized with real demographic/economic data.
+**Country detection** — the orchestrator auto-detects a limited set of common countries from NL text (ISO2 detection + name keywords), and can be extended by expanding the country name/code mappings. When a country is identified, the engine is automatically parametrized with real demographic/economic data.
 
 ---
 

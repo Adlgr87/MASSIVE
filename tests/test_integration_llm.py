@@ -56,3 +56,79 @@ def test_simulation_integration():
     assert len(historial) == 11  # t=0 + 10 steps
     assert "_regla_nombre" in historial[1]
     assert all("opinion" in h for h in historial)
+
+
+def test_circuit_breaker_closes_after_success():
+    """Circuit stays closed while requests succeed."""
+    from simulator import CircuitBreaker
+    cb = CircuitBreaker(failure_threshold=3, cooldown=0.1)
+    assert cb.state == "closed"
+    cb.record_success()
+    assert cb.state == "closed"
+
+
+def test_circuit_breaker_opens_after_threshold():
+    """Circuit opens after the configured failure threshold."""
+    from simulator import CircuitBreaker
+    cb = CircuitBreaker(failure_threshold=3, cooldown=0.5)
+    for _ in range(3):
+        cb.record_failure()
+    assert cb.state == "open"
+    assert cb.allow() is False
+
+
+def test_circuit_breaker_half_open_after_cooldown():
+    """Circuit returns to half-open after cooldown, then closed on success."""
+    from simulator import CircuitBreaker
+    cb = CircuitBreaker(failure_threshold=2, cooldown=0.2)
+    for _ in range(2):
+        cb.record_failure()
+    import time; time.sleep(0.25)  # supera cooldown
+    assert cb.state == "half-open"
+    assert cb.allow() is True
+    cb.record_success()
+    assert cb.state == "closed"
+
+
+def test_llm_retry_on_timeout():
+    """Timeout triggers retries but still yields fallback heuristic result."""
+    from simulator import llamar_llm, DEFAULT_CONFIG
+    estado = {"opinion": 0.5, "propaganda": 0.1}
+    cfg = {**DEFAULT_CONFIG, "proveedor": "openai", "api_key": "fake", "llm_retries": 2, "llm_retry_backoff": 0.0}
+
+    call_count = {"n": 0}
+
+    def _flaky_post(*args, **kwargs):
+        call_count["n"] += 1
+        if call_count["n"] <= 2:
+            raise requests.exceptions.Timeout("timeout")
+        return MagicMock(status_code=200, json=lambda: {"choices": [{"message": {"content": '{"regla": 0, "params": {}, "razon": "ok"}'}}]})
+
+    with patch("requests.post", side_effect=_flaky_post):
+        resultado = llamar_llm(estado, "campana", [estado], cfg)
+
+    assert "regla" in resultado
+    assert call_count["n"] == 3  # 2 reintentos + 1 exitoso
+
+
+def test_llm_no_retry_on_4xx():
+    """Client-side HTTP errors (except 429) are not retried."""
+    from simulator import llamar_llm, DEFAULT_CONFIG
+    estado = {"opinion": 0.5, "propaganda": 0.1}
+    cfg = {**DEFAULT_CONFIG, "proveedor": "openai", "api_key": "fake", "llm_retries": 3, "llm_retry_backoff": 0.0}
+
+    call_count = {"n": 0}
+
+    def _bad_request(*args, **kwargs):
+        call_count["n"] += 1
+        resp = MagicMock()
+        resp.status_code = 400
+        resp.raise_for_status.side_effect = requests.exceptions.HTTPError(response=resp)
+        return resp
+
+    with patch("requests.post", side_effect=_bad_request):
+        resultado = llamar_llm(estado, "campana", [estado], cfg)
+
+    # Fallback heurístico al fallar
+    assert "regla" in resultado
+    assert call_count["n"] == 1  # sin reintentos

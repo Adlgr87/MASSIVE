@@ -47,3 +47,7 @@ archive/
 
 # Test data and outputs
 tests/test_data/
+
+# Environment / credential files
+*.env
+*.env.*\.backup

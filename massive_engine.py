@@ -915,11 +915,33 @@ class MassiveSimEngine:
         self._active_fraction_history: list[float] = [1.0]
         self._steps_run: int = 0
 
+        # ── Warm-up Numba JIT (cache=True avoids recomile across sessions) ──
+        if not getattr(self, "_jit_woken", False):
+            try:
+                from multilayer_engine import (
+                    multi_potential_gradient,
+                    _multilayer_langevin_step_core,
+                )
+                # Tiny batch to trigger one-time compilation.
+                _xt = self._x[:2].copy()
+                multi_potential_gradient(_xt)
+                _M = self._x.shape[0]
+                _layers = self._layers_flat[:, :2, :2]
+                _w = self.layer_weights.astype(np.float64)
+                _th = np.ones((2, K), dtype=np.float64)
+                _multilayer_langevin_step_core(
+                    _xt[:, 0].copy(), _layers, _w, _th,
+                    self.coupling, self.dt, -1.0, 1.0,
+                )
+                self._jit_woken = True
+            except Exception:
+                pass  # JIT missing or not needed — runtime path handles it
+
     # ------------------------------------------------------------------
     # Ejecución
     # ------------------------------------------------------------------
 
-    def run(self, steps: int) -> dict[str, Any]:
+    def run(self, steps: int, store_history: bool = True) -> dict[str, Any]:
         """
         Ejecuta la simulación masiva y devuelve estadísticas de resumen.
 
@@ -929,6 +951,10 @@ class MassiveSimEngine:
 
         Args:
             steps: Número de pasos de integración Euler-Maruyama.
+            store_history: Acceptado por compatibilidad con ``MultilayerEngine``
+                y la capa de servicios.  El motor LOD ya almacena únicamente
+                medias ponderadas (no snapshots completos ``(N, K)``) por lo
+                que el argumento no afecta al consumo de memoria.
 
         Returns:
             Diccionario con métricas finales:

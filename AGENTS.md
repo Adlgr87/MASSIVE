@@ -39,3 +39,44 @@ Angular "next-gen" UI (renamed from the former `massive-ui-ng-package`).
 - Do NOT reintroduce the name `beyondsight` or `mamba`; the canonical name is
   **MASSIVE**. Revert any PR that uses the old name.
 - `target/` (Rust build artifacts) is gitignored.
+
+## Simulation engine API (Phase D/E post-PR #79)
+- `MultilayerEngine.run(steps=100, store_history=True)`:
+  - `store_history=False` → returns compact per-step aggregates
+    `[{"mean_opinion","std_opinion","polarization","sample_size"}, …]`
+    instead of full `(N, K)` snapshots.  O(steps·4) vs O(steps·N·K).
+  - Use `store_history=False` in the service layer (default for
+    `run_multilayer_simulation`).
+- `MassiveSimEngine.run(steps, store_history=True)`:
+  - LOD engine already stores only weighted-mean history; `store_history`
+    is accepted for signature symmetry and ignored.
+- `MultilayerEngine.diagnose() -> dict[str, float]` returns
+  `{n_agents, n_features, n_steps_recorded, state_bytes, opinion_mean,
+   opinion_std, opinion_min, opinion_max}` for observability hooks.
+- `MassiveSimEngine.memory_report` (property) + `run()` result dict already
+  carry `elapsed_seconds`, `steps_per_second`, `memory_savings_pct`.
+- Auth: `api.py` root returns **503 ServiceUnavailable** when no API key is
+  configured (Phase B).  Tests in `test_llm_endpoint.py` use per-request
+  `api_key` body field, so unaffected.
+
+## Testing — Optional dependencies & skip markers
+- Optional deps: torch-dependent engine tests are gated by the
+  `skip_no_torch` marker, defined per test module as:
+  ```python
+  try:
+      import torch
+      TORCH_AVAILABLE = True
+  except ImportError:
+      TORCH_AVAILABLE = False
+  skip_no_torch = pytest.mark.skipif(
+      not TORCH_AVAILABLE, reason="PyTorch no disponible"
+  )
+  ```
+  Used in `tests/test_cfc_engine.py`, `tests/test_cfc_router.py`,
+  and `tests/test_mamba_engine.py`.
+- CI installs `massive[full]` so these tests run. Local dev without torch
+  sees them **skipped** (not failures).
+- To force-run: `pip install "torch>=2.2"` then `pytest tests/ -q`.
+- Convention: do NOT add torch as a hard dependency for root engines
+  (`energy_engine`, `massive_engine`, `multilayer_engine`, `simulator.py`) —
+  they must remain runnable and tested without torch.

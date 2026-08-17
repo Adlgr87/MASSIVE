@@ -27,7 +27,7 @@ def test_factbook_context():
     context = FactbookContext()
 
     # Test loading countries
-    countries_to_test = ["US", "CH", "GM"]
+    countries_to_test = ["US", "CH", "GM", "BR"]
 
     for country_code in countries_to_test:
         country = context.load_country(country_code)

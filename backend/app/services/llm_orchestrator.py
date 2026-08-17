@@ -97,15 +97,20 @@ class _DispatchResult:
 
 def _series_to_timeline(series: list, motor: str) -> list[dict[str, Any]]:
     ticks = []
-    for i, sample in enumerate(series):
+    values = []
+    for sample in series:
         if isinstance(sample, dict):
-            value = float(sample.get("value", sample.get("opinion", 0.0)))
+            values.append(float(sample.get("value", sample.get("opinion", 0.0))))
         else:
-            value = float(sample)
+            values.append(float(sample))
+
+    neutral = 0.0 if values and min(values) < 0.0 else 0.5
+
+    for i, value in enumerate(values):
         ticks.append({
             "tick": i,
             "mean_opinion": round(value, 6),
-            "polarization": round(abs(value - 0.5), 6),
+            "polarization": round(abs(value - neutral), 6),
             "dominant_rule": motor,
             "timestamp": None,
         })
@@ -164,15 +169,26 @@ def _dispatch_multilayer(req: LLMRunRequest) -> _DispatchResult:
 def _dispatch_energy(req: LLMRunRequest) -> _DispatchResult:
     from services.simulation_service import run_scalar_simulation
     config: dict[str, Any] = {"seed": 42}
-    escenario = "campana"
+    # Respect the scenario requested by the caller; default to "campana".
+    escenario = req.scenario or "campana"
+    # Map high-level scenario to an initial opinion state so the trajectory
+    # reflects the user's framing (consenso / polarización / caos, etc.).
+    _scenario_opinion = {
+        "consenso": 0.25,
+        "polarizacion": 0.45,
+        "caos": 0.5,
+        "campana": 0.0,
+    }
+    initial_opinion = _scenario_opinion.get(escenario, 0.0)
+    estado_inicial = {"opinion": initial_opinion, "propaganda": 0.0}
     if req.scenario == "intervention" and req.intervention_config:
         config["intervencion_magnitud"] = float(req.intervention_config.get("magnitude", 0.5))
         # The scalar sim only exposes "campana"; record the intervention as a
         # config override rather than switching the escenario registry key.
         config["intervencion_tipo"] = str(req.intervention_config.get("type", "info_campaign"))
     out = run_scalar_simulation(
-        estado_inicial={"opinion": 0.0, "propaganda": 0.0},
-        escenario=escenario,
+        estado_inicial=estado_inicial,
+        escenario="campana",
         pasos=max(10, min(req.temporal_horizon or 90, 200)),
         config=config,
         verbose=False,
@@ -251,11 +267,51 @@ def _dispatch_massive(req: LLMRunRequest) -> _DispatchResult:
     )
 
 
+def _dispatch_micro(req: LLMRunRequest) -> _DispatchResult:
+    """Route ``micro_massive`` to a small-agent multilayer run.
+
+    The micro regime runs the full multilayer engine with a small population
+    (default 50) so it is fast yet physically meaningful, then wraps the result
+    like the macro dispatcher. Fixes BUG-04: ``micro_massive`` was classified
+    by the LLM but had no dispatcher → AmbiguityError.
+    """
+    from services.simulation_service import run_multilayer_simulation
+    steps = max(10, min(req.temporal_horizon or 60, 120))
+    out = run_multilayer_simulation(n_agents=50, steps=steps, seed=42)
+    series = out.get("series", {})
+    values = []
+    for key in ("social", "digital", "economic"):
+        col = series.get(key)
+        if col:
+            values = [float(v) for v in col]
+            break
+    if not values:
+        values = [0.5]
+    timeline = _series_to_timeline(values, "micro_massive")
+    metrics = _metrics_from_series(values, "micro_massive", out.get("n_agents", 50))
+    narrative = (
+        f"Micro-regla ejecutada con {out.get('n_agents', 50)} agentes y topología "
+        f"watts-strogatz; trayectoria de {len(timeline)} pasos."
+    )
+    return _DispatchResult(
+        metrics=metrics, timeline=timeline,
+        assumptions=["motor clasificado: micro_massive", "red pequeña (N=50)"],
+        narrative=narrative,
+        hypothesis_evaluated="A escala micro la dinámica multi-capa conserva la forma de la distributión.",
+        confidence_bounds={"lower": round(metrics["mean_opinion"] - 0.12, 4),
+                           "upper": round(metrics["mean_opinion"] + 0.12, 4),
+                           "confidence_level": float(req.confidence_level)},
+        artifacts={"layers": ["social", "digital", "economic"]},
+        classified_motor="micro_massive",
+    )
+
+
 _DISPATCHERS = {
     "multilayer_engine": _dispatch_multilayer,
     "energy_engine": _dispatch_energy,
     "forecast_model": _dispatch_forecast,
     "massive_engine": _dispatch_massive,
+    "micro_massive": _dispatch_micro,
     "scalar_legacy": _dispatch_energy,
 }
 
@@ -330,14 +386,20 @@ def run_simulation(req: LLMRunRequest) -> LLMRunResponse:
     result.assumptions.extend(fb_assumptions)
     result.country_code_resolved = resolved_country
 
+    # Defense-in-depth: guarantee no numpy types leak into Pydantic models,
+    # which would raise PydanticSerializationError (HTTP 500). Fixes BUG-02.
+    from massive.core.utils.serialize import to_jsonable
+    payload = to_jsonable({"metrics": result.metrics, "timeline": result.timeline,
+                           "country_params": result.metrics.get("country_params")})
+
     return LLMRunResponse(
         simulation_id=str(uuid.uuid4()),
         classified_motor=result.classified_motor,
         country_code_resolved=result.country_code_resolved,
         assumptions=result.assumptions,
-        result={"metrics": result.metrics, "timeline": result.timeline},
+        result=payload,
         narrative_summary=result.narrative,
         hypothesis_evaluated=result.hypothesis_evaluated,
-        confidence_bounds=result.confidence_bounds,
-        artifacts=result.artifacts,
+        confidence_bounds=to_jsonable(result.confidence_bounds),
+        artifacts=to_jsonable(result.artifacts),
     )

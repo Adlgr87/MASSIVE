@@ -32,6 +32,7 @@ Autor: MASSIVE Research
 
 import json
 import logging
+import time
 from collections import Counter, deque
 from pathlib import Path
 from typing import Any
@@ -183,6 +184,8 @@ DEFAULT_CONFIG: dict[str, Any] = {
     "ollama_host": "http://localhost:11434",
     "llm_timeout": 20,
     "llm_temperature": 0.0,
+    "llm_retries": 3,
+    "llm_retry_backoff": 1.0,
     # Motor
     "alpha_blend": 0.8,
     "ruido_base": 0.03,
@@ -1147,6 +1150,90 @@ def _extraer_json(texto: str) -> dict | None:
         return None
 
 
+class CircuitBreaker:
+    """Tiny circuit-breaker for LLM provider calls.
+
+    States: closed (requests pass), open (fail-fast until cooldown),
+    half-open (first request after cooldown).
+    Conservative defaults: 6 failures / 60s cooldown so the simulator
+    degrades gracefully during provider outages.
+    """
+
+    def __init__(self, failure_threshold: int = 6, cooldown: float = 60.0):
+        self.failure_threshold = failure_threshold
+        self.cooldown = cooldown
+        self._failure_count = 0
+        self._open_until = 0.0
+
+    @property
+    def state(self) -> str:
+        if self._failure_count >= self.failure_threshold:
+            if time.time() < self._open_until:
+                return "open"
+            return "half-open"
+        return "closed"
+
+    def allow(self) -> bool:
+        return self.state != "open"
+
+    def record_success(self):
+        self._failure_count = 0
+        self._open_until = 0.0
+
+    def record_failure(self):
+        self._failure_count += 1
+        if self._failure_count >= self.failure_threshold:
+            self._open_until = time.time() + self.cooldown
+
+
+_circuit_breaker = CircuitBreaker()
+
+
+def _with_retry_and_circuit(fn, cfg: dict, proveedor: str) -> dict | None:
+    """Run an LLM request with exponential backoff + circuit-breaker.
+
+    Retries on Timeout/ConnectionError/5xx (incl. 429); opens the circuit
+    after ``_circuit_breaker.failure_threshold`` consecutive failures so the
+    simulator degrades gracefully (e.g. falls back to heuristic mode).
+    """
+    if not _circuit_breaker.allow():
+        log.warning(
+            f"Circuit breaker OPEN para '{proveedor}' — saltando LLM call. "
+            f"Cooldown {_circuit_breaker.cooldown}s."
+        )
+        return None
+
+    max_retries = cfg.get("llm_retries", DEFAULT_CONFIG.get("llm_retries", 3))
+    base_delay = cfg.get("llm_retry_backoff", 1.0)
+    last_exc = None
+
+    for attempt in range(max_retries + 1):
+        try:
+            result = fn()
+            _circuit_breaker.record_success()
+            return result
+        except requests.exceptions.Timeout as e:
+            last_exc = e
+            log.warning(f"Timeout intento {attempt + 1}/{max_retries + 1} '{proveedor}'.")
+        except requests.exceptions.ConnectionError as e:
+            last_exc = e
+            log.warning(f"Conn error intento {attempt + 1}/{max_retries + 1} '{proveedor}'.")
+        except requests.exceptions.HTTPError as e:
+            code = e.response.status_code if e.response is not None else "N/A"
+            if 400 <= code < 500 and code != 429:
+                log.warning(f"HTTP {code} (no reintentable) '{proveedor}'.")
+                _circuit_breaker.record_failure()
+                return None
+            last_exc = e
+            log.warning(f"HTTP error {code} intento {attempt + 1}/{max_retries + 1} '{proveedor}'.")
+        if attempt < max_retries:
+            time.sleep(base_delay * (2 ** attempt))
+
+    log.error(f"Fallaron {max_retries + 1} reintentos para '{proveedor}': {last_exc}")
+    _circuit_breaker.record_failure()
+    return None
+
+
 def _llamar_openai_compatible(
     prompt: str,
     base_url: str,
@@ -1158,7 +1245,8 @@ def _llamar_openai_compatible(
     if not api_key:
         log.warning(f"Sin API key para proveedor '{proveedor}'.")
         return None
-    try:
+
+    def _do_request() -> dict | None:
         resp = requests.post(
             f"{base_url}/chat/completions",
             headers={"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"},
@@ -1172,17 +1260,17 @@ def _llamar_openai_compatible(
         )
         resp.raise_for_status()
         return _extraer_json(resp.json()["choices"][0]["message"]["content"])
-    except requests.exceptions.ConnectionError:
-        log.error(f"No se pudo conectar a {base_url}.")
-    except requests.exceptions.Timeout:
-        log.warning(f"Timeout ({cfg.get('llm_timeout', DEFAULT_CONFIG['llm_timeout'])}s) en {base_url}.")
+
+    try:
+        return _with_retry_and_circuit(_do_request, cfg, proveedor)
     except (KeyError, IndexError) as e:
         log.warning(f"Error parseando respuesta: {e}")
-    return None
+        _circuit_breaker.record_failure()
+        return None
 
 
 def _llamar_ollama(prompt: str, cfg: dict) -> dict | None:
-    try:
+    def _do_request() -> dict | None:
         resp = requests.post(
             f"{cfg['ollama_host']}/api/generate",
             json={
@@ -1195,13 +1283,13 @@ def _llamar_ollama(prompt: str, cfg: dict) -> dict | None:
         )
         resp.raise_for_status()
         return _extraer_json(resp.json().get("response", ""))
-    except requests.exceptions.ConnectionError:
-        log.error("Ollama no responde. → ollama serve")
-    except requests.exceptions.Timeout:
-        log.warning(f"Timeout ({cfg['llm_timeout']}s) en Ollama.")
+
+    try:
+        return _with_retry_and_circuit(_do_request, cfg, "ollama")
     except KeyError as e:
         log.warning(f"Error parseando Ollama: {e}")
-    return None
+        _circuit_breaker.record_failure()
+        return None
 
 
 def llamar_llm(estado: dict, escenario: str,
