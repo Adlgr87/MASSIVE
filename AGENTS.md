@@ -58,3 +58,25 @@ Angular "next-gen" UI (renamed from the former `massive-ui-ng-package`).
 - Auth: `api.py` root returns **503 ServiceUnavailable** when no API key is
   configured (Phase B).  Tests in `test_llm_endpoint.py` use per-request
   `api_key` body field, so unaffected.
+
+## Testing — Optional dependencies & skip markers
+- Optional deps: torch-dependent engine tests are gated by the
+  `skip_no_torch` marker, defined per test module as:
+  ```python
+  try:
+      import torch
+      TORCH_AVAILABLE = True
+  except ImportError:
+      TORCH_AVAILABLE = False
+  skip_no_torch = pytest.mark.skipif(
+      not TORCH_AVAILABLE, reason="PyTorch no disponible"
+  )
+  ```
+  Used in `tests/test_cfc_engine.py`, `tests/test_cfc_router.py`,
+  and `tests/test_mamba_engine.py`.
+- CI installs `massive[full]` so these tests run. Local dev without torch
+  sees them **skipped** (not failures).
+- To force-run: `pip install "torch>=2.2"` then `pytest tests/ -q`.
+- Convention: do NOT add torch as a hard dependency for root engines
+  (`energy_engine`, `massive_engine`, `multilayer_engine`, `simulator.py`) —
+  they must remain runnable and tested without torch.
