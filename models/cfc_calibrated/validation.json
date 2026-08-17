@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-17T17:25:19.294743",
+  "timestamp": "2026-08-17T17:26:44.629911",
   "model_path": "/home/adlg/MASSIVE/models/cfc_calibrated/cfc_residual.pt",
   "architecture": {
     "type": "CfCResidualCorrector-N9H64",
@@ -11,7 +11,7 @@
       "time_normalized",
       "actual_leave_pct",
       "simulated_leave_pct",
-      "residual_t-6...t-1"
+      "residual_lags_t-6_to_t-1"
     ]
   },
   "training_info": {
@@ -22,110 +22,110 @@
   "baseline_metrics": {
     "final_leave_pct": 0.5449942526325485,
     "error": 0.026094252632548498,
-    "time_seconds": 1.9749033451080322
+    "time_seconds": 0.51680588722229
   },
   "corrected_metrics": {
-    "final_leave_pct": 0.3378767115241485,
-    "error": 0.18102328847585153,
-    "time_seconds": 0.3502843379974365,
-    "improvement_percent": -593.7285808678547,
-    "correction_method": "Dynamic model-guided correction using learned residual predictions"
+    "final_leave_pct": 1.2380985384682845,
+    "error": 0.7191985384682845,
+    "time_seconds": 0.049849510192871094,
+    "improvement_percent": -2656.1568771323878,
+    "correction_method": "Dynamic model-guided correction: ADD predicted residual to push toward target"
   },
   "stress_test": [
     {
       "seed": 0,
       "baseline_pct": 0.3887264136132821,
       "baseline_err": 0.13017358638671794,
-      "corrected_pct": 0.3033873304416228,
-      "corrected_err": 0.21551266955837722,
-      "improvement_err": -0.08533908317165928,
-      "improvement_pct": -65.55791043363827
+      "corrected_pct": 1.2371317829747737,
+      "corrected_err": 0.7182317829747736,
+      "improvement_err": -0.5880581965880557,
+      "improvement_pct": -451.74924722520916
     },
     {
       "seed": 1,
       "baseline_pct": 0.5136011178952665,
       "baseline_err": 0.005298882104733504,
-      "corrected_pct": 0.28626708124058803,
-      "corrected_err": 0.232632918759412,
-      "improvement_err": -0.2273340366546785,
-      "improvement_pct": -4290.226356453571
+      "corrected_pct": 1.236945080331985,
+      "corrected_err": 0.718045080331985,
+      "improvement_err": -0.7127461982272515,
+      "improvement_pct": -13450.878584193324
     },
     {
       "seed": 2,
       "baseline_pct": 0.438948854270762,
       "baseline_err": 0.079951145729238,
-      "corrected_pct": 0.2860756576308503,
-      "corrected_err": 0.23282434236914973,
-      "improvement_err": -0.15287319663991172,
-      "improvement_pct": -191.20826255277322
+      "corrected_pct": 1.2335059612873027,
+      "corrected_err": 0.7146059612873027,
+      "improvement_err": -0.6346548155580647,
+      "improvement_pct": -793.8032779509906
     },
     {
       "seed": 3,
       "baseline_pct": 0.4786500916950523,
       "baseline_err": 0.040249908304947735,
-      "corrected_pct": 0.2799351051173835,
-      "corrected_err": 0.23896489488261652,
-      "improvement_err": -0.19871498657766878,
-      "improvement_pct": -493.702954730065
+      "corrected_pct": 1.2350379599531884,
+      "corrected_err": 0.7161379599531884,
+      "improvement_err": -0.6758880516482406,
+      "improvement_pct": -1679.2287985539506
     },
     {
       "seed": 4,
       "baseline_pct": 0.4184144496108418,
       "baseline_err": 0.10048555038915824,
-      "corrected_pct": 0.17403534463752418,
-      "corrected_err": 0.34486465536247585,
-      "improvement_err": -0.2443791049733176,
-      "improvement_pct": -243.19825490022353
+      "corrected_pct": 1.23242497617177,
+      "corrected_err": 0.71352497617177,
+      "improvement_err": -0.6130394257826117,
+      "improvement_pct": -610.0771935949458
     },
     {
       "seed": 5,
       "baseline_pct": 0.4437319028959506,
       "baseline_err": 0.07516809710404943,
-      "corrected_pct": 0.3216259943326979,
-      "corrected_err": 0.19727400566730213,
-      "improvement_err": -0.12210590856325271,
-      "improvement_pct": -162.44379366718687
+      "corrected_pct": 1.240184247493744,
+      "corrected_err": 0.7212842474937439,
+      "improvement_err": -0.6461161503896944,
+      "improvement_pct": -859.561669487689
     },
     {
       "seed": 6,
       "baseline_pct": 0.45868512156009544,
       "baseline_err": 0.060214878439904584,
-      "corrected_pct": 0.2644955463753217,
-      "corrected_err": 0.25440445362467834,
-      "improvement_err": -0.19418957518477376,
-      "improvement_pct": -322.4943406280859
+      "corrected_pct": 1.2380858332555031,
+      "corrected_err": 0.7191858332555031,
+      "improvement_err": -0.6589709548155985,
+      "improvement_pct": -1094.3656649133025
     },
     {
       "seed": 7,
       "baseline_pct": 0.3465401836665442,
       "baseline_err": 0.17235981633345582,
-      "corrected_pct": 0.21468231551552758,
-      "corrected_err": 0.30421768448447245,
-      "improvement_err": -0.13185786815101663,
-      "improvement_pct": -76.50151349425778
+      "corrected_pct": 1.2402020692825317,
+      "corrected_err": 0.7213020692825317,
+      "improvement_err": -0.548942252949076,
+      "improvement_pct": -318.4862136816537
     },
     {
       "seed": 8,
       "baseline_pct": 0.38874799009110866,
       "baseline_err": 0.13015200990889136,
-      "corrected_pct": 0.3024808598042601,
-      "corrected_err": 0.21641914019573993,
-      "improvement_err": -0.08626713028684857,
-      "improvement_pct": -66.28182718594745
+      "corrected_pct": 1.239395607845803,
+      "corrected_err": 0.720495607845803,
+      "improvement_err": -0.5903435979369116,
+      "improvement_pct": -453.580085586202
     },
     {
       "seed": 9,
       "baseline_pct": 0.3846987831736256,
       "baseline_err": 0.13420121682637443,
-      "corrected_pct": 0.2751155498129043,
-      "corrected_err": 0.2437844501870957,
-      "improvement_err": -0.10958323336072129,
-      "improvement_pct": -81.65591635618091
+      "corrected_pct": 1.2368772197736964,
+      "corrected_err": 0.7179772197736963,
+      "improvement_err": -0.5837760029473219,
+      "improvement_pct": -435.00052887195056
     }
   ],
   "stress_test_stats": {
-    "mean_improvement": -0.15526441235638488,
-    "std_improvement": 0.05470703537492455,
+    "mean_improvement": -0.6252535646842826,
+    "std_improvement": 0.047089803985129554,
     "positive_count": 0,
     "total_seeds": 10
   },
