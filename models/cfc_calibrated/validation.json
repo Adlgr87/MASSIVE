@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-17T17:26:56.333632",
+  "timestamp": "2026-08-17T17:30:39.858095",
   "model_path": "/home/adlg/MASSIVE/models/cfc_calibrated/cfc_residual.pt",
   "architecture": {
     "type": "CfCResidualCorrector-N9H64",
@@ -17,116 +17,117 @@
   "training_info": {
     "epochs_trained": 34,
     "final_val_loss": 0.0009314568780138399,
-    "test_rmse": 0.03762511627930556
+    "test_rmse": 0.03762511627930556,
+    "test_r2": -18.73242811735947
   },
   "baseline_metrics": {
     "final_leave_pct": 0.5449942526325485,
     "error": 0.026094252632548498,
-    "time_seconds": 0.4479691982269287
+    "time_seconds": 1.2853295803070068
   },
   "corrected_metrics": {
-    "final_leave_pct": 1.2380985384682845,
-    "error": 0.7191985384682845,
-    "time_seconds": 0.04217815399169922,
-    "improvement_percent": -2656.1568771323878,
-    "correction_method": "Dynamic model-guided correction: ADD predicted residual to push toward target"
+    "final_leave_pct": 0.6671242599168616,
+    "error": 0.1482242599168616,
+    "time_seconds": 0.1196129322052002,
+    "improvement_percent": -468.0341261507334,
+    "correction_method": "CfC model-guided residual correction (scale factor 0.1)"
   },
   "stress_test": [
     {
       "seed": 0,
       "baseline_pct": 0.3887264136132821,
       "baseline_err": 0.13017358638671794,
-      "corrected_pct": 1.2371317829747737,
-      "corrected_err": 0.7182317829747736,
-      "improvement_err": -0.5880581965880557,
-      "improvement_pct": -451.74924722520916
+      "corrected_pct": 0.5799073181301585,
+      "corrected_err": 0.06100731813015847,
+      "improvement_err": 0.06916626825655947,
+      "improvement_pct": 53.13387314311311
     },
     {
       "seed": 1,
       "baseline_pct": 0.5136011178952665,
       "baseline_err": 0.005298882104733504,
-      "corrected_pct": 1.236945080331985,
-      "corrected_err": 0.718045080331985,
-      "improvement_err": -0.7127461982272515,
-      "improvement_pct": -13450.878584193324
+      "corrected_pct": 0.5961595868344625,
+      "corrected_err": 0.07725958683446243,
+      "improvement_err": -0.07196070472972893,
+      "improvement_pct": -1358.035587646803
     },
     {
       "seed": 2,
       "baseline_pct": 0.438948854270762,
       "baseline_err": 0.079951145729238,
-      "corrected_pct": 1.2335059612873027,
-      "corrected_err": 0.7146059612873027,
-      "improvement_err": -0.6346548155580647,
-      "improvement_pct": -793.8032779509906
+      "corrected_pct": 0.6724555805084871,
+      "corrected_err": 0.15355558050848706,
+      "improvement_err": -0.07360443477924905,
+      "improvement_pct": -92.06176360313499
     },
     {
       "seed": 3,
       "baseline_pct": 0.4786500916950523,
       "baseline_err": 0.040249908304947735,
-      "corrected_pct": 1.2350379599531884,
-      "corrected_err": 0.7161379599531884,
-      "improvement_err": -0.6758880516482406,
-      "improvement_pct": -1679.2287985539506
+      "corrected_pct": 0.5243477794318634,
+      "corrected_err": 0.005447779431863364,
+      "improvement_err": 0.03480212887308437,
+      "improvement_pct": 86.4651134343238
     },
     {
       "seed": 4,
       "baseline_pct": 0.4184144496108418,
       "baseline_err": 0.10048555038915824,
-      "corrected_pct": 1.23242497617177,
-      "corrected_err": 0.71352497617177,
-      "improvement_err": -0.6130394257826117,
-      "improvement_pct": -610.0771935949458
+      "corrected_pct": 0.4877200109702365,
+      "corrected_err": 0.031179989029763544,
+      "improvement_err": 0.0693055613593947,
+      "improvement_pct": 68.97067398346293
     },
     {
       "seed": 5,
       "baseline_pct": 0.4437319028959506,
       "baseline_err": 0.07516809710404943,
-      "corrected_pct": 1.240184247493744,
-      "corrected_err": 0.7212842474937439,
-      "improvement_err": -0.6461161503896944,
-      "improvement_pct": -859.561669487689
+      "corrected_pct": 0.5822145980954778,
+      "corrected_err": 0.06331459809547779,
+      "improvement_err": 0.011853499008571633,
+      "improvement_pct": 15.769321647405473
     },
     {
       "seed": 6,
       "baseline_pct": 0.45868512156009544,
       "baseline_err": 0.060214878439904584,
-      "corrected_pct": 1.2380858332555031,
-      "corrected_err": 0.7191858332555031,
-      "improvement_err": -0.6589709548155985,
-      "improvement_pct": -1094.3656649133025
+      "corrected_pct": 0.4580427050857471,
+      "corrected_err": 0.0608572949142529,
+      "improvement_err": -0.0006424164743483174,
+      "improvement_pct": -1.066873322661374
     },
     {
       "seed": 7,
       "baseline_pct": 0.3465401836665442,
       "baseline_err": 0.17235981633345582,
-      "corrected_pct": 1.2402020692825317,
-      "corrected_err": 0.7213020692825317,
-      "improvement_err": -0.548942252949076,
-      "improvement_pct": -318.4862136816537
+      "corrected_pct": 0.5020773281977027,
+      "corrected_err": 0.01682267180229735,
+      "improvement_err": 0.15553714453115847,
+      "improvement_pct": 90.23979477342249
     },
     {
       "seed": 8,
       "baseline_pct": 0.38874799009110866,
       "baseline_err": 0.13015200990889136,
-      "corrected_pct": 1.239395607845803,
-      "corrected_err": 0.720495607845803,
-      "improvement_err": -0.5903435979369116,
-      "improvement_pct": -453.580085586202
+      "corrected_pct": 0.5861781795451851,
+      "corrected_err": 0.06727817954518511,
+      "improvement_err": 0.06287383036370625,
+      "improvement_pct": 48.30799801533531
     },
     {
       "seed": 9,
       "baseline_pct": 0.3846987831736256,
       "baseline_err": 0.13420121682637443,
-      "corrected_pct": 1.2368772197736964,
-      "corrected_err": 0.7179772197736963,
-      "improvement_err": -0.5837760029473219,
-      "improvement_pct": -435.00052887195056
+      "corrected_pct": 0.5810836063915076,
+      "corrected_err": 0.06218360639150755,
+      "improvement_err": 0.07201761043486687,
+      "improvement_pct": 53.663902711136465
     }
   ],
   "stress_test_stats": {
-    "mean_improvement": -0.6252535646842826,
-    "std_improvement": 0.047089803985129554,
-    "positive_count": 0,
+    "mean_improvement": 0.032934848684401545,
+    "std_improvement": 0.06634735199210079,
+    "positive_count": 7,
     "total_seeds": 10
   },
   "overall_result": "FAIL",
@@ -139,7 +140,7 @@
   },
   "residual_stats": {
     "mean": 0.04255576943821785,
-    "std": 0.029295811591112112,
+    "std": 0.029335915390299665,
     "min": -0.0253233173977324,
     "max": 0.0925108874977174
   },
