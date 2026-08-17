@@ -10,6 +10,7 @@ from __future__ import annotations
 from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException, Request
+from pydantic import ValidationError
 
 from backend.app.models import Feasibility, ForecastPoint, ForecastResponse
 from backend.app.security import get_api_key, rate_limit_dependency
@@ -34,6 +35,7 @@ async def v1_forecast(request: Request, payload: dict[str, Any]) -> ForecastResp
         ``ForecastResponse`` validated against the DTO schema.
     """
     from forecast.engine import forecast
+    from forecast.temporal_config import TemporalConfig
 
     if not isinstance(payload, dict):
         raise HTTPException(status_code=400, detail="JSON body required")
@@ -41,9 +43,16 @@ async def v1_forecast(request: Request, payload: dict[str, Any]) -> ForecastResp
     if not isinstance(sim_state, dict):
         raise HTTPException(status_code=400, detail="'simulation_state' (dict) is required")
     temporal_cfg = payload.get("temporal_config") or {}
+    try:
+        temporal_config = TemporalConfig(**(temporal_cfg if isinstance(temporal_cfg, dict) else {}))
+    except ValidationError as exc:
+        raise HTTPException(
+            status_code=422,
+            detail=exc.errors(),
+        )
     result = forecast(
         sim_state,
-        temporal_config=temporal_cfg if isinstance(temporal_cfg, dict) else {},
+        temporal_config=temporal_config,
         mode=payload.get("mode", "analytical"),
         n_runs=int(payload.get("n_runs", 200)),
     )
@@ -59,7 +68,7 @@ async def v1_forecast(request: Request, payload: dict[str, Any]) -> ForecastResp
     )
     feas = Feasibility(
         score=p_event,
-        label=data.get("confidence", "low"),
+        label=data.get("confidence") or "low",
         rationale=data.get("mode"),
     )
     return ForecastResponse(

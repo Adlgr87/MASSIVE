@@ -1,0 +1,66 @@
+{
+  "model_name": "CfCResidualCorrector",
+  "architecture": "Closed-form Continuous-time ODE (CfC)",
+  "ode_formulation": "dx/dt = -x/tau(t,u,x) + f_theta(t,u,x), tau = softplus(MLP) + eps",
+  "ode_solver": "manual Euler integration (torchdiffeq verified installed)",
+  "feat_dim": 3,
+  "ctx_dim": 6,
+  "hidden_size": 64,
+  "input_features": [
+    "time_normalized",
+    "actual_leave_pct",
+    "simulated_leave_pct"
+  ],
+  "context_features": [
+    "residual_t-6",
+    "residual_t-5",
+    "residual_t-4",
+    "residual_t-3",
+    "residual_t-2",
+    "residual_t-1"
+  ],
+  "target": "residual = actual_leave_pct - simulated_leave_pct",
+  "training": {
+    "epochs_run": 34,
+    "epochs_requested": 200,
+    "learning_rate": 0.0003,
+    "batch_size": 1,
+    "weight_decay": 1e-05,
+    "train_split": 251,
+    "val_split": 54,
+    "test_split": 55,
+    "early_stopping_patience": 30,
+    "grad_clip": 1.0,
+    "window_size": 32,
+    "loss_function": "MSE",
+    "optimizer": "Adam",
+    "scheduler": "ReduceLROnPlateau(factor=0.5, patience=10)"
+  },
+  "device": "cpu",
+  "cuda_available": false,
+  "initial_loss": 0.010359849115567548,
+  "final_val_loss": 0.0009314568780138399,
+  "test_metrics": {
+    "mse": 0.001415649375031264,
+    "mae": 0.03653208565982905,
+    "rmse": 0.03762511627930556,
+    "r2": -18.73242811735947
+  },
+  "training_time_seconds": 9.200380086898804,
+  "residual_stats_reference": {
+    "mean": 0.042555769438217886,
+    "std": 0.029295811591112123,
+    "rmse_baseline": 0.051664669642422945,
+    "r_squared_baseline": -1.68620776524926,
+    "correlation_actual_simulated": 0.37409874262516607,
+    "n_points": 366
+  },
+  "historical_context": {
+    "event": "Brexit Referendum (EU Membership referendum)",
+    "t0_year": 2015,
+    "outcome": "Leave won with 51.89% of votes vs Remain 48.11%"
+  },
+  "checkpoint_epochs": [
+    25
+  ]
+}

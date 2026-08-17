@@ -41,3 +41,9 @@ target/
 .venv/
 venv/
 node_modules/
+
+# Sensitive and lock files
+.context_cache.json
+.env
+.env.*
+uv.lock

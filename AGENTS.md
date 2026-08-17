@@ -70,3 +70,30 @@
 - `services/llm_orchestrator.py` — orquestador: `classify_motor`, `run_llm_simulation`, dispatcher multi-motor, narración. Re-exportado en `services/__init__.py`.
 - `backend/app/models/dto_llm.py` — DTOs `LLMRunRequest`/`LLMRunResponse`/`LLMAmbiguityResponse` (extra="forbid").
 - `docs/LLM_PROMPTS.md` — plantillas de prompts RT/WC/NR/AC; `docs/MASSIVE_LLM_INTERFACE.md` — documentación completa de la interfaz LLM.
+
+## Simulation Scientist Notes (Brexit 2016)
+
+### Engine APIs
+- `run_scientific_simulation(estado_inicial, escenario="campana", pasos=N, scientific_config={"enable_scientific_report": True})` returns `ScientificSimulationResult` with `.history`, `.summary`, `.scientific_report`, `.scientific_config`.
+- `SparseMultilayerEngine(layers=[LayerState(...)], interaction_matrix, max_iterations, convergence_threshold)` from `massive_core.numerics.multilayer_engine_sparse`. Uses `LayerState(node_features, graph_adjacency, layer_id, agent_types)`.
+- `SocialEnergyEngine(range_type="bipolar", temperature, lambda_social, gini_coefficient, inequality_factor, seed)` from `energy_engine`. `step(opinions, adj, attractors, repellers, eta)` returns updated opinions.
+- `SparseEnsembleKalmanFilter(n_ensemble, n_state_dim, n_obs_dim, observable_indices, observation_covariance, inflation, rng)` from `massive_core.data_assimilation.kalman`. Does NOT accept `seed` or `process_covariance` as arrays (the `or` check fails on numpy arrays).
+- `MultilayerEngine(N, layer_weights, coupling, dt, range_type, seed, ...)` from `multilayer_engine`. `.run(steps=N)` returns list of state arrays.
+
+### Bipolar Opinion Encoding
+- Leave = +1, Remain = -1. To convert Leave% to bipolar opinion: `opinion = 2 * leave_pct - 1`. To convert back: `leave_pct = (opinion + 1) / 2`.
+- UK 2016 Brexit: T0 polling ~41% Leave, actual result 51.89% Leave.
+
+### Output Files
+- Scientific report: `/tmp/simulation_analysis_report.md`
+- Residuals CSV: `/tmp/cfc_training_data/residual_timeseries.csv`
+- Residual stats: `/tmp/cfc_training_data/residual_stats.json`
+
+## CfC calibration (2026-08-17)
+- **Task:** Trained a Closed-form Continuous-time (CfC) residual-correction network to correct Brexit 2016 simulation residuals from `energy_engine.py` (Langevin dynamics).
+- **Environment:** Use system `python3` (torch 2.11.0 + torchdiffeq 0.2.5 installed on system Python); the MASSIVE `.venv` does **not** have torch. Activate with `source .venv/bin/activate` only works if deps are installed — prefer system python3 for CfC training. No CUDA in this environment (CPU-only).
+- **Data sources:** `/tmp/cfc_training_data/residual_timeseries.csv` (366 steps), `/tmp/cfc_training_data/residual_stats.json`, `/tmp/historical_research/{initial_state,event_metadata,adjacency_matrix}.json`.
+- **Existing CfC code:** `cfc_engine.py` (CfCCell, CfCRegimeSelector, CfCTauMatrix, CfCArchitectPolicy), `cfc_trainer.py` (regime/tau dataset generation + training), `cfc_router.py` (singleton router with transparent fallback). The new residual corrector follows the same τ-dynamic ODE cell pattern.
+- **Output artifacts:** `/home/adlg/MASSIVE/models/cfc_calibrated/{cfc_residual.pt, config.json, training_log.json, predictions.npz, checkpoints/checkpoint_ep*.pt}`. Report: `/tmp/cfc_training_report.md`. Calibration doc: `/home/adlg/MASSIVE/calibration_log.md`.
+- **Result:** ~27% RMSE reduction on test split (0.0517 → 0.0376 MAE 0.0365), val MSE 0.000371, early-stopped at epoch 34, 9.2s training.
+- **Integration:** extend `CfCRouter` with `correct_residual(...)` that loads `cfc_residual.pt` and adds `r̂(t)` to the energy-engine output `ŷ(t)` → `final(t)=ŷ(t)+r̂(t)`; mirror transparent-fallback pattern (skip correction if torch/model missing). See `calibration_log.md` §6.
