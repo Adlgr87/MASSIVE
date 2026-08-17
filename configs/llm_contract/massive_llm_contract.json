@@ -119,7 +119,7 @@
       },
       "scenario": {
         "type": "string|null",
-        "enum": ["baseline", "optimistic", "pessimistic", "crisis", "intervention", null],
+        "enum": ["baseline", "optimistic", "pessimistic", "crisis", "intervention"],
         "default": "baseline",
         "description": "Named scenario. 'intervention' requires intervention_config."
       },
