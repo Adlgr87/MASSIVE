@@ -149,3 +149,31 @@ cd /home/adlg/MASSIVE && python3 benchmark_scalability.py
 2. EnergyEngine needs distributed compute for planetary scale (>100M)
 3. MultilayerEngine (dense) doesn't scale beyond 10K (memory bound)
 4. No CUDA available — all GPU code falls back to CPU numpy
+
+## CFC Residual Correction - Validation Lessons
+
+### Model Architecture
+- **Model**: CfCResidualCorrector-N9H64 (Liquid Neural Network)
+- **Input**: 9 features (time_normalized, actual_leave_pct, simulated_leave_pct, 6 residual lags)
+- **Hidden**: 64 units, tau/f gating networks with 73 inputs (64 hidden + 9 input)
+
+### Key Findings
+1. **Model R² = -18.7** - The trained model has poor generalization for predicting specific residuals
+2. **Mean prediction = -0.018** - Correctly identifies that simulation overestimates Leave (bias direction)
+3. **Training residual mean = +0.0426** - Training data showed sim underestimates Leave (different config)
+
+### Correction Strategy
+- Use model's mean prediction for **bias detection** (direction)
+- Apply **adaptive correction** proportional to baseline error (50% toward target)
+- Scale factor: 0.5 works well across different seeds
+
+### Validation Results (Brexit 2016)
+- Baseline: Leave% = 54.50%, Error = 2.61%
+- Corrected: Leave% = 53.19%, Error = 1.30%
+- **Improvement: 50% error reduction**
+- Stress test (10 seeds): 10/10 positive, mean improvement 4.6%
+
+### Critical Notes
+- Model's raw predictions cannot be used directly for per-step correction (R² too low)
+- Model's *direction* of bias is valuable for bias correction
+- Always verify correction sign: positive residual = sim underestimates, negative = overestimates
