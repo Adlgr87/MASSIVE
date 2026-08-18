@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
-from typing import Any, Sequence
+from typing import Any
 
 import numpy as np
 
@@ -80,7 +81,7 @@ def build_cfc_regime_dataset_from_history(
         current = history[index]
         if "_regla" not in current:
             continue
-        X_hist.append(opinions[index - window_size:index])
+        X_hist.append(opinions[index - window_size : index])
         X_state.append(_state_vector(current))
         labels.append(int(current.get("_regla", 0)))
 
@@ -107,7 +108,9 @@ def build_cfc_regime_dataset_from_histories(
         Combined in-memory CfC training dataset.
     """
 
-    datasets = [build_cfc_regime_dataset_from_history(history, window_size) for history in histories]
+    datasets = [
+        build_cfc_regime_dataset_from_history(history, window_size) for history in histories
+    ]
     return CfCTrainingDataset(
         X_hist=np.vstack([dataset.X_hist for dataset in datasets]),
         X_state=np.vstack([dataset.X_state for dataset in datasets]),

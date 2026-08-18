@@ -26,6 +26,7 @@ if str(REPO) not in sys.path:
 
 def _workload() -> None:
     import numpy as np
+
     from energy_engine import SocialEnergyEngine
     from multilayer_engine import MultilayerEngine
 

@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional, Sequence
+from collections.abc import Sequence
+from typing import Any
 
 import numpy as np
 
@@ -17,12 +18,12 @@ class MicroOrchestrator:
 
     def __init__(
         self,
-        particles: Optional[Sequence[SocialParticle]] = None,
+        particles: Sequence[SocialParticle] | None = None,
         n_particles: int = 8,
         initial_cohesion: float = 0.3,
         *,
-        seed: Optional[int] = None,
-        rng: Optional[np.random.Generator] = None,
+        seed: int | None = None,
+        rng: np.random.Generator | None = None,
     ) -> None:
         self.rng = rng if rng is not None else np.random.default_rng(seed)
         if particles is not None:

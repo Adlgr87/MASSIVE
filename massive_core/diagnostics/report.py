@@ -7,8 +7,9 @@ history into numeric arrays and returns a JSON-friendly report.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, asdict
-from typing import Any, Sequence
+from collections.abc import Sequence
+from dataclasses import asdict, dataclass
+from typing import Any
 
 import numpy as np
 
@@ -90,9 +91,7 @@ def trajectory_from_history(history: Sequence[Any], fields: Sequence[str] | None
             raise ValueError("all history dictionaries must expose the same selected fields")
         return np.asarray(rows, dtype=float)
 
-    array_rows: list[Array] = [
-        np.asarray(item, dtype=float).reshape(-1) for item in history
-    ]
+    array_rows: list[Array] = [np.asarray(item, dtype=float).reshape(-1) for item in history]
     if any(row.shape != array_rows[0].shape for row in array_rows):
         raise ValueError("all array history entries must have the same shape")
     return np.vstack(array_rows)
@@ -148,7 +147,10 @@ def build_scientific_report(
     hist_counts, _ = np.histogram(final_state, bins=bins)
     entropy = stat.compute_entropy(hist_counts)
     free_energy = stat.compute_free_energy(hist_counts.astype(float) + 1e-12)
-    temps = np.asarray(temperature_range if temperature_range is not None else np.linspace(0.5, 2.0, 5), dtype=float)
+    temps = np.asarray(
+        temperature_range if temperature_range is not None else np.linspace(0.5, 2.0, 5),
+        dtype=float,
+    )
     susceptibility = stat.estimate_phase_transition(final_state, temps)["susceptibility"]
 
     return ScientificReport(

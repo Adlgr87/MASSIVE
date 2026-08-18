@@ -10,11 +10,12 @@ Usage
     from benchmarks.io import load_cases
     cases = load_cases("datasets/pvu_cases")
 """
+
 from __future__ import annotations
 
+import contextlib
 import json
 import logging
-import os
 from pathlib import Path
 from typing import Any
 
@@ -42,12 +43,10 @@ def _load_timeseries(path: Path) -> dict[str, Any]:
     dates = [r["date"] for r in rows]
     P = np.array([float(r["P"]) for r in rows])
     extra: dict[str, np.ndarray] = {}
-    for col in (reader.fieldnames or []):
+    for col in reader.fieldnames or []:
         if col not in ("date", "P"):
-            try:
+            with contextlib.suppress(ValueError, KeyError):
                 extra[col] = np.array([float(r[col]) for r in rows])
-            except (ValueError, KeyError):
-                pass
     return {"dates": dates, "P": P, **extra}
 
 

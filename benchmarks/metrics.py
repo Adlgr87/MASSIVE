@@ -11,16 +11,17 @@ directional_accuracy : fraction of correct sign predictions
 dm_test      : Diebold–Mariano test statistic and p-value (two-sided)
 holm_bonferroni : Holm–Bonferroni correction for a list of p-values
 """
+
 from __future__ import annotations
 
 import math
-from typing import Sequence
+from collections.abc import Sequence
 
 import numpy as np
 from scipy import stats as _scipy_stats
 
-
 # ── point forecast metrics ────────────────────────────────────────────────────
+
 
 def mae(y_true: np.ndarray, y_pred: np.ndarray) -> float:
     """Mean Absolute Error."""
@@ -61,6 +62,7 @@ def directional_accuracy(y_true: np.ndarray, y_pred: np.ndarray) -> float:
 
 
 # ── Diebold–Mariano test ──────────────────────────────────────────────────────
+
 
 def dm_test(
     y_true: np.ndarray,
@@ -105,6 +107,7 @@ def dm_test(
 
 # ── Multiple-comparison correction ───────────────────────────────────────────
 
+
 def holm_bonferroni(p_values: Sequence[float]) -> list[float]:
     """Return Holm–Bonferroni adjusted p-values (same order as input).
 
@@ -126,6 +129,7 @@ def holm_bonferroni(p_values: Sequence[float]) -> list[float]:
 
 
 # ── Aggregate helper ──────────────────────────────────────────────────────────
+
 
 def compute_all_metrics(y_true: np.ndarray, y_pred: np.ndarray) -> dict[str, float]:
     """Return a dict of all point-forecast metrics."""

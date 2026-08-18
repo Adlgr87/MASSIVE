@@ -13,8 +13,7 @@ import argparse
 import json
 import logging
 import sys
-from pathlib import Path
-from typing import Sequence
+from collections.abc import Sequence
 
 log = logging.getLogger("massive.cli")
 
@@ -104,7 +103,9 @@ def _build_parser() -> argparse.ArgumentParser:
     # benchmark
     p_bench = sub.add_parser("benchmark", help="Run the PVU-BS benchmark suite")
     p_bench.add_argument("--cases", type=str, default="datasets/pvu_cases", help="Cases directory")
-    p_bench.add_argument("--out", type=str, default="reports/validation/ci", help="Output directory")
+    p_bench.add_argument(
+        "--out", type=str, default="reports/validation/ci", help="Output directory"
+    )
     p_bench.add_argument("--seed", type=int, default=42, help="RNG seed")
     p_bench_mode = p_bench.add_mutually_exclusive_group()
     p_bench_mode.add_argument("--offline", action="store_true", help="Offline mode (no LLM)")

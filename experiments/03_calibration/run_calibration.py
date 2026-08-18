@@ -5,7 +5,12 @@ FASE 5 — CALIBRACIÓN EMPÍRICA
 Verifica que la calibración existente en empirical_config.py produce
 el comportamiento prometido.
 """
-import sys, os, json, time, traceback
+
+import json
+import os
+import sys
+import traceback
+
 import numpy as np
 
 REPO = "/home/adlg/Escritorio/Proyectos/MASSIVE"
@@ -14,10 +19,12 @@ os.environ.setdefault("PYTHONHASHSEED", "42")
 
 results = []
 
+
 def record(name, status, detail):
     results.append({"test": name, "status": status, "detail": detail})
     icon = "✅" if status == "PASS" else "❌" if status == "FAIL" else "⚠️"
     print(f"{icon} {name}: {status} — {detail}")
+
 
 # ============================================================================
 # [5.1] VERIFICACIÓN DE PERFILES CULTURALES
@@ -26,8 +33,15 @@ def test_cultural_profiles():
     """Para cada uno de los 7 perfiles, verificar que los parámetros difieren."""
     from empirical_calibration import build_empirical_engine_config
 
-    profiles = ["mixed", "latin", "anglosaxon", "east_asian",
-                "middle_east", "south_asian", "subsaharan_africa"]
+    profiles = [
+        "mixed",
+        "latin",
+        "anglosaxon",
+        "east_asian",
+        "middle_east",
+        "south_asian",
+        "subsaharan_africa",
+    ]
 
     configs = {}
     for p in profiles:
@@ -53,11 +67,17 @@ def test_cultural_profiles():
             break
 
     if all_same:
-        record("Perfiles culturales — diversidad de parámetros", "FAIL",
-               "Todos los perfiles producen los mismos valores")
+        record(
+            "Perfiles culturales — diversidad de parámetros",
+            "FAIL",
+            "Todos los perfiles producen los mismos valores",
+        )
     else:
-        record("Perfiles culturales — diversidad de parámetros", "PASS",
-               f"7 perfiles producen configs diferentes")
+        record(
+            "Perfiles culturales — diversidad de parámetros",
+            "PASS",
+            "7 perfiles producen configs diferentes",
+        )
 
     # Verificar dirección esperada: east_asian < anglosaxon en homofilia_tasa
     # (lower rate = slower convergence = more sub-group differentiation in collectivist cultures)
@@ -65,32 +85,52 @@ def test_cultural_profiles():
     ax_homofilia = configs["anglosaxon"].get("homofilia_tasa", 0)
 
     if ea_homofilia != ax_homofilia:
-        record("Dirección cultural — homofilia_tasa (east_asian ≠ anglosaxon)", "PASS",
-               f"east_asian={ea_homofilia}, anglosaxon={ax_homofilia}")
+        record(
+            "Dirección cultural — homofilia_tasa (east_asian ≠ anglosaxon)",
+            "PASS",
+            f"east_asian={ea_homofilia}, anglosaxon={ax_homofilia}",
+        )
     else:
-        record("Dirección cultural — homofilia_tasa (east_asian ≠ anglosaxon)", "WARN",
-               f"east_asian={ea_homofilia} == anglosaxon={ax_homofilia}")
+        record(
+            "Dirección cultural — homofilia_tasa (east_asian ≠ anglosaxon)",
+            "WARN",
+            f"east_asian={ea_homofilia} == anglosaxon={ax_homofilia}",
+        )
 
     # Verificar: latin ≠ anglosaxon en distancia_poder (buscamos el key real)
-    dp_keys_latin = {k: v for k, v in configs["latin"].items() if 'distancia' in k.lower() or 'poder' in k.lower()}
-    dp_keys_ax = {k: v for k, v in configs["anglosaxon"].items() if 'distancia' in k.lower() or 'poder' in k.lower()}
+    dp_keys_latin = {
+        k: v
+        for k, v in configs["latin"].items()
+        if "distancia" in k.lower() or "poder" in k.lower()
+    }
+    dp_keys_ax = {
+        k: v
+        for k, v in configs["anglosaxon"].items()
+        if "distancia" in k.lower() or "poder" in k.lower()
+    }
     if dp_keys_latin != dp_keys_ax:
-        record("Dirección cultural — distancia_poder (latin ≠ anglosaxon)", "PASS",
-               f"latin={dp_keys_latin}, anglosaxon={dp_keys_ax}")
+        record(
+            "Dirección cultural — distancia_poder (latin ≠ anglosaxon)",
+            "PASS",
+            f"latin={dp_keys_latin}, anglosaxon={dp_keys_ax}",
+        )
     else:
-        record("Dirección cultural — distancia_poder (latin ≠ anglosaxon)", "WARN",
-               f"latin={dp_keys_latin} == anglosaxon={dp_keys_ax}")
+        record(
+            "Dirección cultural — distancia_poder (latin ≠ anglosaxon)",
+            "WARN",
+            f"latin={dp_keys_latin} == anglosaxon={dp_keys_ax}",
+        )
 
     # Simular con cada perfil
     from simulator import simular
+
     profile_results = {}
     for p in profiles:
         np.random.seed(42)
         cfg_sim = {"proveedor": "heurístico"}
         cfg_sim.update(configs[p])
         estado = {"opinion": 0.5, "propaganda": 0.3}
-        result = simular(estado, pasos=100, cada_n_pasos=10,
-                          config=cfg_sim, verbose=False)
+        result = simular(estado, pasos=100, cada_n_pasos=10, config=cfg_sim, verbose=False)
         opinions = [h["opinion"] for h in result]
         profile_results[p] = {
             "final_opinion": opinions[-1],
@@ -102,15 +142,22 @@ def test_cultural_profiles():
     final_opinions = [profile_results[p]["final_opinion"] for p in profiles]
     opinion_range = max(final_opinions) - min(final_opinions)
     if opinion_range > 0.01:
-        record("Trayectorias por perfil cultural — divergencia", "PASS",
-               f"range de opiniones finales: {opinion_range:.4f} "
-               f"({min(final_opinions):.4f} a {max(final_opinions):.4f})")
+        record(
+            "Trayectorias por perfil cultural — divergencia",
+            "PASS",
+            f"range de opiniones finales: {opinion_range:.4f} "
+            f"({min(final_opinions):.4f} a {max(final_opinions):.4f})",
+        )
     else:
-        record("Trayectorias por perfil cultural — divergencia", "WARN",
-               f"range={opinion_range:.4f} — trayectorias muy similares")
+        record(
+            "Trayectorias por perfil cultural — divergencia",
+            "WARN",
+            f"range={opinion_range:.4f} — trayectorias muy similares",
+        )
 
     # Guardar detalle de perfiles
     return configs, profile_results
+
 
 # ============================================================================
 # [5.2] CROSS-VALIDATION DE PARÁMETROS EMPÍRICOS
@@ -134,8 +181,7 @@ def test_param_validation():
 
     verified = 0
     for param_name, expected_val, expected_source in critical_params:
-        found = False
-        for category, params in MASSIVE_EMPIRICAL_MASTER.items():
+        for _category, params in MASSIVE_EMPIRICAL_MASTER.items():
             if param_name in params:
                 p = params[param_name]
                 actual_val = p.get("value")
@@ -145,19 +191,27 @@ def test_param_validation():
                 else:
                     actual_source = str(actual_source)
                 val_match = abs(actual_val - expected_val) < 0.01
-                source_match = expected_source.split("(")[0].strip().lower() in actual_source.lower()
+                source_match = (
+                    expected_source.split("(")[0].strip().lower() in actual_source.lower()
+                )
                 if val_match and source_match:
                     verified += 1
-                    found = True
                 break
 
     pct = verified / len(critical_params) * 100
     if pct >= 80:
-        record(f"Cross-validation parámetros críticos ({verified}/{len(critical_params)})", "PASS",
-               f"{pct:.0f}% verificados con fuente y valor correctos")
+        record(
+            f"Cross-validation parámetros críticos ({verified}/{len(critical_params)})",
+            "PASS",
+            f"{pct:.0f}% verificados con fuente y valor correctos",
+        )
     else:
-        record(f"Cross-validation parámetros críticos ({verified}/{len(critical_params)})", "FAIL",
-               f"Solo {pct:.0f}% verificados")
+        record(
+            f"Cross-validation parámetros críticos ({verified}/{len(critical_params)})",
+            "FAIL",
+            f"Solo {pct:.0f}% verificados",
+        )
+
 
 # ============================================================================
 # [5.3] CALIBRACIÓN CON FENÓMENOS CONOCIDOS (GROUND TRUTH)
@@ -166,7 +220,6 @@ def test_ground_truth_scenarios():
     """3 escenarios de verdad de tierra basados en fenómenos sociales documentados."""
 
     # --- ESCENARIO A: Polarización política ---
-    from massive.core.extended_models import regla_nash
     from simulator import regla_hk
 
     cfg = {"rango": "[0, 1] — Probabilístico", "ruido_base": 0.0, "hk_epsilon": 0.2}
@@ -174,9 +227,14 @@ def test_ground_truth_scenarios():
     success_a = 0
     for seed in range(42, 62):
         np.random.seed(seed)
-        estado = {"opinion": 0.5, "propaganda": 0.4,
-                  "opinion_grupo_a": 0.8, "opinion_grupo_b": 0.2,
-                  "pertenencia_grupo": 0.5, "historial": [0.5]}
+        estado = {
+            "opinion": 0.5,
+            "propaganda": 0.4,
+            "opinion_grupo_a": 0.8,
+            "opinion_grupo_b": 0.2,
+            "pertenencia_grupo": 0.5,
+            "historial": [0.5],
+        }
         for _ in range(200):
             estado = regla_hk(estado, params, cfg)
         # Criterio: opinion debe estar cerca de uno de los polos (0.2 o 0.8)
@@ -186,22 +244,34 @@ def test_ground_truth_scenarios():
 
     pct_a = success_a / 20 * 100
     if pct_a >= 70:
-        record("Escenario A — Polarización (bimodal)", "PASS",
-               f"{success_a}/20 runs ({pct_a:.0f}%) con polarización")
+        record(
+            "Escenario A — Polarización (bimodal)",
+            "PASS",
+            f"{success_a}/20 runs ({pct_a:.0f}%) con polarización",
+        )
     else:
-        record("Escenario A — Polarización (bimodal)", "FAIL",
-               f"{success_a}/20 runs ({pct_a:.0f}%) — esperado ≥70%")
+        record(
+            "Escenario A — Polarización (bimodal)",
+            "FAIL",
+            f"{success_a}/20 runs ({pct_a:.0f}%) — esperado ≥70%",
+        )
 
     # --- ESCENARIO B: Consenso de movimiento social ---
     from simulator import regla_umbral_heterogeneo
+
     cfg_b = {"rango": "[0, 1] — Probabilístico", "ruido_base": 0.0}
     params_b = {"umbral_media": 0.25}
     success_b = 0
     for seed in range(42, 62):
         np.random.seed(seed)
-        estado = {"opinion": 0.3, "propaganda": 0.6,
-                  "opinion_grupo_a": 0.8, "opinion_grupo_b": 0.2,
-                  "pertenencia_grupo": 0.6, "historial": [0.3]}
+        estado = {
+            "opinion": 0.3,
+            "propaganda": 0.6,
+            "opinion_grupo_a": 0.8,
+            "opinion_grupo_b": 0.2,
+            "pertenencia_grupo": 0.6,
+            "historial": [0.3],
+        }
         for _ in range(100):
             estado = regla_umbral_heterogeneo(estado, params_b, cfg_b)
         if estado["opinion"] > 0.7:
@@ -209,15 +279,22 @@ def test_ground_truth_scenarios():
 
     pct_b = success_b / 20 * 100
     if pct_b >= 70:
-        record("Escenario B — Consenso (Centola)", "PASS",
-               f"{success_b}/20 runs ({pct_b:.0f}%) con opinion>0.7")
+        record(
+            "Escenario B — Consenso (Centola)",
+            "PASS",
+            f"{success_b}/20 runs ({pct_b:.0f}%) con opinion>0.7",
+        )
     else:
-        record("Escenario B — Consenso (Centola)", "FAIL",
-               f"{success_b}/20 runs ({pct_b:.0f}%) — esperado ≥70%")
+        record(
+            "Escenario B — Consenso (Centola)",
+            "FAIL",
+            f"{success_b}/20 runs ({pct_b:.0f}%) — esperado ≥70%",
+        )
 
     # --- ESCENARIO C: Contagio epidémico (SIR) ---
     # R0 = beta/gamma. Para R0≈2.5: beta=0.5, gamma=0.2, dt=0.3
     from massive.core.extended_models import regla_sir
+
     cfg_c = {"rango": "[0, 1] — Probabilístico", "ruido_base": 0.0}
     params_c = {"beta": 0.5, "gamma": 0.2, "dt": 0.3}
     success_c = 0
@@ -228,9 +305,9 @@ def test_ground_truth_scenarios():
         peak_time = 0
         for step in range(100):
             estado = regla_sir(estado, params_c, cfg_c)
-            I = estado.get("_sir_I", 0)
-            if I > peak_I:
-                peak_I = I
+            sir_I = estado.get("_sir_I", 0)
+            if peak_I < sir_I:
+                peak_I = sir_I
                 peak_time = step
         final_R = estado.get("_sir_R", 0)
         if 25 <= peak_time <= 50 and final_R > 0.6:
@@ -238,11 +315,18 @@ def test_ground_truth_scenarios():
 
     pct_c = success_c / 20 * 100
     if pct_c >= 70:
-        record("Escenario C — Contagio SIR (peak 25-50, R>0.6)", "PASS",
-               f"{success_c}/20 runs ({pct_c:.0f}%) cumplen criterio")
+        record(
+            "Escenario C — Contagio SIR (peak 25-50, R>0.6)",
+            "PASS",
+            f"{success_c}/20 runs ({pct_c:.0f}%) cumplen criterio",
+        )
     else:
-        record("Escenario C — Contagio SIR (peak 25-50, R>0.6)", "FAIL",
-               f"{success_c}/20 runs ({pct_c:.0f}%) — esperado ≥70%")
+        record(
+            "Escenario C — Contagio SIR (peak 25-50, R>0.6)",
+            "FAIL",
+            f"{success_c}/20 runs ({pct_c:.0f}%) — esperado ≥70%",
+        )
+
 
 # ============================================================================
 # EJECUCIÓN
@@ -274,8 +358,10 @@ if __name__ == "__main__":
         traceback.print_exc()
 
     # Guardar
-    output_path = os.path.join(REPO, "experiments/03_calibration/calibration_validation_results.json")
-    with open(output_path, 'w') as f:
+    output_path = os.path.join(
+        REPO, "experiments/03_calibration/calibration_validation_results.json"
+    )
+    with open(output_path, "w") as f:
         json.dump(results, f, indent=2, default=str)
 
     passed = len([r for r in results if r["status"] == "PASS"])

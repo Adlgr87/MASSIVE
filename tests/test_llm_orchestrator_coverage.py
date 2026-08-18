@@ -28,33 +28,50 @@ def _post(client, body):
 
 
 def test_energy_intervention_scenario(client):
-    resp = _post(client, {
-        "intent": "Modelo energético de opinión para México",
-        "country_code": "MX",
-        "scenario": "intervention",
-        "intervention_config": {"type": "info_campaign", "magnitude": 0.6},
-        "api_key": VALID_KEY,
-    })
+    resp = _post(
+        client,
+        {
+            "intent": "Modelo energético de opinión para México",
+            "country_code": "MX",
+            "scenario": "intervention",
+            "intervention_config": {"type": "info_campaign", "magnitude": 0.6},
+            "api_key": VALID_KEY,
+        },
+    )
     assert resp.status_code == 200, resp.text
-    assert resp.json()["classified_motor"] == "energy_engine"
+    data = resp.json()
+    assert data["classified_motor"] == "energy_engine"
+    # Assert energy-specific output to guard against silent scalar fallback.
+    payload = data["result"]["payload"]
+    assert "metrics_timeline" in payload, (
+        "energy_engine dispatch must return metrics_timeline; "
+        "got scalar fallback or wrong engine"
+    )
+    assert payload.get("summary", {}).get("regla_dominante") == "langevin_energy"
 
 
 def test_massive_engine_dispatch(client):
-    resp = _post(client, {
-        "intent": "Simula una dinámica a gran escala",
-        "motor_override": "massive_engine",
-        "api_key": VALID_KEY,
-    })
+    resp = _post(
+        client,
+        {
+            "intent": "Simula una dinámica a gran escala",
+            "motor_override": "massive_engine",
+            "api_key": VALID_KEY,
+        },
+    )
     assert resp.status_code == 200, resp.text
     assert resp.json()["classified_motor"] == "massive_engine"
 
 
 def test_factbook_validation_motor(client):
-    resp = _post(client, {
-        "intent": "Valida los parámetros empíricos de Argentina",
-        "motor_override": "factbook_validation",
-        "api_key": VALID_KEY,
-    })
+    resp = _post(
+        client,
+        {
+            "intent": "Valida los parámetros empíricos de Argentina",
+            "motor_override": "factbook_validation",
+            "api_key": VALID_KEY,
+        },
+    )
     assert resp.status_code == 200, resp.text
     data = resp.json()
     assert data["classified_motor"] == "factbook_validation"
@@ -62,38 +79,50 @@ def test_factbook_validation_motor(client):
 
 
 def test_unknown_motor_override_returns_422(client):
-    resp = _post(client, {
-        "intent": "Simula algo",
-        "motor_override": "not_a_real_motor",
-        "api_key": VALID_KEY,
-    })
+    resp = _post(
+        client,
+        {
+            "intent": "Simula algo",
+            "motor_override": "not_a_real_motor",
+            "api_key": VALID_KEY,
+        },
+    )
     assert resp.status_code == 422, resp.text
     assert "requested_fields" in resp.json()
 
 
 def test_micro_massive_dispatch(client):
-    resp = _post(client, {
-        "intent": "Simula un micro-grupo de agentes",
-        "api_key": VALID_KEY,
-    })
+    resp = _post(
+        client,
+        {
+            "intent": "Simula un micro-grupo de agentes",
+            "api_key": VALID_KEY,
+        },
+    )
     assert resp.status_code == 200, resp.text
     assert resp.json()["classified_motor"] == "micro_massive"
 
 
 def test_country_name_detection_spanish(client):
-    resp = _post(client, {
-        "intent": "Ejecuta el modelo energético de opinión para Brasil",
-        "api_key": VALID_KEY,
-    })
+    resp = _post(
+        client,
+        {
+            "intent": "Ejecuta el modelo energético de opinión para Brasil",
+            "api_key": VALID_KEY,
+        },
+    )
     assert resp.status_code == 200, resp.text
     assert resp.json()["country_code_resolved"] == "BR"
 
 
 def test_explicit_country_code_wins_over_name(client):
-    resp = _post(client, {
-        "intent": "Ejecuta el modelo energético de opinión para Brasil",
-        "country_code": "US",
-        "api_key": VALID_KEY,
-    })
+    resp = _post(
+        client,
+        {
+            "intent": "Ejecuta el modelo energético de opinión para Brasil",
+            "country_code": "US",
+            "api_key": VALID_KEY,
+        },
+    )
     assert resp.status_code == 200, resp.text
     assert resp.json()["country_code_resolved"] == "US"

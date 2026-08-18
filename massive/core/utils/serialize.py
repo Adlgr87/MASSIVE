@@ -6,12 +6,14 @@ Centralizes the conversion logic used previously inline in
 (country_params, LLM orchestrator, simulation_service) shares one
 implementation — eliminating BUG-02 class serialization errors.
 """
+
 from __future__ import annotations
 
 from typing import Any
 
 try:
     import numpy as np
+
     _numpy_available = True
 except ImportError:  # pragma: no cover - numpy is a hard dep of massive_core
     np = None  # type: ignore[assignment]
@@ -40,6 +42,7 @@ def to_jsonable(value: Any) -> Any:
     if isinstance(value, float):
         # handles non-numpy floats that are not JSON-finite
         import math
+
         if math.isnan(value) or math.isinf(value):
             return 0.0
         return value

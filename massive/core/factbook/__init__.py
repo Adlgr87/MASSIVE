@@ -19,39 +19,39 @@ Author: MASSIVE Research
 """
 
 from massive.core.factbook.context import (
+    CountryData,
     FactbookContext,
     get_factbook_context,
     reset_factbook_context,
-    CountryData,
 )
 from massive.core.factbook.loader import FactbookDataLoader
-from massive.core.factbook.validator import (
-    FactbookValidator,
-    ValidationResult,
-    ValidationReport,
-)
 from massive.core.factbook.mappings import (
+    COUNTRY_CODES,
     COUNTRY_MAPPINGS,
     DEMOGRAPHIC_FIELDS,
     ECONOMIC_FIELDS,
-    SOCIAL_FIELDS,
-    POLITICAL_FIELDS,
-    COUNTRY_CODES,
     ISO2_TO_CIA,
     ISO3_TO_CIA,
     NAME_TO_CIA,
-    normalize_0_100_to_0_1,
-    normalize_0_1_to_0_100,
-    normalize_dict,
-    herfindahl_index,
-    diversity_index,
+    POLITICAL_FIELDS,
+    SOCIAL_FIELDS,
     create_5d_demographic_matrix,
     create_wealth_potential,
+    diversity_index,
+    herfindahl_index,
+    normalize_0_1_to_0_100,
+    normalize_0_100_to_0_1,
+    normalize_dict,
+)
+from massive.core.factbook.validator import (
+    FactbookValidator,
+    ValidationReport,
+    ValidationResult,
 )
 
 __all__ = [
     "FactbookContext",
-    "FactbookDataLoader", 
+    "FactbookDataLoader",
     "FactbookValidator",
     "COUNTRY_MAPPINGS",
     "DEMOGRAPHIC_FIELDS",

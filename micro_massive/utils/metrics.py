@@ -1,7 +1,5 @@
 import numpy as np
 
-from micro_massive.core.agent import Strategy
-
 
 class GroupMetrics:
     def __init__(self, particles):
@@ -12,7 +10,7 @@ class GroupMetrics:
             return 1.0
         distances = []
         for i, a in enumerate(self.particles):
-            for b in self.particles[i + 1:]:
+            for b in self.particles[i + 1 :]:
                 distances.append(a.distance_to(b))
         return 1.0 - np.mean(distances) if distances else 1.0
 

@@ -11,6 +11,6 @@ warnings.warn(
     stacklevel=2,
 )
 
-from massive.core.intervention_optimizer import optimize_interventions  # noqa: F401
+from massive.core.intervention_optimizer import optimize_interventions  # noqa: E402, F401
 
 __all__ = ["optimize_interventions"]

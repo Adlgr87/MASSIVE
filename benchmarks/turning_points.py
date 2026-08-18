@@ -10,6 +10,7 @@ Usage
     events_pred = detect(y_pred)
     result = score_turning_points(events_true, events_pred, n=len(y_true))
 """
+
 from __future__ import annotations
 
 import numpy as np
@@ -98,10 +99,7 @@ def score_turning_points(
 
     precision = tp / len(pred_idx) if pred_idx else float("nan")
     recall = tp / len(true_idx) if true_idx else float("nan")
-    if precision + recall > 0:
-        f1 = 2 * precision * recall / (precision + recall)
-    else:
-        f1 = 0.0
+    f1 = 2 * precision * recall / (precision + recall) if precision + recall > 0 else 0.0
     mean_te = float(np.mean(timing_errors)) if timing_errors else float("nan")
 
     return {

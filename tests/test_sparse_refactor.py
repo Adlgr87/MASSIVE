@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-from typing import Generator
 
 import numpy as np
 import pytest
@@ -24,28 +23,34 @@ def sparse_rng() -> np.random.Generator:
 @pytest.fixture
 def sample_adjacency() -> np.ndarray:
     """3-node social network adjacency."""
-    return np.array([
-        [0.0, 0.8, 0.2],
-        [0.8, 0.0, 0.6],
-        [0.2, 0.6, 0.0],
-    ])
+    return np.array(
+        [
+            [0.0, 0.8, 0.2],
+            [0.8, 0.0, 0.6],
+            [0.2, 0.6, 0.0],
+        ]
+    )
 
 
 @pytest.fixture
 def sample_features() -> np.ndarray:
     """Feature matrix for 3 nodes, 2 features."""
-    return np.array([
-        [0.5, 0.3],
-        [0.4, 0.6],
-        [0.7, 0.2],
-    ])
+    return np.array(
+        [
+            [0.5, 0.3],
+            [0.4, 0.6],
+            [0.7, 0.2],
+        ]
+    )
 
 
 @pytest.fixture
 def sample_layer(sample_features, sample_adjacency):
     """Single-layer setup."""
-    from massive_core.numerics.multilayer_engine_sparse import LayerState
     from scipy import sparse
+
+    from massive_core.numerics.multilayer_engine_sparse import LayerState
+
     return LayerState(
         node_features=sample_features,
         graph_adjacency=sparse.csr_matrix(sample_adjacency),
@@ -57,8 +62,10 @@ def sample_layer(sample_features, sample_adjacency):
 @pytest.fixture
 def sample_layers(sample_features, sample_adjacency):
     """Two-layer setup."""
-    from massive_core.numerics.multilayer_engine_sparse import LayerState
     from scipy import sparse
+
+    from massive_core.numerics.multilayer_engine_sparse import LayerState
+
     adj = np.array([[0.0, 0.7, 0.3], [0.7, 0.0, 0.5], [0.3, 0.5, 0.0]])
     feat = np.array([[0.6, 0.4], [0.3, 0.7], [0.8, 0.1]])
     return [
@@ -87,6 +94,7 @@ class TestSparseMultilayerEngine:
 
     def test_initialisation_single_layer(self, sample_layer):
         from massive_core.numerics.multilayer_engine_sparse import SparseMultilayerEngine
+
         engine = SparseMultilayerEngine(
             layers=[sample_layer],
             interaction_matrix=np.array([[1.0]]),
@@ -96,6 +104,7 @@ class TestSparseMultilayerEngine:
 
     def test_initialisation_multi_layer(self, sample_layers):
         from massive_core.numerics.multilayer_engine_sparse import SparseMultilayerEngine
+
         engine = SparseMultilayerEngine(
             layers=sample_layers,
             interaction_matrix=np.array([[1.0, 0.3], [0.3, 1.0]]),
@@ -104,6 +113,7 @@ class TestSparseMultilayerEngine:
 
     def test_initialisation_invalid_interaction_matrix(self, sample_layers):
         from massive_core.numerics.multilayer_engine_sparse import SparseMultilayerEngine
+
         with pytest.raises(ValueError, match="interaction_matrix shape"):
             SparseMultilayerEngine(
                 layers=sample_layers,
@@ -112,6 +122,7 @@ class TestSparseMultilayerEngine:
 
     def test_run_simulation_single_layer(self, sample_layer):
         from massive_core.numerics.multilayer_engine_sparse import SparseMultilayerEngine
+
         engine = SparseMultilayerEngine(
             layers=[sample_layer],
             interaction_matrix=np.array([[1.0]]),
@@ -124,6 +135,7 @@ class TestSparseMultilayerEngine:
 
     def test_run_simulation_multi_layer(self, sample_layers):
         from massive_core.numerics.multilayer_engine_sparse import SparseMultilayerEngine
+
         engine = SparseMultilayerEngine(
             layers=sample_layers,
             interaction_matrix=np.array([[1.0, 0.2], [0.2, 1.0]]),
@@ -135,6 +147,7 @@ class TestSparseMultilayerEngine:
 
     def test_convergence(self, sample_layer):
         from massive_core.numerics.multilayer_engine_sparse import SparseMultilayerEngine
+
         engine = SparseMultilayerEngine(
             layers=[sample_layer],
             interaction_matrix=np.array([[1.0]]),
@@ -148,6 +161,7 @@ class TestSparseMultilayerEngine:
 
     def test_network_metrics(self, sample_layer):
         from massive_core.numerics.multilayer_engine_sparse import SparseMultilayerEngine
+
         engine = SparseMultilayerEngine(
             layers=[sample_layer],
             interaction_matrix=np.array([[1.0]]),
@@ -158,8 +172,13 @@ class TestSparseMultilayerEngine:
         assert "density" in metrics["layer_0_test_layer"]
 
     def test_add_layer(self, sample_layer):
-        from massive_core.numerics.multilayer_engine_sparse import SparseMultilayerEngine, LayerState
         from scipy import sparse
+
+        from massive_core.numerics.multilayer_engine_sparse import (
+            LayerState,
+            SparseMultilayerEngine,
+        )
+
         engine = SparseMultilayerEngine(layers=[sample_layer])
         new_layer = LayerState(
             node_features=np.array([[0.5, 0.5]]),
@@ -172,6 +191,7 @@ class TestSparseMultilayerEngine:
 
     def test_remove_layer(self, sample_layers):
         from massive_core.numerics.multilayer_engine_sparse import SparseMultilayerEngine
+
         engine = SparseMultilayerEngine(layers=sample_layers)
         engine.remove_layer(0)
         assert engine.n_layers == 1
@@ -179,18 +199,21 @@ class TestSparseMultilayerEngine:
 
     def test_remove_layer_invalid_index(self, sample_layers):
         from massive_core.numerics.multilayer_engine_sparse import SparseMultilayerEngine
+
         engine = SparseMultilayerEngine(layers=sample_layers)
         with pytest.raises(ValueError, match="out of range"):
             engine.remove_layer(5)
 
     def test_add_inter_layer_edge(self, sample_layers):
         from massive_core.numerics.multilayer_engine_sparse import SparseMultilayerEngine
+
         engine = SparseMultilayerEngine(layers=sample_layers)
         engine.add_inter_layer_edge(0, 0, 1, 0)
         assert engine.inter_layer_edges.shape[0] == 1
 
     def test_get_layer_states(self, sample_layers):
         from massive_core.numerics.multilayer_engine_sparse import SparseMultilayerEngine
+
         engine = SparseMultilayerEngine(
             layers=sample_layers,
             interaction_matrix=np.array([[1.0, 0.0], [0.0, 1.0]]),
@@ -200,6 +223,7 @@ class TestSparseMultilayerEngine:
 
     def test_metrics_history_structure(self, sample_layer):
         from massive_core.numerics.multilayer_engine_sparse import SparseMultilayerEngine
+
         engine = SparseMultilayerEngine(
             layers=[sample_layer],
             interaction_matrix=np.array([[1.0]]),
@@ -222,6 +246,7 @@ class TestSparseEnsembleKalmanFilter:
     def sparse_ekf(self):
         """Standard sparse EnKF fixture."""
         from massive_core.data_assimilation.kalman import SparseEnsembleKalmanFilter
+
         n_ensemble = 20
         n_state = 10
         n_obs = 5
@@ -247,6 +272,7 @@ class TestSparseEnsembleKalmanFilter:
     def test_predict(self, sparse_ekf):
         def identity(state: np.ndarray) -> np.ndarray:
             return state * 1.01
+
         sparse_ekf.predict(identity)
         # Ensemble should have shifted
         spread = sparse_ekf.get_ensemble_spread()
@@ -260,6 +286,7 @@ class TestSparseEnsembleKalmanFilter:
     def test_assimilate_step(self, sparse_ekf):
         def model_fn(state: np.ndarray) -> np.ndarray:
             return state * 1.01
+
         observations = np.random.randn(sparse_ekf.n_obs_dim)
         state, ensemble = sparse_ekf.assimilate_step(model_fn, observations)
         assert state.shape == (10,)
@@ -304,6 +331,7 @@ class TestStabilityAnalyzer:
     @pytest.fixture
     def analyzer(self, linear_stable_system, stable_equilibrium):
         from massive_core.numerics.stability import SparseStabilityAnalyzer
+
         return SparseStabilityAnalyzer(
             system_fn=linear_stable_system,
             equilibrium=stable_equilibrium,

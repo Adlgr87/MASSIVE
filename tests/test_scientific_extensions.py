@@ -8,7 +8,11 @@ from massive_core.metalearning import MetaRegimeSelector
 from massive_core.multiscale import MultiTimescaleEngine
 from massive_core.network_inference import NetworkReconstructor
 from massive_core.numerics import AdaptiveODESolver, StabilityAnalyzer
-from massive_core.physics import AgentHydrodynamics, PerturbationTheorySolver, StatisticalMechanicsEngine
+from massive_core.physics import (
+    AgentHydrodynamics,
+    PerturbationTheorySolver,
+    StatisticalMechanicsEngine,
+)
 
 
 class ScientificExtensionTests(unittest.TestCase):
@@ -25,7 +29,9 @@ class ScientificExtensionTests(unittest.TestCase):
         self.assertTrue(-1.0 <= x_next[0] <= 1.0)
         self.assertGreater(dt_next, 0.0)
         self.assertIsNotNone(solver.last_diagnostics)
-        self.assertIn(solver.last_diagnostics.method, {"milstein", "rk4_maruyama", "implicit_euler_maruyama"})
+        self.assertIn(
+            solver.last_diagnostics.method, {"milstein", "rk4_maruyama", "implicit_euler_maruyama"}
+        )
 
     def test_stability_analyzer_identifies_stable_linear_field(self):
         analyzer = StabilityAnalyzer(lambda x: -2.0 * x)
@@ -34,7 +40,9 @@ class ScientificExtensionTests(unittest.TestCase):
 
         self.assertTrue(report.stable)
         self.assertAlmostEqual(report.max_real_eigenvalue, -2.0, places=4)
-        self.assertAlmostEqual(analyzer.compute_spectral_radius(np.array([[0.5, 0.0], [0.0, 0.25]])), 0.5, places=4)
+        self.assertAlmostEqual(
+            analyzer.compute_spectral_radius(np.array([[0.5, 0.0], [0.0, 0.25]])), 0.5, places=4
+        )
 
     def test_ensemble_kalman_filter_update_moves_mean_toward_observation(self):
         initial = np.array([[-1.0], [0.0], [1.0], [2.0]])
@@ -53,9 +61,13 @@ class ScientificExtensionTests(unittest.TestCase):
         self.assertGreater(abs(before[0] - 4.0), abs(after[0] - 4.0))
 
     def test_bifurcation_analyzer_reports_stability_change(self):
-        analyzer = BifurcationAnalyzer(lambda param: (lambda x: param * x - x**3), bounds=(-2.0, 2.0))
+        analyzer = BifurcationAnalyzer(
+            lambda param: (lambda x: param * x - x**3), bounds=(-2.0, 2.0)
+        )
 
-        diagram = analyzer.detect_bifurcation_diagram(np.array([-0.5, 0.5]), np.array([0.01]), n_steps=50, dt=0.05)
+        diagram = analyzer.detect_bifurcation_diagram(
+            np.array([-0.5, 0.5]), np.array([0.01]), n_steps=50, dt=0.05
+        )
 
         self.assertEqual(diagram["fixed_points"].shape, (2, 1))
         self.assertGreaterEqual(len(diagram["bifurcation_points"]), 1)
@@ -94,7 +106,9 @@ class ScientificExtensionTests(unittest.TestCase):
     def test_network_reconstruction_and_meta_selector(self):
         t = np.linspace(0.0, 1.0, 20)
         trajectories = np.column_stack([t, t + 0.01, 1.0 - t])
-        adjacency = NetworkReconstructor().reconstruct_correlation_based(trajectories, threshold=0.9)
+        adjacency = NetworkReconstructor().reconstruct_correlation_based(
+            trajectories, threshold=0.9
+        )
         self.assertEqual(adjacency.shape, (3, 3))
         self.assertEqual(adjacency[0, 0], 0.0)
         self.assertEqual(adjacency[0, 1], 1.0)

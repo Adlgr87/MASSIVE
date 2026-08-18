@@ -28,23 +28,22 @@ Reproducibility
 - Controlled by --seed and PYTHONHASHSEED from the shell
 
 """
+
 from __future__ import annotations
 
 import argparse
 import csv
 import json
 import math
-import os
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 import numpy as np
 
-from massive_core.data_assimilation.workflow import assimilate_history_observations
-
 # Import MASSIVE real integration
 from benchmarks.massive_real import _fit_linear, _seed_everything
+from massive_core.data_assimilation.workflow import assimilate_history_observations
 from simulator import simular
 
 
@@ -59,7 +58,7 @@ class CaseMeta:
 @dataclass
 class CaseData:
     name: str
-    P: List[float]
+    P: list[float]
     meta: CaseMeta
 
 
@@ -67,7 +66,7 @@ def read_case(case_dir: Path) -> CaseData:
     name = case_dir.name
     # Load meta.json if present
     meta_path = case_dir / "meta.json"
-    meta_obj: Dict[str, Any] = {}
+    meta_obj: dict[str, Any] = {}
     if meta_path.exists():
         meta_obj = json.loads(meta_path.read_text(encoding="utf-8"))
     meta = CaseMeta(
@@ -87,7 +86,7 @@ def read_case(case_dir: Path) -> CaseData:
         try:
             p_idx = next(i for i, h in enumerate(cols) if h.lower() == "p")
         except StopIteration:
-            raise ValueError(f"timeseries.csv must contain column 'P' in {case_dir}")
+            raise ValueError(f"timeseries.csv must contain column 'P' in {case_dir}") from None
         P = []
         for row in reader:
             if not row:
@@ -129,7 +128,9 @@ def rmse(a: np.ndarray, b: np.ndarray) -> float:
     return float(math.sqrt(np.mean((a - b) ** 2)))
 
 
-def run_case(case: CaseData, *, seed: int, obs_interval: int, sigma_obs: float, n_ensemble: int) -> Dict[str, Any]:
+def run_case(
+    case: CaseData, *, seed: int, obs_interval: int, sigma_obs: float, n_ensemble: int
+) -> dict[str, Any]:
     _seed_everything(seed)
 
     series = np.asarray(case.P, dtype=float)
@@ -174,7 +175,7 @@ def run_case(case: CaseData, *, seed: int, obs_interval: int, sigma_obs: float, 
     pre_pred = np.clip(a * opinions[n_train:n_total] + b, 0.0, 1.0)
 
     # Build sparse observations on test window every obs_interval
-    obs: Dict[int, np.ndarray] = {}
+    obs: dict[int, np.ndarray] = {}
     for i in range(0, horizon, obs_interval):
         step = n_train + i
         # Map polarization observation to "opinion-equivalent"
@@ -189,7 +190,7 @@ def run_case(case: CaseData, *, seed: int, obs_interval: int, sigma_obs: float, 
         history,
         observations=obs,
         fields=("opinion",),
-        observation_variance=float(sigma_obs ** 2),
+        observation_variance=float(sigma_obs**2),
         n_ensemble=int(n_ensemble),
         ensemble_spread=0.01,
         seed=seed,
@@ -239,12 +240,16 @@ def run_case(case: CaseData, *, seed: int, obs_interval: int, sigma_obs: float, 
 def main() -> int:
     ap = argparse.ArgumentParser(description="EXP-003: EnKF delta on MASSIVE real forecasts")
     ap.add_argument("--cases", required=True, help="Path to datasets/real_cases root")
-    ap.add_argument("--cases-filter", default="", help="Comma-separated subset of case directory names")
+    ap.add_argument(
+        "--cases-filter", default="", help="Comma-separated subset of case directory names"
+    )
     ap.add_argument("--out", required=True, help="Output directory for metrics and report")
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--n-ensemble", type=int, default=32)
     ap.add_argument("--sigma-obs", type=float, default=0.05)
-    ap.add_argument("--interval", type=int, default=5, help="Observation interval on test window (steps)")
+    ap.add_argument(
+        "--interval", type=int, default=5, help="Observation interval on test window (steps)"
+    )
     args = ap.parse_args()
 
     _seed_everything(args.seed)
@@ -258,13 +263,21 @@ def main() -> int:
         names = [n for n in names if n in allow]
     names = sorted(names)
 
-    results: List[Dict[str, Any]] = []
+    results: list[dict[str, Any]] = []
     for name in names:
         try:
             case = read_case(root / name)
-            res = run_case(case, seed=args.seed, obs_interval=args.interval, sigma_obs=args.sigma_obs, n_ensemble=args.n_ensemble)
+            res = run_case(
+                case,
+                seed=args.seed,
+                obs_interval=args.interval,
+                sigma_obs=args.sigma_obs,
+                n_ensemble=args.n_ensemble,
+            )
             results.append(res)
-            print(f"[OK] {name}: ΔMAE={res['delta']['mae']:+.4f}, Δdir={res['delta']['directional_accuracy']:+.3f}")
+            print(
+                f"[OK] {name}: ΔMAE={res['delta']['mae']:+.4f}, Δdir={res['delta']['directional_accuracy']:+.3f}"
+            )
         except Exception as e:
             print(f"[FAIL] {name}: {e}")
 
@@ -280,15 +293,17 @@ def main() -> int:
     # Build report
     wins = sum(1 for r in results if r["delta"]["mae"] > 0)
     report = [
-        f"# EXP-003: EnKF Delta (seed={args.seed}, n_ensemble={args.n_ensemble}, "+
-        f"sigma_obs={args.sigma_obs}, interval={args.interval})\n",
+        f"# EXP-003: EnKF Delta (seed={args.seed}, n_ensemble={args.n_ensemble}, "
+        + f"sigma_obs={args.sigma_obs}, interval={args.interval})\n",
         f"Cases: {len(results)}\n",
         "\n## Summary\n",
         f"Wins (ΔMAE>0): {wins}/{len(results)}\n\n",
         "| Case | ΔMAE | ΔRMSE | ΔDirAcc |\n|---|---:|---:|---:|\n",
     ]
     for r in results:
-        report.append(f"| {r['case']} | {r['delta']['mae']:+.4f} | {r['delta']['rmse']:+.4f} | {r['delta']['directional_accuracy']:+.3f} |\n")
+        report.append(
+            f"| {r['case']} | {r['delta']['mae']:+.4f} | {r['delta']['rmse']:+.4f} | {r['delta']['directional_accuracy']:+.3f} |\n"
+        )
     (out / "report.md").write_text("".join(report), encoding="utf-8")
 
     print(f"Saved metrics to {out}")

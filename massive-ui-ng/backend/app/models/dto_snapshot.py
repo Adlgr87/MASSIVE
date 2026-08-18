@@ -8,7 +8,7 @@ All models use ``extra="forbid"`` to prevent silent schema drift.
 from __future__ import annotations
 
 from datetime import datetime
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 from pydantic import BaseModel
 
@@ -30,7 +30,7 @@ class SnapshotRecord(BaseModel):
     sim_id: str
     tick: int
     timestamp: datetime
-    data: Dict[str, Any]
+    data: dict[str, Any]
 
 
 class TimelineTick(BaseModel):
@@ -50,7 +50,7 @@ class TimelineTick(BaseModel):
     mean_opinion: float
     polarization: float
     dominant_rule: str
-    timestamp: Optional[datetime] = None
+    timestamp: datetime | None = None
 
 
 class TimelineResponse(BaseModel):
@@ -65,5 +65,5 @@ class TimelineResponse(BaseModel):
     model_config = {"extra": "forbid"}
 
     sim_id: str
-    ticks: List[TimelineTick]
+    ticks: list[TimelineTick]
     total: int

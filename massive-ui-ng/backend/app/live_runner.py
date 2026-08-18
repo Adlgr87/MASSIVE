@@ -17,7 +17,6 @@ the repository already reserved for live streaming.
 from __future__ import annotations
 
 import logging
-from typing import Any, Optional
 
 import networkx as nx
 import numpy as np
@@ -49,8 +48,8 @@ class LiveEnergySim:
         range_type: str = "bipolar",
         seed: int = 42,
         user_goal: str = "polarizacion_moderada",
-        temperature: Optional[float] = None,
-        lambda_social: Optional[float] = None,
+        temperature: float | None = None,
+        lambda_social: float | None = None,
     ) -> None:
         from energy_engine import SocialEnergyEngine, random_network
         from energy_schemas import EnergyConfig

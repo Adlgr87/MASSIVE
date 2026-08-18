@@ -51,8 +51,9 @@ log = logging.getLogger("massive.interpreter_layer")
 # ── Detección de LangChain (opcional) ────────────────────────────────────────
 
 try:
-    from langchain_core.output_parsers import JsonOutputParser, StrOutputParser
+    from langchain_core.output_parsers import JsonOutputParser
     from langchain_core.prompts import ChatPromptTemplate
+
     _LC_AVAILABLE = True
 except ImportError:
     _LC_AVAILABLE = False
@@ -132,8 +133,10 @@ Devuelve JSON con:
 
 # ── Modelos de respuesta ──────────────────────────────────────────────────────
 
+
 class WizardResult(BaseModel):
     """Resultado del ScenarioWizardChain."""
+
     config: dict[str, Any] = Field(default_factory=dict)
     razon: str = ""
     advertencias: list[str] = Field(default_factory=list)
@@ -161,6 +164,7 @@ class WizardResult(BaseModel):
 
 class ExplainerResult(BaseModel):
     """Resultado del ConceptExplainerChain."""
+
     parametro: str = ""
     valor: Any = None
     explicacion_simple: str = ""
@@ -172,21 +176,24 @@ class ExplainerResult(BaseModel):
 
 class NarratorResult(BaseModel):
     """Resultado del ResultNarratorChain."""
+
     diagnostico: str = ""
     dinamica_clave: str = ""
     implicaciones: str = ""
     recomendaciones: list[str] = Field(default_factory=list)
-    modo: str = "equilibrado"   # "coloquial", "tecnico", "equilibrado"
+    modo: str = "equilibrado"  # "coloquial", "tecnico", "equilibrado"
 
 
 class TranslatorResult(BaseModel):
     """Resultado del BiTranslatorChain."""
+
     original_registro: str = ""
     traduccion: str = ""
     terminos_mapeados: dict[str, str] = Field(default_factory=dict)
 
 
 # ── Clase principal ───────────────────────────────────────────────────────────
+
 
 class InterpreterLayer:
     """
@@ -206,10 +213,13 @@ class InterpreterLayer:
 
     # Defaults por proveedor
     _PROVIDER_DEFAULTS: dict[str, dict] = {
-        "groq":        {"model": "llama-3.3-70b-versatile", "base_url": None},
-        "openai":      {"model": "gpt-4o-mini",             "base_url": None},
-        "openrouter":  {"model": "mistralai/mistral-7b-instruct", "base_url": "https://openrouter.ai/api/v1"},
-        "ollama":      {"model": "llama3",                  "base_url": "http://localhost:11434/v1"},
+        "groq": {"model": "llama-3.3-70b-versatile", "base_url": None},
+        "openai": {"model": "gpt-4o-mini", "base_url": None},
+        "openrouter": {
+            "model": "mistralai/mistral-7b-instruct",
+            "base_url": "https://openrouter.ai/api/v1",
+        },
+        "ollama": {"model": "llama3", "base_url": "http://localhost:11434/v1"},
     }
 
     def __init__(
@@ -231,6 +241,7 @@ class InterpreterLayer:
         # Construir cliente OpenAI-compatible
         try:
             from openai import OpenAI
+
             init_kwargs: dict[str, Any] = {"api_key": resolved_key or "ollama"}
             base_url = defaults.get("base_url")
             if base_url:
@@ -238,6 +249,7 @@ class InterpreterLayer:
             if provider == "groq":
                 try:
                     from groq import Groq
+
                     self._client = Groq(api_key=resolved_key)
                 except ImportError:
                     init_kwargs["base_url"] = "https://api.groq.com/openai/v1"
@@ -271,12 +283,15 @@ class InterpreterLayer:
         try:
             if self.provider == "groq":
                 from langchain_groq import ChatGroq
+
                 llm = ChatGroq(model=self.model, temperature=0.1)
             elif self.provider == "openai":
                 from langchain_openai import ChatOpenAI
+
                 llm = ChatOpenAI(model=self.model, temperature=0.1)
             else:
                 from langchain_openai import ChatOpenAI
+
                 defaults = self._PROVIDER_DEFAULTS.get(self.provider, {})
                 llm = ChatOpenAI(
                     model=self.model,
@@ -285,35 +300,46 @@ class InterpreterLayer:
                 )
 
             json_parser = JsonOutputParser()
-            str_parser  = StrOutputParser()
 
             self._chains["wizard"] = (
-                ChatPromptTemplate.from_messages([
-                    ("system", _WIZARD_SYSTEM),
-                    ("human",  "{scenario}"),
-                ])
-                | llm | json_parser
+                ChatPromptTemplate.from_messages(
+                    [
+                        ("system", _WIZARD_SYSTEM),
+                        ("human", "{scenario}"),
+                    ]
+                )
+                | llm
+                | json_parser
             )
             self._chains["explainer"] = (
-                ChatPromptTemplate.from_messages([
-                    ("system", _EXPLAINER_SYSTEM),
-                    ("human",  "Parámetro: {param}\nValor actual: {value}\nContexto: {context}"),
-                ])
-                | llm | json_parser
+                ChatPromptTemplate.from_messages(
+                    [
+                        ("system", _EXPLAINER_SYSTEM),
+                        ("human", "Parámetro: {param}\nValor actual: {value}\nContexto: {context}"),
+                    ]
+                )
+                | llm
+                | json_parser
             )
             self._chains["narrator"] = (
-                ChatPromptTemplate.from_messages([
-                    ("system", _NARRATOR_SYSTEM),
-                    ("human",  "Modo: {mode}\n\nResultados:\n{results}"),
-                ])
-                | llm | json_parser
+                ChatPromptTemplate.from_messages(
+                    [
+                        ("system", _NARRATOR_SYSTEM),
+                        ("human", "Modo: {mode}\n\nResultados:\n{results}"),
+                    ]
+                )
+                | llm
+                | json_parser
             )
             self._chains["translator"] = (
-                ChatPromptTemplate.from_messages([
-                    ("system", _TRANSLATOR_SYSTEM),
-                    ("human",  "{text}"),
-                ])
-                | llm | json_parser
+                ChatPromptTemplate.from_messages(
+                    [
+                        ("system", _TRANSLATOR_SYSTEM),
+                        ("human", "{text}"),
+                    ]
+                )
+                | llm
+                | json_parser
             )
             log.info("[UIL] Cadenas LangChain construidas correctamente.")
         except Exception as exc:
@@ -335,7 +361,7 @@ class InterpreterLayer:
             model=self.model,
             messages=[
                 {"role": "system", "content": system},
-                {"role": "user",   "content": user},
+                {"role": "user", "content": user},
             ],
             temperature=temperature,
             max_tokens=1200,
@@ -373,8 +399,9 @@ class InterpreterLayer:
             else:
                 raw = self._call_llm(_WIZARD_SYSTEM, scenario)
 
-            config = {k: v for k, v in raw.items()
-                      if k not in ("razon", "advertencias", "confianza")}
+            config = {
+                k: v for k, v in raw.items() if k not in ("razon", "advertencias", "confianza")
+            }
             return WizardResult(
                 config=config,
                 razon=raw.get("razon", ""),
@@ -404,9 +431,9 @@ class InterpreterLayer:
         """
         try:
             if self._use_langchain and "explainer" in self._chains:
-                raw = self._chains["explainer"].invoke({
-                    "param": param, "value": value, "context": context
-                })
+                raw = self._chains["explainer"].invoke(
+                    {"param": param, "value": value, "context": context}
+                )
             else:
                 raw = self._call_llm(
                     _EXPLAINER_SYSTEM,
@@ -440,9 +467,7 @@ class InterpreterLayer:
         results_text = json.dumps(simulation_results, ensure_ascii=False, indent=2)
         try:
             if self._use_langchain and "narrator" in self._chains:
-                raw = self._chains["narrator"].invoke({
-                    "mode": mode, "results": results_text
-                })
+                raw = self._chains["narrator"].invoke({"mode": mode, "results": results_text})
             else:
                 raw = self._call_llm(
                     _NARRATOR_SYSTEM,
@@ -527,7 +552,7 @@ class InterpreterLayer:
         """
         warnings: list[str] = []
         merged_config: dict[str, Any] = {}
-        doc_result   = None
+        doc_result = None
         wizard_result = None
 
         # 1. Parsear archivo
@@ -553,9 +578,8 @@ class InterpreterLayer:
                     merged_config[k] = v
 
         return {
-            "config":        merged_config,
-            "doc_result":    doc_result,
+            "config": merged_config,
+            "doc_result": doc_result,
             "wizard_result": wizard_result,
-            "warnings":      warnings,
+            "warnings": warnings,
         }
-

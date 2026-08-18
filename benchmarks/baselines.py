@@ -10,7 +10,10 @@ MovingAverageBaseline: mean of the last ``window`` observations
 AR1Baseline          : AR(1) fitted by OLS on the training series
 RandomRegimeBaseline : random-walk with noise calibrated from training
 """
+
 from __future__ import annotations
+
+import contextlib
 
 import numpy as np
 
@@ -76,7 +79,7 @@ class AR1Baseline:
         self.phi0 = 0.0
         self.phi1 = 0.0
 
-    def fit(self, train: np.ndarray) -> "AR1Baseline":
+    def fit(self, train: np.ndarray) -> AR1Baseline:
         y = train[1:]
         x = train[:-1]
         if len(x) < 2:
@@ -109,6 +112,7 @@ class ETSBaseline:
 
     def __init__(self):
         import statsmodels.api as sm  # lazy import
+
         self.sm = sm
 
     def predict(self, train: np.ndarray, horizon: int) -> np.ndarray:
@@ -130,6 +134,7 @@ class ARIMABaseline:
 
     def __init__(self):
         import statsmodels.api as sm
+
         self.sm = sm
 
     def predict(self, train: np.ndarray, horizon: int) -> np.ndarray:
@@ -157,6 +162,7 @@ class ThresholdLogisticBaseline:
 
     def __init__(self):
         import numpy as _np
+
         self._np = _np
 
     def predict(self, train: np.ndarray, horizon: int) -> np.ndarray:
@@ -178,6 +184,7 @@ class ThresholdLogisticBaseline:
         logit_future = a * t_future + b
         y_future = 1 / (1 + self._np.exp(-logit_future))
         return y_future.astype(float)
+
 
 class RandomRegimeBaseline:
     """Random walk with std calibrated from training first-differences.
@@ -213,6 +220,7 @@ class RidgeLagsBaseline:
 
     def __init__(self, lags: int = 4, alpha: float = 1.0):
         from sklearn.linear_model import Ridge
+
         self.Ridge = Ridge
         self.lags = lags
         self.alpha = alpha
@@ -323,26 +331,15 @@ def get_all_baselines() -> list:
         RandomRegimeBaseline(),
     ]
     # Optional: statsmodels-based baselines
-    try:
+    with contextlib.suppress(Exception):
         baselines.append(ETSBaseline())
-    except Exception:
-        pass
-    try:
+    with contextlib.suppress(Exception):
         baselines.append(ARIMABaseline())
-    except Exception:
-        pass
     # Optional: sklearn-based baselines
-    try:
+    with contextlib.suppress(Exception):
         baselines.append(RidgeLagsBaseline(lags=4, alpha=1.0))
-    except Exception:
-        pass
-    try:
+    with contextlib.suppress(Exception):
         baselines.append(RandomForestBaseline(lags=4, n_estimators=40))
-    except Exception:
-        pass
-    try:
+    with contextlib.suppress(Exception):
         baselines.append(GradientBoostingBaseline(lags=4, n_estimators=40))
-    except Exception:
-        pass
     return baselines
-

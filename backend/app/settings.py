@@ -9,6 +9,6 @@ The canonical settings live in ``massive_core.config.settings``.
 
 from __future__ import annotations
 
-from massive_core.config.settings import AppSettings, get_app_settings, clear_settings_cache
+from massive_core.config.settings import AppSettings, clear_settings_cache, get_app_settings
 
 __all__ = ["AppSettings", "get_app_settings", "clear_settings_cache"]

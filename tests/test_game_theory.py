@@ -6,8 +6,9 @@ Covers:
   - calculate_strategic_force() logic for both opinion ranges
   - Integration with simular() (end-to-end opinion stays in range)
 """
-import sys
+
 import os
+import sys
 import unittest
 
 import numpy as np
@@ -23,9 +24,9 @@ class TestGamePayoff(unittest.TestCase):
 
     def test_default_values(self):
         gp = GamePayoff()
-        self.assertEqual(gp.cc,  1.0)
+        self.assertEqual(gp.cc, 1.0)
         self.assertEqual(gp.cd, -1.0)
-        self.assertEqual(gp.dc,  1.0)
+        self.assertEqual(gp.dc, 1.0)
         self.assertEqual(gp.dd, -1.0)
 
     def test_custom_values(self):
@@ -79,17 +80,13 @@ class TestCalculateStrategicForce(unittest.TestCase):
     def test_neighbors_near_neutral_bipolar(self):
         """Neighbours within |avg| < 0.2 of neutral=0 → cooperation incentive."""
         # avg = 0.1, |0.1 - 0| = 0.1 < 0.2 → return cc - dc = 1.0 - 1.0 = 0.0
-        force = calculate_strategic_force(
-            0.5, [0.1, 0.1], self.matrix, neutral=0.0
-        )
+        force = calculate_strategic_force(0.5, [0.1, 0.1], self.matrix, neutral=0.0)
         self.assertAlmostEqual(force, self.matrix.cc - self.matrix.dc)
 
     def test_neighbors_far_from_neutral_bipolar(self):
         """Neighbours far from neutral (polarised) → fragmentation incentive."""
         # avg = 0.8, |0.8 - 0| = 0.8 > 0.2 → return dd - cd = -1.0 - (-1.0) = 0.0
-        force = calculate_strategic_force(
-            -0.5, [0.8, 0.8], self.matrix, neutral=0.0
-        )
+        force = calculate_strategic_force(-0.5, [0.8, 0.8], self.matrix, neutral=0.0)
         self.assertAlmostEqual(force, self.matrix.dd - self.matrix.cd)
 
     # ── Probabilistic range [0, 1], neutral = 0.5 ─────────────────
@@ -97,17 +94,13 @@ class TestCalculateStrategicForce(unittest.TestCase):
     def test_neighbors_near_neutral_probabilistic(self):
         """For [0,1] range: |avg - 0.5| < 0.2 means near consensus."""
         # avg = 0.5, |0.5 - 0.5| = 0.0 < 0.2
-        force = calculate_strategic_force(
-            0.7, [0.5, 0.5], self.matrix, neutral=0.5
-        )
+        force = calculate_strategic_force(0.7, [0.5, 0.5], self.matrix, neutral=0.5)
         self.assertAlmostEqual(force, self.matrix.cc - self.matrix.dc)
 
     def test_neighbors_far_from_neutral_probabilistic(self):
         """For [0,1] range: |avg - 0.5| >= 0.2 means polarised."""
         # avg = 0.9, |0.9 - 0.5| = 0.4 > 0.2
-        force = calculate_strategic_force(
-            0.2, [0.9, 0.9], self.matrix, neutral=0.5
-        )
+        force = calculate_strategic_force(0.2, [0.9, 0.9], self.matrix, neutral=0.5)
         self.assertAlmostEqual(force, self.matrix.dd - self.matrix.cd)
 
     # ── Boundary at threshold ──────────────────────────────────────
@@ -115,9 +108,7 @@ class TestCalculateStrategicForce(unittest.TestCase):
     def test_exactly_at_threshold_is_far(self):
         """avg exactly at threshold should be treated as NOT near neutral."""
         # avg = 0.2 from neutral=0 → abs(0.2 - 0) = 0.2, NOT < 0.2
-        force = calculate_strategic_force(
-            0.0, [0.2, 0.2], self.matrix, neutral=0.0
-        )
+        force = calculate_strategic_force(0.0, [0.2, 0.2], self.matrix, neutral=0.0)
         self.assertAlmostEqual(force, self.matrix.dd - self.matrix.cd)
 
     # ── Prisoner's Dilemma payoff ──────────────────────────────────
@@ -125,18 +116,14 @@ class TestCalculateStrategicForce(unittest.TestCase):
     def test_prisoners_dilemma_consensus_incentive(self):
         """Prisoner's Dilemma: when neighbours near consensus, cc > dc gives negative force."""
         pd_payoff = GamePayoff(cc=1.0, cd=-1.0, dc=1.0, dd=-0.5)
-        force = calculate_strategic_force(
-            0.0, [0.05, -0.05], pd_payoff, neutral=0.0
-        )
+        force = calculate_strategic_force(0.0, [0.05, -0.05], pd_payoff, neutral=0.0)
         # cc - dc = 1.0 - 1.0 = 0.0
         self.assertAlmostEqual(force, pd_payoff.cc - pd_payoff.dc)
 
     def test_prisoners_dilemma_fragmentation_incentive(self):
         """Prisoner's Dilemma: polarised neighbours → dd - cd = -0.5 - (-1.0) = 0.5."""
         pd_payoff = GamePayoff(cc=1.0, cd=-1.0, dc=1.0, dd=-0.5)
-        force = calculate_strategic_force(
-            0.0, [0.9, 0.9], pd_payoff, neutral=0.0
-        )
+        force = calculate_strategic_force(0.0, [0.9, 0.9], pd_payoff, neutral=0.0)
         self.assertAlmostEqual(force, pd_payoff.dd - pd_payoff.cd)
 
 
@@ -148,16 +135,17 @@ class TestStrategicIntegration(unittest.TestCase):
 
     def _estado_bipolar(self):
         return {
-            "opinion":           0.0,
-            "propaganda":        0.4,
-            "confianza":         0.5,
-            "opinion_grupo_a":   0.65,
-            "opinion_grupo_b":  -0.55,
+            "opinion": 0.0,
+            "propaganda": 0.4,
+            "confianza": 0.5,
+            "opinion_grupo_a": 0.65,
+            "opinion_grupo_b": -0.55,
             "pertenencia_grupo": 0.6,
         }
 
     def test_simular_strategic_disabled_stays_in_range(self):
         from simulator import simular
+
         hist = simular(
             self._estado_bipolar(),
             pasos=10,
@@ -169,6 +157,7 @@ class TestStrategicIntegration(unittest.TestCase):
 
     def test_simular_strategic_enabled_stays_in_range(self):
         from simulator import simular
+
         config = {
             "rango": "[-1, 1] — Bipolar",
             "strategic": {
@@ -190,6 +179,7 @@ class TestStrategicIntegration(unittest.TestCase):
     def test_simular_strategic_weight_zero_produces_valid_history(self):
         """With ω=0 the strategic delta is zero; simulation must still stay in range."""
         from simulator import simular
+
         config = {
             "rango": "[-1, 1] — Bipolar",
             "strategic": {
@@ -199,8 +189,11 @@ class TestStrategicIntegration(unittest.TestCase):
             },
         }
         hist = simular(
-            self._estado_bipolar(), pasos=10, cada_n_pasos=5,
-            config=config, verbose=False,
+            self._estado_bipolar(),
+            pasos=10,
+            cada_n_pasos=5,
+            config=config,
+            verbose=False,
         )
         self.assertEqual(len(hist), 11)
         self.assertTrue(all(-1.0 <= h["opinion"] <= 1.0 for h in hist))

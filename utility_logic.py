@@ -10,6 +10,6 @@ warnings.warn(
     stacklevel=2,
 )
 
-from massive.core.utility_logic import calculate_strategic_force  # noqa: F401
+from massive.core.utility_logic import calculate_strategic_force  # noqa: E402, F401
 
 __all__ = ["calculate_strategic_force"]

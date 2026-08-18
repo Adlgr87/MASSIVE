@@ -92,16 +92,20 @@ def network_reconstruction_benchmark(threshold: float = 0.8) -> dict[str, Any]:
     """
 
     t = np.linspace(0.0, 2.0 * np.pi, 100)
-    trajectories = np.column_stack([
-        np.sin(t),
-        np.sin(t + 0.05),
-        np.cos(t),
-    ])
-    expected = np.array([
-        [0.0, 1.0, 0.0],
-        [1.0, 0.0, 0.0],
-        [0.0, 0.0, 0.0],
-    ])
+    trajectories = np.column_stack(
+        [
+            np.sin(t),
+            np.sin(t + 0.05),
+            np.cos(t),
+        ]
+    )
+    expected = np.array(
+        [
+            [0.0, 1.0, 0.0],
+            [1.0, 0.0, 0.0],
+            [0.0, 0.0, 0.0],
+        ]
+    )
     adjacency = NetworkReconstructor().reconstruct_correlation_based(
         trajectories,
         threshold=threshold,

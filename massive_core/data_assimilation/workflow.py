@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
-from typing import Any, Mapping, Sequence
+from typing import Any
 
 import numpy as np
 
@@ -90,7 +91,9 @@ def assimilate_history_observations(
         raise ValueError("H must have shape (n_observations, state_dim)")
 
     rng = np.random.default_rng(seed)
-    initial_ensemble = trajectory[0] + rng.normal(0.0, ensemble_spread, size=(n_ensemble, state_dim))
+    initial_ensemble = trajectory[0] + rng.normal(
+        0.0, ensemble_spread, size=(n_ensemble, state_dim)
+    )
     enkf = EnsembleKalmanFilter(
         n_ensemble=n_ensemble,
         n_state_dim=state_dim,

@@ -5,6 +5,7 @@ REPRODUCIBILIDAD FORMAL — post-optimization.
 Same local seed / Generator must yield identical results within machine.
 Global ``np.random.seed`` is **not** required for engine reproducibility.
 """
+
 from __future__ import annotations
 
 import json
@@ -24,9 +25,7 @@ results: list[dict] = []
 
 
 def record(name, status, detail, deltas=None):
-    results.append(
-        {"test": name, "status": status, "detail": detail, "deltas": deltas or []}
-    )
+    results.append({"test": name, "status": status, "detail": detail, "deltas": deltas or []})
     icon = "✅" if status == "PASS" else "❌" if status == "FAIL" else "⚠️"
     print(f"{icon} {name}: {status} — {detail}")
 
@@ -47,8 +46,8 @@ def test_simulator_reproducibility():
         result = simular(estado, pasos=50, cada_n_pasos=5, config=cfg, verbose=False)
         runs.append([h["opinion"] for h in result])
 
-    delta_01 = max(abs(a - b) for a, b in zip(runs[0], runs[1]))
-    delta_02 = max(abs(a - b) for a, b in zip(runs[0], runs[2]))
+    delta_01 = max(abs(a - b) for a, b in zip(runs[0], runs[1], strict=False))
+    delta_02 = max(abs(a - b) for a, b in zip(runs[0], runs[2], strict=False))
     max_delta = max(delta_01, delta_02)
 
     if max_delta < 1e-10:
@@ -116,9 +115,7 @@ def test_multilayer_reproducibility():
 
     runs = []
     for _ in range(3):
-        engine = MultilayerEngine(
-            N=50, layer_weights=(0.4, 0.3, 0.3), coupling=0.3, seed=42
-        )
+        engine = MultilayerEngine(N=50, layer_weights=(0.4, 0.3, 0.3), coupling=0.3, seed=42)
         history = engine.run(steps=20)
         final = np.array(history[-1])
         runs.append(float(np.mean(final)))

@@ -12,30 +12,26 @@ import time
 
 import numpy as np
 import pandas as pd
-import pytest
 
 from multilayer_engine import (
-    K,
-    COL_OPINION,
     COL_COOP,
     COL_HIER,
+    COL_OPINION,
+    K,
     MultilayerEngine,
-    build_layers,
     compute_theta,
     generate_attributes,
+    generate_hierarchical,
     generate_scale_free,
     generate_watts_strogatz,
-    generate_hierarchical,
-    multi_potential_gradient,
-    multilayer_langevin_step,
 )
-
 
 # ============================================================
 # TEST 1 — Recuperar comportamiento original (layer_weights=[1,0,0])
 # Con solo la capa social activa, el sistema debe comportarse como
 # una red de mundo pequeño simple sin capas digitales ni económicas.
 # ============================================================
+
 
 class TestOriginalBehavior:
 
@@ -47,9 +43,7 @@ class TestOriginalBehavior:
 
     def test_single_layer_opinion_changes(self):
         """La opinión evoluciona (no es estática) con solo capa social."""
-        engine = MultilayerEngine(
-            N=20, layer_weights=(1.0, 0.0, 0.0), coupling=0.5, seed=1
-        )
+        engine = MultilayerEngine(N=20, layer_weights=(1.0, 0.0, 0.0), coupling=0.5, seed=1)
         x0 = engine._history[0][:, COL_OPINION].copy()
         engine.run(steps=30)
         xf = engine.x[:, COL_OPINION]
@@ -78,6 +72,7 @@ class TestOriginalBehavior:
 # que los agentes con religion=0, dado que theta amplifica su ruido.
 # ============================================================
 
+
 class TestThetaModulation:
 
     def test_theta_religion_amplifies_opinion_noise(self):
@@ -87,11 +82,11 @@ class TestThetaModulation:
         theta = compute_theta(attrs)
 
         theta_religious = theta[attrs["religion"] == 1, COL_OPINION]
-        theta_secular   = theta[attrs["religion"] == 0, COL_OPINION]
+        theta_secular = theta[attrs["religion"] == 0, COL_OPINION]
 
-        assert theta_religious.mean() > theta_secular.mean(), (
-            "Agentes religiosos deben tener theta_opinion mayor"
-        )
+        assert (
+            theta_religious.mean() > theta_secular.mean()
+        ), "Agentes religiosos deben tener theta_opinion mayor"
 
     def test_theta_education_amplifies_cooperation(self):
         """Educación alta → theta más alto en dimensión cooperación."""
@@ -100,7 +95,7 @@ class TestThetaModulation:
         theta = compute_theta(attrs)
 
         high_edu = attrs["education"] > 0.7
-        low_edu  = attrs["education"] < 0.3
+        low_edu = attrs["education"] < 0.3
         if high_edu.sum() > 5 and low_edu.sum() > 5:
             assert theta[high_edu, COL_COOP].mean() > theta[low_edu, COL_COOP].mean()
 
@@ -110,7 +105,7 @@ class TestThetaModulation:
         attrs = generate_attributes(N, age_dist=(0.33, 0.34, 0.33), seed=7)
         theta = compute_theta(attrs)
 
-        old_mask   = attrs["age_group"] == 2
+        old_mask = attrs["age_group"] == 2
         young_mask = attrs["age_group"] == 0
         if old_mask.sum() > 5 and young_mask.sum() > 5:
             assert theta[old_mask, COL_HIER].mean() > theta[young_mask, COL_HIER].mean()
@@ -129,14 +124,15 @@ class TestThetaModulation:
             var_sec = np.var(engine.x[sec_mask, COL_OPINION])
             # Dado que theta amplifica el ruido, religiosos tienden a mayor varianza
             # Usamos una tolerancia amplia (×0.5) porque es un proceso estocástico
-            assert var_rel >= var_sec * 0.5, (
-                f"Esperado var_religioso ({var_rel:.4f}) ≥ 0.5 × var_secular ({var_sec:.4f})"
-            )
+            assert (
+                var_rel >= var_sec * 0.5
+            ), f"Esperado var_religioso ({var_rel:.4f}) ≥ 0.5 × var_secular ({var_sec:.4f})"
 
 
 # ============================================================
 # TEST 3 — 1000 steps < 10s (Numba)
 # ============================================================
+
 
 class TestNumbaPerformance:
 
@@ -151,9 +147,7 @@ class TestNumbaPerformance:
         engine2.run(steps=1000)
         elapsed = time.perf_counter() - t0
 
-        assert elapsed < 10.0, (
-            f"1000 pasos tardaron {elapsed:.2f}s — esperado < 10s"
-        )
+        assert elapsed < 10.0, f"1000 pasos tardaron {elapsed:.2f}s — esperado < 10s"
 
     def test_state_shape_preserved(self):
         """El estado siempre tiene forma (N, K) tras cualquier número de pasos."""
@@ -182,6 +176,7 @@ class TestNumbaPerformance:
 # ============================================================
 # TEST 4 — Plots multidimensionales funcionan
 # ============================================================
+
 
 class TestMultidimensionalPlots:
 
@@ -222,8 +217,13 @@ class TestMultidimensionalPlots:
         engine = MultilayerEngine(N=30, seed=4)
         engine.run(steps=5)
         landscape = engine.get_landscape()
-        for key in ("mean_opinion", "std_opinion", "polarization",
-                    "mean_cooperation", "mean_hierarchy"):
+        for key in (
+            "mean_opinion",
+            "std_opinion",
+            "polarization",
+            "mean_cooperation",
+            "mean_hierarchy",
+        ):
             assert key in landscape
 
     def test_plot_returns_all_components(self):
@@ -239,6 +239,7 @@ class TestMultidimensionalPlots:
 # ============================================================
 # Tests adicionales — Generadores de red y atributos
 # ============================================================
+
 
 class TestNetworkGenerators:
 
@@ -279,7 +280,7 @@ class TestAttributes:
     def test_age_dist_respected(self):
         """La distribución de edades respeta las proporciones."""
         df = generate_attributes(1000, age_dist=(0.2, 0.5, 0.3), seed=0)
-        for age_val, expected in zip([0, 1, 2], [0.2, 0.5, 0.3]):
+        for age_val, expected in zip([0, 1, 2], [0.2, 0.5, 0.3], strict=False):
             frac = (df["age_group"] == age_val).mean()
             assert abs(frac - expected) < 0.05
 

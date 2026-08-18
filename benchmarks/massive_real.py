@@ -30,8 +30,9 @@ from __future__ import annotations
 
 import os
 import random
+from collections.abc import Sequence
+
 import numpy as np
-from typing import Sequence, Optional, Dict, Any
 
 # Seed for determinism — must match runner convention
 SEED = 42
@@ -61,7 +62,7 @@ def _build_initial_state(
     cultural_profile: str = "mixed",
     red_type: str = "watts_strogatz",
     cluster_id: str | None = None,
-) -> Dict[str, float]:
+) -> dict[str, float]:
     """Build MASSIVE initial state from a polarization training window.
 
     Optionally conditions initial parameters on cluster_id (regime):
@@ -181,7 +182,7 @@ def massive_real_forecast(
             cada_n_pasos=max(1, cada_n_pasos),
             verbose=False,
         )
-    except Exception as e:
+    except Exception:
         # Graceful fallback: persistence of last value
         return np.full(horizon, float(train[-1]) if train else 0.5, dtype=float)
 
@@ -261,9 +262,7 @@ def massive_real_forecast_with_calibration(
     except Exception:
         return np.full(horizon, float(train[-1]) if train else 0.5, dtype=float)
 
-    opinions = np.asarray(
-        [float(h.get("opinion", 0.5)) for h in history], dtype=float
-    )
+    opinions = np.asarray([float(h.get("opinion", 0.5)) for h in history], dtype=float)
     if len(opinions) < n_total:
         opinions = np.concatenate(
             [opinions, np.full(n_total - len(opinions), opinions[-1] if len(opinions) else 0.5)]

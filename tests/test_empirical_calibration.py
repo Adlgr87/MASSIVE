@@ -2,14 +2,9 @@ import json
 import unittest
 
 from empirical_calibration import (
-    HK_EPSILON_MAX,
-    HK_EPSILON_MIN,
     MASSIVE_EMPIRICAL_MASTER,
     MASSIVE_RUNTIME_PARAMS,
-    TIPPING_POINT_MEAN,
-    TIPPING_POINT_STD,
     apply_empirical_profile,
-    build_empirical_engine_config,
     export_to_json,
 )
 
@@ -55,19 +50,30 @@ class TestEmpiricalMaster(unittest.TestCase):
 class TestRuntimeParams(unittest.TestCase):
     def test_required_keys(self):
         required = [
-            "temperature", "social_influence_lambda", "attractor_depth",
-            "repeller_strength", "payoff_coordination", "payoff_defection",
-            "narrative_decay_rate", "saturation_threshold",
-            "cultural_profile", "validation_flags",
+            "temperature",
+            "social_influence_lambda",
+            "attractor_depth",
+            "repeller_strength",
+            "payoff_coordination",
+            "payoff_defection",
+            "narrative_decay_rate",
+            "saturation_threshold",
+            "cultural_profile",
+            "validation_flags",
         ]
         for key in required:
             self.assertIn(key, MASSIVE_RUNTIME_PARAMS, msg=f"Missing key: {key}")
 
     def test_numeric_params_in_range(self):
         numeric_keys = [
-            "temperature", "social_influence_lambda", "attractor_depth",
-            "repeller_strength", "payoff_coordination", "payoff_defection",
-            "narrative_decay_rate", "saturation_threshold",
+            "temperature",
+            "social_influence_lambda",
+            "attractor_depth",
+            "repeller_strength",
+            "payoff_coordination",
+            "payoff_defection",
+            "narrative_decay_rate",
+            "saturation_threshold",
         ]
         for key in numeric_keys:
             val = MASSIVE_RUNTIME_PARAMS[key]
@@ -91,10 +97,18 @@ class TestApplyEmpiricalProfile(unittest.TestCase):
     def test_adds_expected_keys(self):
         result = apply_empirical_profile({})
         expected_keys = [
-            "efecto_vecinos_peso", "ruido_base", "ruido_desconfianza",
-            "alpha_blend", "sesgo_confirmacion", "hk_epsilon",
-            "competencia_peso", "umbral_media", "umbral_std", "homofilia_tasa",
-            "strategic", "_empirical_profile",
+            "efecto_vecinos_peso",
+            "ruido_base",
+            "ruido_desconfianza",
+            "alpha_blend",
+            "sesgo_confirmacion",
+            "hk_epsilon",
+            "competencia_peso",
+            "umbral_media",
+            "umbral_std",
+            "homofilia_tasa",
+            "strategic",
+            "_empirical_profile",
         ]
         for key in expected_keys:
             self.assertIn(key, result, msg=f"Missing key: {key}")
@@ -158,6 +172,7 @@ class TestExportToJson(unittest.TestCase):
     def test_write_to_disk(self):
         import os
         import tempfile
+
         with tempfile.NamedTemporaryFile(suffix=".json", delete=False, mode="w") as tf:
             tmp_path = tf.name
         try:

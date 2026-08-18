@@ -18,7 +18,9 @@ class AgentHydrodynamics:
     def __init__(self, grid: Array | None = None, diffusivity: float = 0.01) -> None:
         if diffusivity < 0.0:
             raise ValueError("diffusivity must be non-negative")
-        self.grid = np.asarray(grid, dtype=float) if grid is not None else np.linspace(-1.0, 1.0, 100)
+        self.grid = (
+            np.asarray(grid, dtype=float) if grid is not None else np.linspace(-1.0, 1.0, 100)
+        )
         self.diffusivity = diffusivity
 
     def compute_density_field(self, agent_positions: Array, kernel_bandwidth: float = 0.1) -> Array:
@@ -38,7 +40,9 @@ class AgentHydrodynamics:
         if positions.size == 0:
             return np.zeros_like(self.grid)
         diff = (self.grid[:, None] - positions[None, :]) / kernel_bandwidth
-        density = np.mean(np.exp(-0.5 * diff**2), axis=1) / (kernel_bandwidth * np.sqrt(2.0 * np.pi))
+        density = np.mean(np.exp(-0.5 * diff**2), axis=1) / (
+            kernel_bandwidth * np.sqrt(2.0 * np.pi)
+        )
         integral = np.trapezoid(density, self.grid)
         if integral > 0.0:
             density = density / integral
@@ -63,7 +67,9 @@ class AgentHydrodynamics:
             velocity = velocity + np.asarray(force_field, dtype=float)
         return velocity
 
-    def solve_fluid_equations(self, initial_density: Array, dt: float, n_steps: int, force_field: Array | None = None) -> Array:
+    def solve_fluid_equations(
+        self, initial_density: Array, dt: float, n_steps: int, force_field: Array | None = None
+    ) -> Array:
         """Solve a one-dimensional advection-diffusion equation.
 
         Args:

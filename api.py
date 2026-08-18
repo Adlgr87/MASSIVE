@@ -1,11 +1,11 @@
 from __future__ import annotations
 
+import contextlib
+import logging
 import os
 import tempfile
-import logging
-from typing import Optional
 
-from fastapi import FastAPI, UploadFile, File, HTTPException, Depends, Header, Request
+from fastapi import Depends, FastAPI, File, Header, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import APIKeyHeader
 
@@ -17,7 +17,7 @@ app = FastAPI(title="MASSIVE UIL API", version="1.0.0")
 api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
 
 
-async def get_api_key(api_key: Optional[str] = Header(None, alias="X-API-Key")):
+async def get_api_key(api_key: str | None = Header(None, alias="X-API-Key")):
     """Validate API key from header. Fail-closed in production."""
     valid_key = os.getenv("MASSIVE_API_KEY")
     if not valid_key:
@@ -115,6 +115,7 @@ def get_adapter():
     if _adapter is None:
         try:
             from uil_adapter import create_uil_adapter
+
             provider = os.getenv("PROVIDER", "groq")
             api_key = os.getenv("GROQ_API_KEY", os.getenv("OPENAI_API_KEY", ""))
             _adapter = create_uil_adapter(llm_provider=provider, llm_api_key=api_key)
@@ -133,8 +134,8 @@ def _public_error(exc: Exception) -> HTTPException:
 @app.post("/api/extract")
 async def api_extract(
     request: Request,
-    file: UploadFile = File(...),
-    api_key: Optional[str] = Depends(get_api_key),
+    file: UploadFile = File(...),  # noqa: B008
+    api_key: str | None = Depends(get_api_key),
 ):
     """Upload a file (pdf/json/csv/xlsx) and return extracted MASSIVE config."""
     _rate_limit(request)
@@ -153,20 +154,18 @@ async def api_extract(
     except HTTPException:
         raise
     except Exception as exc:
-        raise _public_error(exc)
+        raise _public_error(exc) from exc
     finally:
         if tmp_path:
-            try:
+            with contextlib.suppress(OSError):
                 os.unlink(tmp_path)
-            except OSError:
-                pass
 
 
 @app.post("/api/wizard")
 async def api_wizard(
     request: Request,
     payload: dict,
-    api_key: Optional[str] = Depends(get_api_key),
+    api_key: str | None = Depends(get_api_key),
 ):
     """Accepts JSON {"description": "..."} and returns a generated config."""
     _rate_limit(request)
@@ -180,14 +179,14 @@ async def api_wizard(
     except HTTPException:
         raise
     except Exception as exc:
-        raise _public_error(exc)
+        raise _public_error(exc) from exc
 
 
 @app.post("/api/simulate-uil")
 async def api_simulate(
     request: Request,
     payload: dict,
-    api_key: Optional[str] = Depends(get_api_key),
+    api_key: str | None = Depends(get_api_key),
 ):
     """
     Run full_pipeline from a natural-language description only.
@@ -218,9 +217,7 @@ async def api_simulate(
     except HTTPException:
         raise
     except Exception as exc:
-        raise _public_error(exc)
-
-
+        raise _public_error(exc) from exc
 
 
 # ── API v1: Architect, Forecast, Energy endpoints ───────────────────────────
@@ -232,11 +229,12 @@ async def api_simulate(
 # The /api/v1/forecast endpoint validates its projected point against the
 # existing DTOs from backend.app.models (ForecastPoint / Feasibility).
 
+
 @app.post("/api/v1/architect")
 async def api_architect(
     request: Request,
     payload: dict,
-    api_key: Optional[str] = Depends(get_api_key),
+    api_key: str | None = Depends(get_api_key),
 ):
     """Social architect inverse-strategy endpoint.
 
@@ -251,12 +249,17 @@ async def api_architect(
     """
     _rate_limit(request)
     from social_architect import buscar_estrategia_inversa
+
     try:
         if not isinstance(payload, dict):
             raise HTTPException(status_code=400, detail="JSON body required")
         estado_inicial = payload.get("estado_inicial")
         objetivo_usuario = payload.get("objetivo_usuario")
-        if not isinstance(estado_inicial, dict) or not isinstance(objetivo_usuario, str)                 or not objetivo_usuario.strip():
+        if (
+            not isinstance(estado_inicial, dict)
+            or not isinstance(objetivo_usuario, str)
+            or not objetivo_usuario.strip()
+        ):
             raise HTTPException(
                 status_code=400,
                 detail="'estado_inicial' (dict) and 'objetivo_usuario' (str) are required",
@@ -279,14 +282,14 @@ async def api_architect(
     except HTTPException:
         raise
     except Exception as exc:
-        raise _public_error(exc)
+        raise _public_error(exc) from exc
 
 
 @app.post("/api/v1/forecast")
 async def api_forecast(
     request: Request,
     payload: dict,
-    api_key: Optional[str] = Depends(get_api_key),
+    api_key: str | None = Depends(get_api_key),
 ):
     """Forecast endpoint with confidence intervals.
 
@@ -299,6 +302,7 @@ async def api_forecast(
     """
     _rate_limit(request)
     from forecast.engine import forecast
+
     try:
         if not isinstance(payload, dict):
             raise HTTPException(status_code=400, detail="JSON body required")
@@ -317,7 +321,8 @@ async def api_forecast(
         # Feasibility DTOs (backend.app.models.dto_forecast) so the response
         # stays schema-aligned with the forecast domain contract.
         try:
-            from backend.app.models import ForecastPoint, Feasibility
+            from backend.app.models import Feasibility, ForecastPoint
+
             _p_event = float(data.get("p_event", 0.0))
             _lower = max(0.0, _p_event - 0.05)
             _upper = min(1.0, _p_event + 0.05)
@@ -335,14 +340,18 @@ async def api_forecast(
             )
         except Exception:
             # DTO validation is best-effort; never leak internals.
-            point = {"tick": data.get("steps_to_event") or 0,
-                     "mean_opinion": float(data.get("p_event", 0.0)),
-                     "polarization": 0.0,
-                     "confidence_lower": max(0.0, float(data.get("p_event", 0.0)) - 0.05),
-                     "confidence_upper": min(1.0, float(data.get("p_event", 0.0)) + 0.05)}
-            feas = {"score": float(data.get("p_event", 0.0)),
-                    "label": data.get("confidence", "low"),
-                    "rationale": data.get("mode")}
+            point = {
+                "tick": data.get("steps_to_event") or 0,
+                "mean_opinion": float(data.get("p_event", 0.0)),
+                "polarization": 0.0,
+                "confidence_lower": max(0.0, float(data.get("p_event", 0.0)) - 0.05),
+                "confidence_upper": min(1.0, float(data.get("p_event", 0.0)) + 0.05),
+            }
+            feas = {
+                "score": float(data.get("p_event", 0.0)),
+                "label": data.get("confidence", "low"),
+                "rationale": data.get("mode"),
+            }
         point_dict = point.model_dump() if hasattr(point, "model_dump") else dict(point)
         feas_dict = feas.model_dump() if hasattr(feas, "model_dump") else dict(feas)
         return {
@@ -357,14 +366,14 @@ async def api_forecast(
     except HTTPException:
         raise
     except Exception as exc:
-        raise _public_error(exc)
+        raise _public_error(exc) from exc
 
 
 @app.post("/api/v1/energy")
 async def api_energy(
     request: Request,
     payload: dict,
-    api_key: Optional[str] = Depends(get_api_key),
+    api_key: str | None = Depends(get_api_key),
 ):
     """Energy landscape analysis endpoint.
 
@@ -381,6 +390,7 @@ async def api_energy(
     """
     _rate_limit(request)
     from energy_runner import run_energy_simulation
+
     try:
         if not isinstance(payload, dict):
             raise HTTPException(status_code=400, detail="JSON body required")
@@ -400,7 +410,8 @@ async def api_energy(
     except HTTPException:
         raise
     except Exception as exc:
-        raise _public_error(exc)
+        raise _public_error(exc) from exc
+
 
 @app.get("/")
 async def root():
@@ -427,7 +438,9 @@ async def readiness_check():
     checks = {"status": "ready", "checks": {}}
 
     # Check if LLM provider is configured
-    has_llm_key = any(os.getenv(k) for k in ("GROQ_API_KEY", "OPENAI_API_KEY", "OPENROUTER_API_KEY"))
+    has_llm_key = any(
+        os.getenv(k) for k in ("GROQ_API_KEY", "OPENAI_API_KEY", "OPENROUTER_API_KEY")
+    )
     checks["checks"]["llm_provider"] = "available" if has_llm_key else "not_configured"
 
     # Check if UIL adapter can be instantiated (lazy check)
@@ -447,8 +460,5 @@ async def readiness_check():
 async def version_info():
     """Version and build information."""
     import sys
-    return {
-        "version": "1.0.0",
-        "python": sys.version.split()[0],
-        "service": "MASSIVE UIL API"
-    }
+
+    return {"version": "1.0.0", "python": sys.version.split()[0], "service": "MASSIVE UIL API"}

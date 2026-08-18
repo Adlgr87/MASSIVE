@@ -2,8 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Any, Callable, Dict, Optional
 import logging
+from collections.abc import Callable
+from typing import Any
 
 import numpy as np
 
@@ -71,11 +72,11 @@ def optimize_interventions(
     n_phases: int,
     max_iter: int = 100,
     seed: int = 42,
-    cost_scale_factor: Optional[float] = None,
-    fiscal_constraint: Optional[float] = None,
-    sector_multipliers: Optional[Dict[str, float]] = None,
-    country_code: Optional[str] = None,
-    objective_weights: Optional[Dict[str, float]] = None,
+    cost_scale_factor: float | None = None,
+    fiscal_constraint: float | None = None,
+    sector_multipliers: dict[str, float] | None = None,
+    country_code: str | None = None,
+    objective_weights: dict[str, float] | None = None,
 ) -> dict:
     """
     Optimize interventions with stochastic search and explicit cost/feasibility.
@@ -107,6 +108,7 @@ def optimize_interventions(
     if country_code:
         try:
             from massive.core.factbook import get_factbook_context
+
             context = get_factbook_context()
             constraints = context.get_intervention_constraints(country_code)
             cost_scale_factor = constraints.get("cost_scale_factor", cost_scale_factor)
@@ -117,10 +119,7 @@ def optimize_interventions(
             log.warning("[InterventionOptimizer] Country load failed: %s", e)
 
     # Feasibility in [0, 1] — hard floor at 0.
-    if fiscal_constraint is None:
-        feasibility = 1.0
-    else:
-        feasibility = float(np.clip(fiscal_constraint, 0.0, 1.0))
+    feasibility = 1.0 if fiscal_constraint is None else float(np.clip(fiscal_constraint, 0.0, 1.0))
 
     # Budget: max fraction of agent-phase slots that may be non-zero.
     # High cost_scale_factor and low feasibility → sparser interventions.
@@ -207,7 +206,7 @@ def optimize_interventions(
 
 def create_economic_aware_optimizer(
     country_code: str,
-    base_optimizer: Optional[Callable] = None,
+    base_optimizer: Callable | None = None,
 ) -> Callable:
     """
     Factory function to create an optimizer pre-configured with country economic data.
@@ -221,6 +220,7 @@ def create_economic_aware_optimizer(
     """
     try:
         from massive.core.factbook import get_factbook_context
+
         context = get_factbook_context()
         constraints = context.get_intervention_constraints(country_code)
 
@@ -282,7 +282,7 @@ def estimate_intervention_cost(
 def get_intervention_feasibility(
     interventions: np.ndarray,
     country_code: str,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Evaluate the feasibility of interventions given a country's economic situation.
 
@@ -295,6 +295,7 @@ def get_intervention_feasibility(
     """
     try:
         from massive.core.factbook import get_factbook_context
+
         context = get_factbook_context()
         constraints = context.get_intervention_constraints(country_code)
 

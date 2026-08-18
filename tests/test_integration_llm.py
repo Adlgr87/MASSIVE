@@ -1,7 +1,9 @@
-import pytest
+from unittest.mock import MagicMock, patch
+
 import requests.exceptions
-from unittest.mock import patch, MagicMock
-from simulator import llamar_llm, simular, DEFAULT_CONFIG
+
+from simulator import DEFAULT_CONFIG, llamar_llm, simular
+
 
 def test_llm_selector_fallback():
     """
@@ -20,6 +22,7 @@ def test_llm_selector_fallback():
         assert "razon" in resultado
         assert isinstance(resultado["regla"], int)
 
+
 def test_llm_selector_success():
     """
     Test a successful LLM rule selection mock.
@@ -31,11 +34,13 @@ def test_llm_selector_success():
     mock_response.status_code = 200
     mock_response.raise_for_status = MagicMock()
     mock_response.json.return_value = {
-        "choices": [{
-            "message": {
-                "content": '{"regla": 1, "params": {}, "razon": "High propaganda detected"}'
+        "choices": [
+            {
+                "message": {
+                    "content": '{"regla": 1, "params": {}, "razon": "High propaganda detected"}'
+                }
             }
-        }]
+        ]
     }
 
     with patch("requests.post", return_value=mock_response):
@@ -43,6 +48,7 @@ def test_llm_selector_success():
 
         assert resultado["regla"] == 1
         assert "High propaganda" in resultado["razon"]
+
 
 def test_simulation_integration():
     """
@@ -61,6 +67,7 @@ def test_simulation_integration():
 def test_circuit_breaker_closes_after_success():
     """Circuit stays closed while requests succeed."""
     from simulator import CircuitBreaker
+
     cb = CircuitBreaker(failure_threshold=3, cooldown=0.1)
     assert cb.state == "closed"
     cb.record_success()
@@ -70,6 +77,7 @@ def test_circuit_breaker_closes_after_success():
 def test_circuit_breaker_opens_after_threshold():
     """Circuit opens after the configured failure threshold."""
     from simulator import CircuitBreaker
+
     cb = CircuitBreaker(failure_threshold=3, cooldown=0.5)
     for _ in range(3):
         cb.record_failure()
@@ -80,10 +88,13 @@ def test_circuit_breaker_opens_after_threshold():
 def test_circuit_breaker_half_open_after_cooldown():
     """Circuit returns to half-open after cooldown, then closed on success."""
     from simulator import CircuitBreaker
+
     cb = CircuitBreaker(failure_threshold=2, cooldown=0.2)
     for _ in range(2):
         cb.record_failure()
-    import time; time.sleep(0.25)  # supera cooldown
+    import time
+
+    time.sleep(0.25)  # supera cooldown
     assert cb.state == "half-open"
     assert cb.allow() is True
     cb.record_success()
@@ -92,9 +103,16 @@ def test_circuit_breaker_half_open_after_cooldown():
 
 def test_llm_retry_on_timeout():
     """Timeout triggers retries but still yields fallback heuristic result."""
-    from simulator import llamar_llm, DEFAULT_CONFIG
+    from simulator import DEFAULT_CONFIG, llamar_llm
+
     estado = {"opinion": 0.5, "propaganda": 0.1}
-    cfg = {**DEFAULT_CONFIG, "proveedor": "openai", "api_key": "fake", "llm_retries": 2, "llm_retry_backoff": 0.0}
+    cfg = {
+        **DEFAULT_CONFIG,
+        "proveedor": "openai",
+        "api_key": "fake",
+        "llm_retries": 2,
+        "llm_retry_backoff": 0.0,
+    }
 
     call_count = {"n": 0}
 
@@ -102,7 +120,12 @@ def test_llm_retry_on_timeout():
         call_count["n"] += 1
         if call_count["n"] <= 2:
             raise requests.exceptions.Timeout("timeout")
-        return MagicMock(status_code=200, json=lambda: {"choices": [{"message": {"content": '{"regla": 0, "params": {}, "razon": "ok"}'}}]})
+        return MagicMock(
+            status_code=200,
+            json=lambda: {
+                "choices": [{"message": {"content": '{"regla": 0, "params": {}, "razon": "ok"}'}}]
+            },
+        )
 
     with patch("requests.post", side_effect=_flaky_post):
         resultado = llamar_llm(estado, "campana", [estado], cfg)
@@ -113,9 +136,16 @@ def test_llm_retry_on_timeout():
 
 def test_llm_no_retry_on_4xx():
     """Client-side HTTP errors (except 429) are not retried."""
-    from simulator import llamar_llm, DEFAULT_CONFIG
+    from simulator import DEFAULT_CONFIG, llamar_llm
+
     estado = {"opinion": 0.5, "propaganda": 0.1}
-    cfg = {**DEFAULT_CONFIG, "proveedor": "openai", "api_key": "fake", "llm_retries": 3, "llm_retry_backoff": 0.0}
+    cfg = {
+        **DEFAULT_CONFIG,
+        "proveedor": "openai",
+        "api_key": "fake",
+        "llm_retries": 3,
+        "llm_retry_backoff": 0.0,
+    }
 
     call_count = {"n": 0}
 

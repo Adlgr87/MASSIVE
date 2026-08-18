@@ -12,7 +12,7 @@ import json
 import logging
 import os
 import re
-from typing import Any, Optional
+from typing import Any
 
 import requests
 
@@ -80,7 +80,7 @@ def chat_completion(
     max_tokens: int = 1200,
     timeout: float = 45.0,
     json_mode: bool = False,
-) -> Optional[str]:
+) -> str | None:
     """Send a chat completion request to the configured provider.
 
     Args:
@@ -197,7 +197,7 @@ def chat_completion_stream(
         return
 
 
-def extract_json(text: str) -> Optional[dict[str, Any]]:
+def extract_json(text: str) -> dict[str, Any] | None:
     """Defensively extract the first JSON object from model output.
 
     Mirrors the tolerant parsing style of ``simulator._extraer_json``.

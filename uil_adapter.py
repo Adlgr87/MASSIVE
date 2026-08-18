@@ -1,5 +1,5 @@
 """
-UIL Adapter — Integración sinérgica entre Document Intelligence, 
+UIL Adapter — Integración sinérgica entre Document Intelligence,
 Interpreter Layer, y MASSIVE Simulator.
 
 Este módulo actúa como orquestador de los flujos de entrada:
@@ -13,12 +13,12 @@ Siguiendo protocolo CLAUDE.md: surgical changes, goal-driven execution.
 from __future__ import annotations
 
 import logging
-from typing import Any, Optional
+from typing import Any
 
 try:
+    from document_intelligence import DocumentIntelligence, MASSIVEExtractedConfig  # noqa: F401
     from interpreter_layer import InterpreterLayer
-    from document_intelligence import DocumentIntelligence, MASSIVEExtractedConfig
-    from simulator import simular, DEFAULT_CONFIG
+    from simulator import DEFAULT_CONFIG, simular
 
     _UIL_AVAILABLE = True
 except ImportError as e:
@@ -32,7 +32,7 @@ log = logging.getLogger("massive.uil_adapter")
 class UILAdapter:
     """Orquestador de flujos UIL integrados con MASSIVE simulator."""
 
-    def __init__(self, llm_provider: str = "groq", llm_api_key: Optional[str] = None):
+    def __init__(self, llm_provider: str = "groq", llm_api_key: str | None = None):
         """
         Initialize UIL adapter with document intelligence and interpreter layer.
 
@@ -82,9 +82,7 @@ class UILAdapter:
         log.info(f"UIL Document: extracted {len(config)} parameters")
         return config
 
-    def from_document_and_description(
-        self, file_path: str, description: str
-    ) -> dict[str, Any]:
+    def from_document_and_description(self, file_path: str, description: str) -> dict[str, Any]:
         """
         Combined flow: Document + natural language interpretation.
 
@@ -97,7 +95,7 @@ class UILAdapter:
         Returns:
             Merged config dict
         """
-        log.info(f"UIL Combined: parsing document + description")
+        log.info("UIL Combined: parsing document + description")
 
         # Extract from document
         doc_config = self.from_document(file_path)
@@ -113,8 +111,8 @@ class UILAdapter:
 
     def full_pipeline(
         self,
-        file_path: Optional[str] = None,
-        description: Optional[str] = None,
+        file_path: str | None = None,
+        description: str | None = None,
         simulation_steps: int = 50,
     ) -> dict[str, Any]:
         """
@@ -147,13 +145,15 @@ class UILAdapter:
 
         # Split flat wizard/doc keys into simular(estado, escenario, config=...)
         estado_keys = {
-            "opinion", "propaganda", "confianza",
-            "opinion_grupo_a", "opinion_grupo_b", "identidad_grupo",
+            "opinion",
+            "propaganda",
+            "confianza",
+            "opinion_grupo_a",
+            "opinion_grupo_b",
+            "identidad_grupo",
             "pertenencia_grupo",
         }
-        estado_inicial = {
-            k: config[k] for k in estado_keys if k in config
-        }
+        estado_inicial = {k: config[k] for k in estado_keys if k in config}
         # Sensible defaults for required state fields
         if "opinion" not in estado_inicial:
             estado_inicial["opinion"] = 0.0
@@ -168,7 +168,9 @@ class UILAdapter:
             if key in estado_keys or key in {"escenario", "pasos", "regla_sugerida"}:
                 continue
             if key in DEFAULT_CONFIG or key in {
-                "homofilia_tasa", "sesgo_confirmacion", "cultural_profile",
+                "homofilia_tasa",
+                "sesgo_confirmacion",
+                "cultural_profile",
             }:
                 sim_config[key] = val
 
@@ -201,16 +203,12 @@ class UILAdapter:
                 "raw": config,
             },
             "history": history,
-            "summary": (
-                narrative.narrative
-                if hasattr(narrative, "narrative")
-                else str(narrative)
-            ),
+            "summary": (narrative.narrative if hasattr(narrative, "narrative") else str(narrative)),
         }
 
 
 # Convenience factory
-def create_uil_adapter(llm_provider: str = "groq", llm_api_key: Optional[str] = None) -> UILAdapter:
+def create_uil_adapter(llm_provider: str = "groq", llm_api_key: str | None = None) -> UILAdapter:
     """Factory function to create UIL adapter with error handling."""
     try:
         return UILAdapter(llm_provider=llm_provider, llm_api_key=llm_api_key)

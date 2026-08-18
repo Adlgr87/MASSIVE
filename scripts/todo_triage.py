@@ -6,7 +6,6 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
 
 ROOT = Path(__file__).resolve().parents[1]
 SKIP_PARTS = {".git", "site", "node_modules", "__pycache__", ".venv", "experiments"}

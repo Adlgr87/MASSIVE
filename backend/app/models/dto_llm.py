@@ -9,10 +9,9 @@ All models use ``extra="forbid"`` to prevent silent schema drift.
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
-
 
 # ---------------------------------------------------------------------------
 # Request
@@ -37,7 +36,7 @@ class LLMLlmHint(BaseModel):
     model_config = {"extra": "forbid"}
 
     provider: Literal["groq", "openai", "openrouter"] = "groq"
-    model: Optional[str] = None
+    model: str | None = None
 
 
 class LLMRunRequest(BaseModel):
@@ -59,25 +58,15 @@ class LLMRunRequest(BaseModel):
     model_config = {"extra": "forbid"}
 
     intent: str = Field(..., min_length=1, description="Natural-language intent")
-    motor: Optional[LLMMotor] = Field(
-        default=None, description="Engine family override"
-    )
-    country: Optional[str] = Field(
-        default=None, description="Country for Factbook augmentation"
-    )
-    partial_config: Optional[Dict[str, Any]] = Field(
+    motor: LLMMotor | None = Field(default=None, description="Engine family override")
+    country: str | None = Field(default=None, description="Country for Factbook augmentation")
+    partial_config: dict[str, Any] | None = Field(
         default=None, description="Structured overrides merged with NL-translated config"
     )
-    llm: Optional[LLMLlmHint] = Field(
-        default=None, description="LLM provider/model hint"
-    )
-    simulation_steps: Optional[int] = Field(
-        default=None, ge=1, description="Step-count override"
-    )
-    seed: Optional[int] = Field(
-        default=42, ge=0, description="RNG seed for reproducibility"
-    )
-    config_overrides: Optional[Dict[str, Any]] = Field(
+    llm: LLMLlmHint | None = Field(default=None, description="LLM provider/model hint")
+    simulation_steps: int | None = Field(default=None, ge=1, description="Step-count override")
+    seed: int | None = Field(default=42, ge=0, description="RNG seed for reproducibility")
+    config_overrides: dict[str, Any] | None = Field(
         default=None, description="Extra engine-specific config keys"
     )
 
@@ -86,15 +75,16 @@ class LLMRunRequest(BaseModel):
 # Response pieces
 # ---------------------------------------------------------------------------
 
+
 class LLMSummary(BaseModel):
     """Normalized summary emitted by the orchestrator."""
 
     model_config = {"extra": "forbid"}
 
     motor: str
-    indicators: Dict[str, Any]
-    regla_dominante: Optional[str] = None
-    factbook_country: Optional[str] = None
+    indicators: dict[str, Any]
+    regla_dominante: str | None = None
+    factbook_country: str | None = None
 
 
 class LLMTimelinePoint(BaseModel):
@@ -103,9 +93,9 @@ class LLMTimelinePoint(BaseModel):
     model_config = {"extra": "forbid"}
 
     tick: int
-    mean_opinion: Optional[float] = None
-    polarization: Optional[float] = None
-    active_agents: Optional[int] = None
+    mean_opinion: float | None = None
+    polarization: float | None = None
+    active_agents: int | None = None
 
 
 class LLMResults(BaseModel):
@@ -119,10 +109,10 @@ class LLMResults(BaseModel):
 
     sim_id: str
     motor: LLMMotor
-    payload: Dict[str, Any]
+    payload: dict[str, Any]
     # Abridged timeline (first/last N ticks) for large histories.
-    timeline: Optional[List[LLMTimelinePoint]] = None
-    final_state: Optional[Dict[str, Any]] = None
+    timeline: list[LLMTimelinePoint] | None = None
+    final_state: dict[str, Any] | None = None
 
 
 class LLMRunResponse(BaseModel):
@@ -143,12 +133,12 @@ class LLMRunResponse(BaseModel):
 
     sim_id: str
     motor: LLMMotor
-    config: Dict[str, Any]
+    config: dict[str, Any]
     summary: LLMSummary
     narrative: str
     results: LLMResults
-    assumptions: List[str]
-    factbook_params: Optional[Dict[str, Any]] = None
+    assumptions: list[str]
+    factbook_params: dict[str, Any] | None = None
 
 
 class LLMAmbiguityResponse(BaseModel):
@@ -157,5 +147,5 @@ class LLMAmbiguityResponse(BaseModel):
     model_config = {"extra": "forbid"}
 
     detail: str = "Intent ambiguous; please provide the requested fields."
-    requested_fields: List[str]
-    motor: Optional[str] = None
+    requested_fields: list[str]
+    motor: str | None = None

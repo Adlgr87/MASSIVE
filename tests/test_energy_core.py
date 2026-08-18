@@ -2,23 +2,22 @@
 Suite de pruebas para el núcleo Energy de MASSIVE.
 Cubre: SocialEnergyEngine, EnergySchemas, LandscapeCache, ProgrammaticArchitect, run_energy_simulation
 """
-import pytest
+
+from unittest.mock import patch
+
 import numpy as np
-import json
-import sqlite3
-from pathlib import Path
-from unittest.mock import patch, MagicMock
+import pytest
 
-from energy_engine import SocialEnergyEngine, random_network
-from energy_schemas import EnergyConfig, Attractor, Repeller, Dynamics, EnergyParams, Metadata
 from cache_manager import LandscapeCache
-from programmatic_architect import ProgrammaticArchitect, ARCHETYPES
+from energy_engine import SocialEnergyEngine, random_network
 from energy_runner import run_energy_simulation
-
+from energy_schemas import Attractor, EnergyConfig, Repeller
+from programmatic_architect import ARCHETYPES, ProgrammaticArchitect
 
 # ============================================================
 # FIXTURES
 # ============================================================
+
 
 @pytest.fixture
 def engine_bipolar():
@@ -45,8 +44,8 @@ def valid_config_dict():
         "energy_params": {
             "attractors": [{"position": -0.5, "strength": 2.0, "label": "A"}],
             "repellers": [{"position": 0.5, "strength": 1.5, "label": "R"}],
-            "dynamics": {"temperature": 0.05, "eta": 0.01, "lambda_social": 0.6}
-        }
+            "dynamics": {"temperature": 0.05, "eta": 0.01, "lambda_social": 0.6},
+        },
     }
 
 
@@ -59,6 +58,7 @@ def cache_tmp(tmp_path):
 # ============================================================
 # TestEnergyEngine
 # ============================================================
+
 
 class TestEnergyEngine:
 
@@ -106,7 +106,14 @@ class TestEnergyEngine:
     def test_system_metrics_returns_required_keys(self, engine_bipolar, simple_adj):
         opinions = np.array([0.0, 0.5, -0.5])
         metrics = engine_bipolar.system_metrics(opinions, simple_adj, [], [])
-        for key in ("mean_opinion", "std_opinion", "polarizacion", "energia_total", "energia_media", "n_clusters_approx"):
+        for key in (
+            "mean_opinion",
+            "std_opinion",
+            "polarizacion",
+            "energia_total",
+            "energia_media",
+            "n_clusters_approx",
+        ):
             assert key in metrics
 
     def test_system_metrics_polarization_bounded(self, engine_bipolar, simple_adj):
@@ -128,6 +135,7 @@ class TestEnergyEngine:
 # ============================================================
 # TestRandomNetwork
 # ============================================================
+
 
 class TestRandomNetwork:
 
@@ -161,6 +169,7 @@ class TestRandomNetwork:
 # TestEnergySchemas
 # ============================================================
 
+
 class TestEnergySchemas:
 
     def test_valid_config_parses(self, valid_config_dict):
@@ -178,11 +187,11 @@ class TestEnergySchemas:
         assert isinstance(d["attractors"], list)
 
     def test_attractor_position_out_of_range_raises(self):
-        with pytest.raises(Exception):
+        with pytest.raises(Exception):  # noqa: B017
             Attractor(position=1.5, strength=1.0)
 
     def test_repeller_strength_too_low_raises(self):
-        with pytest.raises(Exception):
+        with pytest.raises(Exception):  # noqa: B017
             Repeller(position=0.0, strength=0.1)
 
     def test_duplicate_attractor_positions_raises(self):
@@ -194,10 +203,10 @@ class TestEnergySchemas:
                     {"position": 0.5, "strength": 1.5, "label": "B"},
                 ],
                 "repellers": [],
-                "dynamics": {"temperature": 0.05, "eta": 0.01, "lambda_social": 0.5}
-            }
+                "dynamics": {"temperature": 0.05, "eta": 0.01, "lambda_social": 0.5},
+            },
         }
-        with pytest.raises(Exception):
+        with pytest.raises(Exception):  # noqa: B017
             EnergyConfig.model_validate(data)
 
     def test_empty_attractors_and_repellers_allowed(self):
@@ -206,20 +215,21 @@ class TestEnergySchemas:
             "energy_params": {
                 "attractors": [],
                 "repellers": [],
-                "dynamics": {"temperature": 0.15, "eta": 0.01, "lambda_social": 0.3}
-            }
+                "dynamics": {"temperature": 0.15, "eta": 0.01, "lambda_social": 0.3},
+            },
         }
         cfg = EnergyConfig.model_validate(data)
         assert cfg.energy_params.attractors == []
 
     def test_extra_fields_forbidden(self):
-        with pytest.raises(Exception):
+        with pytest.raises(Exception):  # noqa: B017
             Attractor(position=0.0, strength=1.0, label="X", unknown_field="bad")
 
 
 # ============================================================
 # TestLandscapeCache
 # ============================================================
+
 
 class TestLandscapeCache:
 
@@ -262,6 +272,7 @@ class TestLandscapeCache:
 # TestProgrammaticArchitect
 # ============================================================
 
+
 class TestProgrammaticArchitect:
 
     def test_archetype_lookup_returns_correct(self):
@@ -295,10 +306,13 @@ class TestProgrammaticArchitect:
         fake_llm_response = ARCHETYPES["polarizacion_extrema"].copy()
 
         import programmatic_architect
-        with patch.object(programmatic_architect, "_cache", new_cache):
-            with patch("programmatic_architect.call_llm", return_value=fake_llm_response):
-                arch = ProgrammaticArchitect()
-                arch.get_landscape("escenario inventado unico")
+
+        with (
+            patch.object(programmatic_architect, "_cache", new_cache),
+            patch("programmatic_architect.call_llm", return_value=fake_llm_response),
+        ):
+            arch = ProgrammaticArchitect()
+            arch.get_landscape("escenario inventado unico")
 
         cached = new_cache.get("escenario inventado unico")
         assert cached is not None
@@ -308,11 +322,19 @@ class TestProgrammaticArchitect:
 # TestRunEnergySimulation
 # ============================================================
 
+
 class TestRunEnergySimulation:
 
     def test_returns_required_keys(self):
         result = run_energy_simulation("consenso_moderado", n_agents=10, steps=5)
-        for key in ("history", "metrics_timeline", "final_state", "summary", "config_used", "archetype_info"):
+        for key in (
+            "history",
+            "metrics_timeline",
+            "final_state",
+            "summary",
+            "config_used",
+            "archetype_info",
+        ):
             assert key in result
 
     def test_history_length(self):
@@ -322,17 +344,27 @@ class TestRunEnergySimulation:
     def test_summary_structure(self):
         result = run_energy_simulation("polarizacion_extrema", n_agents=8, steps=5)
         summary = result["summary"]
-        for key in ("opinion_inicial", "opinion_final", "delta_total", "polarizacion_media", "pasos"):
+        for key in (
+            "opinion_inicial",
+            "opinion_final",
+            "delta_total",
+            "polarizacion_media",
+            "pasos",
+        ):
             assert key in summary
         assert summary["pasos"] == 5
 
     def test_opinions_in_bipolar_range(self):
-        result = run_energy_simulation("radicalizacion_progresiva", n_agents=20, steps=10, range_type="bipolar")
+        result = run_energy_simulation(
+            "radicalizacion_progresiva", n_agents=20, steps=10, range_type="bipolar"
+        )
         opinions = result["final_state"]["opinions"]
         assert all(-1.0 <= o <= 1.0 for o in opinions)
 
     def test_opinions_in_unipolar_range(self):
-        result = run_energy_simulation("consenso_moderado", n_agents=20, steps=10, range_type="unipolar")
+        result = run_energy_simulation(
+            "consenso_moderado", n_agents=20, steps=10, range_type="unipolar"
+        )
         opinions = result["final_state"]["opinions"]
         assert all(0.0 <= o <= 1.0 for o in opinions)
 
@@ -349,7 +381,7 @@ class TestRunEnergySimulation:
             "consenso_moderado",
             n_agents=5,
             steps=3,
-            config_overrides={"temperature": 0.15, "lambda_social": 0.9}
+            config_overrides={"temperature": 0.15, "lambda_social": 0.9},
         )
         assert result["summary"]["pasos"] == 3
 

@@ -18,9 +18,8 @@ from __future__ import annotations
 
 import logging
 import os
-from typing import Optional
 
-from fastapi import Depends, Header, HTTPException, Request
+from fastapi import Header, HTTPException, Request
 from fastapi.security import APIKeyHeader
 
 from massive_core.config import build_rate_limiter
@@ -33,7 +32,7 @@ api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
 
 
 async def get_api_key(
-    api_key: Optional[str] = Header(None, alias="X-API-Key"),
+    api_key: str | None = Header(None, alias="X-API-Key"),
 ) -> str:
     """Validate the ``X-API-Key`` header.
 

@@ -165,7 +165,12 @@ STRINGS = {
         "activate_strategic": "Activar Capa Estratégica",
         "strategic_weight": "Peso estratégico (ω)",
         "strategic_preset": "Preset de juego",
-        "strategic_preset_options": ["Personalizado", "Dilema del Prisionero", "Caza del Ciervo", "Coordinación"],
+        "strategic_preset_options": [
+            "Personalizado",
+            "Dilema del Prisionero",
+            "Caza del Ciervo",
+            "Coordinación",
+        ],
         "strategic_cc": "cc — Ambos cooperan (consenso)",
         "strategic_cd": "cd — Yo coopero, otro traiciona (ingenuo)",
         "strategic_dc": "dc — Yo traiciono, otro coopera (tentación)",
@@ -253,8 +258,9 @@ STRINGS = {
 | Probabilidad de adopción de tecnología | **[0,1] probabilístico** | Tasa de adopción natural |
 | Difusión de información / contagio | **[0,1] probabilístico** | Modelos SIR en este rango |
 """,
-    }
+    },
 }
+
 
 def t(key: str, lang: str = "en", **kwargs) -> str:
     """Translate a key to the given language."""

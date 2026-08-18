@@ -10,7 +10,6 @@ from __future__ import annotations
 
 import threading
 from collections import defaultdict
-from typing import Any
 
 _METRIC_HELP = {
     "http_requests_total": "HTTP requests served (counter)",
@@ -52,9 +51,7 @@ class MetricsRegistry:
                 for key_tuple in sorted(series.keys()):
                     value = series[key_tuple]
                     if key_tuple:
-                        label_str = ",".join(
-                            f'{k}="{v}"' for k, v in dict(key_tuple).items()
-                        )
+                        label_str = ",".join(f'{k}="{v}"' for k, v in dict(key_tuple).items())
                         out.append(f"{name}{{{label_str}}} {value:g}")
                     else:
                         out.append(f"{name} {value:g}")

@@ -116,7 +116,9 @@ def active_mask_step(
     new = np.asarray(x_new, dtype=np.float64)
     adjacency = np.asarray(adj, dtype=np.float64)
     if _rust_core is not None:
-        return np.asarray(_rust_core.active_mask_step_rs(prev, new, adjacency, float(threshold)), dtype=bool)
+        return np.asarray(
+            _rust_core.active_mask_step_rs(prev, new, adjacency, float(threshold)), dtype=bool
+        )
 
     changed = np.abs(new - prev).max(axis=1) > threshold
     if changed.any():

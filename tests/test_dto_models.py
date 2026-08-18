@@ -13,7 +13,7 @@ from __future__ import annotations
 
 import subprocess
 import sys
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import pytest
@@ -24,7 +24,6 @@ from backend.app.models import (
     Feasibility,
     ForecastPoint,
     ForecastResponse,
-    InterventionLogEntry,
     InterventionRecord,
     SimAgentLite,
     SimAggregateMetrics,
@@ -34,15 +33,15 @@ from backend.app.models import (
     SimSnapshotMessage,
     SimulationSnapshotPayload,
     SnapshotRecord,
-    TimelineTick,
     TimelineResponse,
+    TimelineTick,
 )
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
-_NOW = datetime(2026, 1, 1, tzinfo=timezone.utc)
+_NOW = datetime(2026, 1, 1, tzinfo=UTC)
 
 _METRICS = dict(
     mean_opinion=0.1,
@@ -166,9 +165,7 @@ class TestSimEventMessage:
         assert msg.detail is None
 
     def test_error_with_detail(self):
-        msg = SimEventMessage(
-            sim_id="run-1", event=SimEventKind.error, detail="OOM at tick 99"
-        )
+        msg = SimEventMessage(sim_id="run-1", event=SimEventKind.error, detail="OOM at tick 99")
         assert msg.detail == "OOM at tick 99"
 
     def test_invalid_event(self):
@@ -280,9 +277,7 @@ class TestArchitectEventMessage:
         )
 
     def test_valid(self):
-        msg = ArchitectEventMessage(
-            sim_id="run-1", intervention=self._record(), timestamp=_NOW
-        )
+        msg = ArchitectEventMessage(sim_id="run-1", intervention=self._record(), timestamp=_NOW)
         assert msg.type == "architect_event"
 
     def test_extra_forbidden(self):

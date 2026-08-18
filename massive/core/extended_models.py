@@ -7,7 +7,6 @@ Todos los modelos son 100% funcionales y se integran como reglas de simulator.py
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING
 
 import numpy as np
 from scipy.integrate import solve_ivp
@@ -21,33 +20,25 @@ try:
     NASH_AVAILABLE = True
 except ImportError:
     NASH_AVAILABLE = False
-    log.warning(
-        "[ExtModels] nashpy no instalado — regla_nash usará fallback analítico."
-    )
+    log.warning("[ExtModels] nashpy no instalado — regla_nash usará fallback analítico.")
 
 try:
     # pgmpy >= 1.1.0 renamed BayesianNetwork → DiscreteBayesianNetwork
     try:
         from pgmpy.models import DiscreteBayesianNetwork as BayesianNetwork
 
-        log.debug(
-            "[ExtModels] pgmpy >= 1.1.0 detectado — usando DiscreteBayesianNetwork."
-        )
+        log.debug("[ExtModels] pgmpy >= 1.1.0 detectado — usando DiscreteBayesianNetwork.")
     except ImportError:
         from pgmpy.models import BayesianNetwork  # type: ignore[assignment]
 
-        log.debug(
-            "[ExtModels] pgmpy < 1.1.0 detectado — usando BayesianNetwork (legacy)."
-        )
+        log.debug("[ExtModels] pgmpy < 1.1.0 detectado — usando BayesianNetwork (legacy).")
     from pgmpy.factors.discrete import TabularCPD
     from pgmpy.inference import VariableElimination
 
     PGMPY_AVAILABLE = True
 except ImportError:
     PGMPY_AVAILABLE = False
-    log.warning(
-        "[ExtModels] pgmpy no instalado — regla_bayesiana usará modelo Beta-Binomial."
-    )
+    log.warning("[ExtModels] pgmpy no instalado — regla_bayesiana usará modelo Beta-Binomial.")
 
 
 # ─────────────────────────────────────────────────────────────────────────────
@@ -115,9 +106,7 @@ def regla_nash(estado: dict, params: dict, cfg: dict) -> dict:
         Updated state with Nash-equilibrium-derived opinion.
     """
     op_a = estado.get("opinion_grupo_a", _rango(cfg).get("max", 1.0) * 0.7)
-    op_b = estado.get(
-        "opinion_grupo_b", _rango(cfg).get("min", 0.0) + _amp_em(cfg) * 0.3
-    )
+    op_b = estado.get("opinion_grupo_b", _rango(cfg).get("min", 0.0) + _amp_em(cfg) * 0.3)
     perten = float(estado.get("pertenencia_grupo", 0.6))
     opinion = estado["opinion"]
     amp = _amp_em(cfg)
@@ -179,7 +168,7 @@ _BN_CACHE: dict = {}  # module-level cache keyed by range name
 
 def _build_pgmpy_model(
     rango_name: str,
-) -> "tuple[BayesianNetwork, VariableElimination]":
+) -> tuple[BayesianNetwork, VariableElimination]:
     """Build and cache a pgmpy BN for the given range type."""
     model = BayesianNetwork(
         [
@@ -236,7 +225,7 @@ def _build_pgmpy_model(
     return model, infer
 
 
-def _get_bn_inference(rango_name: str) -> "VariableElimination | None":
+def _get_bn_inference(rango_name: str) -> VariableElimination | None:
     """Return cached VariableElimination engine, building it on first call."""
     if not PGMPY_AVAILABLE:
         return None
@@ -347,9 +336,7 @@ def regla_bayesiana(estado: dict, params: dict, cfg: dict) -> dict:
             midpoint = (r_min + r_max) / 2.0
             new_op = float(probs[0] * r_min + probs[1] * midpoint + probs[2] * r_max)
             mean_val = np.dot(probs, [0, 0.5, 1])
-            uncertainty = float(
-                np.sqrt(np.sum(probs * (np.array([0, 0.5, 1]) - mean_val) ** 2))
-            )
+            uncertainty = float(np.sqrt(np.sum(probs * (np.array([0, 0.5, 1]) - mean_val) ** 2)))
         except Exception as exc:
             log.debug(f"[Bayesian] pgmpy inference error: {exc}; using Beta-Binomial.")
             new_op = _beta_binom_update(
@@ -413,7 +400,7 @@ def regla_sir(estado: dict, params: dict, cfg: dict) -> dict:
         Updated state with SIR-evolved opinion and S/I/R fractions.
     """
     r = _rango(cfg)
-    r_min, r_max = r["min"], r["max"]
+    r_min, _r_max = r["min"], r["max"]
     amp = _amp_em(cfg)
     opinion = estado["opinion"]
     prop = estado["propaganda"]
@@ -432,10 +419,10 @@ def regla_sir(estado: dict, params: dict, cfg: dict) -> dict:
     beta_eff = beta * (0.5 + p_prop)  # range [0.5*beta, 1.5*beta]
 
     def sir_rhs(t, y):
-        S, I, R = y
-        dS = -beta_eff * S * I
-        dI = beta_eff * S * I - gamma * I
-        dR = gamma * I
+        S, inf_, R = y
+        dS = -beta_eff * S * inf_
+        dI = beta_eff * S * inf_ - gamma * inf_
+        dR = gamma * inf_
         return [dS, dI, dR]
 
     try:

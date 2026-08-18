@@ -10,7 +10,6 @@ from __future__ import annotations
 import os
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Optional
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -46,12 +45,16 @@ class UISettings:
     frontend_dist: Path = field(default_factory=lambda: _REPO_ROOT / "frontend" / "dist")
 
     # ── Data ─────────────────────────────────────────────────────────────
-    data_dir: Optional[Path] = field(
+    data_dir: Path | None = field(
         default_factory=lambda: (
-            Path(os.getenv("MASSIVE_DATA_DIR")) if os.getenv("MASSIVE_DATA_DIR") else _REPO_ROOT / "data" / "ui_ng"
+            Path(os.getenv("MASSIVE_DATA_DIR"))
+            if os.getenv("MASSIVE_DATA_DIR")
+            else _REPO_ROOT / "data" / "ui_ng"
         )
     )
-    run_store_capacity: int = field(default_factory=lambda: _env_int("MASSIVE_RUN_STORE_CAPACITY", 500))
+    run_store_capacity: int = field(
+        default_factory=lambda: _env_int("MASSIVE_RUN_STORE_CAPACITY", 500)
+    )
 
     # ── Security ─────────────────────────────────────────────────────────
     api_keys: list[str] = field(
@@ -76,11 +79,17 @@ class UISettings:
             h.strip() for h in os.getenv("MASSIVE_ALLOWED_HOSTS", "*").split(",") if h.strip()
         ]
     )
-    trust_proxy_headers: bool = field(default_factory=lambda: _env_bool("MASSIVE_TRUST_PROXY", False))
+    trust_proxy_headers: bool = field(
+        default_factory=lambda: _env_bool("MASSIVE_TRUST_PROXY", False)
+    )
 
     # ── Rate limiting (per client IP; see docs for multi-worker notes) ───
-    rate_limit_enabled: bool = field(default_factory=lambda: _env_bool("MASSIVE_RATE_LIMIT_ENABLED", True))
-    rate_limit_per_minute: int = field(default_factory=lambda: _env_int("MASSIVE_RATE_LIMIT_PER_MIN", 120))
+    rate_limit_enabled: bool = field(
+        default_factory=lambda: _env_bool("MASSIVE_RATE_LIMIT_ENABLED", True)
+    )
+    rate_limit_per_minute: int = field(
+        default_factory=lambda: _env_int("MASSIVE_RATE_LIMIT_PER_MIN", 120)
+    )
     rate_limit_simulate_per_minute: int = field(
         default_factory=lambda: _env_int("MASSIVE_RATE_LIMIT_SIMULATE_PER_MIN", 12)
     )

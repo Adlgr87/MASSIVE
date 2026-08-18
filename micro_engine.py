@@ -27,33 +27,40 @@ log = logging.getLogger("massive")
 
 # ── Dependencies (all optional) ──────────────────────────────────────────────
 try:
-    from sklearn.preprocessing import StandardScaler
+    from sklearn.cluster import KMeans
     from sklearn.decomposition import PCA
     from sklearn.ensemble import RandomForestClassifier
-    from sklearn.cluster import KMeans
     from sklearn.metrics import silhouette_score
+    from sklearn.preprocessing import StandardScaler
+
     SKLEARN_AVAILABLE = True
 except ImportError:
     SKLEARN_AVAILABLE = False
 
 try:
     import hdbscan
+
     HDBSCAN_AVAILABLE = True
 except ImportError:
     HDBSCAN_AVAILABLE = False
 
 try:
-    from dask import delayed, compute as dask_compute
+    from dask import compute as dask_compute
+    from dask import delayed
+
     DASK_AVAILABLE = True
 except ImportError:
     DASK_AVAILABLE = False
 
 # Local imports (deferred to avoid circular imports at module level)
 _ML_ENGINE = None
+
+
 def _get_multilayer_engine():
     global _ML_ENGINE
     if _ML_ENGINE is None:
         from multilayer_engine import MultilayerEngine
+
         _ML_ENGINE = MultilayerEngine
     return _ML_ENGINE
 
@@ -61,6 +68,7 @@ def _get_multilayer_engine():
 # ============================================================
 # FEATURE EXTRACTION
 # ============================================================
+
 
 def extract_trajectory_features(
     history: list[np.ndarray],
@@ -80,11 +88,11 @@ def extract_trajectory_features(
         return {"_error": 1.0}
 
     # Dimensiones
-    op = arr[:, :, 0]   # opinion  (T, N)
-    co = arr[:, :, 1]   # cooperation
-    hi = arr[:, :, 2]   # hierarchy
-    ic = arr[:, :, 3]   # income/status
-    ia = arr[:, :, 4]   # info_access/trust
+    op = arr[:, :, 0]  # opinion  (T, N)
+    co = arr[:, :, 1]  # cooperation
+    hi = arr[:, :, 2]  # hierarchy
+    arr[:, :, 3]  # income/status
+    ia = arr[:, :, 4]  # info_access/trust
 
     # Estado final
     op_end = op[-1, :]
@@ -107,7 +115,7 @@ def extract_trajectory_features(
     trust_mean = float(np.mean(ia_end))
 
     # Asimetría de la distribución de opiniones
-    op_skew = float(np.mean((op_end - np.mean(op_end))**3) / max(np.std(op_end)**3, 1e-10))
+    op_skew = float(np.mean((op_end - np.mean(op_end)) ** 3) / max(np.std(op_end) ** 3, 1e-10))
 
     # Estabilidad: varianza de la opinión media en el último 20% de pasos
     tail = max(T // 5, 2)
@@ -168,6 +176,7 @@ def extract_trajectory_features(
 # GROUP PROFILE → MULTILAYERENGINE MAPPER
 # ============================================================
 
+
 def _profile_to_engine_params(
     profile: Any,
     variation: dict[str, float] | None = None,
@@ -223,6 +232,7 @@ def _profile_to_engine_params(
 # ============================================================
 # ENSEMBLE RUNNER
 # ============================================================
+
 
 class MicroSimOrchestrator:
     """
@@ -286,30 +296,38 @@ class MicroSimOrchestrator:
 
         # Cooperation biases de miembros (default si no hay miembros definidos)
         if profile.members:
-            coop = np.array([
-                profile.members[i].cooperation_bias if i < len(profile.members) else 0.5
-                for i in range(N)
-            ])
-            hier = np.array([
-                profile.members[i].hierarchy_bias if i < len(profile.members) else 0.5
-                for i in range(N)
-            ])
-            trust = np.array([
-                profile.members[i].trust_bias if i < len(profile.members) else 0.5
-                for i in range(N)
-            ])
+            coop = np.array(
+                [
+                    profile.members[i].cooperation_bias if i < len(profile.members) else 0.5
+                    for i in range(N)
+                ]
+            )
+            hier = np.array(
+                [
+                    profile.members[i].hierarchy_bias if i < len(profile.members) else 0.5
+                    for i in range(N)
+                ]
+            )
+            trust = np.array(
+                [
+                    profile.members[i].trust_bias if i < len(profile.members) else 0.5
+                    for i in range(N)
+                ]
+            )
         else:
             coop = np.full(N, 0.5)
             hier = np.full(N, 0.5)
             trust = np.full(N, 0.5)
 
-        state = np.column_stack([
-            opinions,
-            coop + rng.normal(0, initial_noise * 0.1, N),
-            hier + rng.normal(0, initial_noise * 0.1, N),
-            base_spread * rng.random(N),
-            trust + rng.normal(0, initial_noise * 0.1, N),
-        ]).astype(np.float64)
+        state = np.column_stack(
+            [
+                opinions,
+                coop + rng.normal(0, initial_noise * 0.1, N),
+                hier + rng.normal(0, initial_noise * 0.1, N),
+                base_spread * rng.random(N),
+                trust + rng.normal(0, initial_noise * 0.1, N),
+            ]
+        ).astype(np.float64)
         state = np.clip(state, [-1, 0, 0, 0, 0], [1, 1, 1, 1, 1])
         engine.update_opinions(state)
 
@@ -321,7 +339,7 @@ class MicroSimOrchestrator:
         if ext_pressure > 0.01:
             rng_step = np.random.default_rng(seed + 42)
             x = history[-1].copy()
-            for t in range(steps):
+            for _t in range(steps):
                 noise = rng_step.normal(0, ext_pressure * 0.05, (N, 5))
                 x = x + noise
                 x[:, 0] = np.clip(x[:, 0], -1.0, 1.0)
@@ -393,8 +411,10 @@ class MicroSimOrchestrator:
 
         feature_matrix = self._features_to_matrix(all_features)
 
-        log.info(f"[Micro] Ensemble completo: {n_simulations} sims, "
-                 f"{feature_matrix.shape[1]} features")
+        log.info(
+            f"[Micro] Ensemble completo: {n_simulations} sims, "
+            f"{feature_matrix.shape[1]} features"
+        )
 
         return all_histories, feature_matrix, all_params
 
@@ -407,16 +427,18 @@ class MicroSimOrchestrator:
         rng = np.random.default_rng(seed)
         variations = []
         for _ in range(n):
-            variations.append({
-                "coupling": rng.uniform(0.05, 0.8),
-                "external_pressure": rng.uniform(0.0, 0.5),
-                "initial_noise": rng.uniform(0.01, 0.3),
-            })
+            variations.append(
+                {
+                    "coupling": rng.uniform(0.05, 0.8),
+                    "external_pressure": rng.uniform(0.0, 0.5),
+                    "initial_noise": rng.uniform(0.01, 0.3),
+                }
+            )
         return variations
 
     def _features_to_matrix(self, features: list[dict]) -> np.ndarray:
         """Convierte lista de dicts de features en matriz numpy."""
-        keys = [k for k in features[0].keys() if not k.startswith("_")]
+        keys = [k for k in features[0] if not k.startswith("_")]
         matrix = np.zeros((len(features), len(keys)), dtype=np.float64)
         for i, f in enumerate(features):
             for j, k in enumerate(keys):
@@ -426,16 +448,26 @@ class MicroSimOrchestrator:
     def get_feature_names(self) -> list[str]:
         """Returns feature names from the last extraction."""
         return [
-            "polarization", "hierarchy_mean", "hierarchy_std", "cooperation",
-            "trust", "opinion_skew", "stability", "max_polarization",
-            "time_to_stabilize", "dim_correlation", "opinion_delta",
-            "cooperation_delta", "extreme_fraction",
+            "polarization",
+            "hierarchy_mean",
+            "hierarchy_std",
+            "cooperation",
+            "trust",
+            "opinion_skew",
+            "stability",
+            "max_polarization",
+            "time_to_stabilize",
+            "dim_correlation",
+            "opinion_delta",
+            "cooperation_delta",
+            "extreme_fraction",
         ]
 
 
 # ============================================================
 # CLUSTERIZACIÓN Y ANÁLISIS DE BIFURCACIÓN
 # ============================================================
+
 
 class FamilyOfFuturesAnalyzer:
     """
@@ -607,20 +639,21 @@ class FamilyOfFuturesAnalyzer:
                 # Distancia ponderada por importancia
                 diff = (center_i - center_j) ** 2
                 weighted_dist = np.sqrt(np.sum(diff * importances))
-                transition_costs.append({
-                    "from": int(i),
-                    "to": int(j),
-                    "cost": float(weighted_dist),
-                    "params_change": {
-                        k: float(center_j[idx] - center_i[idx])
-                        for idx, k in enumerate(param_keys[:len(center_i)])
-                    },
-                })
+                transition_costs.append(
+                    {
+                        "from": int(i),
+                        "to": int(j),
+                        "cost": float(weighted_dist),
+                        "params_change": {
+                            k: float(center_j[idx] - center_i[idx])
+                            for idx, k in enumerate(param_keys[: len(center_i)])
+                        },
+                    }
+                )
 
         return {
             "param_importances": {
-                k: float(importances[idx])
-                for idx, k in enumerate(param_keys[:len(importances)])
+                k: float(importances[idx]) for idx, k in enumerate(param_keys[: len(importances)])
             },
             "transition_costs": sorted(transition_costs, key=lambda x: x["cost"]),
         }
@@ -653,14 +686,15 @@ class FamilyOfFuturesAnalyzer:
                 continue
 
             mean_feats = np.mean(feature_matrix[mask], axis=0)
-            std_feats = np.std(feature_matrix[mask], axis=0)
+            np.std(feature_matrix[mask], axis=0)
 
             # Parámetros típicos de esta familia
-            params_array = np.array([
-                [p.get("coupling", 0), p.get("external_pressure", 0),
-                 p.get("initial_noise", 0)]
-                for p in param_records
-            ])
+            params_array = np.array(
+                [
+                    [p.get("coupling", 0), p.get("external_pressure", 0), p.get("initial_noise", 0)]
+                    for p in param_records
+                ]
+            )
             mean_params = np.mean(params_array[mask], axis=0)
 
             feat_names = self._get_feature_names(feature_matrix.shape[1])
@@ -669,20 +703,22 @@ class FamilyOfFuturesAnalyzer:
             # Etiqueta humana basada en patrones
             label, desc, risks = self._label_family(mean_dict)
 
-            families.append({
-                "id": int(lbl) if lbl >= 0 else -1,
-                "size": n_members,
-                "proportion": float(n_members / n_sims),
-                "label": label,
-                "description": desc,
-                "mean_features": mean_dict,
-                "archetype_params": {
-                    "coupling": float(mean_params[0]),
-                    "external_pressure": float(mean_params[1]),
-                    "initial_noise": float(mean_params[2]),
-                },
-                "risk_flags": risks,
-            })
+            families.append(
+                {
+                    "id": int(lbl) if lbl >= 0 else -1,
+                    "size": n_members,
+                    "proportion": float(n_members / n_sims),
+                    "label": label,
+                    "description": desc,
+                    "mean_features": mean_dict,
+                    "archetype_params": {
+                        "coupling": float(mean_params[0]),
+                        "external_pressure": float(mean_params[1]),
+                        "initial_noise": float(mean_params[2]),
+                    },
+                    "risk_flags": risks,
+                }
+            )
 
         # Ordenar por tamaño descendente
         families.sort(key=lambda x: x["size"], reverse=True)
@@ -694,16 +730,23 @@ class FamilyOfFuturesAnalyzer:
 
     def _get_feature_names(self, n_feats: int) -> list[str]:
         base = [
-            "polarization", "hierarchy_mean", "hierarchy_std", "cooperation",
-            "trust", "opinion_skew", "stability", "max_polarization",
-            "time_to_stabilize", "dim_correlation", "opinion_delta",
-            "cooperation_delta", "extreme_fraction",
+            "polarization",
+            "hierarchy_mean",
+            "hierarchy_std",
+            "cooperation",
+            "trust",
+            "opinion_skew",
+            "stability",
+            "max_polarization",
+            "time_to_stabilize",
+            "dim_correlation",
+            "opinion_delta",
+            "cooperation_delta",
+            "extreme_fraction",
         ]
         return base[:n_feats]
 
-    def _label_family(
-        self, feats: dict[str, float]
-    ) -> tuple[str, str, list[str]]:
+    def _label_family(self, feats: dict[str, float]) -> tuple[str, str, list[str]]:
         """Asigna etiqueta humana a una familia basada en sus features."""
         pol = feats.get("polarization", 0)
         coop = feats.get("cooperation", 0.5)
@@ -713,8 +756,8 @@ class FamilyOfFuturesAnalyzer:
         stable = feats.get("stability", 0.5)
         extreme = feats.get("extreme_fraction", 0)
         op_delta = feats.get("opinion_delta", 0)
-        time_stab = feats.get("time_to_stabilize", 0.5)
-        max_pol = feats.get("max_polarization", pol)
+        feats.get("time_to_stabilize", 0.5)
+        feats.get("max_polarization", pol)
 
         risks = []
         parts = []
@@ -788,6 +831,7 @@ class FamilyOfFuturesAnalyzer:
 # MICRO SOCIAL ARCHITECT
 # ============================================================
 
+
 class MicroSocialArchitect:
     """
     Versión micro del Social Architect.
@@ -827,11 +871,7 @@ class MicroSocialArchitect:
 
         # Buscar en transition_costs
         costs = bifurcation.get("transition_costs", [])
-        transition = next(
-            (c for c in costs
-             if c["from"] == from_id and c["to"] == to_id),
-            None
-        )
+        transition = next((c for c in costs if c["from"] == from_id and c["to"] == to_id), None)
 
         if not transition:
             # Calcular directamente
@@ -845,7 +885,7 @@ class MicroSocialArchitect:
                 diff = p_to[k] - p_from[k]
                 changes[k] = round(diff, 4)
                 w = importances.get(k, 1.0 / max(len(p_from), 1))
-                weighted_dist += w * diff ** 2
+                weighted_dist += w * diff**2
             weighted_dist = np.sqrt(weighted_dist)
 
             transition = {
@@ -859,9 +899,7 @@ class MicroSocialArchitect:
         imp = bifurcation.get("param_importances", {})
         sorted_params = sorted(imp.items(), key=lambda x: -x[1])
 
-        recommendation = (
-            f"Para pasar de '{from_fam['label']}' a '{to_fam['label']}':\n"
-        )
+        recommendation = f"Para pasar de '{from_fam['label']}' a '{to_fam['label']}':\n"
         for param, importance in sorted_params:
             change = transition.get("params_change", {}).get(param, 0)
             direction = "aumentar" if change > 0 else "reducir"
@@ -918,6 +956,7 @@ class MicroSocialArchitect:
 # ORQUESTADOR COMPLETO
 # ============================================================
 
+
 def analyze_group(
     profile: Any,
     n_simulations: int = 500,
@@ -951,8 +990,7 @@ def analyze_group(
     """
     if not SKLEARN_AVAILABLE:
         raise ImportError(
-            "scikit-learn es necesario para Micro. "
-            "Instálalo con: pip install scikit-learn"
+            "scikit-learn es necesario para Micro. " "Instálalo con: pip install scikit-learn"
         )
 
     # 1. Ensemble

@@ -7,6 +7,7 @@ These tests verify that:
 4. Turning-point detection returns valid indices.
 5. The runner end-to-end writes metrics.json and report.md.
 """
+
 import json
 import tempfile
 import unittest

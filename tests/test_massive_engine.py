@@ -17,20 +17,20 @@ import numpy as np
 import pytest
 
 from massive_engine import (
-    ActiveSet,
-    MassiveSimEngine,
     _OPINION_MAX,
     _OPINION_MIN,
+    ActiveSet,
+    MassiveSimEngine,
     build_aggregated_super_agents,
     build_super_agents,
     dequantize_state,
     quantize_state,
 )
 
-
 # ============================================================
 # 1. CUANTIZACIÓN
 # ============================================================
+
 
 class TestQuantization:
 
@@ -43,8 +43,7 @@ class TestQuantization:
 
     def test_quantize_opinion_range(self):
         """Opinión -1.0 → 0, +1.0 → 255."""
-        x = np.array([[-1.0, 0.5, 0.5, 0.5, 0.5],
-                      [ 1.0, 0.5, 0.5, 0.5, 0.5]])
+        x = np.array([[-1.0, 0.5, 0.5, 0.5, 0.5], [1.0, 0.5, 0.5, 0.5, 0.5]])
         q = quantize_state(x)
         assert q[0, 0] == 0
         assert q[1, 0] == 255
@@ -71,7 +70,7 @@ class TestQuantization:
         """q=127 → opinión ≈ 0 (neutro en rango bipolar)."""
         q = np.array([[127, 128, 128, 128, 128]], dtype=np.uint8)
         x = dequantize_state(q)
-        assert abs(x[0, 0]) < 0.01   # cercano a 0
+        assert abs(x[0, 0]) < 0.01  # cercano a 0
 
     def test_dequantize_unipolar_midpoint(self):
         """q=127 → dimensión unipolar ≈ 0.5."""
@@ -83,6 +82,7 @@ class TestQuantization:
 # ============================================================
 # 2. LOD — build_super_agents
 # ============================================================
+
 
 class TestBuildSuperAgents:
 
@@ -121,6 +121,7 @@ class TestBuildSuperAgents:
 # 3. ActiveSet
 # ============================================================
 
+
 class TestActiveSet:
 
     def test_initial_all_active(self):
@@ -136,9 +137,9 @@ class TestActiveSet:
         """Agentes que no cambian pasan a dormir."""
         M = 10
         aset = ActiveSet(M, sleep_threshold=0.01)
-        adj = np.eye(M)   # sin vecinos externos
+        adj = np.eye(M)  # sin vecinos externos
         x0 = np.zeros((M, 5))
-        x1 = x0.copy()   # sin cambios
+        x1 = x0.copy()  # sin cambios
         aset.step(x0, x1, adj)
         assert aset.n_active == 0
 
@@ -149,7 +150,7 @@ class TestActiveSet:
         adj = np.zeros((M, M))
         x0 = np.zeros((M, 5))
         x1 = x0.copy()
-        x1[3, 0] = 0.5   # agente 3 cambió
+        x1[3, 0] = 0.5  # agente 3 cambió
         aset.step(x0, x1, adj)
         assert aset.mask[3]
 
@@ -162,13 +163,14 @@ class TestActiveSet:
         adj[0, 1] = 1.0
         x0 = np.zeros((M, 5))
         x1 = x0.copy()
-        x1[0, 0] = 0.5   # agente 0 cambió
+        x1[0, 0] = 0.5  # agente 0 cambió
         aset.step(x0, x1, adj)
-        assert aset.mask[1]   # vecino del agente que cambió
+        assert aset.mask[1]  # vecino del agente que cambió
 
     def test_sparse_csr_only_real_neighbors_wake(self):
         """CSR reactivation wakes graph neighbors, not dense n_common slices."""
         from scipy import sparse
+
         from massive_engine import active_mask_step_sparse
 
         M = 6
@@ -202,6 +204,7 @@ class TestActiveSet:
 # 4. MassiveSimEngine — funcionalidad básica
 # ============================================================
 
+
 class TestMassiveSimEngine:
 
     def test_init_no_crash(self):
@@ -213,7 +216,7 @@ class TestMassiveSimEngine:
     def test_auto_M(self):
         """M se calcula automáticamente como min(N, max(50, sqrt(N)))."""
         engine = MassiveSimEngine(N=10_000)
-        assert engine.M == min(10_000, max(50, int(10_000 ** 0.5)))
+        assert min(10_000, max(50, int(10_000**0.5))) == engine.M
 
     def test_auto_M_never_exceeds_N(self):
         """Para N pequeño, M automático no supera N."""
@@ -290,11 +293,21 @@ class TestMassiveSimEngine:
     def test_required_keys_in_result(self):
         engine = MassiveSimEngine(N=500, M=20, seed=2)
         result = engine.run(steps=5)
-        for key in ("mean_opinion", "std_opinion", "polarization",
-                    "mean_cooperation", "n_agents", "n_clusters",
-                    "n_steps", "elapsed_seconds", "memory_savings_pct",
-                    "opinion_history", "active_history",
-                    "cluster_opinions", "cluster_counts"):
+        for key in (
+            "mean_opinion",
+            "std_opinion",
+            "polarization",
+            "mean_cooperation",
+            "n_agents",
+            "n_clusters",
+            "n_steps",
+            "elapsed_seconds",
+            "memory_savings_pct",
+            "opinion_history",
+            "active_history",
+            "cluster_opinions",
+            "cluster_counts",
+        ):
             assert key in result, f"Falta clave '{key}' en resultado"
 
     def test_opinion_in_valid_range(self):
@@ -343,7 +356,8 @@ class TestMassiveSimEngine:
         """Con event-driven y threshold alto, los super-agentes pasan a dormir."""
         # threshold=0.5 >> noise típico (~0.01/paso) → la mayoría duerme tras el 1er paso
         engine = MassiveSimEngine(
-            N=500, M=30,
+            N=500,
+            M=30,
             event_driven=True,
             sleep_threshold=0.5,
             seed=10,
@@ -360,6 +374,7 @@ class TestMassiveSimEngine:
 # 5. apply_shock
 # ============================================================
 
+
 class TestApplyShock:
 
     def test_shock_changes_opinions(self):
@@ -370,7 +385,7 @@ class TestApplyShock:
 
     def test_shock_stays_in_range(self):
         engine = MassiveSimEngine(N=500, M=20, seed=0)
-        engine.apply_shock(shock_value=10.0, fraction=1.0)   # saturar intencionalmente
+        engine.apply_shock(shock_value=10.0, fraction=1.0)  # saturar intencionalmente
         assert np.all(engine.x[:, 0] >= _OPINION_MIN)
         assert np.all(engine.x[:, 0] <= _OPINION_MAX)
 
@@ -389,18 +404,31 @@ class TestApplyShock:
 # 6. memory_report
 # ============================================================
 
+
 class TestMemoryReport:
 
     def test_required_keys(self):
         engine = MassiveSimEngine(N=10_000, M=100)
         rep = engine.memory_report
-        for key in ("n_agents", "n_clusters", "float64_MB",
-                    "lod_MB", "final_MB", "savings_pct",
-                    "strategies", "gpu_backend",
-                    "state_bytes", "adjacency_dense_bytes",
-                    "adjacency_csr_bytes", "theta_bytes",
-                    "history_bytes", "total_bytes", "total_MB",
-                    "savings_vs_state_pct", "savings_vs_full_network_pct"):
+        for key in (
+            "n_agents",
+            "n_clusters",
+            "float64_MB",
+            "lod_MB",
+            "final_MB",
+            "savings_pct",
+            "strategies",
+            "gpu_backend",
+            "state_bytes",
+            "adjacency_dense_bytes",
+            "adjacency_csr_bytes",
+            "theta_bytes",
+            "history_bytes",
+            "total_bytes",
+            "total_MB",
+            "savings_vs_state_pct",
+            "savings_vs_full_network_pct",
+        ):
             assert key in rep, f"missing key {key}"
 
     def test_component_bytes_sum_to_total(self):
@@ -451,6 +479,7 @@ class TestMemoryReport:
 # 7. RENDIMIENTO
 # ============================================================
 
+
 class TestPerformance:
 
     def test_large_N_runs_fast(self):
@@ -463,23 +492,19 @@ class TestPerformance:
         t0 = time.perf_counter()
         engine2.run(steps=200)
         elapsed = time.perf_counter() - t0
-        assert elapsed < 15.0, (
-            f"200 pasos con N=50k tardaron {elapsed:.2f}s — esperado < 15s"
-        )
+        assert elapsed < 15.0, f"200 pasos con N=50k tardaron {elapsed:.2f}s — esperado < 15s"
 
     def test_million_agents_init_fast(self):
         """Inicializar 1M de agentes (como M=500 clústeres) en < 5s."""
         t0 = time.perf_counter()
-        engine = MassiveSimEngine(N=1_000_000, M=500, seed=0)
+        MassiveSimEngine(N=1_000_000, M=500, seed=0)
         elapsed = time.perf_counter() - t0
-        assert elapsed < 5.0, (
-            f"Inicialización de 1M agentes tardó {elapsed:.2f}s — esperado < 5s"
-        )
+        assert elapsed < 5.0, f"Inicialización de 1M agentes tardó {elapsed:.2f}s — esperado < 5s"
 
     def test_memory_savings_scale(self):
         """El ahorro de memoria escala correctamente con N y M."""
-        small = MassiveSimEngine(N=1000,   M=50,  quantize=True)
-        large = MassiveSimEngine(N=100_000, M=50,  quantize=True)
+        small = MassiveSimEngine(N=1000, M=50, quantize=True)
+        large = MassiveSimEngine(N=100_000, M=50, quantize=True)
         # Ambos usan el mismo M → mismo almacenamiento real
         assert abs(small.memory_report["final_MB"] - large.memory_report["final_MB"]) < 0.01
         # Pero el ahorro relativo es mayor para N grande

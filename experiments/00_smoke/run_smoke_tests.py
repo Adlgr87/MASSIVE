@@ -7,6 +7,7 @@ Verifies each core engine:
   - expected output shape / ranges
   - reproducibility via local seed / Generator (not global np.random)
 """
+
 from __future__ import annotations
 
 import json
@@ -42,7 +43,7 @@ def record(name, motor, status, detail, elapsed_ms, reproducible=None):
 
 
 def test_simulator():
-    from simulator import simular, resumen_historial
+    from simulator import resumen_historial, simular
 
     estado = {"opinion": 0.5, "propaganda": 0.0}
     cfg = {"proveedor": "heurístico", "seed": 42}
@@ -145,9 +146,7 @@ def test_massive_engine():
 def test_energy_engine():
     from energy_engine import SocialEnergyEngine
 
-    engine = SocialEnergyEngine(
-        range_type="bipolar", temperature=0.05, lambda_social=0.5, seed=42
-    )
+    engine = SocialEnergyEngine(range_type="bipolar", temperature=0.05, lambda_social=0.5, seed=42)
 
     N = 50
     rng = np.random.default_rng(42)
@@ -185,7 +184,9 @@ def test_energy_engine():
 
     metrics = engine.system_metrics(opinions, adj, attractors, repellers)
     assert isinstance(metrics, dict), "system_metrics debe devolver dict"
-    record("energy_system_metrics", "energy_engine.py", "PASS", f"keys={list(metrics.keys())[:5]}", 0)
+    record(
+        "energy_system_metrics", "energy_engine.py", "PASS", f"keys={list(metrics.keys())[:5]}", 0
+    )
 
 
 def test_multilayer_engine():

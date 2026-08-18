@@ -10,7 +10,7 @@ warnings.warn(
     stacklevel=2,
 )
 
-from massive.core.schemas import (  # noqa: F401
+from massive.core.schemas import (  # noqa: E402, F401
     GamePayoff,
     Intervention,
     StrategicConfig,

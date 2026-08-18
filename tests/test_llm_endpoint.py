@@ -43,10 +43,13 @@ def _post(client: TestClient, body: dict) -> object:
 
 def test_multilayer_basic(client: TestClient):
     """Intent clasifica en multilayer_engine y devuelve timeline + métricas."""
-    resp = _post(client, {
-        "intent": "Simula la dinámica de opinión social en una red",
-        "api_key": VALID_KEY,
-    })
+    resp = _post(
+        client,
+        {
+            "intent": "Simula la dinámica de opinión social en una red",
+            "api_key": VALID_KEY,
+        },
+    )
     assert resp.status_code == 200, resp.text
     data = resp.json()
     assert data["classified_motor"] == "multilayer_engine"
@@ -61,24 +64,39 @@ def test_multilayer_basic(client: TestClient):
 
 def test_energy_with_factbook_brasil(client: TestClient):
     """Intent con Brasil + energía usa Factbook para parámetros de país."""
-    resp = _post(client, {
-        "intent": "Ejecuta el modelo energético de opinión para Brasil con escenario de crisis",
-        "country_code": "BR",
-        "api_key": VALID_KEY,
-    })
+    resp = _post(
+        client,
+        {
+            "intent": "Ejecuta el modelo energético de opinión para Brasil con escenario de crisis",
+            "country_code": "BR",
+            "api_key": VALID_KEY,
+        },
+    )
     assert resp.status_code == 200, resp.text
     data = resp.json()
     assert data["classified_motor"] == "energy_engine"
     assert data["country_code_resolved"] == "BR"
     assert any("Brasil" in a or "BR" in a for a in data["assumptions"])
+    # Assert energy-specific output to guard against silent scalar fallback.
+    payload = data["result"]["payload"]
+    assert "metrics_timeline" in payload, (
+        "energy_engine dispatch must return metrics_timeline; "
+        "got scalar fallback or wrong engine"
+    )
+    assert (
+        payload.get("summary", {}).get("regla_dominante") == "langevin_energy"
+    ), "energy_engine summary must carry regla_dominante='langevin_energy'"
 
 
 def test_forecast(client: TestClient):
     """Intent de pronóstico clasifica en forecast_model."""
-    resp = _post(client, {
-        "intent": "Haz un forecast de polarización para los próximos 90 días",
-        "api_key": VALID_KEY,
-    })
+    resp = _post(
+        client,
+        {
+            "intent": "Haz un forecast de polarización para los próximos 90 días",
+            "api_key": VALID_KEY,
+        },
+    )
     assert resp.status_code == 200, resp.text
     data = resp.json()
     assert data["classified_motor"] == "forecast_model"
@@ -88,8 +106,9 @@ def test_forecast(client: TestClient):
 def test_missing_llm_key_returns_503(client: TestClient):
     """Sin api_key ni variables de entorno -> 503 ServiceUnavailable."""
     # Forzar ausencia de provider keys en el proceso.
-    old_env = {k: os.environ.pop(k, None) for k in
-               ("GROQ_API_KEY", "OPENAI_API_KEY", "OPENROUTER_API_KEY")}
+    old_env = {
+        k: os.environ.pop(k, None) for k in ("GROQ_API_KEY", "OPENAI_API_KEY", "OPENROUTER_API_KEY")
+    }
     try:
         resp = _post(client, {"intent": "Simula la dinámica de opinión social en una red"})
         assert resp.status_code == 503, resp.text

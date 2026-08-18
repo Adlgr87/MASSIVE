@@ -1,6 +1,14 @@
 """Numerical methods for MASSIVE scientific extensions."""
 
+from .multilayer_engine_sparse import (
+    LayerState,
+    MultilayerState,
+    SimulationResult,
+    SparseEnKF,
+    SparseMultilayerEngine,
+)
 from .solvers import AdaptiveODESolver, SolverDiagnostics
+from .stability import SparseStabilityAnalyzer, StabilityAnalyzer, StabilityReport
 from .steppers import (
     AdaptiveStepper,
     DynamicsStepper,
@@ -8,14 +16,6 @@ from .steppers import (
     NumericalDiagnostics,
     StepperResult,
     create_stepper,
-)
-from .stability import StabilityAnalyzer, StabilityReport, SparseStabilityAnalyzer
-from .multilayer_engine_sparse import (
-    SparseMultilayerEngine,
-    LayerState,
-    MultilayerState,
-    SimulationResult,
-    SparseEnKF,
 )
 
 __all__ = [

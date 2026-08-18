@@ -11,9 +11,9 @@ Note:
 """
 
 from massive_core.numerics.stability import (
+    SparseStabilityAnalyzer,
     StabilityAnalyzer,
     StabilityReport,
-    SparseStabilityAnalyzer,
 )
 
 __all__ = [

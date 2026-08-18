@@ -3,11 +3,11 @@ cache_manager.py — Gestor de caché para MASSIVE Architect
 Arquitectura: Memoria RAM (ultra-rápido) + SQLite (persistente cross-session)
 Compatible con: UI-NG (servida por backend FastAPI), Docker, serverless con volumen montado.
 """
-import os
-import json
-import sqlite3
+
 import hashlib
-from typing import Optional
+import json
+import os
+import sqlite3
 
 
 class LandscapeCache:
@@ -40,7 +40,7 @@ class LandscapeCache:
     def _key(self, goal: str) -> str:
         return hashlib.md5(goal.lower().strip().encode()).hexdigest()[:12]
 
-    def get(self, goal: str) -> Optional[dict]:
+    def get(self, goal: str) -> dict | None:
         k = self._key(goal)
         if k in self._memory:
             return self._memory[k]
@@ -62,10 +62,13 @@ class LandscapeCache:
         self._memory[k] = config
         try:
             conn = sqlite3.connect(self.db_path, check_same_thread=False)
-            conn.execute("""
+            conn.execute(
+                """
                 INSERT OR REPLACE INTO landscapes (key, config)
                 VALUES (?, ?)
-            """, (k, json.dumps(config, ensure_ascii=False)))
+            """,
+                (k, json.dumps(config, ensure_ascii=False)),
+            )
             conn.commit()
             conn.close()
         except Exception:

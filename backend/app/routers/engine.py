@@ -75,8 +75,11 @@ async def v1_architect(request: Request, payload: dict[str, Any]) -> dict[str, A
         raise HTTPException(status_code=400, detail="JSON body required")
     estado_inicial = payload.get("estado_inicial")
     objetivo_usuario = payload.get("objetivo_usuario")
-    if not isinstance(estado_inicial, dict) or not isinstance(objetivo_usuario, str) \
-            or not objetivo_usuario.strip():
+    if (
+        not isinstance(estado_inicial, dict)
+        or not isinstance(objetivo_usuario, str)
+        or not objetivo_usuario.strip()
+    ):
         raise HTTPException(
             400,
             "'estado_inicial' (dict) and 'objeto_usuario' (str) are required",

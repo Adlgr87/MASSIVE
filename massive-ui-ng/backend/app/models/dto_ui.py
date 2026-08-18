@@ -9,10 +9,9 @@ The frontend mirrors these types in ``frontend/src/types.ts``.
 
 from __future__ import annotations
 
-from typing import Any, Literal, Optional
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
-
 
 # ---------------------------------------------------------------------------
 # Conversation (translator) contract
@@ -72,15 +71,15 @@ class SimulateRequest(BaseModel):
     pasos: int = Field(default=50, ge=5, le=500)
     estado_inicial: dict[str, Any] = Field(default_factory=dict)
     config: dict[str, Any] = Field(default_factory=dict)
-    seed: Optional[int] = Field(default=None, ge=0)
+    seed: int | None = Field(default=None, ge=0)
     scientific: bool = True
     language: Literal["es", "en"] = "es"
     audience: Literal["general", "tecnico"] = "general"
     # engine-specific parameters
-    n_agents: Optional[int] = Field(default=None, ge=2, le=1_000_000)
+    n_agents: int | None = Field(default=None, ge=2, le=1_000_000)
     connectivity: float = Field(default=0.3, ge=0.01, le=1.0)
     range_type: Literal["bipolar", "unipolar"] = "bipolar"
-    layer_weights: Optional[list[float]] = None
+    layer_weights: list[float] | None = None
     quantize: bool = True
     event_driven: bool = True
 
@@ -101,7 +100,7 @@ class SimulateResponse(BaseModel):
     mode: Literal["llm", "heuristic"]
     language: str
     summary: dict[str, Any] = Field(default_factory=dict)
-    scientific_report: Optional[dict[str, Any]] = None
+    scientific_report: dict[str, Any] | None = None
     series: dict[str, Any] = Field(default_factory=dict)
     narrative: str = ""
     highlights: list[Highlight] = Field(default_factory=list)
@@ -134,8 +133,8 @@ class RunListItem(BaseModel):
     engine: str
     language: str
     headline: str
-    final_opinion: Optional[float] = None
-    dominant_rule: Optional[str] = None
+    final_opinion: float | None = None
+    dominant_rule: str | None = None
     mode: str
 
 

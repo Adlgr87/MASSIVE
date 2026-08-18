@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 import os
-from typing import Any, Optional
+from typing import Any
 
 
 def resolve_llm_credentials(
     provider: str = "groq",
-    api_key: Optional[str] = None,
+    api_key: str | None = None,
 ) -> dict[str, Any]:
     """Resolve provider credentials without mutating ``os.environ``.
 
@@ -49,7 +49,7 @@ def setup_social_architect_client() -> Any:
 def wizard_config(
     description: str,
     provider: str = "groq",
-    api_key: Optional[str] = None,
+    api_key: str | None = None,
 ) -> dict[str, Any]:
     """Translate natural language into a MASSIVE config dict.
 

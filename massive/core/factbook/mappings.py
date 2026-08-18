@@ -6,7 +6,8 @@ Defines the mapping between CIA World Factbook fields and MASSIVE simulation par
 Author: MASSIVE Research
 """
 
-from typing import Dict, List, Any
+from typing import Any
+
 import numpy as np
 
 # =============================================================================
@@ -15,7 +16,7 @@ import numpy as np
 
 # Mapping between different country code systems
 # Format: {cia_code: {iso2: str, iso3: str, name: str, numeric: int}}
-COUNTRY_CODES: Dict[str, Dict[str, Any]] = {
+COUNTRY_CODES: dict[str, dict[str, Any]] = {
     "US": {"iso2": "US", "iso3": "USA", "name": "United States", "numeric": 840},
     "CH": {"iso2": "CN", "iso3": "CHN", "name": "China", "numeric": 156},
     "GM": {"iso2": "DE", "iso3": "DEU", "name": "Germany", "numeric": 276},
@@ -34,16 +35,16 @@ COUNTRY_CODES: Dict[str, Dict[str, Any]] = {
 }
 
 # Reverse mappings for lookup
-ISO2_TO_CIA: Dict[str, str] = {v["iso2"]: k for k, v in COUNTRY_CODES.items()}
-ISO3_TO_CIA: Dict[str, str] = {v["iso3"]: k for k, v in COUNTRY_CODES.items()}
-NAME_TO_CIA: Dict[str, str] = {v["name"].lower(): k for k, v in COUNTRY_CODES.items()}
+ISO2_TO_CIA: dict[str, str] = {v["iso2"]: k for k, v in COUNTRY_CODES.items()}
+ISO3_TO_CIA: dict[str, str] = {v["iso3"]: k for k, v in COUNTRY_CODES.items()}
+NAME_TO_CIA: dict[str, str] = {v["name"].lower(): k for k, v in COUNTRY_CODES.items()}
 
 # =============================================================================
 # DEMOGRAPHIC FIELD MAPPINGS
 # =============================================================================
 
 # CIA World Factbook demographic fields and their mapping to MASSIVE parameters
-DEMOGRAPHIC_FIELDS: Dict[str, Dict[str, Any]] = {
+DEMOGRAPHIC_FIELDS: dict[str, dict[str, Any]] = {
     # Population data
     "population": {
         "factbook_path": ["people", "population"],
@@ -53,7 +54,6 @@ DEMOGRAPHIC_FIELDS: Dict[str, Dict[str, Any]] = {
         "scaling": "direct",
         "default": 1000,
     },
-    
     # Age structure
     "age_0_14": {
         "factbook_path": ["people", "age_structure", "0-14_years"],
@@ -95,7 +95,6 @@ DEMOGRAPHIC_FIELDS: Dict[str, Dict[str, Any]] = {
         "range": [0.0, 100.0],
         "default": 10.0,
     },
-    
     # Ethnic groups - used for social pressure calculation
     "ethnic_groups": {
         "factbook_path": ["people", "ethnic_groups"],
@@ -105,7 +104,6 @@ DEMOGRAPHIC_FIELDS: Dict[str, Dict[str, Any]] = {
         "format": {"group_name": "percentage"},
         "default": {},
     },
-    
     # Religious groups - used for social pressure calculation
     "religions": {
         "factbook_path": ["people", "religions"],
@@ -115,7 +113,6 @@ DEMOGRAPHIC_FIELDS: Dict[str, Dict[str, Any]] = {
         "format": {"religion_name": "percentage"},
         "default": {},
     },
-    
     # Languages
     "languages": {
         "factbook_path": ["people", "languages"],
@@ -125,7 +122,6 @@ DEMOGRAPHIC_FIELDS: Dict[str, Dict[str, Any]] = {
         "format": {"language_name": "percentage"},
         "default": {},
     },
-    
     # Education (if available)
     "literacy_rate": {
         "factbook_path": ["people", "literacy"],
@@ -135,7 +131,6 @@ DEMOGRAPHIC_FIELDS: Dict[str, Dict[str, Any]] = {
         "range": [0.0, 100.0],
         "default": 95.0,
     },
-    
     # Gender ratio
     "sex_ratio": {
         "factbook_path": ["people", "sex_ratio"],
@@ -147,7 +142,7 @@ DEMOGRAPHIC_FIELDS: Dict[str, Dict[str, Any]] = {
 }
 
 # Economic fields
-ECONOMIC_FIELDS: Dict[str, Dict[str, Any]] = {
+ECONOMIC_FIELDS: dict[str, dict[str, Any]] = {
     # GDP data
     "gdp_purchasing_power_parity": {
         "factbook_path": ["economy", "gdp_purchasing_power_parity"],
@@ -165,7 +160,6 @@ ECONOMIC_FIELDS: Dict[str, Dict[str, Any]] = {
         "scaling": "direct",
         "default": 20000.0,
     },
-    
     # Gini index - CRITICAL for energy landscape
     "gini_index": {
         "factbook_path": ["economy", "gini_index"],
@@ -176,7 +170,6 @@ ECONOMIC_FIELDS: Dict[str, Dict[str, Any]] = {
         "scaling": "normalized",  # Convert to [0, 1] for MASSIVE
         "default": 35.0,
     },
-    
     # Income distribution
     "income_distribution": {
         "factbook_path": ["economy", "income_distribution"],
@@ -186,7 +179,6 @@ ECONOMIC_FIELDS: Dict[str, Dict[str, Any]] = {
         "format": {"percentile": "share"},
         "default": {},
     },
-    
     # Economic sectors
     "agriculture": {
         "factbook_path": ["economy", "gdp_composition_by_sector", "agriculture"],
@@ -212,7 +204,6 @@ ECONOMIC_FIELDS: Dict[str, Dict[str, Any]] = {
         "range": [0.0, 100.0],
         "default": 70.0,
     },
-    
     # Labor force
     "labor_force": {
         "factbook_path": ["economy", "labor_force"],
@@ -221,7 +212,6 @@ ECONOMIC_FIELDS: Dict[str, Dict[str, Any]] = {
         "description": "Total labor force",
         "default": 50000000,
     },
-    
     "unemployment_rate": {
         "factbook_path": ["economy", "unemployment_rate"],
         "massive_usage": "unemployment_rate",
@@ -230,7 +220,6 @@ ECONOMIC_FIELDS: Dict[str, Dict[str, Any]] = {
         "range": [0.0, 100.0],
         "default": 5.0,
     },
-    
     # Budget data
     "budget_revenues": {
         "factbook_path": ["economy", "budget", "revenues"],
@@ -256,7 +245,7 @@ ECONOMIC_FIELDS: Dict[str, Dict[str, Any]] = {
 }
 
 # Political fields
-POLITICAL_FIELDS: Dict[str, Dict[str, Any]] = {
+POLITICAL_FIELDS: dict[str, dict[str, Any]] = {
     "government_type": {
         "factbook_path": ["government", "country_name", "conventional_long_form"],
         "massive_usage": "governance_type",
@@ -281,7 +270,7 @@ POLITICAL_FIELDS: Dict[str, Dict[str, Any]] = {
 }
 
 # Social fields
-SOCIAL_FIELDS: Dict[str, Dict[str, Any]] = {
+SOCIAL_FIELDS: dict[str, dict[str, Any]] = {
     "urbanization": {
         "factbook_path": ["people", "urbanization"],
         "massive_usage": "urban_rural_split",
@@ -320,7 +309,7 @@ SOCIAL_FIELDS: Dict[str, Dict[str, Any]] = {
 # =============================================================================
 
 # How Factbook data maps to MASSIVE simulation parameters
-FACTBOOK_TO_MASSIVE: Dict[str, Dict[str, Any]] = {
+FACTBOOK_TO_MASSIVE: dict[str, dict[str, Any]] = {
     # Agent initialization
     "agent_initialization": {
         "population": {
@@ -349,7 +338,6 @@ FACTBOOK_TO_MASSIVE: Dict[str, Dict[str, Any]] = {
             "description": "Normalize religion percentages",
         },
     },
-    
     # Social pressure calculation
     "social_pressure": {
         "ethnic_diversity": {
@@ -371,7 +359,6 @@ FACTBOOK_TO_MASSIVE: Dict[str, Dict[str, Any]] = {
             "description": "Calculate language diversity index",
         },
     },
-    
     # Energy engine parameters
     "energy_engine": {
         "gini_coefficient": {
@@ -393,7 +380,6 @@ FACTBOOK_TO_MASSIVE: Dict[str, Dict[str, Any]] = {
             "description": "Create economic potential function from income distribution",
         },
     },
-    
     # Intervention optimizer
     "intervention_optimizer": {
         "gdp_per_capita": {
@@ -421,6 +407,7 @@ FACTBOOK_TO_MASSIVE: Dict[str, Dict[str, Any]] = {
 # TRANSFORMATION FUNCTIONS
 # =============================================================================
 
+
 def normalize_0_100_to_0_1(value: float) -> float:
     """Normalize value from [0, 100] to [0, 1] range."""
     return np.clip(float(value) / 100.0, 0.0, 1.0)
@@ -431,7 +418,7 @@ def normalize_0_1_to_0_100(value: float) -> float:
     return np.clip(float(value) * 100.0, 0.0, 100.0)
 
 
-def normalize_dict(percentages: Dict[str, float]) -> Dict[str, float]:
+def normalize_dict(percentages: dict[str, float]) -> dict[str, float]:
     """Normalize dictionary values to sum to 1.0."""
     total = sum(percentages.values())
     if total <= 0:
@@ -439,16 +426,16 @@ def normalize_dict(percentages: Dict[str, float]) -> Dict[str, float]:
     return {k: v / total for k, v in percentages.items()}
 
 
-def herfindahl_index(distribution: Dict[str, float]) -> float:
+def herfindahl_index(distribution: dict[str, float]) -> float:
     """
     Calculate Herfindahl index from a distribution.
     Higher values indicate less diversity (more concentration).
     """
     normalized = normalize_dict(distribution)
-    return sum(p ** 2 for p in normalized.values())
+    return sum(p**2 for p in normalized.values())
 
 
-def diversity_index(distribution: Dict[str, float]) -> float:
+def diversity_index(distribution: dict[str, float]) -> float:
     """
     Calculate diversity index (1 - Herfindahl) from a distribution.
     Higher values indicate more diversity.
@@ -461,70 +448,70 @@ def scale_to_max(value: float, max_value: float) -> int:
     return min(int(value), max_value)
 
 
-def create_5d_demographic_matrix(age_percentages: List[float]) -> np.ndarray:
+def create_5d_demographic_matrix(age_percentages: list[float]) -> np.ndarray:
     """
     Create 5D demographic sensitivity matrix from age structure.
-    
+
     The 5 dimensions in MASSIVE:
     0: opinion
-    1: cooperation  
+    1: cooperation
     2: hierarchy
     3: income
     4: access_info
-    
+
     Age groups affect sensitivity differently.
     """
     # Ensure we have 5 values (pad if necessary)
     while len(age_percentages) < 5:
         age_percentages.append(0.0)
-    
+
     # Normalize to sum to 1.0
     total = sum(age_percentages)
     if total > 0:
         age_percentages = [x / total for x in age_percentages]
-    
+
     # Create 5D matrix where each age group has different sensitivities
     # Younger people are more sensitive to social influence (opinion, access_info)
     # Middle-aged are more sensitive to economic factors (income, hierarchy)
     # Elderly are more resistant to change
-    
+
     matrix = np.zeros((5, 5))
-    
+
     # Age group 0-14 (index 0): High social sensitivity
     matrix[0] = np.array([0.8, 0.7, 0.3, 0.2, 0.9]) * age_percentages[0]
-    
+
     # Age group 15-24 (index 1): High social and info access
     matrix[1] = np.array([0.9, 0.6, 0.4, 0.3, 0.95]) * age_percentages[1]
-    
+
     # Age group 25-54 (index 2): Balanced, economic focus
     matrix[2] = np.array([0.7, 0.8, 0.6, 0.8, 0.7]) * age_percentages[2]
-    
+
     # Age group 55-64 (index 3): Lower sensitivity
     matrix[3] = np.array([0.5, 0.5, 0.5, 0.6, 0.5]) * age_percentages[3]
-    
+
     # Age group 65+ (index 4): Lowest sensitivity
     matrix[4] = np.array([0.3, 0.4, 0.4, 0.5, 0.4]) * age_percentages[4]
-    
+
     return matrix
 
 
-def create_wealth_potential(gini: float, mean_income: float = 20000.0) -> Dict[str, Any]:
+def create_wealth_potential(gini: float, mean_income: float = 20000.0) -> dict[str, Any]:
     """
     Create economic potential function parameters from Gini index and mean income.
-    
+
     Higher Gini = more polarized economic landscape (deeper wells, higher peaks)
     Higher mean income = higher overall potential
     """
     gini_normalized = normalize_0_100_to_0_1(gini)
-    
+
     # Calculate polarization factor
     # Gini = 0 (perfect equality) -> polarization = 0
     # Gini = 100 (maximum inequality) -> polarization = 1.0
     polarization = gini_normalized
-    
+
     # Economic potential scale
     income_scale = np.log1p(mean_income) / 10
-    
+
     return {
         "polarization_factor": polarization,
         "income_scale": income_scale,

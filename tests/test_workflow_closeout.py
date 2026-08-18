@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import numpy as np
-import pytest
 
 from adapters.mutalambda.massive_target import (
     MassiveTargetManifest,
@@ -11,11 +10,11 @@ from adapters.mutalambda.massive_target import (
     make_objective,
 )
 from benchmarks.baselines import SeasonalNaiveBaseline, get_all_baselines
-from benchmarks.walk_forward import walk_forward_scores, rolling_origin_splits
-from forecast.targets import TargetDefinition, resolve_target, all_targets
+from benchmarks.walk_forward import rolling_origin_splits, walk_forward_scores
+from forecast.targets import all_targets, resolve_target
 from massive_core.numerics.steppers import AdaptiveStepper, create_stepper
 from massive_engine import MassiveEngine
-from services.simulation_service import run_scalar_simulation, run_multilayer_simulation
+from services.simulation_service import run_multilayer_simulation, run_scalar_simulation
 
 
 def test_target_definitions_cover_pvu_clusters():
@@ -118,11 +117,12 @@ def test_simulation_service_scalar_and_multilayer():
 
 
 def test_sparse_remove_layer_ix():
-    from massive_core.numerics.multilayer_engine_sparse import (
-        SparseMultilayerEngine,
-        LayerState,
-    )
     from scipy.sparse import csr_matrix
+
+    from massive_core.numerics.multilayer_engine_sparse import (
+        LayerState,
+        SparseMultilayerEngine,
+    )
 
     def _layer(lid: str, n: int) -> LayerState:
         return LayerState(

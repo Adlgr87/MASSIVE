@@ -72,10 +72,10 @@ class SimulatorTests(unittest.TestCase):
         estado = {
             "opinion": 0.0,
             "propaganda": 0.4,
-            "confianza": 0.005,          # very low — most likely to go negative
+            "confianza": 0.005,  # very low — most likely to go negative
             "opinion_grupo_a": 0.65,
             "opinion_grupo_b": -0.55,
-            "pertenencia_grupo": 0.1,    # minimum allowed by homofilia rule
+            "pertenencia_grupo": 0.1,  # minimum allowed by homofilia rule
         }
         config = {"proveedor": "heurístico", "rango": "[-1, 1] — Bipolar"}
 
@@ -118,18 +118,22 @@ class SimulatorTests(unittest.TestCase):
             captured_states.append(estado_ruido.copy())
             return original_simular(estado_ruido, **kwargs)
 
-        with patch("simulator.simular", side_effect=mock_simular):
-            with patch("numpy.random.normal", return_value=-0.5):
-                simular_multiples(
-                    estado, pasos=3, cada_n_pasos=1, config=config, n_simulaciones=1
-                )
+        with (
+            patch("simulator.simular", side_effect=mock_simular),
+            patch("numpy.random.normal", return_value=-0.5),
+        ):
+            simular_multiples(estado, pasos=3, cada_n_pasos=1, config=config, n_simulaciones=1)
 
         self.assertEqual(len(captured_states), 1)
         perturbed = captured_states[0]
-        self.assertGreaterEqual(perturbed["confianza"], 0.0,
-            "confianza must not go negative after noise perturbation")
-        self.assertGreaterEqual(perturbed["pertenencia_grupo"], 0.0,
-            "pertenencia_grupo must not go negative after noise perturbation")
+        self.assertGreaterEqual(
+            perturbed["confianza"], 0.0, "confianza must not go negative after noise perturbation"
+        )
+        self.assertGreaterEqual(
+            perturbed["pertenencia_grupo"],
+            0.0,
+            "pertenencia_grupo must not go negative after noise perturbation",
+        )
         # Opinion-space values should still be clipped to [-1, 1]
         self.assertGreaterEqual(perturbed["opinion"], -1.0)
         self.assertLessEqual(perturbed["opinion"], 1.0)

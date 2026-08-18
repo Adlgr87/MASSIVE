@@ -33,6 +33,7 @@ async def v1_benchmarks(request: Request, payload: dict[str, Any]) -> dict[str, 
         Dict with ``mode``, ``seed``, ``results_count``, ``report`` summary.
     """
     import asyncio
+
     from benchmarks import runner as bench_runner
 
     if not isinstance(payload, dict):

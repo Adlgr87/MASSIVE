@@ -16,8 +16,9 @@ Integración con CIA World Factbook:
   - Wealth distribution para modificar fuerza de atractores/repulsores
   - Sector composition para paisajes económicos
 """
+
 import logging
-from typing import Any, Dict, Optional
+from typing import Any
 
 import numpy as np
 
@@ -25,14 +26,18 @@ log = logging.getLogger("massive")
 
 try:
     from numba import njit
+
     NUMBA_AVAILABLE = True
 except ImportError:
     NUMBA_AVAILABLE = False
     log.warning("[EnergyEngine] Numba no instalado — usando ruta Python (más lenta).")
+
     def njit(*args, **kwargs):
         """No-op decorator when Numba is not installed."""
+
         def decorator(fn):
             return fn
+
         return decorator if args and callable(args[0]) else decorator
 
 
@@ -87,10 +92,14 @@ def _step_jit(
     new_opinions = np.empty(n)
     for i in range(n):
         grad = _landscape_gradient_jit(
-            opinions[i], att_positions, att_strengths,
-            rep_positions, rep_strengths, sigma2,
+            opinions[i],
+            att_positions,
+            att_strengths,
+            rep_positions,
+            rep_strengths,
+            sigma2,
         )
-        social_drift    = lambda_social * (neighbor_mean[i] - opinions[i])
+        social_drift = lambda_social * (neighbor_mean[i] - opinions[i])
         landscape_drift = (1.0 - lambda_social) * (-grad)
         val = opinions[i] + eta * landscape_drift + eta * social_drift + noise[i]
         if val < min_val:
@@ -104,7 +113,7 @@ def _step_jit(
 def _gaussian(x: float, position: float, sigma: float = _SIGMA) -> float:
     """Evalúa una gaussiana normalizada centrada en position."""
     diff = x - position
-    return float(np.exp(-diff ** 2 / (2 * sigma ** 2)))
+    return float(np.exp(-(diff**2) / (2 * sigma**2)))
 
 
 def _landscape_gradient(x: float, attractors: list, repellers: list) -> float:
@@ -120,7 +129,7 @@ def _landscape_gradient(x: float, attractors: list, repellers: list) -> float:
              -Σ strength_r · (x - pos_r) / σ² · G(x, pos_r)
     """
     grad = 0.0
-    sigma2 = _SIGMA ** 2
+    sigma2 = _SIGMA**2
 
     for att in attractors:
         diff = x - att["position"]
@@ -164,40 +173,40 @@ class SocialEnergyEngine:
         temperature: float = 0.05,
         lambda_social: float = 0.5,
         scientific_config: dict | None = None,
-        gini_coefficient: Optional[float] = None,
-        inequality_factor: Optional[float] = None,
-        economic_potential: Optional[Dict[str, Any]] = None,
-        seed: Optional[int] = None,
-        rng: Optional[np.random.Generator] = None,
+        gini_coefficient: float | None = None,
+        inequality_factor: float | None = None,
+        economic_potential: dict[str, Any] | None = None,
+        seed: int | None = None,
+        rng: np.random.Generator | None = None,
     ):
         self.range_type = range_type
         self.temperature = float(temperature)
         self.lambda_social = float(lambda_social)
         self.min_val = -1.0 if range_type == "bipolar" else 0.0
         self.max_val = 1.0
-        
+
         # Factbook economic parameters
         self.gini_coefficient = gini_coefficient if gini_coefficient is not None else 0.35
         self.inequality_factor = inequality_factor if inequality_factor is not None else 1.35
         self.economic_potential = economic_potential or {}
-        
+
         # Ensure gini is in [0, 1] range
         self.gini_coefficient = max(0.0, min(1.0, self.gini_coefficient))
-        
+
         # Update lambda_social based on inequality
         # Higher inequality = more weight on social network (less on landscape)
         if inequality_factor:
             # Adjust lambda to account for inequality
             inequality_adjustment = (inequality_factor - 1.0) * 0.1
             self.lambda_social = max(0.0, min(1.0, self.lambda_social + inequality_adjustment))
-        
+
         from massive_core.config import ScientificRuntimeConfig
         from massive_core.numerics import create_stepper
 
         self.scientific_config = ScientificRuntimeConfig.from_dict(scientific_config)
         self._stepper = create_stepper(self.scientific_config.solver)
         self.last_numerical_diagnostics = None
-        
+
         # Always use a local Generator (never the process-global np.random).
         if rng is not None:
             self.rng = rng
@@ -238,7 +247,7 @@ class SocialEnergyEngine:
         noise = np.sqrt(2.0 * eta * self.temperature) * self.rng.standard_normal(n)
 
         # ── Extract arrays for JIT-compiled hot path ───────────────────────────
-        sigma2 = _SIGMA ** 2
+        sigma2 = _SIGMA**2
         if attractors:
             att_positions = np.array([a["position"] for a in attractors], dtype=np.float64)
             att_strengths = np.array([a["strength"] for a in attractors], dtype=np.float64)
@@ -254,6 +263,7 @@ class SocialEnergyEngine:
             rep_strengths = np.empty(0, dtype=np.float64)
 
         if self._stepper is not None:
+
             def drift(current: np.ndarray) -> np.ndarray:
                 local_neighbor_mean = (adj @ current) / row_sums
                 local_drift = np.empty(n)
@@ -265,9 +275,7 @@ class SocialEnergyEngine:
                 return local_drift
 
             diffusion = np.sqrt(2.0 * self.temperature) if self.temperature > 0.0 else None
-            step_noise = (
-                self.rng.standard_normal(n) if diffusion is not None else None
-            )
+            step_noise = self.rng.standard_normal(n) if diffusion is not None else None
             result = self._stepper.step(
                 opinions.astype(np.float64),
                 eta,
@@ -285,10 +293,15 @@ class SocialEnergyEngine:
                 opinions.astype(np.float64),
                 neighbor_mean.astype(np.float64),
                 noise.astype(np.float64),
-                att_positions, att_strengths,
-                rep_positions, rep_strengths,
-                self.lambda_social, eta, sigma2,
-                self.min_val, self.max_val,
+                att_positions,
+                att_strengths,
+                rep_positions,
+                rep_strengths,
+                self.lambda_social,
+                eta,
+                sigma2,
+                self.min_val,
+                self.max_val,
             )
         else:
             new_opinions = np.empty(n)
@@ -297,10 +310,7 @@ class SocialEnergyEngine:
                 social_drift = self.lambda_social * (neighbor_mean[i] - opinions[i])
                 landscape_drift = (1.0 - self.lambda_social) * (-grad)
                 new_opinions[i] = (
-                    opinions[i]
-                    + eta * landscape_drift
-                    + eta * social_drift
-                    + noise[i]
+                    opinions[i] + eta * landscape_drift + eta * social_drift + noise[i]
                 )
             new_opinions = np.clip(new_opinions, self.min_val, self.max_val)
 
@@ -309,17 +319,17 @@ class SocialEnergyEngine:
     def set_gini_coefficient(self, gini: float):
         """
         Set Gini coefficient from CIA World Factbook.
-        
+
         Args:
             gini: Gini index normalized to [0, 1] range
         """
         self.gini_coefficient = max(0.0, min(1.0, float(gini)))
         log.info(f"[EnergyEngine] Gini coefficient set to: {self.gini_coefficient}")
-    
+
     def set_inequality_factor(self, factor: float):
         """
         Set inequality amplification factor.
-        
+
         Args:
             factor: Inequality factor > 1.0 (higher for more unequal societies)
         """
@@ -328,17 +338,17 @@ class SocialEnergyEngine:
         inequality_adjustment = (self.inequality_factor - 1.0) * 0.1
         self.lambda_social = max(0.0, min(1.0, self.lambda_social + inequality_adjustment))
         log.info(f"[EnergyEngine] Inequality factor set to: {self.inequality_factor}")
-    
-    def set_economic_potential(self, potential: Dict[str, Any]):
+
+    def set_economic_potential(self, potential: dict[str, Any]):
         """
         Set economic potential parameters from Factbook data.
-        
+
         Args:
             potential: Dictionary with polarization_factor, income_scale, etc.
         """
         self.economic_potential = potential or {}
-        log.info(f"[EnergyEngine] Economic potential parameters updated")
-    
+        log.info("[EnergyEngine] Economic potential parameters updated")
+
     def create_gini_adjusted_landscape(
         self,
         base_attractors: list,
@@ -346,46 +356,50 @@ class SocialEnergyEngine:
     ) -> tuple:
         """
         Create energy landscape adjusted for economic inequality (Gini index).
-        
+
         Higher Gini index creates:
         - Deeper attractors (stronger consensus points)
         - Higher repulsors (stronger polarization barriers)
         - More pronounced energy wells
-        
+
         Args:
             base_attractors: Base attractor positions and strengths
             base_repellers: Base repeller positions and strengths
-            
+
         Returns:
             Tuple of (adjusted_attractors, adjusted_repellers)
         """
         gini = self.gini_coefficient
         inequality = self.inequality_factor
-        
+
         # Get polarization factor from economic potential if available
-        polarization = self.economic_potential.get("polarization_factor", gini)
-        income_scale = self.economic_potential.get("income_scale", 1.0)
+        self.economic_potential.get("polarization_factor", gini)
+        self.economic_potential.get("income_scale", 1.0)
         attractor_multiplier = self.economic_potential.get("attractor_strength", 1.35)
         repeller_multiplier = self.economic_potential.get("repeller_strength", 0.75)
-        
+
         # Adjust attractors: higher inequality = stronger attractors
         adjusted_attractors = []
         for att in base_attractors:
-            adjusted_attractors.append({
-                "position": att["position"],
-                "strength": att["strength"] * inequality * attractor_multiplier
-            })
-        
+            adjusted_attractors.append(
+                {
+                    "position": att["position"],
+                    "strength": att["strength"] * inequality * attractor_multiplier,
+                }
+            )
+
         # Adjust repulsors: higher inequality = stronger repulsors (more polarization)
         adjusted_repellers = []
         for rep in base_repellers:
-            adjusted_repellers.append({
-                "position": rep["position"],
-                "strength": rep["strength"] * inequality * repeller_multiplier
-            })
-        
+            adjusted_repellers.append(
+                {
+                    "position": rep["position"],
+                    "strength": rep["strength"] * inequality * repeller_multiplier,
+                }
+            )
+
         return adjusted_attractors, adjusted_repellers
-    
+
     def create_economic_landscape(
         self,
         mean_income: float = 20000.0,
@@ -394,25 +408,25 @@ class SocialEnergyEngine:
     ) -> tuple:
         """
         Create economic energy landscape based on Factbook economic data.
-        
+
         Creates a landscape where:
         - Attractors represent economic opportunities (wealth, jobs)
         - Repellers represent economic barriers (poverty, inequality)
         - Gini index determines the distribution shape
-        
+
         Args:
             mean_income: Mean income level (affects landscape scale)
             n_attractors: Number of economic opportunity centers
             n_repellers: Number of economic barriers
-            
+
         Returns:
             Tuple of (attractors, repellers) configured for economic simulation
         """
         gini = self.gini_coefficient
-        
+
         # Calculate income-based scaling
         income_scale = np.log1p(mean_income) / 15.0
-        
+
         # Create attractors (economic opportunities)
         # In more unequal societies, opportunities are more concentrated
         attractors = []
@@ -421,7 +435,7 @@ class SocialEnergyEngine:
             # Higher Gini = more concentrated opportunities (higher strength, fewer positions)
             strength = 2.0 * income_scale * (1.0 + gini)
             attractors.append({"position": position, "strength": strength})
-        
+
         # Create repulsors (economic barriers)
         repellers = []
         for i in range(n_repellers):
@@ -429,9 +443,9 @@ class SocialEnergyEngine:
             # Higher Gini = stronger barriers
             strength = 1.5 * income_scale * (1.0 + gini * 2.0)
             repellers.append({"position": position, "strength": strength})
-        
+
         return attractors, repellers
-    
+
     def system_metrics(
         self,
         opinions: np.ndarray,
@@ -454,9 +468,7 @@ class SocialEnergyEngine:
         polarizacion = float(std / half_range) if half_range > 0 else 0.0
 
         # Energía total del sistema
-        energies = [
-            _landscape_energy(x, attractors, repellers) for x in opinions
-        ]
+        energies = [_landscape_energy(x, attractors, repellers) for x in opinions]
         energia_total = float(np.sum(energies))
         energia_media = float(np.mean(energies))
 

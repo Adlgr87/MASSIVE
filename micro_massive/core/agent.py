@@ -2,13 +2,12 @@
 
 from __future__ import annotations
 
-from enum import Enum
-from typing import Optional
+from enum import StrEnum
 
 import numpy as np
 
 
-class Strategy(str, Enum):
+class Strategy(StrEnum):
     COOPERATE = "cooperate"
     COMPETE = "compete"
     OBSERVE = "observe"
@@ -24,8 +23,8 @@ class SocialParticle:
         energy: float = 0.5,
         strategy: Strategy = Strategy.COOPERATE,
         *,
-        seed: Optional[int] = None,
-        rng: Optional[np.random.Generator] = None,
+        seed: int | None = None,
+        rng: np.random.Generator | None = None,
     ) -> None:
         self.id = id
         self.charge = charge
@@ -43,5 +42,5 @@ class SocialParticle:
     def update_energy(self, delta: float) -> None:
         self.energy = float(np.clip(self.energy + delta, 0.0, 1.0))
 
-    def distance_to(self, other: "SocialParticle") -> float:
+    def distance_to(self, other: SocialParticle) -> float:
         return float(np.linalg.norm(self.position - other.position))

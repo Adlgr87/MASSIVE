@@ -40,10 +40,9 @@ from __future__ import annotations
 
 import logging
 import time
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
-
 from scipy import sparse
 
 from massive_core.rust_core import active_mask_step
@@ -58,6 +57,7 @@ _GPU_BACKEND: str = "numpy"
 
 try:
     import cupy as _cp
+
     try:
         if _cp.cuda.is_available():
             _GPU_BACKEND = "cupy"
@@ -71,6 +71,7 @@ except ImportError:
 if _GPU_BACKEND == "numpy":
     try:
         import torch as _torch
+
         if _torch.cuda.is_available():
             _GPU_BACKEND = "torch"
     except ImportError:
@@ -86,6 +87,7 @@ def _get_array_module(use_gpu: bool):
     if use_gpu:
         if _GPU_BACKEND == "cupy":
             import cupy
+
             return cupy
         if _GPU_BACKEND == "torch":
             return None  # se usa la ruta torch separada
@@ -123,7 +125,7 @@ class MassiveEngine:
         n_agents: int | None = None,
         seed: int = 42,
         **overrides: Any,
-    ) -> "MassiveEngine":
+    ) -> MassiveEngine:
         """
         Construct a MassiveEngine from CIA World Factbook-derived params.
 
@@ -132,6 +134,7 @@ class MassiveEngine:
         """
         if context is None:
             from massive.core.factbook import get_factbook_context
+
             context = get_factbook_context()
         params = context.get_massive_params(country) or {}
         provenance: dict[str, str] = {}
@@ -149,13 +152,9 @@ class MassiveEngine:
             "derived_parameter" if "gini_coefficient" in params else "literature_prior"
         )
         social_groups = params.get("social_groups", {})
-        provenance["social_groups"] = (
-            "raw_factbook" if social_groups else "internal_default"
-        )
+        provenance["social_groups"] = "raw_factbook" if social_groups else "internal_default"
         economic = params.get("economic_potential", {})
-        provenance["economic_potential"] = (
-            "derived_parameter" if economic else "internal_default"
-        )
+        provenance["economic_potential"] = "derived_parameter" if economic else "internal_default"
 
         config = {
             "n_agents": int(n_agents),
@@ -236,6 +235,7 @@ class MassiveEngine:
 # ESTRATEGIA 2 — CUANTIZACIÓN DE ESTADO (uint8)
 # ============================================================
 
+
 def quantize_state(x: np.ndarray) -> np.ndarray:
     """
     Convierte estado float (N, K) a uint8 (N, K). Ahorra ~87.5% de RAM.
@@ -257,7 +257,8 @@ def quantize_state(x: np.ndarray) -> np.ndarray:
     # Opinión: escalar de [-1, 1] a [0, 255]
     q[:, 0] = np.clip(
         np.round((x[:, 0] - _OPINION_MIN) / (_OPINION_MAX - _OPINION_MIN) * 255.0),
-        0, 255,
+        0,
+        255,
     ).astype(np.uint8)
     # Dimensiones unipolares [0, 1] → [0, 255]
     if x.shape[1] > 1:
@@ -276,10 +277,7 @@ def dequantize_state(q: np.ndarray) -> np.ndarray:
         Estado reconstruido float32 de forma (N, K).
     """
     x = np.empty(q.shape, dtype=np.float32)
-    x[:, 0] = (
-        q[:, 0].astype(np.float32) / 255.0 * (_OPINION_MAX - _OPINION_MIN)
-        + _OPINION_MIN
-    )
+    x[:, 0] = q[:, 0].astype(np.float32) / 255.0 * (_OPINION_MAX - _OPINION_MIN) + _OPINION_MIN
     if q.shape[1] > 1:
         x[:, 1:] = q[:, 1:].astype(np.float32) / 255.0
     return x
@@ -288,6 +286,7 @@ def dequantize_state(q: np.ndarray) -> np.ndarray:
 # ============================================================
 # ESTRATEGIA 3 — COLA DE EVENTOS (Active Set)
 # ============================================================
+
 
 def active_mask_step_sparse(
     x_prev: np.ndarray,
@@ -346,8 +345,8 @@ class ActiveSet:
     def __init__(self, M: int, sleep_threshold: float = 5e-3) -> None:
         self._M = M
         self._threshold = sleep_threshold
-        self._active = np.ones(M, dtype=bool)   # inicialmente todos activos
-        self._history: list[float] = [1.0]       # fracción activa por paso
+        self._active = np.ones(M, dtype=bool)  # inicialmente todos activos
+        self._history: list[float] = [1.0]  # fracción activa por paso
 
     def step(
         self,
@@ -368,13 +367,9 @@ class ActiveSet:
         """
         if sparse.issparse(adj):
             csr = adj.tocsr()
-            self._active = active_mask_step_sparse(
-                x_prev, x_new, csr, self._threshold
-            )
+            self._active = active_mask_step_sparse(x_prev, x_new, csr, self._threshold)
         else:
-            self._active = active_mask_step(
-                x_prev, x_new, np.asarray(adj), self._threshold
-            )
+            self._active = active_mask_step(x_prev, x_new, np.asarray(adj), self._threshold)
         self._history.append(float(self._active.mean()))
 
     @property
@@ -413,6 +408,7 @@ class ActiveSet:
 # ============================================================
 # ESTRATEGIA 1 — LOD: GENERACIÓN DE SUPER-AGENTES
 # ============================================================
+
 
 def build_super_agents(
     N: int,
@@ -491,7 +487,7 @@ def _kmeans_labels(
 ) -> np.ndarray:
     """Mini k-means (numpy-only) returning labels of shape (N,)."""
     n = features.shape[0]
-    if M >= n:
+    if n <= M:
         return np.arange(n, dtype=np.int64)
 
     mu = features.mean(axis=0)
@@ -562,9 +558,7 @@ def build_aggregated_super_agents(
     else:
         feats = np.asarray(feature_matrix, dtype=np.float64)
         if feats.shape[0] != n:
-            raise ValueError(
-                f"feature_matrix rows ({feats.shape[0]}) must match N={n}"
-            )
+            raise ValueError(f"feature_matrix rows ({feats.shape[0]}) must match N={n}")
         features = np.concatenate([states, feats], axis=1)
 
     rng = np.random.default_rng(seed)
@@ -601,6 +595,7 @@ def build_aggregated_super_agents(
 # ============================================================
 # PASO DE LANGEVIN CON MÁSCARA (Event-Driven)
 # ============================================================
+
 
 def _langevin_step_masked(
     x: np.ndarray,
@@ -647,7 +642,7 @@ def _langevin_step_masked(
         social_op += coupling * w * (layers_flat[ell][active_idx, :] @ x[:, _COL_OPINION])
 
     # Gradiente del potencial solo para agentes activos
-    grad_U = multi_potential_gradient(x[active_mask])   # (M_active, K)
+    grad_U = multi_potential_gradient(x[active_mask])  # (M_active, K)
 
     # Drift: −∇U + fuerza social (solo en dimensión de opinión)
     drift = -grad_U
@@ -659,10 +654,7 @@ def _langevin_step_masked(
 
     # Actualización Euler-Maruyama
     x_new = x.copy()
-    x_new[active_mask] += (
-        dt * drift
-        + theta[active_mask] * _STOCHASTIC_SCALE * noise * np.sqrt(dt)
-    )
+    x_new[active_mask] += dt * drift + theta[active_mask] * _STOCHASTIC_SCALE * noise * np.sqrt(dt)
 
     # Recorte al rango válido
     x_new[:, 0] = np.clip(x_new[:, 0], _OPINION_MIN, _OPINION_MAX)
@@ -675,6 +667,7 @@ def _langevin_step_masked(
 # ============================================================
 # PASO DE LANGEVIN CON GPU (CuPy)
 # ============================================================
+
 
 def _langevin_step_gpu(
     x: np.ndarray,
@@ -708,10 +701,10 @@ def _langevin_step_gpu(
     if _GPU_BACKEND == "cupy":
         import cupy as cp
 
-        x_gpu          = cp.asarray(x)
-        layers_gpu     = cp.asarray(layers_flat)
-        lw_gpu         = cp.asarray(layer_weights)
-        theta_gpu      = cp.asarray(theta)
+        x_gpu = cp.asarray(x)
+        layers_gpu = cp.asarray(layers_flat)
+        lw_gpu = cp.asarray(layer_weights)
+        theta_gpu = cp.asarray(theta)
         M, K = x.shape
         L = len(layer_weights)
 
@@ -740,6 +733,7 @@ def _langevin_step_gpu(
 
     # Fallback: numpy (misma operación vectorizada)
     from multilayer_engine import multi_potential_gradient
+
     M, K = x.shape
     social_force = np.zeros((M, K), dtype=np.float64)
     for ell, w in enumerate(layer_weights):
@@ -747,11 +741,7 @@ def _langevin_step_gpu(
     grad_U = multi_potential_gradient(x)
     _rng = rng if rng is not None else np.random.default_rng()
     noise = _rng.standard_normal((M, K))
-    x_new = (
-        x
-        + dt * (-grad_U + social_force)
-        + theta * _STOCHASTIC_SCALE * noise * np.sqrt(dt)
-    )
+    x_new = x + dt * (-grad_U + social_force) + theta * _STOCHASTIC_SCALE * noise * np.sqrt(dt)
     x_new[:, 0] = np.clip(x_new[:, 0], _OPINION_MIN, _OPINION_MAX)
     if K > 1:
         x_new[:, 1:] = np.clip(x_new[:, 1:], 0.0, 1.0)
@@ -761,6 +751,7 @@ def _langevin_step_gpu(
 # ============================================================
 # MOTOR PRINCIPAL — MassiveSimEngine
 # ============================================================
+
 
 class MassiveSimEngine:
     """
@@ -840,15 +831,14 @@ class MassiveSimEngine:
 
         # Default M scales with sqrt(N) but never exceeds N.
         if M is None:
-            M = min(N, max(50, int(N ** 0.5))) if N >= 50 else N
+            M = min(N, max(50, int(N**0.5))) if N >= 50 else N
         if not 1 <= M <= N:
             raise ValueError(f"M must satisfy 1 <= M <= N (got M={M}, N={N})")
 
         w = np.asarray(layer_weights, dtype=np.float64)
         if w.ndim != 1 or w.size != 3 or not np.isfinite(w).all() or float(w.sum()) <= 0.0:
             raise ValueError(
-                "layer_weights must be a length-3 positive-sum vector "
-                f"(got {layer_weights!r})"
+                "layer_weights must be a length-3 positive-sum vector " f"(got {layer_weights!r})"
             )
 
         self.N = N
@@ -881,15 +871,16 @@ class MassiveSimEngine:
 
         # ── Red de M super-agentes (capas social, digital, económica) ─
         from multilayer_engine import (
-            generate_watts_strogatz,
-            generate_scale_free,
             generate_hierarchical,
+            generate_scale_free,
+            generate_watts_strogatz,
         )
+
         M_ = self.M
         A_s = generate_watts_strogatz(M_, k=min(5, M_ - 1), seed=seed)
         A_d = generate_scale_free(M_, m=min(2, M_ - 1), seed=seed)
         A_e = generate_hierarchical(M_, seed=seed)
-        self._layers_flat: np.ndarray = np.stack([A_s, A_d, A_e])   # (3, M, M)
+        self._layers_flat: np.ndarray = np.stack([A_s, A_d, A_e])  # (3, M, M)
         # CSR union for sparse event-driven neighbor reactivation
         self._adj_csr: sparse.csr_matrix = combine_layers_csr(self._layers_flat)
         self._layers_csr: list[sparse.csr_matrix] = [
@@ -919,9 +910,10 @@ class MassiveSimEngine:
         if not getattr(self, "_jit_woken", False):
             try:
                 from multilayer_engine import (
-                    multi_potential_gradient,
                     _multilayer_langevin_step_core,
+                    multi_potential_gradient,
                 )
+
                 # Tiny batch to trigger one-time compilation.
                 _xt = self._x[:2].copy()
                 multi_potential_gradient(_xt)
@@ -930,8 +922,14 @@ class MassiveSimEngine:
                 _w = self.layer_weights.astype(np.float64)
                 _th = np.ones((2, K), dtype=np.float64)
                 _multilayer_langevin_step_core(
-                    _xt[:, 0].copy(), _layers, _w, _th,
-                    self.coupling, self.dt, -1.0, 1.0,
+                    _xt[:, 0].copy(),
+                    _layers,
+                    _w,
+                    _th,
+                    self.coupling,
+                    self.dt,
+                    -1.0,
+                    1.0,
                 )
                 self._jit_woken = True
             except Exception:
@@ -1086,9 +1084,7 @@ class MassiveSimEngine:
         n_layers = int(self._layers_flat.shape[0]) if hasattr(self, "_layers_flat") else 3
 
         # ── Component bytes (actual engine structures) ──────────────
-        state_bytes = (
-            self.M * self.K * 1 if self.quantize else self.M * self.K * 8
-        )
+        state_bytes = self.M * self.K * 1 if self.quantize else self.M * self.K * 8
         # Dense layer stack held for Langevin step (float64)
         adjacency_dense_bytes = self.M * self.M * n_layers * 8
         # CSR union used for event reactivation
@@ -1102,10 +1098,7 @@ class MassiveSimEngine:
             adjacency_csr_bytes = 0
         theta_bytes = self.M * self.K * 8
         counts_bytes = self.M * 8  # int64
-        history_bytes = (
-            len(self._opinion_history) * 8
-            + len(self._active_fraction_history) * 8
-        )
+        history_bytes = len(self._opinion_history) * 8 + len(self._active_fraction_history) * 8
         active_mask_bytes = self.M if self.event_driven else 0
         temporary_bytes = self.M * self.K * 8  # one scratch copy in run()
 
@@ -1144,9 +1137,7 @@ class MassiveSimEngine:
             else 0.0
         )
         savings_full = (
-            (1.0 - total_bytes / baseline_full_bytes) * 100.0
-            if baseline_full_bytes > 0
-            else 0.0
+            (1.0 - total_bytes / baseline_full_bytes) * 100.0 if baseline_full_bytes > 0 else 0.0
         )
 
         return {
@@ -1206,22 +1197,24 @@ class MassiveSimEngine:
 
         mem = self.memory_report
         return {
-            "mean_opinion":        w_mean,
-            "std_opinion":         w_std,
-            "polarization":        float(np.average(np.abs(x_f[:, 0]), weights=counts_f)),
-            "mean_cooperation":    float(np.average(x_f[:, 1], weights=counts_f)) if self.K > 1 else 0.0,
-            "n_agents":            self.N,
-            "n_clusters":          self.M,
-            "n_steps":             self._steps_run,
-            "elapsed_seconds":     elapsed,
-            "steps_per_second":    steps / elapsed if elapsed > 0 else 0.0,
-            "memory_savings_pct":  mem["savings_pct"],
-            "float64_MB":          mem["float64_MB"],
-            "final_MB":            mem["final_MB"],
-            "opinion_history":     np.array(self._opinion_history, dtype=np.float32),
-            "active_history":      np.array(self._active_fraction_history, dtype=np.float32),
-            "cluster_opinions":    x_f[:, 0],
-            "cluster_counts":      self._counts,
-            "gpu_backend":         _GPU_BACKEND,
-            "strategies_active":   mem["strategies"],
+            "mean_opinion": w_mean,
+            "std_opinion": w_std,
+            "polarization": float(np.average(np.abs(x_f[:, 0]), weights=counts_f)),
+            "mean_cooperation": (
+                float(np.average(x_f[:, 1], weights=counts_f)) if self.K > 1 else 0.0
+            ),
+            "n_agents": self.N,
+            "n_clusters": self.M,
+            "n_steps": self._steps_run,
+            "elapsed_seconds": elapsed,
+            "steps_per_second": steps / elapsed if elapsed > 0 else 0.0,
+            "memory_savings_pct": mem["savings_pct"],
+            "float64_MB": mem["float64_MB"],
+            "final_MB": mem["final_MB"],
+            "opinion_history": np.array(self._opinion_history, dtype=np.float32),
+            "active_history": np.array(self._active_fraction_history, dtype=np.float32),
+            "cluster_opinions": x_f[:, 0],
+            "cluster_counts": self._counts,
+            "gpu_backend": _GPU_BACKEND,
+            "strategies_active": mem["strategies"],
         }

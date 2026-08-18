@@ -31,9 +31,9 @@ from fastapi.responses import Response  # noqa: E402
 from fastapi.staticfiles import StaticFiles  # noqa: E402
 from starlette.middleware.trustedhost import TrustedHostMiddleware  # noqa: E402
 
+from backend.app.metrics import registry  # noqa: E402
 from backend.app.rate_limit import RateLimitMiddleware  # noqa: E402
 from backend.app.run_store import RunStore  # noqa: E402
-from backend.app.metrics import registry  # noqa: E402
 from backend.app.settings import UISettings  # noqa: E402
 
 logging.basicConfig(
@@ -132,6 +132,7 @@ def create_app(settings: UISettings | None = None) -> FastAPI:
 
     serve_frontend = settings.serve_frontend and settings.frontend_dist.exists()
     if not serve_frontend:
+
         @app.get("/")
         def root() -> dict:
             return {

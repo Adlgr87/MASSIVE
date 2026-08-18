@@ -37,7 +37,6 @@
 
 | Hallazgo | Descripción | Prioridad | Owner |
 |----------|-------------|-----------|-------|
-| **BUG `_dispatch`** | En `services/llm_orchestrator.py`, todos los motores (`energy_engine`, `multilayer_engine`, `massive_engine`) redirigen a `simular` (scalar legacy). El motor `energy_engine` nunca ejecuta `SocialEnergyEngine`. | 🔴 Alta | Dev Senior |
 | **Rate limiting decorativo** | `RateLimitMiddleware` registrado en `main.py` ✅; pero `api.py` legacy también aplica `_rate_limit` — verificar consistencia. | 🟡 Media | DevOps |
 | **Logging plano** | `main.py` usa `logging.basicConfig` (texto plano) sin contexto estructurado (request_id, simulation_id, etc.). | 🟡 Media | Ingeniero Obs |
 | **`api.py` legacy** | Tiene fallback inseguro (`default-secret-key`) y usa `!=` en vez de `hmac.compare_digest`. Riesgo de seguridad. | 🟡 Media | Dev Senior |

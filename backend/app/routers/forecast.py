@@ -49,7 +49,7 @@ async def v1_forecast(request: Request, payload: dict[str, Any]) -> ForecastResp
         raise HTTPException(
             status_code=422,
             detail=exc.errors(),
-        )
+        ) from exc
     result = forecast(
         sim_state,
         temporal_config=temporal_config,

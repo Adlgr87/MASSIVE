@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Optional, Sequence
+from collections.abc import Sequence
 
 import numpy as np
 
@@ -16,8 +16,8 @@ class EvolutionaryGame:
         self,
         particles: Sequence[SocialParticle],
         *,
-        seed: Optional[int] = None,
-        rng: Optional[np.random.Generator] = None,
+        seed: int | None = None,
+        rng: np.random.Generator | None = None,
     ) -> None:
         self.particles = list(particles)
         self.rng = rng if rng is not None else np.random.default_rng(seed)
@@ -35,7 +35,7 @@ class EvolutionaryGame:
                 if key in self.payoff_matrix:
                     p_payoff, n_payoff = self.payoff_matrix[key]
                 else:
-                    p_payoff, n_payoff = 2, 2
+                    p_payoff, _n_payoff = 2, 2
                 p.payoff_history.append(p_payoff)
                 p.update_energy(0.05 * p_payoff)
 

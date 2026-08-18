@@ -50,7 +50,9 @@ def auth_client():
 @pytest.fixture()
 def limited_client():
     app = create_app(
-        _settings(rate_limit_enabled=True, rate_limit_per_minute=120, rate_limit_simulate_per_minute=2)
+        _settings(
+            rate_limit_enabled=True, rate_limit_per_minute=120, rate_limit_simulate_per_minute=2
+        )
     )
     with TestClient(app) as c:
         yield c
@@ -156,8 +158,10 @@ def test_conversation_stream_sse(client):
     assert "event: status" in text
     assert "event: done" in text
     # Extract the done payload (the event carrying the full turn contract).
-    done_lines = [l for l in text.splitlines() if l.startswith("data: {") and '"action"' in l]
-    payload = json.loads(done_lines[-1][len("data: "):])
+    done_lines = [
+        line_ for line_ in text.splitlines() if line_.startswith("data: {") and '"action"' in line_
+    ]
+    payload = json.loads(done_lines[-1][len("data: ") :])
     assert payload["mode"] == "heuristic"
     assert payload["action"] == "propose"
 
@@ -244,8 +248,10 @@ def test_simulate_stream_sse(client):
         text = "".join(resp.iter_text())
     assert "event: status" in text
     assert "event: done" in text
-    done_lines = [l for l in text.splitlines() if l.startswith("data: {") and '"run_id"' in l]
-    payload = json.loads(done_lines[-1][len("data: "):])
+    done_lines = [
+        line_ for line_ in text.splitlines() if line_.startswith("data: {") and '"run_id"' in line_
+    ]
+    payload = json.loads(done_lines[-1][len("data: ") :])
     assert payload["run_id"]
     assert payload["summary"]["opinion_final"] is not None
 
@@ -362,9 +368,15 @@ def test_run_store_sqlite_persistence(tmp_path: Path):
 def test_run_store_memory_mode():
     store = RunStore(db_path=None, capacity=3)
     for i in range(5):
-        store.put({
-            "engine": "scalar", "mode": "heuristic", "language": "es",
-            "summary": {"opinion_inicial": i, "opinion_final": i},
-            "scientific_report": None, "series": {}, "meta": {},
-        })
+        store.put(
+            {
+                "engine": "scalar",
+                "mode": "heuristic",
+                "language": "es",
+                "summary": {"opinion_inicial": i, "opinion_final": i},
+                "scientific_report": None,
+                "series": {},
+                "meta": {},
+            }
+        )
     assert store.count() == 3  # capacity trims

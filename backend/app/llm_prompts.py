@@ -85,10 +85,15 @@ INTERPRETER_LANGUAGE = {
 }
 
 
-def build_interpreter_messages(messages: list[dict[str, str]], language: str) -> list[dict[str, str]]:
+def build_interpreter_messages(
+    messages: list[dict[str, str]], language: str
+) -> list[dict[str, str]]:
     return [
         {"role": "system", "content": INTERPRETER_SYSTEM},
-        {"role": "system", "content": INTERPRETER_LANGUAGE.get(language, INTERPRETER_LANGUAGE["es"])},
+        {
+            "role": "system",
+            "content": INTERPRETER_LANGUAGE.get(language, INTERPRETER_LANGUAGE["es"]),
+        },
         *messages,
     ]
 

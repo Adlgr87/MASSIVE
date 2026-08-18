@@ -1,5 +1,4 @@
 import numpy as np
-import pytest
 
 from benchmarks.butterfly_diagnostic import run_butterfly_diagnostic_core
 from massive_engine import MassiveEngine

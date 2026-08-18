@@ -94,13 +94,16 @@ def compare_scenarios(
         if spec.strategy is not None:
             state = _state_for_strategy(state, spec.strategy)
         if spec.strategy is None and spec.overrides:
-            state = apply_intervention(state, Intervention(
-                time_start=1,
-                time_end=max(1, temporal_config.n_steps),
-                model_name="lineal",
-                parameters=spec.overrides,
-                fase_rationale="scenario override",
-            ))
+            state = apply_intervention(
+                state,
+                Intervention(
+                    time_start=1,
+                    time_end=max(1, temporal_config.n_steps),
+                    model_name="lineal",
+                    parameters=spec.overrides,
+                    fase_rationale="scenario override",
+                ),
+            )
 
         result = forecast(state, temporal_config, mode=mode, **kwargs)
         rows.append(
@@ -158,6 +161,8 @@ def run_intervention_comparison(
         p_event_no_intervention=baseline_row.p_event,
         p_event_best_plan=best_row.p_event,
         min_effect_time_days=min_days,
-        feasibility_vs_deadline=(min_days is not None and min_days <= temporal_config.time_horizon_days),
+        feasibility_vs_deadline=(
+            min_days is not None and min_days <= temporal_config.time_horizon_days
+        ),
         scenario_report=report,
     )

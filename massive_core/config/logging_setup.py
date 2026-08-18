@@ -6,16 +6,15 @@ import logging
 import os
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
-from typing import Optional
 
 from massive_core.config.settings import LoggingSettings, get_app_settings
 
 
 def configure_logging(
-    level: Optional[str] = None,
+    level: str | None = None,
     *,
     force: bool = False,
-    log_file: Optional[str] = None,
+    log_file: str | None = None,
 ) -> None:
     """Configure root logging once for the process.
 
@@ -37,10 +36,7 @@ def configure_logging(
 
     handlers: list[logging.Handler] = [logging.StreamHandler()]
     resolved_file = (
-        log_file
-        or os.getenv("MASSIVE_LOG_FILE")
-        or getattr(log_cfg, "file", None)
-        or None
+        log_file or os.getenv("MASSIVE_LOG_FILE") or getattr(log_cfg, "file", None) or None
     )
     if resolved_file:
         path = Path(resolved_file)

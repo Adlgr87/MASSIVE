@@ -1,4 +1,4 @@
-from typing import Any, Dict, List, Literal, Optional
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -68,7 +68,7 @@ class Intervention(BaseModel):
             )
         return self
 
-    parameters: Dict[str, Any] = Field(
+    parameters: dict[str, Any] = Field(
         description=(
             "Parámetros numéricos. Ej: {'epsilon': 0.3} o {'umbral': 0.5}. "
             "En modo corporativo puede incluir 'target_nodes': lista de IDs de nodos "
@@ -78,7 +78,7 @@ class Intervention(BaseModel):
     fase_rationale: str = Field(
         description="Breve justificación sociológica/organizacional de esta fase"
     )
-    target_nodes: Optional[List[str]] = Field(
+    target_nodes: list[str] | None = Field(
         default=None,
         description=(
             "Opcional. Lista de IDs de nodos específicos a intervenir "
@@ -88,6 +88,4 @@ class Intervention(BaseModel):
 
 
 class StrategyMatrix(BaseModel):
-    interventions: List[Intervention] = Field(
-        description="Secuencia temporal de intervenciones"
-    )
+    interventions: list[Intervention] = Field(description="Secuencia temporal de intervenciones")

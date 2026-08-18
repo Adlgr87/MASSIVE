@@ -13,7 +13,6 @@ import time
 from abc import ABC, abstractmethod
 from collections import defaultdict
 from pathlib import Path
-from typing import Optional
 
 
 class RateLimiter(ABC):
@@ -94,8 +93,8 @@ class FileRateLimiter(RateLimiter):
 
 
 def build_rate_limiter(
-    backend: Optional[str] = None,
-    path: Optional[str] = None,
+    backend: str | None = None,
+    path: str | None = None,
 ) -> RateLimiter:
     """Factory for rate limiters from env / arguments.
 
@@ -107,9 +106,7 @@ def build_rate_limiter(
     resolved = (backend or os.getenv("MASSIVE_RATE_LIMIT_BACKEND") or "memory").lower()
     if resolved == "file":
         file_path = Path(
-            path
-            or os.getenv("MASSIVE_RATE_LIMIT_PATH")
-            or "/tmp/massive_rate_limit.json"
+            path or os.getenv("MASSIVE_RATE_LIMIT_PATH") or "/tmp/massive_rate_limit.json"
         )
         return FileRateLimiter(file_path)
     return InMemoryRateLimiter()

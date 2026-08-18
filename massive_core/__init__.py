@@ -47,8 +47,8 @@ from massive_core.diagnostics import (  # noqa: E402
     build_scientific_report,
     trajectory_from_history,
 )
-from massive_core.metalearning import (
-    build_cfc_regime_dataset_from_history,  # noqa: E402
+from massive_core.metalearning import (  # noqa: E402
+    build_cfc_regime_dataset_from_history,
 )
 from massive_core.scientific_runner import (  # noqa: E402
     ScientificEngineResult,

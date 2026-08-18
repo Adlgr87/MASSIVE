@@ -22,10 +22,10 @@ key validation (constant-time) as the REST routers is used.
 from __future__ import annotations
 
 import asyncio
+import contextlib
 import logging
 import uuid
-from datetime import datetime, timezone
-from typing import Optional
+from datetime import UTC, datetime
 
 from fastapi import APIRouter, Query, WebSocket, WebSocketDisconnect
 
@@ -80,7 +80,7 @@ async def ws_live(
     pasos: int = Query(120),
     user_goal: str = Query("polarizacion_moderada"),
     tick_interval_ms: int = Query(40),
-    api_key: Optional[str] = Query(None),
+    api_key: str | None = Query(None),
 ) -> None:
     """Stream a live simulation (see module docstring)."""
     registry.inc("ws_connections_total")
@@ -94,10 +94,13 @@ async def ws_live(
 
     # ── Validate parameters ────────────────────────────────────────────────
     if engine not in ("energy", "massive"):
-        await ws.send_json(SimEventMessage(
-            sim_id="", event=SimEventKind.error,
-            detail=f"unknown engine: {engine}",
-        ).model_dump(mode="json"))
+        await ws.send_json(
+            SimEventMessage(
+                sim_id="",
+                event=SimEventKind.error,
+                detail=f"unknown engine: {engine}",
+            ).model_dump(mode="json")
+        )
         await ws.close(code=4400)
         return
     pasos = max(1, min(pasos, _MAX_STEPS))
@@ -115,17 +118,18 @@ async def ws_live(
                 seed=seed,
                 user_goal=user_goal if user_goal in _ENERGY_ARCHETYPES else "polarizacion_moderada",
             )
-            emit_every = 1
         else:
             n_agents = max(100, min(n_agents, _MASSIVE_MAX_AGENTS))
             runner = LiveMassiveSim(n_agents=n_agents, seed=seed)
-            emit_every = runner.chunk_steps
     except Exception as exc:  # noqa: BLE001
         log.exception("live runner construction failed")
-        await ws.send_json(SimEventMessage(
-            sim_id=sim_id, event=SimEventKind.error,
-            detail=f"runner init failed: {exc}",
-        ).model_dump(mode="json"))
+        await ws.send_json(
+            SimEventMessage(
+                sim_id=sim_id,
+                event=SimEventKind.error,
+                detail=f"runner init failed: {exc}",
+            ).model_dump(mode="json")
+        )
         await ws.close(code=4400)
         return
 
@@ -133,10 +137,13 @@ async def ws_live(
     queue: asyncio.Queue = asyncio.Queue()
     listener = asyncio.create_task(_drain_commands(ws, queue))
 
-    await ws.send_json(SimEventMessage(
-        sim_id=sim_id, event=SimEventKind.started,
-        detail=f"engine={engine} agents={n_agents} pasos={pasos}",
-    ).model_dump(mode="json"))
+    await ws.send_json(
+        SimEventMessage(
+            sim_id=sim_id,
+            event=SimEventKind.started,
+            detail=f"engine={engine} agents={n_agents} pasos={pasos}",
+        ).model_dump(mode="json")
+    )
 
     stopped_by_client = False
     try:
@@ -144,7 +151,7 @@ async def ws_live(
             # Listen for commands without blocking the stream.
             try:
                 cmd = await asyncio.wait_for(queue.get(), timeout=0.05)
-            except asyncio.TimeoutError:
+            except TimeoutError:
                 cmd = None
             if cmd is not None:
                 action = cmd.get("action")
@@ -160,44 +167,51 @@ async def ws_live(
                         )
                         registry.inc("ws_shocks_total")
                     else:
-                        await ws.send_json(SimEventMessage(
-                            sim_id=sim_id, event=SimEventKind.error,
-                            detail="shock is only available for the massive engine",
-                        ).model_dump(mode="json"))
+                        await ws.send_json(
+                            SimEventMessage(
+                                sim_id=sim_id,
+                                event=SimEventKind.error,
+                                detail="shock is only available for the massive engine",
+                            ).model_dump(mode="json")
+                        )
                     continue
 
             runner.step()
             snapshot = runner.snapshot()
             registry.inc("ws_snapshots_total")
-            await ws.send_json(SimSnapshotMessage(
-                sim_id=sim_id,
-                timestamp=datetime.now(timezone.utc),
-                payload=snapshot,
-            ).model_dump(mode="json"))
+            await ws.send_json(
+                SimSnapshotMessage(
+                    sim_id=sim_id,
+                    timestamp=datetime.now(UTC),
+                    payload=snapshot,
+                ).model_dump(mode="json")
+            )
             if tick_ms > 0 and engine == "energy":
                 await asyncio.sleep(tick_ms / 1000.0)
 
-        await ws.send_json(SimEventMessage(
-            sim_id=sim_id,
-            event=SimEventKind.stopped,
-            detail="client-requested stop" if stopped_by_client else "horizon reached",
-        ).model_dump(mode="json"))
+        await ws.send_json(
+            SimEventMessage(
+                sim_id=sim_id,
+                event=SimEventKind.stopped,
+                detail="client-requested stop" if stopped_by_client else "horizon reached",
+            ).model_dump(mode="json")
+        )
     except WebSocketDisconnect:
         log.info("live client disconnected (sim %s)", sim_id)
     except Exception as exc:  # noqa: BLE001
         log.exception("live loop failed (sim %s)", sim_id)
-        try:
-            await ws.send_json(SimEventMessage(
-                sim_id=sim_id, event=SimEventKind.error, detail=str(exc),
-            ).model_dump(mode="json"))
-        except Exception:  # noqa: BLE001
-            pass
+        with contextlib.suppress(Exception):  # noqa: BLE001
+            await ws.send_json(
+                SimEventMessage(
+                    sim_id=sim_id,
+                    event=SimEventKind.error,
+                    detail=str(exc),
+                ).model_dump(mode="json")
+            )
     finally:
         listener.cancel()
-        try:
+        with contextlib.suppress(Exception):  # noqa: BLE001
             await ws.close()
-        except Exception:  # noqa: BLE001
-            pass
 
 
 def np_clip(v: float, lo: float, hi: float) -> float:

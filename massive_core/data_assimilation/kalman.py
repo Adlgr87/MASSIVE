@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Callable, Optional, Tuple
+from collections.abc import Callable
 
 import numpy as np
 
@@ -44,7 +44,11 @@ class EnsembleKalmanFilter:
             if ensemble.shape != (n_ensemble, n_state_dim):
                 raise ValueError("initial_ensemble has incompatible shape")
             self.ensemble = ensemble.copy()
-        self.R = np.asarray(observation_covariance, dtype=float) if observation_covariance is not None else np.eye(n_state_dim) * 0.1
+        self.R = (
+            np.asarray(observation_covariance, dtype=float)
+            if observation_covariance is not None
+            else np.eye(n_state_dim) * 0.1
+        )
 
     def predict(self, model_step: Callable[[Array], Array], dt: float | None = None) -> Array:
         """Propagate every ensemble member through the model.
@@ -75,10 +79,7 @@ class EnsembleKalmanFilter:
         """
 
         y = np.asarray(observations, dtype=float).reshape(-1)
-        if H is None:
-            H_mat = np.eye(y.size, self.n_state_dim)
-        else:
-            H_mat = np.asarray(H, dtype=float)
+        H_mat = np.eye(y.size, self.n_state_dim) if H is None else np.asarray(H, dtype=float)
         if H_mat.shape != (y.size, self.n_state_dim):
             raise ValueError("H must have shape (n_observations, n_state_dim)")
         if self.R.shape != (y.size, y.size):
@@ -149,10 +150,10 @@ class SparseEnsembleKalmanFilter:
         n_obs_dim: int,
         observable_indices: list[int],
         observation_covariance: np.ndarray,
-        process_covariance: Optional[np.ndarray] = None,
-        initial_ensemble: Optional[np.ndarray] = None,
+        process_covariance: np.ndarray | None = None,
+        initial_ensemble: np.ndarray | None = None,
         inflation: float = 1.0,
-        rng: Optional[np.random.Generator] = None,
+        rng: np.random.Generator | None = None,
     ) -> None:
         self.n_ensemble = n_ensemble
         self.n_state_dim = n_state_dim
@@ -190,7 +191,7 @@ class SparseEnsembleKalmanFilter:
     # State accessors
     # ------------------------------------------------------------------
 
-    def get_state_estimate(self) -> Tuple[np.ndarray, np.ndarray]:
+    def get_state_estimate(self) -> tuple[np.ndarray, np.ndarray]:
         """Return *(full_mean, full_covariance)*."""
         mean = self.ensemble.mean(axis=0)
         centered = self.ensemble - mean
@@ -204,7 +205,7 @@ class SparseEnsembleKalmanFilter:
     def predict(
         self,
         model_fn: Callable[[Array], Array],
-        process_noise: Optional[np.ndarray] = None,
+        process_noise: np.ndarray | None = None,
     ) -> Array:
         """Advance the full ensemble through *model_fn*.
 
@@ -260,9 +261,7 @@ class SparseEnsembleKalmanFilter:
         obs_cov = obs_devs.T @ obs_devs / Nm1
 
         try:
-            inv_obs_cov = np.linalg.inv(
-                obs_cov + self.observation_covariance[:n_obs, :n_obs]
-            )
+            inv_obs_cov = np.linalg.inv(obs_cov + self.observation_covariance[:n_obs, :n_obs])
         except np.linalg.LinAlgError:
             inv_obs_cov = np.linalg.pinv(
                 obs_cov + self.observation_covariance[:n_obs, :n_obs] + 1e-6 * np.eye(n_obs)
@@ -281,8 +280,8 @@ class SparseEnsembleKalmanFilter:
         self,
         model_fn: Callable[[Array], Array],
         observations: np.ndarray,
-        process_noise: Optional[np.ndarray] = None,
-    ) -> Tuple[np.ndarray, np.ndarray]:
+        process_noise: np.ndarray | None = None,
+    ) -> tuple[np.ndarray, np.ndarray]:
         """Full predict-update cycle for sparse EnKF.
 
         Args:

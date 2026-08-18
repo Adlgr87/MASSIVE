@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Optional
+from typing import Any
 
 import numpy as np
 
@@ -12,7 +12,7 @@ from micro_massive.core.agent import SocialParticle, Strategy
 class ForerPersonalityGenerator:
     """Sample social particles from named archetypes with local RNG."""
 
-    def __init__(self, *, seed: Optional[int] = None, rng: Optional[np.random.Generator] = None) -> None:
+    def __init__(self, *, seed: int | None = None, rng: np.random.Generator | None = None) -> None:
         self.rng = rng if rng is not None else np.random.default_rng(seed)
         self.archetypes: dict[str, dict[str, Any]] = {
             "el_pegamento": {"charge": 0.8, "energy": 0.7, "strategy": Strategy.COOPERATE},
@@ -30,7 +30,7 @@ class ForerPersonalityGenerator:
     def generate_particle(
         self,
         id: int,
-        archetype: Optional[str] = None,
+        archetype: str | None = None,
     ) -> SocialParticle:
         if archetype and archetype in self.archetypes:
             params = self.archetypes[archetype]
@@ -53,7 +53,7 @@ class ForerPersonalityGenerator:
     def generate_group(
         self,
         n_particles: int,
-        archetype_distribution: Optional[dict[str, float]] = None,
+        archetype_distribution: dict[str, float] | None = None,
     ) -> list[SocialParticle]:
         if archetype_distribution is None:
             archetype_distribution = {
