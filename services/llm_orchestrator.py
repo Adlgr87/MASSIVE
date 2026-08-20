@@ -25,7 +25,7 @@ from __future__ import annotations
 import logging
 import os
 import uuid
-from typing import Any
+from typing import Any, cast
 
 from services.factbook_service import country_params as _factbook_params
 from services.llm_service import resolve_llm_credentials, wizard_config
@@ -680,7 +680,9 @@ def _sanitize_for_json(obj: Any) -> Any:
     if isinstance(obj, (list, tuple)):
         return [_sanitize_for_json(v) for v in obj]
     if _NP_TYPES and isinstance(obj, _NP_TYPES):
-        return obj.item()
+        # Narrowed by isinstance against np.generic-derived types; mypy cannot
+        # narrow through the runtime tuple, hence the explicit cast.
+        return cast(Any, obj).item()
     try:
         import numpy as np
 
