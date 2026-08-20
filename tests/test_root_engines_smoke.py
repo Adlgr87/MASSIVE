@@ -56,8 +56,13 @@ def _make_param_records(n=20):
 
 
 def test_describe_families_smoke_4clusters():
-    """4 clusters of 5 (all >=2) => exactly 4 families."""
-    feature_matrix, labels = _make_4_clusters_feature_matrix(n_per=5, seed=11)
+    """4 clusters of 15 (all >=2) => exactly 4 families.
+
+    n_per=15 (60 sims) keeps the auto-k search meaningful: KMeans fallback
+    caps k at min(8, n_sims // 10), so with fewer than 40 sims k=4 can never
+    be evaluated (regression note 2026-08-20, see docs/production-readiness-audit.md TEST-03).
+    """
+    feature_matrix, labels = _make_4_clusters_feature_matrix(n_per=15, seed=11)
     param_records = _make_param_records(n=len(labels))
 
     analyzer = FamilyOfFuturesAnalyzer(n_clusters=0, random_state=42)
