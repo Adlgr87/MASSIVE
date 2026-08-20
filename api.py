@@ -18,15 +18,17 @@ api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
 
 
 async def get_api_key(api_key: str | None = Header(None, alias="X-API-Key")):
-    """Validate API key from header. Fail-closed in production."""
+    """Validate API key from header. Fail-closed in staging/production."""
+    from massive_core.config import DEV_FALLBACK_API_KEY, api_key_matches, is_dev_env
+
     valid_key = os.getenv("MASSIVE_API_KEY")
     if not valid_key:
-        if os.getenv("MASSIVE_ENV") == "dev":
-            valid_key = "dev-secret-key"
-            log.warning("MASSIVE_API_KEY not set — using dev fallback (dev mode only)")
+        if is_dev_env(os.getenv("MASSIVE_ENV")):
+            valid_key = DEV_FALLBACK_API_KEY
+            log.warning("MASSIVE_API_KEY not set — using dev fallback (development mode only)")
         else:
             raise HTTPException(status_code=503, detail="API key not configured")
-    if api_key != valid_key:
+    if not api_key_matches(api_key, valid_key):
         raise HTTPException(status_code=401, detail="Invalid API Key")
     return api_key
 

@@ -6,6 +6,7 @@ Exports:
     configure_logging / get_logger — centralized logging
 """
 
+from massive_core.config.api_auth import DEV_FALLBACK_API_KEY, api_key_matches, is_dev_env
 from massive_core.config.logging_setup import configure_logging, get_logger
 from massive_core.config.rate_limit import (
     FileRateLimiter,
@@ -37,4 +38,7 @@ __all__ = [
     "InMemoryRateLimiter",
     "FileRateLimiter",
     "build_rate_limiter",
+    "DEV_FALLBACK_API_KEY",
+    "api_key_matches",
+    "is_dev_env",
 ]
