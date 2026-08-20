@@ -21,6 +21,20 @@ nav:
   - Home: index.md
   - API Reference: api.md
   - Spanish Version: README_ES.md
+  - Production Readiness:
+      - Audit & Risk Matrix: production-readiness-audit.md
+      - Release Checklist: release-checklist.md
+      - Architecture (current): architecture/current-state.md
+      - Architecture (target): architecture/target-state.md
+      - Runbooks:
+          - Local Development: runbooks/local-development.md
+          - Operations: runbooks/operations.md
+          - Incidents: runbooks/incidents.md
+      - Security:
+          - Threat Model: security/threat-model.md
+          - Secrets & Configuration: security/secrets-and-configuration.md
+      - Testing Strategy: testing/test-strategy.md
+      - Performance Baseline: performance/baseline.md
   - Factbook Integration:
       - Summary: FACTBOOK_SUMMARY.md
       - Quickstart: FACTBOOK_QUICKSTART.md
