@@ -34,6 +34,10 @@ description = "MASSIVE non-secret fixture values (documented dev fallback key, t
 stopwords = [
   # Documented development fallback (backend/app/security.py, api.py, README, docs)
   "dev-secret-key",
+  # Historical insecure fallback removed from HEAD but present in git history
+  # (pre-2026-08 commits; superseded by fail-closed auth — see audit SEC-02)
+  "default-secret-key",
+  "replace_with_generated_key",
   # Test fixture keys (tests/test_api_security.py, tests/test_llm_endpoint.py)
   "testkey111",
   "badkey00",
