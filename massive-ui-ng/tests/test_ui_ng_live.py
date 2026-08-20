@@ -7,10 +7,10 @@ auth, client stop/shock commands) and the Prometheus /metrics endpoint.
 from __future__ import annotations
 
 import pytest
+from backend.app.live_runner import LiveEnergySim, LiveMassiveSim
 from fastapi.testclient import TestClient
 from starlette.websockets import WebSocketDisconnect as _WsDisconnect
 
-from backend.app.live_runner import LiveEnergySim, LiveMassiveSim
 from backend.app.main import create_app
 from backend.app.settings import UISettings
 
