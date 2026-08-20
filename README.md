@@ -47,12 +47,13 @@ cd MASSIVE
 python -m pip install --upgrade pip
 pip install -r requirements.txt
 cp .env.example .env    # add your API key if needed
-python app.py           # opens Streamlit UI
+uvicorn api:app --host 0.0.0.0 --port 8000
+# → API docs: http://localhost:8000/docs
 ```
 
-**No Streamlit?** Run the API server instead:
+**Prefer the canonical versioned API (`/v1/*`)?**
 ```bash
-uvicorn api:app --host 0.0.0.0 --port 8000
+uvicorn backend.app.main:app --host 0.0.0.0 --port 8000
 ```
 
 > **Minimum requirement:** Python 3.11, 500 MB free RAM. Rust/CUDA/torch are optional.
