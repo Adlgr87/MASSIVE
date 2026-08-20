@@ -41,6 +41,8 @@ target/
 .venv/
 venv/
 node_modules/
+frontend/dist/
+site/
 
 # Sensitive and lock files
 .context_cache.json
