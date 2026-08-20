@@ -29,11 +29,17 @@
 5. **Seguridad**: tests de auth (401/503/429), uploads maliciosos y no-fuga de secretos en respuestas/logs.
 6. **Smoke Docker**: `docker-e2e.yml` ya existe (build + health) — mantener verde.
 
-## 4. Cobertura
+## 4. Cobertura (medida 2026-08-20 en HEAD de la rama de trabajo)
 
-- Signoff previo (2026-08-16): 47% agregado. **Por medir en HEAD** con:
-  `python -m pytest tests/ --cov --cov-report=term` (config en `pyproject.toml [tool.coverage]`).
-- Umbral: se fijará tras medir, como `baseline − 0` inicial y subiendo por hitos. Nada de cifras arbitrarias.
+`pytest tests/ --cov` (branch coverage, config `pyproject.toml [tool.coverage]`):
+
+- **TOTAL: 68%** (6 476 stmts; scope ahora incluye `backend/`, `forecast/`, `api`).
+- Módulos clave: `services/llm_orchestrator` 81% · `micro_engine` 82% · `massive_engine` 76% ·
+  `energy_engine` 71% · `simulator` 66% · `multilayer_engine` 68%.
+- Referencia previa del signoff (2026-08-16): 47% (scope distinto, sin backend).
+- Umbral propuesto (Hito 3): `--cov-fail-under=65` como suelo anti-regresión, subiendo por hitos.
+  Rutas críticas prioritarias para subir cobertura: `backend/app/main.py` (middleware+ready),
+  `massive_core/network_inference/`, `massive_core/neural_physics/pinns.py` (0%).
 
 ## 5. Priorización de rutas críticas para nuevos tests
 

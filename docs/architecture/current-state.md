@@ -86,7 +86,7 @@ flowchart LR
 | `uvicorn api:app` (legacy) | ✅ import OK; rutas: `/api/extract`, `/api/wizard`, `/api/simulate-uil`, `/api/v1/{architect,forecast,energy}`, `/health`, `/ready`, `/version` | introspección FastAPI en venv limpio |
 | `uvicorn backend.app.main:app` (canónico) | ✅ import OK; rutas `/v1/*` + infra; `POST /v1/simulate` → 200 con `X-API-Key: dev-secret-key` (modo dev) | TestClient ejecutado |
 | `python app.py` (README Quick Start) | ❌ **`app.py` no existe**; streamlit no está en requirements | `ls app.py` → No such file |
-| `massive-cli` | ⚠️ declarado en pyproject (`massive.cli.main:main`); no verificado end-to-end aún | pyproject.toml `[project.scripts]` |
+| `massive-cli` / `python -m massive.cli` | ✅ verificado 2026-08-20: `version` y `simulate --pasos 5` funcionales | ejecutado en venv limpio |
 | `python -m benchmarks.runner` | ✅ usado por CI (pvu-validation) | workflows |
 
 ### 2.2 Duplicación / confusión de backends (hallazgo estructural)
@@ -178,7 +178,7 @@ Tests que fallan y causa raíz:
 
 - `0` (archivo vacío en raíz), `test-zapier.txt`, `.github/test-zapier-dir.txt` — basura del incidente del token Zapier (PR #81).
 - `README.backup.md`, `site/` (build MkDocs **commiteado** al repo).
-- `backend/app/services/llm_orchestrator.py` — duplicado huérfano con contrato divergente.
+- ~~`backend/app/services/llm_orchestrator.py`~~ + 15 módulos UI-NG huérfanos — **eliminados 2026-08-20** (PR #85, verificados sin importadores; persisten en `massive-ui-ng/backend/`).
 - `frontend/src/MASSIVE_UIL_demo.jsx` — demo no referenciado por el build (a confirmar en FASE 2).
 - `MASSIVE_PRODUCTION_SIGNOFF.md` documenta un `Makefile` que **no existe** y entry-points (`massive = "simulator:main"`) que no coinciden con pyproject (`massive-cli`).
 

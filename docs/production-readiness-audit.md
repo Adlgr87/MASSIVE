@@ -4,8 +4,13 @@
 > Entorno de verificación: Python 3.11.2 (venv limpio), Node 22.22.3, pytest 8, ruff/black/mypy actuales.
 > Sin Docker ni toolchain Rust en el sandbox (limitación documentada; esas verificaciones se delegan a CI).
 >
-> **Estado Hito 0 (2026-08-20, rama arena/01a01fbd-massive): COMPLETO.**
-> Suite completa: 521 tests verdes sin exclusiones (~35 s); ruff/black/mypy-slice limpios; `npm run build` verde; docs de auditoría añadidos. Pendiente de verificación en CI tras el merge.
+> **Estado (2026-08-20, rama arena/01a01fbd-massive, PR #85):**
+> - **Hito 0 COMPLETO** (CI verificada en PR: core/scientific/api/pvu/full-suite/compose-build-health/frontend/lint/mypy ✅ — 14/15 checks; solo gitleaks 🔴 por SEC-01 pre-existente, ver §3).
+> - **Hito 1**: SEC-02/03 implementados y testeados; SEC-01 (rotación token) **pendiente del owner**.
+> - **Hito 2**: ARCH-01 resuelto (16 módulos huérfanos UI-NG eliminados del backend raíz); DOCS-01/OPS-02 resueltos; decisión kit UI-NG (ARCH-02) pendiente del owner.
+> - **Hito 4 (parcial)**: request-id + access log estructurado; `/ready` redefinido (solo dependencias requeridas; degradación informativa de LLM).
+> - **Hito 5 (parcial)**: baseline de rendimiento medido (docs/performance/baseline.md); cobertura real medida: **68%**.
+> - Pendiente del owner: rotación token, workflow secret-scan determinista, branch protection, decisión UI-NG, merge PR #85.
 
 ---
 

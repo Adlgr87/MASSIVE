@@ -21,7 +21,7 @@ curl -fsS http://localhost:8000/ready   # debe reflejar dependencias (LLM config
 | Endpoint | Semántica | Acción si falla |
 |---|---|---|
 | `/health` | liveness (proceso vivo) | reinicio del contenedor (restart: unless-stopped) |
-| `/ready` | readiness (dependencias: LLM creds, adapter) | NO reiniciar: revisar `.env` (claves LLM) — el servicio deliberadamente devuelve 503 si `/v1/llm` no es utilizable |
+| `/ready` | readiness — SOLO dependencias requeridas (settings + núcleo de simulación) | 503 ⇒ problema real del núcleo: revisar arranque/imports. Sin claves LLM devuelve **200 con `mode: "degraded"`** (solo `/v1/llm/*` se degrada; el resto de la API sigue sirviendo) |
 | `/version` | build metadata | — |
 
 ## 3. Configuración crítica de producción (checklist)

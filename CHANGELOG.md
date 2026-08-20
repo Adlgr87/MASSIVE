@@ -5,7 +5,37 @@ All notable changes to **MASSIVE** are documented here. This project follows
 
 ## [Unreleased] — production-readiness hardening (2026-08-20)
 
+### Added
+- Request correlation & access logging in the canonical backend: every
+  response carries `X-Request-ID` (echoed when the client supplies it) and a
+  single structured access line (`request_id/method/path/status/duration_ms`).
+- `Makefile` with verified developer targets (`install/test/test-cov/lint/
+  format/typecheck/api/frontend-*/benchmark`).
+- `tests/test_backend_observability.py` (5 tests) covering request-id
+  propagation and readiness semantics.
+
+### Changed
+- **`/ready` semantics (Hito 4)**: readiness now depends only on REQUIRED
+  dependencies (typed settings + simulation core import). Missing LLM
+  credentials no longer 503 the whole probe — the API answers
+  `200 {"mode": "degraded"}` because core endpoints work without LLMs
+  (`/v1/llm/*` degrades itself with 503). Load balancers keep routing
+  traffic to a fully-functional core.
+- Coverage measurement scope now includes `backend/`, `forecast/` and `api`
+  (`[tool.coverage.run] source`); measured baseline: **68%** branch coverage
+  (6 476 stmts).
+
+### Removed
+- 16 orphaned UI-NG modules from the root backend (PR #84 residue, verified
+  unreachable from `backend.app.main` and unimported by tests): evaluation.py
+  (+eval_golden.json), live_runner.py, llm_chat.py, llm_prompts.py, metrics.py,
+  narrative.py, rate_limit.py, run_store.py, scenario_parser.py, routers
+  conversation/live/simulation/status, models/dto_ui, services/. The kit keeps
+  its own copies under `massive-ui-ng/backend/`.
+
 ### Fixed
+- Tests no longer dirty the working tree: the Factbook validation-report test
+  writes to pytest `tmp_path` instead of `reports/factbook_validation_*.json`.
 - **TEST-01 (blocker)**: `tests/test_llm_endpoint.py` and
   `tests/test_llm_orchestrator_coverage.py` were rewritten by PR #84 against a
   `create_app` factory + `classified_motor` contract that never existed in the
