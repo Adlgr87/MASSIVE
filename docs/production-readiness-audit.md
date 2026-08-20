@@ -79,9 +79,53 @@ Severidad: 🔴 crítico · 🟠 alto · 🟡 medio · 🔵 bajo. Prob./Impacto:
 
 ### Propuesta de mejora CI (requiere owner — el agente no puede pushear `.github/workflows/*`)
 
-`secret_scan.yml` actual usa `gitleaks/gitleaks-action@v2`, que ante push de rama nueva/forzada (sin `before` válido) escanea el **historial completo heredado** y falla siempre por el token Zapier histórico (SEC-01). Variante determinista propuesta (escanear exactamente el cambio propuesto, binario pinneado):
+**Estado (2026-08-20): autorizado por el owner e implementado hasta donde la credencial lo permite.** El agente tiene autorización explícita del owner para este cambio, pero el token de la App (`arena-ai-coding-agent[bot]`) carece del scope `workflows`: git push y la REST API lo rechazan (`refusing to allow a GitHub App to create or update workflow ... without workflows permission`). El YAML final quedó revertido a la versión vigente en la rama; aplicar el siguiente contenido exacto en `.github/workflows/secret_scan.yml` (vía GitHub web UI en la rama del PR o en main) cierra el check:
 
 ```yaml
+name: Secret scan
+
+on: [pull_request, push]
+
+permissions:
+  contents: read
+
+jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine scan range
+        id: range
+        run: |
+          set -eu
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            # Only the commits unique to this PR (symmetric difference with base)
+            RANGE="origin/${{ github.base_ref }}...HEAD"
+          elif [ -n "${{ github.event.before }}" ] && git cat-file -e "${{ github.event.before }}"^{commit} 2>/dev/null; then
+            RANGE="${{ github.event.before }}..HEAD"
+          else
+            # New branch or force-push without valid before: scan the tip commit
+            RANGE="HEAD~1..HEAD"
+          fi
+          echo "range=${RANGE}" >> "$GITHUB_OUTPUT"
+          echo "Scanning gitleaks range: ${RANGE}"
+
+      - name: Run gitleaks (pinned)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -eu
+          VERSION=8.24.3
+          curl -sL "https://github.com/gitleaks/gitleaks/releases/download/v${VERSION}/gitleaks_${VERSION}_linux_x64.tar.gz" \
+            | tar xz -C /usr/local/bin gitleaks
+          gitleaks git --redact --config gitleaks.toml --verbose \
+            --log-opts "${{ steps.range.outputs.range }}"
+```
+
+Contexto: el `secret_scan.yml` actual usa `gitleaks/gitleaks-action@v2`, que ante push de rama nueva/forzada (sin `before` válido) escanea el **historial completo heredado** y falla siempre por el token Zapier histórico (SEC-01). La variante determinista anterior escanea exactamente el cambio propuesto con el binario pinneado 8.24.3 + `gitleaks.toml` del repo (reglas por defecto + allowlist documentada). Auditoría ad-hoc del historial completo: `gitleaks git --log-opts=all`.yaml
 name: Secret scan
 on: [pull_request, push]
 permissions:
