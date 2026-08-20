@@ -85,7 +85,7 @@ jobs:
           set -eu
           VERSION=8.24.3
           curl -sL "https://github.com/gitleaks/gitleaks/releases/download/v${VERSION}/gitleaks_${VERSION}_linux_x64.tar.gz" | tar xz -C /usr/local/bin gitleaks
-          gitleaks git --redact --config .gitleaks.toml --verbose --log-opts "${{ steps.range.outputs.range }}"
+          gitleaks git --redact --config gitleaks.toml --verbose --log-opts "${{ steps.range.outputs.range }}"
 ```
 
 ### Hito 0 — Desbloquear ejecución y reproducibilidad (S)
