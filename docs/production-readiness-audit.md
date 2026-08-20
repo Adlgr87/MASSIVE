@@ -51,6 +51,24 @@ Severidad: 🔴 crítico · 🟠 alto · 🟡 medio · 🔵 bajo. Prob./Impacto:
 | PERF-01 | Rendimiento | Sin baseline reproducible de rendimiento en CI/CD verificable desde clonación limpia (benchmarks existen pero informales) | `benchmarks/`, `benchmark_scalability.py` (con errores de lint) | 🟡 | M | M | Crear `docs/performance/baseline.md` con método reproducible | B | Baseline documentado + script ejecutable |
 | REL-01 | Release | Sin tags, sin releases, CHANGELOG mínimo; publish depende de tags que nunca se crearon | `git tag` → vacío; `gh release list` → vacío | 🟡 | M | M | Checklist de release + flujo semver documentado | B | `docs/release-checklist.md` ejecutado en un RC |
 
+### Estado de resolución (2026-08-20, rama de trabajo → PR #85)
+
+| ID | Estado | Evidencia de cierre |
+|----|--------|---------------------|
+| TEST-01/02/03 | ✅ resuelto | suite completa 521→530 tests verdes sin exclusiones; CI `full-suite` ✅ |
+| FE-01 | ✅ resuelto | `npm run build` OK; CI `Build Frontend` / `compose-build-health` ✅ (compose valida build+arranque) |
+| LINT-01 | ✅ resuelto | ruff/black/mypy limpios; CI `Python Lint` ✅. Hallazgo adicional: 2 I001 en `massive-ui-ng/tests/` (llegaron con PR #84) enmascarados localmente por `.ruff_cache` rancia — CI era la fuente de verdad; usar `--no-cache` al dudar |
+| SEC-02/03 | ✅ resuelto | helper compartido `massive_core.config.api_auth` + 12 tests de paridad/auth |
+| SEC-01 | 🔴 **pendiente owner** | token Zapier accesible en historial (commit d99b06b3; 77 commits lo contienen en árbol). Rotar. Ver `gitleaks.toml` (allowlist documentada) y propuesta de workflow en §3 |
+| OPS-02 | ✅ resuelto | supervisord/nginx/Dockerfile/compose sin streamlit; `compose-build-health` ✅ |
+| DOCS-01 | ✅ resuelto | quickstart con comandos reales; `massive-cli` verificado |
+| ARCH-01 | ✅ resuelto | 16 módulos huérfanos eliminados (AST reachability + grep sin importadores); API funcional post-borrado (200 en /health, /v1/simulate, /v1/llm) |
+| ARCH-02 | 🟡 pendiente owner | decisión de destino del kit `massive-ui-ng/` (ver target-state D1) |
+| HYG-01 | ✅ resuelto | archivos basura eliminados; `site/` des-trackeado |
+| PERF-01 | ✅ parcial | baseline reproducible con números reales (docs/performance/baseline.md) |
+| REL-01 | 🟡 pendiente | checklist listo; requiere tag semver + branch protection (owner) |
+| NUEVO OBS-02 | ✅ implementado | `/metrics` Prometheus (contadores por grupo + uptime), `X-Request-ID`, access log con duración, límite body 413 (`MASSIVE_MAX_BODY_MB`) — 9 tests |
+
 ### Riesgos detectados y descartados (con evidencia)
 
 - **Secretos en árbol actual**: regex de patrones (sk-, gsk_, xox, AKIA, ghp_, hf_, Bearer largos) sobre `.py/.md/.yml/.json/.txt/.ts/.sh` → 0 hallazgos.

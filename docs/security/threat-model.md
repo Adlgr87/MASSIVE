@@ -37,7 +37,7 @@
 | T4 | Prompt injection → config maliciosa | intent NL → wizard LLM → config de motores | respuestas LLM pasan por `wizard_config`; campos finales validados por DTOs `extra=forbid` en `/v1`; `/api/wizard` (legacy) devuelve config sin aplicar | 🟡 revisar allowlist de claves de config en el merge (`partial_config`, `config_overrides`) |
 | T5 | SSRF vía `OLLAMA_HOST` | env controlado por operador (no usuario) | no user-controlled | ✅ (verificar que ningún endpoint acepte URLs de usuario) |
 | T6 | Path traversal en uploads | `tempfile.NamedTemporaryFile(suffix=_safe_suffix(...))` con allowlist de extensiones | allowlist implementada; archivo temporal; sin path de usuario | ✅ (mantener test) |
-| T7 | DoS por payloads enormes | JSON body sin límite global explícito (upload sí limitado a 10 MB) | rate limit 60/min | 🟡 límite de body para JSON endpoints (Hito 4) |
+| T7 | DoS por payloads enormes | JSON body sin límite global explícito (upload sí limitado a 10 MB) | rate limit 60/min + **middleware 413 si `Content-Length > MASSIVE_MAX_BODY_MB`** (2026-08-20, test incluido) | ✅ (queda: límites por endpoint específicos si se requiere) |
 | T8 | Ejecución arbitraria vía deserialización | JSON/pydantic únicamente; sin pickle/yaml.load inseguros en superficie auditada | `grep` sin hallazgos en endpoints | ✅ |
 | T9 | Stack traces / rutas internas al cliente | legacy `_public_error` en extract; otros endpoints envuelven en HTTPException | parcial | 🟡 revisar handlers globales (Hito 2) |
 | T10 | Abuso de LLM (coste) | llamadas a proveedores por request | rate limit; `MASSIVE_LLM_TIMEOUT_SECONDS`/retries | 🟡 presupuesto por key (futuro) |

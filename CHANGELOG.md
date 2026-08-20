@@ -6,6 +6,13 @@ All notable changes to **MASSIVE** are documented here. This project follows
 ## [Unreleased] — production-readiness hardening (2026-08-20)
 
 ### Added
+- **`GET /metrics`** on the canonical backend: dependency-free Prometheus
+  text format — `http_requests_total{method,group,status}` counter (recorded
+  by the request middleware, path groups llm/simulate/forecast/engine/
+  benchmarks/infra/other) and `massive_uptime_seconds` gauge.
+- Request body-size guard: requests whose declared `Content-Length` exceeds
+  `MASSIVE_MAX_BODY_MB` (default 10 MB) are rejected with 413 before any
+  handler work — previously only file uploads were size-limited.
 - Request correlation & access logging in the canonical backend: every
   response carries `X-Request-ID` (echoed when the client supplies it) and a
   single structured access line (`request_id/method/path/status/duration_ms`).

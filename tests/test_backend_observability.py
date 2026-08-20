@@ -71,3 +71,57 @@ def test_health_is_liveness_only(client: TestClient):
     resp = client.get("/health")
     assert resp.status_code == 200
     assert resp.json()["status"] == "healthy"
+
+
+# ---------------------------------------------------------------------------
+# Metrics endpoint (Hito 4)
+# ---------------------------------------------------------------------------
+
+
+def test_metrics_endpoint_prometheus_text(client: TestClient):
+    resp = client.get("/metrics")
+    assert resp.status_code == 200
+    assert "text/plain" in resp.headers["content-type"]
+    body = resp.text
+    assert "# TYPE http_requests_total counter" in body
+    assert "http_requests_total{" in body  # at least one series recorded
+    assert "massive_uptime_seconds" in body
+
+
+def test_metrics_records_requests_by_group(client: TestClient):
+    client.get("/health")
+    client.get("/metrics")
+    resp = client.get("/metrics")
+    body = resp.text
+    # The three infra calls above must be counted
+    assert 'group="infra"' in body
+    assert 'method="GET"' in body
+    assert 'status="200"' in body
+
+
+def test_body_size_limit_rejects_oversized_payload(client: TestClient, monkeypatch):
+    """Requests with declared Content-Length above MASSIVE_MAX_BODY_MB get 413."""
+    monkeypatch.setenv("MASSIVE_MAX_BODY_MB", "1")  # reload app to pick it up?
+    # _MAX_BODY_BYTES is read at import time; re-import would need a fresh app.
+    # Instead verify the guard logic against the imported constant:
+    import backend.app.main as main_mod
+
+    limit = main_mod._MAX_BODY_BYTES
+    assert limit >= 1 * 1024 * 1024
+    # Oversized declared length -> 413 without reading the body
+    resp = client.post(
+        "/v1/simulate",
+        content=b"x",
+        headers={"Content-Type": "application/json", "Content-Length": str(limit + 1)},
+    )
+    assert resp.status_code == 413
+    assert "exceeds" in resp.json()["detail"]
+
+
+def test_body_size_limit_allows_normal_payload(client: TestClient):
+    resp = client.post(
+        "/v1/simulate",
+        json={"pasos": 3},
+        headers={"X-API-Key": "dev-secret-key"},
+    )
+    assert resp.status_code == 200

@@ -39,7 +39,9 @@ from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse, Response
 
+from backend.app.metrics import registry as metrics_registry
 from backend.app.routers import benchmark, engine, forecast, llm, sim
 from backend.app.settings import get_app_settings
 
@@ -89,7 +91,44 @@ app.add_middleware(
 )
 
 
-# --- Request correlation + access log ------------------------------------
+# --- Request body size limit (defence against oversized payloads) --------
+_MAX_BODY_BYTES = int(os.getenv("MASSIVE_MAX_BODY_MB", "10")) * 1024 * 1024
+
+
+@app.middleware("http")
+async def body_size_limit(request: Request, call_next):
+    """Reject requests whose declared body exceeds ``MASSIVE_MAX_BODY_MB``.
+
+    Uploads are size-checked inside the upload handlers; this guard covers
+    every other JSON endpoint so a single huge payload cannot exhaust memory
+    before validation runs.
+    """
+    content_length = request.headers.get("content-length")
+    if content_length and content_length.isdigit() and int(content_length) > _MAX_BODY_BYTES:
+        return JSONResponse(
+            status_code=413,
+            content={"detail": f"Request body exceeds {_MAX_BODY_BYTES // (1024 * 1024)} MB limit"},
+        )
+    return await call_next(request)
+
+
+# --- Request correlation + access log + metrics ---------------------------
+def _path_group(path: str) -> str:
+    if path.startswith("/v1/llm"):
+        return "llm"
+    if path.startswith("/v1/simulate") or path.startswith("/v1/scientific"):
+        return "simulate"
+    if path.startswith("/v1/forecast"):
+        return "forecast"
+    if path.startswith("/v1/engine"):
+        return "engine"
+    if path.startswith("/v1/benchmarks"):
+        return "benchmarks"
+    if path in ("/health", "/ready", "/version", "/metrics"):
+        return "infra"
+    return "other"
+
+
 @app.middleware("http")
 async def request_context(request: Request, call_next):
     """Propagate/generate X-Request-ID and emit one structured access line.
@@ -103,6 +142,14 @@ async def request_context(request: Request, call_next):
     response = await call_next(request)
     elapsed_ms = (time.perf_counter() - start) * 1000.0
     response.headers["X-Request-ID"] = request_id
+    metrics_registry.inc(
+        "http_requests_total",
+        {
+            "method": request.method,
+            "group": _path_group(request.url.path),
+            "status": str(response.status_code),
+        },
+    )
     log.info(
         "http request_id=%s method=%s path=%s status=%s duration_ms=%.1f",
         request_id,
@@ -143,6 +190,15 @@ async def health_check() -> dict[str, Any]:
         "service": "MASSIVE UIL API",
         "version": "1.0.0",
     }
+
+
+@app.get("/metrics")
+async def metrics() -> Response:
+    """Prometheus text-format metrics (read-only counters, no secrets)."""
+    return Response(
+        content=metrics_registry.render(),
+        media_type="text/plain; version=0.0.4; charset=utf-8",
+    )
 
 
 @app.get("/ready")

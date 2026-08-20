@@ -36,7 +36,12 @@ curl -fsS http://localhost:8000/ready   # debe reflejar dependencias (LLM config
 ## 4. Logs y métricas
 
 - Logs a stdout (supervisord los redirige); `MASSIVE_LOG_FILE` opcional para archivo.
-- Kit UI-NG expone `/metrics` Prometheus (no cableado en despliegue actual).
+- Cada request registra una línea estructurada `http request_id=… method=… path=… status=… duration_ms=…`
+  y devuelve la cabecera `X-Request-ID` (eco si el cliente la aporta) para correlación.
+- **`GET /metrics`** (backend canónico): formato texto Prometheus — contador
+  `http_requests_total{method,group,status}` + gauge `massive_uptime_seconds`. Sin secretos.
+  Scraping sugerido (30s): `massive_http_requests_total` por grupo `llm|simulate|forecast|engine|benchmarks|infra|other`.
+- Límite de body: peticiones con `Content-Length > MASSIVE_MAX_BODY_MB` (default 10 MB) → 413.
 - Buscar: `WARNING` (`dev fallback`, `wizard_config failed`), `ERROR` (fallos de dispatch).
 
 ## 5. Rollback
