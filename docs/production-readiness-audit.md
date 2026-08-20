@@ -54,6 +54,40 @@ Severidad: 🔴 crítico · 🟠 alto · 🟡 medio · 🔵 bajo. Prob./Impacto:
 
 ## 3. Plan por hitos
 
+### Propuesta de mejora CI (requiere owner — el agente no puede pushear `.github/workflows/*`)
+
+`secret_scan.yml` actual usa `gitleaks/gitleaks-action@v2`, que ante push de rama nueva/forzada (sin `before` válido) escanea el **historial completo heredado** y falla siempre por el token Zapier histórico (SEC-01). Variante determinista propuesta (escanear exactamente el cambio propuesto, binario pinneado):
+
+```yaml
+name: Secret scan
+on: [pull_request, push]
+permissions:
+  contents: read
+jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: range
+        run: |
+          set -eu
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            RANGE="origin/${{ github.base_ref }}...HEAD"
+          elif [ -n "${{ github.event.before }}" ] && git cat-file -e "${{ github.event.before }}"^{commit} 2>/dev/null; then
+            RANGE="${{ github.event.before }}..HEAD"
+          else
+            RANGE="HEAD~1..HEAD"
+          fi
+          echo "range=${RANGE}" >> "$GITHUB_OUTPUT"
+      - run: |
+          set -eu
+          VERSION=8.24.3
+          curl -sL "https://github.com/gitleaks/gitleaks/releases/download/v${VERSION}/gitleaks_${VERSION}_linux_x64.tar.gz" | tar xz -C /usr/local/bin gitleaks
+          gitleaks git --redact --config .gitleaks.toml --verbose --log-opts "${{ steps.range.outputs.range }}"
+```
+
 ### Hito 0 — Desbloquear ejecución y reproducibilidad (S)
 **Objetivo:** CI verde en lo esencial; clonación limpia funciona.
 - T0.1 (TEST-01/02/03): reparar 2 módulos de tests + 2 tests contra contrato canónico. [S/M] — rollback: revert commit.
