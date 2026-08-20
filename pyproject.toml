@@ -73,9 +73,9 @@ python_files = ["test_*.py"]
 addopts = "-q"
 
 [tool.coverage.run]
-source = ["massive", "massive_core", "micro_massive", "services",
-          "energy_engine", "massive_engine", "multilayer_engine",
-          "micro_engine", "simulator"]
+source = ["massive", "massive_core", "micro_massive", "services", "backend",
+          "forecast", "energy_engine", "massive_engine", "multilayer_engine",
+          "micro_engine", "simulator", "api"]
 branch = true
 omit = [
   "*/tests/*",

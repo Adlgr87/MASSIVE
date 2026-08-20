@@ -332,7 +332,7 @@ class TestValidationFramework:
         passes, score, _ = validator.validate_accuracy(sim, "US", threshold=50.0)
         log.info(f"accuracy check: {'PASS' if passes else 'FAIL'}, score={score:.2f}")
 
-    def test_report_saving(self):
+    def test_report_saving(self, tmp_path):
         from massive.core.factbook.validator import FactbookValidator
 
         validator = FactbookValidator()
@@ -354,8 +354,10 @@ class TestValidationFramework:
         report = validator.validate_simulation(
             simulation_results=sim, country_identifier="US", config={"test": True}
         )
-        report_path = report.save()
-        log.info(f"report saved to: {report_path}")
+        # Save to pytest tmp dir — the default path writes into the repo tree
+        # (reports/factbook_validation_*.json) and dirties the working copy.
+        report_path = report.save(tmp_path / "factbook_validation_test.json")
+        assert Path(report_path).exists()
 
 
 class TestAgentInitialization:
