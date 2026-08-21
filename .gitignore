@@ -8,6 +8,7 @@
 __pycache__/
 *.pyc
 *.pyo
+.ruff_cache/
 
 # Reports generados en runtime
 reports/validation/run_*/
@@ -41,6 +42,8 @@ target/
 .venv/
 venv/
 node_modules/
+frontend/dist/
+site/
 
 # Sensitive and lock files
 .context_cache.json

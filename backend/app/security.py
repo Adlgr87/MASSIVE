@@ -22,7 +22,12 @@ import os
 from fastapi import Header, HTTPException, Request
 from fastapi.security import APIKeyHeader
 
-from massive_core.config import build_rate_limiter
+from massive_core.config import (
+    DEV_FALLBACK_API_KEY,
+    api_key_matches,
+    build_rate_limiter,
+    is_dev_env,
+)
 
 log = logging.getLogger("massive.backend.security")
 
@@ -48,16 +53,15 @@ async def get_api_key(
     """
     expected = os.getenv("MASSIVE_API_KEY")
     if not expected:
-        env = os.getenv("MASSIVE_ENV", "development")
-        if env == "development":
-            expected = "dev-secret-key"
+        if is_dev_env(os.getenv("MASSIVE_ENV")):
+            expected = DEV_FALLBACK_API_KEY
             log.warning("MASSIVE_API_KEY not set — using dev fallback (development mode only)")
         else:
             raise HTTPException(
                 status_code=503,
                 detail="API key not configured — server is not ready",
             )
-    if api_key != expected:
+    if not api_key_matches(api_key, expected):
         raise HTTPException(status_code=401, detail="Invalid API Key")
     return api_key
 

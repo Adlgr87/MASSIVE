@@ -225,10 +225,13 @@ class TestInterventionOptimizerIntegration:
         from massive.core.factbook import FactbookContext
         from massive.core.intervention_optimizer import estimate_intervention_cost
 
+        rng = np.random.default_rng(42)
         context = FactbookContext()
         for cc in ["US", "CH", "GM"]:
             constraints = context.get_intervention_constraints(cc)
-            interventions = np.random.uniform(-1, 1, 100)
+            # Contract: interventions is a (n_phases, n_agents) matrix
+            # (see massive/core/intervention_optimizer.py::estimate_intervention_cost).
+            interventions = rng.uniform(-1, 1, (5, 20))
             cost = estimate_intervention_cost(
                 interventions,
                 constraints.get("cost_scale_factor", 1.0),
@@ -329,7 +332,7 @@ class TestValidationFramework:
         passes, score, _ = validator.validate_accuracy(sim, "US", threshold=50.0)
         log.info(f"accuracy check: {'PASS' if passes else 'FAIL'}, score={score:.2f}")
 
-    def test_report_saving(self):
+    def test_report_saving(self, tmp_path):
         from massive.core.factbook.validator import FactbookValidator
 
         validator = FactbookValidator()
@@ -351,8 +354,10 @@ class TestValidationFramework:
         report = validator.validate_simulation(
             simulation_results=sim, country_identifier="US", config={"test": True}
         )
-        report_path = report.save()
-        log.info(f"report saved to: {report_path}")
+        # Save to pytest tmp dir — the default path writes into the repo tree
+        # (reports/factbook_validation_*.json) and dirties the working copy.
+        report_path = report.save(tmp_path / "factbook_validation_test.json")
+        assert Path(report_path).exists()
 
 
 class TestAgentInitialization:

@@ -1,0 +1,56 @@
+# Gitleaks configuration for MASSIVE.
+#
+# Extends the upstream default ruleset with explicit, documented exceptions.
+# NOTHING in this file may ever be a real credential. If you are tempted to
+# add a real key here, you are doing it wrong: real keys live in environment
+# variables (see docs/security/secrets-and-configuration.md).
+
+[extend]
+useDefault = true
+
+# ---------------------------------------------------------------------------
+# EXCEPTION 1 — historical Zapier token (SEC-01), pending owner rotation.
+#
+# Commit d99b06b3 ("Add Micro — Familias de Futuros module", 2026-07) added
+# `.codebuff/config.json` containing a real ZAPIER_MCP_TOKEN. PR #81 removed
+# the file but the token remains recoverable from the public git history and
+# is therefore considered COMPROMISED; rotation has been formally requested
+# from the repository owner (docs/production-readiness-audit.md, SEC-01).
+#
+# Why allowlist the commit: branch-push scans that inherit the full history
+# flag this dead commit on every run, which masks any NEW leak. Skipping ONLY
+# this exact commit keeps every other rule active. Remove this entry once the
+# token has been rotated (it is then harmless dead history).
+# ---------------------------------------------------------------------------
+[[allowlists]]
+description = "SEC-01: known historical Zapier token, compromised & documented, owner rotation pending"
+commits = ["d99b06b364f07486ca51597560950813aade742c"]
+
+# ---------------------------------------------------------------------------
+# EXCEPTION 2 — non-secret fixture values used by tests/docs/examples.
+# ---------------------------------------------------------------------------
+[[allowlists]]
+description = "MASSIVE non-secret fixture values (documented dev fallback key, test keys, .env.example placeholders)"
+stopwords = [
+  # Documented development fallback (backend/app/security.py, api.py, README, docs)
+  "dev-secret-key",
+  # Historical insecure fallback removed from HEAD but present in git history
+  # (pre-2026-08 commits; superseded by fail-closed auth — see audit SEC-02)
+  "default-secret-key",
+  "replace_with_generated_key",
+  # Test fixture keys (tests/test_api_security.py, tests/test_llm_endpoint.py)
+  "testkey111",
+  "badkey00",
+  "fake-llm-key",
+  "live-secret",
+  "secret-123",
+  # .env.example placeholders
+  "change-me-in-production",
+  "ci-test-key",
+  "your_groq_api_key_here",
+  "your_openai_api_key_here",
+  "your_openrouter_api_key_here",
+  "your_twitter_bearer_token_here",
+  "your_reddit_client_id_here",
+  "your_reddit_client_secret_here",
+]

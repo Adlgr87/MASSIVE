@@ -33,11 +33,15 @@ from __future__ import annotations
 import logging
 import os
 import sys
+import time
+import uuid
 from typing import Any
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse, Response
 
+from backend.app.metrics import registry as metrics_registry
 from backend.app.routers import benchmark, engine, forecast, llm, sim
 from backend.app.settings import get_app_settings
 
@@ -87,6 +91,76 @@ app.add_middleware(
 )
 
 
+# --- Request body size limit (defence against oversized payloads) --------
+_MAX_BODY_BYTES = int(os.getenv("MASSIVE_MAX_BODY_MB", "10")) * 1024 * 1024
+
+
+@app.middleware("http")
+async def body_size_limit(request: Request, call_next):
+    """Reject requests whose declared body exceeds ``MASSIVE_MAX_BODY_MB``.
+
+    Uploads are size-checked inside the upload handlers; this guard covers
+    every other JSON endpoint so a single huge payload cannot exhaust memory
+    before validation runs.
+    """
+    content_length = request.headers.get("content-length")
+    if content_length and content_length.isdigit() and int(content_length) > _MAX_BODY_BYTES:
+        return JSONResponse(
+            status_code=413,
+            content={"detail": f"Request body exceeds {_MAX_BODY_BYTES // (1024 * 1024)} MB limit"},
+        )
+    return await call_next(request)
+
+
+# --- Request correlation + access log + metrics ---------------------------
+def _path_group(path: str) -> str:
+    if path.startswith("/v1/llm"):
+        return "llm"
+    if path.startswith("/v1/simulate") or path.startswith("/v1/scientific"):
+        return "simulate"
+    if path.startswith("/v1/forecast"):
+        return "forecast"
+    if path.startswith("/v1/engine"):
+        return "engine"
+    if path.startswith("/v1/benchmarks"):
+        return "benchmarks"
+    if path in ("/health", "/ready", "/version", "/metrics"):
+        return "infra"
+    return "other"
+
+
+@app.middleware("http")
+async def request_context(request: Request, call_next):
+    """Propagate/generate X-Request-ID and emit one structured access line.
+
+    The ID is accepted from trusted upstream proxies (nginx sets none today,
+    so it is client-supplied only when the proxy allows it) and echoed back so
+    operators can correlate a user report with logs.
+    """
+    request_id = request.headers.get("x-request-id") or uuid.uuid4().hex[:16]
+    start = time.perf_counter()
+    response = await call_next(request)
+    elapsed_ms = (time.perf_counter() - start) * 1000.0
+    response.headers["X-Request-ID"] = request_id
+    metrics_registry.inc(
+        "http_requests_total",
+        {
+            "method": request.method,
+            "group": _path_group(request.url.path),
+            "status": str(response.status_code),
+        },
+    )
+    log.info(
+        "http request_id=%s method=%s path=%s status=%s duration_ms=%.1f",
+        request_id,
+        request.method,
+        request.url.path,
+        response.status_code,
+        elapsed_ms,
+    )
+    return response
+
+
 # --- Include versioned routers -------------------------------------------
 app.include_router(sim.router, prefix="/v1")
 app.include_router(forecast.router, prefix="/v1")
@@ -118,16 +192,51 @@ async def health_check() -> dict[str, Any]:
     }
 
 
+@app.get("/metrics")
+async def metrics() -> Response:
+    """Prometheus text-format metrics (read-only counters, no secrets)."""
+    return Response(
+        content=metrics_registry.render(),
+        media_type="text/plain; version=0.0.4; charset=utf-8",
+    )
+
+
 @app.get("/ready")
 async def readiness_check() -> dict[str, Any]:
-    """Readiness probe — checks LLM provider and UIL adapter."""
-    checks: dict[str, Any] = {"status": "ready", "checks": {}}
+    """Readiness probe — required dependencies only.
 
+    Required (503 on failure): typed settings load and the core simulation
+    stack imports. Optional dependencies (LLM provider, UIL adapter) are
+    reported informationally: the API's simulation endpoints work without
+    them, so their absence degrades ``/v1/llm/*`` (which returns 503 itself)
+    but must NOT remove the whole service from load-balancer rotation.
+    """
+    checks: dict[str, Any] = {"status": "ready", "mode": "full", "checks": {}}
+
+    # -- Required: typed configuration ------------------------------------
+    try:
+        get_app_settings()
+        checks["checks"]["settings"] = "ok"
+    except Exception as exc:
+        checks["checks"]["settings"] = f"error: {type(exc).__name__}"
+        raise HTTPException(status_code=503, detail=checks) from exc
+
+    # -- Required: core simulation stack ----------------------------------
+    try:
+        import simulator  # noqa: F401  (canonical engine module)
+
+        checks["checks"]["simulation_core"] = "ok"
+    except Exception as exc:
+        checks["checks"]["simulation_core"] = f"error: {type(exc).__name__}"
+        raise HTTPException(status_code=503, detail=checks) from exc
+
+    # -- Optional: LLM provider (informational) ---------------------------
     has_llm_key = any(
         os.getenv(k) for k in ("GROQ_API_KEY", "OPENAI_API_KEY", "OPENROUTER_API_KEY")
     )
     checks["checks"]["llm_provider"] = "available" if has_llm_key else "not_configured"
 
+    # -- Optional: UIL adapter (informational) ----------------------------
     try:
         from uil_adapter import create_uil_adapter  # type: ignore[import-not-found]
 
@@ -139,7 +248,7 @@ async def readiness_check() -> dict[str, Any]:
         checks["checks"]["uil_adapter"] = "unavailable"
 
     if not has_llm_key:
-        raise HTTPException(status_code=503, detail=checks["checks"])
+        checks["mode"] = "degraded"  # /v1/llm/* unavailable; core works
     return checks
 
 

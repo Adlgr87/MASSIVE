@@ -1,12 +1,20 @@
-"""TestClient validation for POST /v1/llm/run_simulation.
+"""Contract tests for POST /v1/llm/run_simulation (canonical backend).
 
-Covers the contract paths from configs/llm_contract/massive_llm_contract.json:
-  - multilayer básico
-  - energy + Factbook Brasil
-  - forecast
-  - LLM key faltante (503)
-  - intent ambiguo (422 + requested_fields)
-  - intent vacío (422)
+Validates the endpoint against the canonical contract declared in
+``configs/llm_contract/massive_llm_contract.json`` (v1.1.0) and implemented by
+``backend/app/routers/llm.py`` + ``services/llm_orchestrator.py``:
+
+    response = {sim_id, motor, config, summary, narrative,
+                results{sim_id, motor, payload, timeline, final_state},
+                assumptions, factbook_params}
+
+Hermetic: all LLM provider keys are cleared from the environment so the
+orchestrator uses its documented no-LLM fallbacks and no network calls occur.
+
+Regression note (2026-08-20): an earlier revision of this file imported a
+``create_app`` factory and asserted a ``classified_motor`` contract that never
+existed in ``backend/app`` (PR #84 divergence). This version asserts the
+shipped contract.
 """
 
 from __future__ import annotations
@@ -22,117 +30,121 @@ _ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if _ROOT not in sys.path:
     sys.path.insert(0, _ROOT)
 
-from backend.app.main import create_app  # noqa: E402
+from backend.app.main import app  # noqa: E402
+
+_PROVIDER_KEY_VARS = ("GROQ_API_KEY", "OPENAI_API_KEY", "OPENROUTER_API_KEY")
 
 
 @pytest.fixture
-def client() -> TestClient:
-    """App created without API keys -> auth disabled (open dev mode).
-
-    Each scenario supplies its own api_key override where needed.
-    """
-    return TestClient(create_app())
-
-
-VALID_KEY = "fake-llm-key"
+def client(monkeypatch: pytest.MonkeyPatch) -> TestClient:
+    """Authenticated client; provider keys cleared for hermetic (no-LLM) runs."""
+    for var in _PROVIDER_KEY_VARS:
+        monkeypatch.delenv(var, raising=False)
+    return TestClient(app)
 
 
-def _post(client: TestClient, body: dict) -> object:
-    return client.post("/v1/llm/run_simulation", json=body)
+AUTH = {"X-API-Key": "dev-secret-key"}
+
+
+def _post(client: TestClient, body: dict, headers: dict | None = None) -> object:
+    return client.post(
+        "/v1/llm/run_simulation", json=body, headers=headers if headers is not None else AUTH
+    )
 
 
 def test_multilayer_basic(client: TestClient):
-    """Intent clasifica en multilayer_engine y devuelve timeline + métricas."""
-    resp = _post(
-        client,
-        {
-            "intent": "Simula la dinámica de opinión social en una red",
-            "api_key": VALID_KEY,
-        },
-    )
+    """Opinion-dynamics intent classifies as multilayer_engine and returns the
+    canonical response envelope."""
+    resp = _post(client, {"intent": "Simula la dinámica de opinión social en una red"})
     assert resp.status_code == 200, resp.text
     data = resp.json()
-    assert data["classified_motor"] == "multilayer_engine"
-    assert "simulation_id" in data
-    assert data["country_code_resolved"] == "none"
+    assert data["motor"] == "multilayer_engine"
+    assert data["sim_id"].startswith("sim_")
+    results = data["results"]
+    assert results["motor"] == data["motor"]
+    assert results["sim_id"] == data["sim_id"]
+    assert isinstance(results["payload"], dict)
+    assert isinstance(results["timeline"], list) and results["timeline"]
     assert isinstance(data["assumptions"], list) and data["assumptions"]
-    assert "timeline" in data["result"]
-    assert len(data["result"]["timeline"]) >= 1
-    assert "metrics" in data["result"]
-    assert data["result"]["metrics"]["dominant_rule"] == "multilayer_engine"
+    assert data["summary"]["motor"] == "multilayer_engine"
+    assert "indicators" in data["summary"]
 
 
 def test_energy_with_factbook_brasil(client: TestClient):
-    """Intent con Brasil + energía usa Factbook para parámetros de país."""
+    """`energía` keyword + country BR dispatches energy_engine with Factbook
+    augmentation (guards against silent scalar/multilayer fallback)."""
     resp = _post(
         client,
         {
-            "intent": "Ejecuta el modelo energético de opinión para Brasil con escenario de crisis",
-            "country_code": "BR",
-            "api_key": VALID_KEY,
+            "intent": "Simula el paisaje de energía social para Brasil con desigualdad",
+            "country": "BR",
+            "simulation_steps": 20,
         },
     )
     assert resp.status_code == 200, resp.text
     data = resp.json()
-    assert data["classified_motor"] == "energy_engine"
-    assert data["country_code_resolved"] == "BR"
-    assert any("Brasil" in a or "BR" in a for a in data["assumptions"])
-    # Assert energy-specific output to guard against silent scalar fallback.
-    payload = data["result"]["payload"]
-    assert "metrics_timeline" in payload, (
-        "energy_engine dispatch must return metrics_timeline; "
-        "got scalar fallback or wrong engine"
-    )
-    assert (
-        payload.get("summary", {}).get("regla_dominante") == "langevin_energy"
-    ), "energy_engine summary must carry regla_dominante='langevin_energy'"
+    assert data["motor"] == "energy_engine"
+    assert data["factbook_params"], "Factbook augmentation expected for country=BR"
+    assert data["summary"]["factbook_country"] is not None
+    assert data["results"]["motor"] == "energy_engine"
 
 
-def test_forecast(client: TestClient):
-    """Intent de pronóstico clasifica en forecast_model."""
-    resp = _post(
-        client,
-        {
-            "intent": "Haz un forecast de polarización para los próximos 90 días",
-            "api_key": VALID_KEY,
-        },
-    )
-    assert resp.status_code == 200, resp.text
-    data = resp.json()
-    assert data["classified_motor"] == "forecast_model"
-    assert len(data["result"]["timeline"]) >= 1
-
-
-def test_missing_llm_key_returns_503(client: TestClient):
-    """Sin api_key ni variables de entorno -> 503 ServiceUnavailable."""
-    # Forzar ausencia de provider keys en el proceso.
-    old_env = {
-        k: os.environ.pop(k, None) for k in ("GROQ_API_KEY", "OPENAI_API_KEY", "OPENROUTER_API_KEY")
-    }
-    try:
-        resp = _post(client, {"intent": "Simula la dinámica de opinión social en una red"})
-        assert resp.status_code == 503, resp.text
-        assert "configured" in resp.json()["detail"] or "API key" in resp.json()["detail"]
-    finally:
-        for k, v in old_env.items():
-            if v is not None:
-                os.environ[k] = v
-
-
-def test_ambiguous_intent_returns_422_with_fields(client: TestClient):
-    """Intent ambigüo (vago) -> 422 + requested_fields."""
-    resp = _post(client, {"intent": "Brasil", "api_key": VALID_KEY})
-    # "Brasil" alone has no motor keyword -> AmbiguityError -> 422
+def test_forecast_without_horizon_is_ambiguous_422(client: TestClient):
+    """Forecast-classified intent without a temporal horizon asks the client
+    for the missing field (422 + requested_fields)."""
+    resp = _post(client, {"intent": "Predecir la viralidad de una noticia en Brasil"})
     assert resp.status_code == 422, resp.text
-    body = resp.json()
-    assert body["detail"] is not None
-    assert "requested_fields" in body
-    assert "motor_override" in body["requested_fields"]
+    detail = resp.json()["detail"]
+    assert isinstance(detail, dict)
+    assert "temporal_horizon_days" in detail["requested_fields"]
+    assert detail["motor"] == "forecast"
+
+
+def test_forecast_with_motor_override_runs(client: TestClient):
+    """Explicit motor=forecast + simulation_steps bypasses the ambiguity gate."""
+    resp = _post(
+        client,
+        {
+            "intent": "Predecir la viralidad de una noticia en Brasil",
+            "motor": "forecast",
+            "simulation_steps": 14,
+        },
+    )
+    assert resp.status_code == 200, resp.text
+    data = resp.json()
+    assert data["motor"] == "forecast"
+    assert data["results"]["motor"] == "forecast"
+
+
+def test_social_architect_without_llm_key_returns_503(client: TestClient):
+    """social_architect is inherently LLM-driven: without any provider key the
+    endpoint must fail closed with 503 and an actionable message."""
+    resp = _post(client, {"intent": "Qué intervención reduce la polarización en Estados Unidos"})
+    assert resp.status_code == 503, resp.text
+    assert "API key" in resp.json()["detail"]
 
 
 def test_empty_intent_returns_422(client: TestClient):
-    """intent='' falla validación pydantic (min_length 5) -> 422."""
-    resp = _post(client, {"intent": "", "api_key": VALID_KEY})
+    resp = _post(client, {"intent": ""})
     assert resp.status_code == 422, resp.text
-    # Pydantic validation error mentions 'intent'
-    assert "intent" in resp.text.lower()
+    assert "intent" in resp.text
+
+
+def test_unknown_fields_are_rejected_422(client: TestClient):
+    """DTO is extra=forbid: contract drift must fail loudly (e.g. client-side
+    `api_key` fields from foreign contracts)."""
+    resp = _post(client, {"intent": "Simula una red", "api_key": "badkey00"})
+    assert resp.status_code == 422, resp.text
+    assert "extra_forbidden" in resp.text
+
+
+def test_invalid_motor_returns_422(client: TestClient):
+    resp = _post(client, {"intent": "Simula algo", "motor": "no_such_motor"})
+    assert resp.status_code == 422, resp.text
+    assert "literal_error" in resp.text
+
+
+def test_requires_api_key_401(client: TestClient):
+    """No X-API-Key → 401 (dev fallback key is still required in development)."""
+    resp = _post(client, {"intent": "Simula una red"}, headers={})
+    assert resp.status_code == 401, resp.text
