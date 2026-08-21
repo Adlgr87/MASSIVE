@@ -6,6 +6,15 @@ All notable changes to **MASSIVE** are documented here. This project follows
 ## [Unreleased] — production-readiness hardening (2026-08-20)
 
 ### Added
+- **Professional README rewrite** (EN + ES, verified 2026-08-20): accurate
+  quick start (canonical API + CLI + Docker, all commands executed against a
+  real uvicorn server), verified route inventory from OpenAPI, Mermaid
+  architecture diagram, "why it's different" frontier table (LOD population
+  scale, LLM-as-math-translator contract, CfC residual correction, EnKF
+  assimilation, scientific opt-in layer, inverse design, Rust kernels),
+  quality/production-posture table, repository layout and full documentation
+  index. Replaces the stale quickstart (`app.py` never existed) and
+  de-duplicated endpoint tables.
 - **`GET /metrics`** on the canonical backend: dependency-free Prometheus
   text format — `http_requests_total{method,group,status}` counter (recorded
   by the request middleware, path groups llm/simulate/forecast/engine/
