@@ -4,6 +4,7 @@ Validates that transient/5xx/429 failures are retried with backoff,
 that the circuit opens after the configured threshold, and that after
 cooldown the simulator recovers — never propagating exceptions.
 """
+
 from unittest.mock import MagicMock, patch
 
 import requests
@@ -19,10 +20,10 @@ def _cfg(provider: str = "groq", retries: int = 3, backoff: float = 0.0):
     """Minimal cfg that exercises a real provider (requires API key bypass)."""
     return {
         "proveedor": provider,
-        "api_key": "test-key",            # bypasses resolve_provider_api_key absence check
+        "api_key": "test-key",  # bypasses resolve_provider_api_key absence check
         "modelo": "llama-3.1-8b-instant",
         "llm_retries": retries,
-        "llm_retry_backoff": backoff,     # 0 so we don't sleep during tests
+        "llm_retry_backoff": backoff,  # 0 so we don't sleep during tests
     }
 
 
@@ -47,8 +48,10 @@ def test_obs02_retry_fallback_then_recovery():
         # 4th call -> 200 with a valid JSON body
         return _ok_response()
 
-    with patch("simulator.requests.post", side_effect=fake_post), \
-         patch("simulator.time.sleep") as sleep_mock:  # skip real backoff
+    with (
+        patch("simulator.requests.post", side_effect=fake_post),
+        patch("simulator.time.sleep") as sleep_mock,
+    ):  # skip real backoff
         result = llamar_llm(_estado(), "test", [], _cfg(retries=3))
 
     assert sleep_mock.call_count >= 1
@@ -99,8 +102,7 @@ def test_obs02_429_then_success():
             raise requests.exceptions.HTTPError(response=_resp(429))
         return _ok_response()
 
-    with patch("simulator.requests.post", side_effect=fake_post), \
-         patch("simulator.time.sleep"):
+    with patch("simulator.requests.post", side_effect=fake_post), patch("simulator.time.sleep"):
         result = llamar_llm(_estado(), "test", [], _cfg(retries=2))
 
     assert "regla" in result
@@ -119,7 +121,13 @@ def _resp(code: int):
 def _ok_response():
     m = MagicMock()
     m.json.return_value = {
-        "choices": [{"message": {"content": '{"regla": 4, "params": {"fuerza": 0.08}, "razon": "polarizacion"}'}}]
+        "choices": [
+            {
+                "message": {
+                    "content": '{"regla": 4, "params": {"fuerza": 0.08}, "razon": "polarizacion"}'
+                }
+            }
+        ]
     }
     m.raise_for_status.return_value = None
     return m

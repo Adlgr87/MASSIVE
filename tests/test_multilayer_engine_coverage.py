@@ -26,23 +26,32 @@ from multilayer_engine import (
 
 # ── Kernel functions ───────────────────────────────────────────────────────
 
+
 class TestMultilayerKernels:
 
     def test_multilayer_langevin_step_dense_path(self):
         N = 10
-        x = np.column_stack([
-            np.linspace(-0.5, 0.5, N),
-            np.full(N, 0.4),
-            np.full(N, 0.3),
-            np.full(N, 0.2),
-            np.full(N, 0.6),
-        ])
+        x = np.column_stack(
+            [
+                np.linspace(-0.5, 0.5, N),
+                np.full(N, 0.4),
+                np.full(N, 0.3),
+                np.full(N, 0.2),
+                np.full(N, 0.6),
+            ]
+        )
         adj = generate_watts_strogatz(N)
         layers = np.stack([adj, adj, adj], axis=0)
         theta = np.ones((N, K))
         out = multilayer_langevin_step(
-            x, layers, np.array([0.4, 0.3, 0.3]), theta,
-            coupling=0.3, dt=0.01, x_min=-1.0, x_max=1.0,
+            x,
+            layers,
+            np.array([0.4, 0.3, 0.3]),
+            theta,
+            coupling=0.3,
+            dt=0.01,
+            x_min=-1.0,
+            x_max=1.0,
             rng=np.random.default_rng(0),
         )
         assert out.shape == (N, K)
@@ -50,19 +59,27 @@ class TestMultilayerKernels:
 
     def test_multilayer_langevin_step_sparse_path(self):
         N = 10
-        x = np.column_stack([
-            np.linspace(-0.5, 0.5, N),
-            np.full(N, 0.4),
-            np.full(N, 0.3),
-            np.full(N, 0.2),
-            np.full(N, 0.6),
-        ])
+        x = np.column_stack(
+            [
+                np.linspace(-0.5, 0.5, N),
+                np.full(N, 0.4),
+                np.full(N, 0.3),
+                np.full(N, 0.2),
+                np.full(N, 0.6),
+            ]
+        )
         adj = generate_watts_strogatz(N)
         layers = [sparse.csr_matrix(adj), sparse.csr_matrix(adj), sparse.csr_matrix(adj)]
         theta = np.ones((N, K))
         out = multilayer_langevin_step(
-            x, layers, np.array([0.4, 0.3, 0.3]), theta,
-            coupling=0.3, dt=0.01, x_min=-1.0, x_max=1.0,
+            x,
+            layers,
+            np.array([0.4, 0.3, 0.3]),
+            theta,
+            coupling=0.3,
+            dt=0.01,
+            x_min=-1.0,
+            x_max=1.0,
             rng=np.random.default_rng(0),
         )
         assert out.shape == (N, K)
@@ -91,39 +108,53 @@ class TestMultilayerKernels:
 
 # ── targeted_llm_bias ──────────────────────────────────────────────────────
 
+
 class TestTargetedLlmBias:
 
     def test_heuristic_provider_returns_narrative(self):
         text = targeted_llm_bias(
-            layer_target="social", demographic="religion=1",
-            proveedor="heurístico", api_key="", modelo="",
+            layer_target="social",
+            demographic="religion=1",
+            proveedor="heurístico",
+            api_key="",
+            modelo="",
         )
         assert "Heurístico" in text
         assert "cooperación" in text
 
     def test_unknown_demographic_uses_raw_label(self):
         text = targeted_llm_bias(
-            layer_target="economic", demographic="custom_group",
-            proveedor="heurístico", api_key="", modelo="",
+            layer_target="economic",
+            demographic="custom_group",
+            proveedor="heurístico",
+            api_key="",
+            modelo="",
         )
         assert "custom_group" in text
 
     def test_fallback_on_connection_error(self):
         text = targeted_llm_bias(
-            layer_target="digital", demographic="gender=1",
-            proveedor="openai", api_key="fake", modelo="gpt",
+            layer_target="digital",
+            demographic="gender=1",
+            proveedor="openai",
+            api_key="fake",
+            modelo="gpt",
         )
         assert "Fallback" in text
 
     def test_fallback_on_unknown_provider_without_key(self):
         text = targeted_llm_bias(
-            layer_target="digital", demographic="gender=0",
-            proveedor="unknown_provider", api_key="", modelo="",
+            layer_target="digital",
+            demographic="gender=0",
+            proveedor="unknown_provider",
+            api_key="",
+            modelo="",
         )
         assert "Heurístico" in text
 
 
 # ── MultilayerEngine public API ────────────────────────────────────────────
+
 
 class TestMultilayerEngineApi:
 
@@ -230,8 +261,13 @@ class TestMultilayerEngineApi:
         eng = MultilayerEngine(N=10, seed=0)
         eng.run(steps=2)
         land = eng.get_landscape()
-        for key in ("mean_opinion", "std_opinion", "polarization",
-                    "mean_cooperation", "mean_hierarchy"):
+        for key in (
+            "mean_opinion",
+            "std_opinion",
+            "polarization",
+            "mean_cooperation",
+            "mean_hierarchy",
+        ):
             assert key in land
 
     def test_init_N_too_small_raises(self):

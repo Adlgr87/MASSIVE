@@ -22,6 +22,7 @@ from micro_schemas import GroupProfile
 
 # ── KMeans fallback / clustering edges ─────────────────────────────────────
 
+
 class TestKmeansFallback:
 
     def test_kmeans_tiny_sample_returns_zeros(self):
@@ -43,8 +44,9 @@ class TestBifurcationEarlyExit:
         analyzer = FamilyOfFuturesAnalyzer(n_clusters=0, random_state=0)
         labels = np.zeros(60, dtype=int)
         X = np.random.RandomState(0).rand(60, 13)
-        params = [{"coupling": 0.3, "external_pressure": 0.1, "initial_noise": 0.1}
-                   for _ in range(60)]
+        params = [
+            {"coupling": 0.3, "external_pressure": 0.1, "initial_noise": 0.1} for _ in range(60)
+        ]
         pm = analyzer._params_to_matrix(params)
         bif = analyzer._build_bifurcation_map(pm, labels, X)
         assert bif["param_importances"] == {}
@@ -54,8 +56,9 @@ class TestBifurcationEarlyExit:
         analyzer = FamilyOfFuturesAnalyzer(n_clusters=0, random_state=0)
         labels = np.array([0] * 5 + [-1] * 5)
         X = np.random.RandomState(0).rand(10, 13)
-        params = [{"coupling": 0.3, "external_pressure": 0.1, "initial_noise": 0.1}
-                   for _ in range(10)]
+        params = [
+            {"coupling": 0.3, "external_pressure": 0.1, "initial_noise": 0.1} for _ in range(10)
+        ]
         pm = analyzer._params_to_matrix(params)
         bif = analyzer._build_bifurcation_map(pm, labels, X)
         assert bif["param_importances"] == {}
@@ -63,15 +66,23 @@ class TestBifurcationEarlyExit:
 
 # ── _label_family branches ─────────────────────────────────────────────────
 
+
 class TestLabelFamilyBranches:
 
     def _feats(self, **over):
         base = {
-            "polarization": 0.1, "cooperation": 0.5, "trust": 0.5,
-            "hierarchy_mean": 0.5, "hierarchy_std": 0.2, "stability": 0.01,
-            "extreme_fraction": 0.1, "opinion_delta": 0.1,
-            "time_to_stabilize": 0.5, "max_polarization": 0.1,
-            "dim_correlation": 0.3, "cooperation_delta": 0.1,
+            "polarization": 0.1,
+            "cooperation": 0.5,
+            "trust": 0.5,
+            "hierarchy_mean": 0.5,
+            "hierarchy_std": 0.2,
+            "stability": 0.01,
+            "extreme_fraction": 0.1,
+            "opinion_delta": 0.1,
+            "time_to_stabilize": 0.5,
+            "max_polarization": 0.1,
+            "dim_correlation": 0.3,
+            "cooperation_delta": 0.1,
         }
         base.update(over)
         return base
@@ -84,14 +95,12 @@ class TestLabelFamilyBranches:
 
     def test_jerarquico_label(self):
         a = FamilyOfFuturesAnalyzer()
-        label, _, _ = a._label_family(
-            self._feats(hierarchy_mean=0.7, hierarchy_std=0.1))
+        label, _, _ = a._label_family(self._feats(hierarchy_mean=0.7, hierarchy_std=0.1))
         assert "Jerárquico" in label
 
     def test_horizontal_label(self):
         a = FamilyOfFuturesAnalyzer()
-        label, _, _ = a._label_family(
-            self._feats(hierarchy_mean=0.1, hierarchy_std=0.1))
+        label, _, _ = a._label_family(self._feats(hierarchy_mean=0.1, hierarchy_std=0.1))
         assert "Horizontal" in label
 
     def test_volatilidad_unstable(self):
@@ -111,15 +120,15 @@ class TestLabelFamilyBranches:
 
     def test_estancamiento_label(self):
         a = FamilyOfFuturesAnalyzer()
-        label, desc, risks = a._label_family(
-            self._feats(opinion_delta=0.01, polarization=0.1))
+        label, desc, risks = a._label_family(self._feats(opinion_delta=0.01, polarization=0.1))
         assert label == "Estancamiento"
         assert any("apatía" in r for r in risks)
 
     def test_groupthink_risk(self):
         a = FamilyOfFuturesAnalyzer()
         label, desc, risks = a._label_family(
-            self._feats(polarization=0.1, trust=0.8, hierarchy_mean=0.7))
+            self._feats(polarization=0.1, trust=0.8, hierarchy_mean=0.7)
+        )
         assert any("Groupthink" in r for r in risks)
 
     def test_alta_confianza_risk(self):
@@ -130,19 +139,35 @@ class TestLabelFamilyBranches:
 
 # ── MicroSocialArchitect transitions ───────────────────────────────────────
 
+
 class TestMicroSocialArchitect:
 
     def test_find_transition_direct_calc_fallback(self):
         arch = MicroSocialArchitect()
         families = [
-            {"id": 0, "label": "Consenso", "archetype_params":
-                {"coupling": 0.2, "external_pressure": 0.1, "initial_noise": 0.1}},
-            {"id": 1, "label": "Fragmentación", "archetype_params":
-                {"coupling": 0.6, "external_pressure": 0.4, "initial_noise": 0.2}},
+            {
+                "id": 0,
+                "label": "Consenso",
+                "archetype_params": {
+                    "coupling": 0.2,
+                    "external_pressure": 0.1,
+                    "initial_noise": 0.1,
+                },
+            },
+            {
+                "id": 1,
+                "label": "Fragmentación",
+                "archetype_params": {
+                    "coupling": 0.6,
+                    "external_pressure": 0.4,
+                    "initial_noise": 0.2,
+                },
+            },
         ]
-        bif = {"param_importances": {"coupling": 0.5,
-                                     "external_pressure": 0.3,
-                                     "initial_noise": 0.2}, "transition_costs": []}
+        bif = {
+            "param_importances": {"coupling": 0.5, "external_pressure": 0.3, "initial_noise": 0.2},
+            "transition_costs": [],
+        }
         tr = arch.find_transition(families, bif, 0, 1)
         assert tr["from"] == 0
         assert tr["to"] == 1
@@ -165,9 +190,10 @@ class TestMicroSocialArchitect:
     def test_suggest_narrative_with_changes(self):
         arch = MicroSocialArchitect()
         transition = {
-            "params_change": {"coupling": 0.1, "external_pressure": -0.05,
-                              "initial_noise": 0.02},
-            "from_label": "Consenso", "to_label": "Fragmentación", "cost": 0.34,
+            "params_change": {"coupling": 0.1, "external_pressure": -0.05, "initial_noise": 0.02},
+            "from_label": "Consenso",
+            "to_label": "Fragmentación",
+            "cost": 0.34,
         }
         text = arch.suggest_narrative(transition)
         assert "Consenso" in text
@@ -182,6 +208,7 @@ class TestMicroSocialArchitect:
 
 # ── extract_trajectory_features edge ───────────────────────────────────────
 
+
 class TestExtractFeaturesEdge:
 
     def test_short_history_returns_error_flag(self):
@@ -190,6 +217,7 @@ class TestExtractFeaturesEdge:
 
 
 # ── _profile_to_engine_params ─────────────────────────────────────────────
+
 
 class TestProfileToEngineParams:
 
@@ -200,15 +228,18 @@ class TestProfileToEngineParams:
         assert params["coupling"] == profile.communication_frequency
         assert params["seed"] == 42
         assert params["_base_spread"] == pytest.approx(
-            profile.diversity_of_opinion * 0.5 + 0.1 * 0.3)
+            profile.diversity_of_opinion * 0.5 + 0.1 * 0.3
+        )
 
 
 # ── run_single external pressure branch ────────────────────────────────────
+
 
 class TestRunSingleExternalPressure:
 
     def test_external_pressure_applies_noise(self):
         from micro_engine import MicroSimOrchestrator
+
         orch = MicroSimOrchestrator(quiet=True)
         profile = GroupProfile(n_members=4, communication_frequency=0.3)
         variation = {"coupling": 0.4, "external_pressure": 0.6, "initial_noise": 0.15}
@@ -219,16 +250,17 @@ class TestRunSingleExternalPressure:
 
 # ── describe_families: members >=2 filter ──────────────────────────────────
 
+
 class TestDescribeFamiliesFilters:
 
     def test_single_member_clusters_filtered(self):
         analyzer = FamilyOfFuturesAnalyzer(n_clusters=0, random_state=0)
         np_rng = np.random.RandomState(0)
         X = np_rng.rand(20, 13)
-        params = [{"coupling": 0.3, "external_pressure": 0.1, "initial_noise": 0.1}
-                   for _ in range(20)]
-        labels = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1,
-                           2, 2, 2, 2, 2, 3, 3, 3, 3, 3])
+        params = [
+            {"coupling": 0.3, "external_pressure": 0.1, "initial_noise": 0.1} for _ in range(20)
+        ]
+        labels = np.array([0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3])
         fams = analyzer.describe_families(labels, X, params)
         assert len(fams) == 4
         # ids re-asigned after sort
@@ -236,6 +268,7 @@ class TestDescribeFamiliesFilters:
 
 
 # ── analyze_group without scikit-learn ─────────────────────────────────────
+
 
 class TestAnalyzeGroupNoSklearn:
 

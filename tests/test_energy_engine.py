@@ -20,6 +20,7 @@ from energy_engine import (
 
 # ── Helper function coverage ───────────────────────────────────────────────
 
+
 class TestEnergyHelpers:
 
     def test_gaussian_peak_at_center(self):
@@ -59,6 +60,7 @@ class TestEnergyHelpers:
 
 
 # ── Setters and economic landscapes ────────────────────────────────────────
+
 
 class TestEnergySettersAndLandscapes:
 
@@ -103,11 +105,13 @@ class TestEnergySettersAndLandscapes:
 
     def test_create_gini_adjusted_landscape_uses_economic_potential(self):
         eng = SocialEnergyEngine()
-        eng.set_economic_potential({
-            "polarization_factor": 0.5,
-            "attractor_strength": 2.0,
-            "repeller_strength": 1.0,
-        })
+        eng.set_economic_potential(
+            {
+                "polarization_factor": 0.5,
+                "attractor_strength": 2.0,
+                "repeller_strength": 1.0,
+            }
+        )
         base_a = [{"position": 0.0, "strength": 1.0}]
         base_r = [{"position": 1.0, "strength": 1.0}]
         a, r = eng.create_gini_adjusted_landscape(base_a, base_r)
@@ -117,7 +121,8 @@ class TestEnergySettersAndLandscapes:
     def test_create_economic_landscape_single_attractor(self):
         eng = SocialEnergyEngine(gini_coefficient=0.4)
         attractors, repellers = eng.create_economic_landscape(
-            mean_income=30000.0, n_attractors=1, n_repellers=1)
+            mean_income=30000.0, n_attractors=1, n_repellers=1
+        )
         assert len(attractors) == 1
         assert len(repellers) == 1
         assert attractors[0]["position"] == pytest.approx(0.0)
@@ -131,6 +136,7 @@ class TestEnergySettersAndLandscapes:
 
 
 # ── System metrics: cluster path ───────────────────────────────────────────
+
 
 class TestSystemMetrics:
 
@@ -164,6 +170,7 @@ class TestSystemMetrics:
 
 # ── Random network ─────────────────────────────────────────────────────────
 
+
 class TestRandomNetwork:
 
     def test_connectivity_extreme_values(self):
@@ -174,6 +181,7 @@ class TestRandomNetwork:
 
 
 # ── Scientific stepper path ───────────────────────────────────────────────
+
 
 class TestEnergyScientificStepper:
 
