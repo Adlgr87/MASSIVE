@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import json
 import os
+import tempfile
 import time
 from abc import ABC, abstractmethod
 from collections import defaultdict
@@ -101,12 +102,14 @@ def build_rate_limiter(
     Args:
         backend: ``memory`` or ``file``. Defaults to ``MASSIVE_RATE_LIMIT_BACKEND``.
         path: File path when backend is ``file``. Defaults to
-            ``MASSIVE_RATE_LIMIT_PATH`` or ``/tmp/massive_rate_limit.json``.
+            ``MASSIVE_RATE_LIMIT_PATH`` or the platform temp directory.
     """
     resolved = (backend or os.getenv("MASSIVE_RATE_LIMIT_BACKEND") or "memory").lower()
     if resolved == "file":
         file_path = Path(
-            path or os.getenv("MASSIVE_RATE_LIMIT_PATH") or "/tmp/massive_rate_limit.json"
+            path
+            or os.getenv("MASSIVE_RATE_LIMIT_PATH")
+            or Path(tempfile.gettempdir()) / "massive_rate_limit.json"
         )
         return FileRateLimiter(file_path)
     return InMemoryRateLimiter()
