@@ -4,17 +4,14 @@ Validates that transient/5xx/429 failures are retried with backoff,
 that the circuit opens after the configured threshold, and that after
 cooldown the simulator recovers — never propagating exceptions.
 """
-import time
 from unittest.mock import MagicMock, patch
 
-import pytest
 import requests
 
 from simulator import (
-    _circuit_breaker,
     CircuitBreaker,
+    _circuit_breaker,
     llamar_llm,
-    llamar_llm_heuristico,
 )
 
 

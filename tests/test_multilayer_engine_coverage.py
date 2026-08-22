@@ -13,20 +13,16 @@ import pytest
 from scipy import sparse
 
 from multilayer_engine import (
-    K,
-    COL_OPINION,
     COL_COOP,
-    COL_HIER,
-    COL_INCOME,
-    COL_INFO,
+    COL_OPINION,
+    K,
+    MultilayerEngine,
     _bimodal_grad,
+    generate_watts_strogatz,
     multi_potential_gradient,
     multilayer_langevin_step,
     targeted_llm_bias,
-    MultilayerEngine,
-    generate_watts_strogatz,
 )
-
 
 # ── Kernel functions ───────────────────────────────────────────────────────
 
@@ -163,7 +159,7 @@ class TestMultilayerEngineApi:
         eng = MultilayerEngine(N=15, seed=0)
         graphs = eng.graphs
         assert set(graphs.keys()) == {"social", "digital", "economic"}
-        for name, g in graphs.items():
+        for _name, g in graphs.items():
             assert g.format == "csr"
 
     def test_dynamic_rewiring_censorship(self):

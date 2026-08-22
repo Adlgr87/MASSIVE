@@ -13,11 +13,10 @@ import pytest
 from energy_engine import (
     SocialEnergyEngine,
     _gaussian,
-    _landscape_gradient,
     _landscape_energy,
+    _landscape_gradient,
     random_network,
 )
-
 
 # ── Helper function coverage ───────────────────────────────────────────────
 

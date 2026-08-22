@@ -20,7 +20,6 @@ from micro_engine import (
 )
 from micro_schemas import GroupProfile
 
-
 # ── KMeans fallback / clustering edges ─────────────────────────────────────
 
 class TestKmeansFallback:
