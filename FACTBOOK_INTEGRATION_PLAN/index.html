@@ -1,0 +1,3588 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="MASSIVE — Hybrid social dynamics simulator. Numerical core + LLM as regime selector.">
+      
+      
+      
+      
+        <link rel="prev" href="../FACTBOOK_QUICKSTART/">
+      
+      
+        <link rel="next" href="../FACTBOOK_INTEGRATION_COMPLETE/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Integration Plan - MASSIVE Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#world-factbook-integration-plan-for-massive" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="MASSIVE Documentation" class="md-header__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MASSIVE Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Integration Plan
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="MASSIVE Documentation" class="md-nav__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    MASSIVE Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../README_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spanish Version
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Readiness
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Production Readiness
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../production-readiness-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Audit & Risk Matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/current-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (current)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/target-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (target)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runbooks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Runbooks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runbooks/local-development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runbooks/operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runbooks/incidents/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Incidents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/threat-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/secrets-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secrets & Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/test-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../performance/baseline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Baseline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Factbook Integration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Factbook Integration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FACTBOOK_SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FACTBOOK_QUICKSTART/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration Plan
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executive Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-architecture-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Architecture Overview
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Architecture Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-integration-philosophy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Integration Philosophy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-core-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Core Components
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-data-structure-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Data Structure Analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Data Structure Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-world-factbook-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 World Factbook Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-key-metrics-for-massive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Key Metrics for MASSIVE
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-integration-points-in-massive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Integration Points in MASSIVE
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Integration Points in MASSIVE">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-agent-initialization-critical" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Agent Initialization (CRITICAL)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-social-pressure-calculation-high-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Social Pressure Calculation (HIGH PRIORITY)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-energy-engine-medium-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Energy Engine (MEDIUM PRIORITY)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-intervention-optimizer-high-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Intervention Optimizer (HIGH PRIORITY)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-social-architect-analytics-medium-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Social Architect Analytics (MEDIUM PRIORITY)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-workflow-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Workflow Integration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Workflow Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-standard-simulation-workflow-without-factbook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Standard Simulation Workflow (Without Factbook)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-enhanced-workflow-with-factbook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Enhanced Workflow (With Factbook)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-step-by-step-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Step-by-Step Workflow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.3 Step-by-Step Workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-load-factbook-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Load Factbook Context
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-map-to-massive-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Map to MASSIVE Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-initialize-agents-with-real-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Initialize Agents with Real Data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-run-simulation-with-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Run Simulation with Context
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-validate-against-real-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Validate Against Real Data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-cross-country-comparison-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Cross-Country Comparison (Optional)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-data-mapping-specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Data Mapping Specification
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Data Mapping Specification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-factbook-massive-parameter-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Factbook → MASSIVE Parameter Mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-derived-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Derived Metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-implementation-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Implementation Guide
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Implementation Guide">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-file-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 File Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-core-module-factbookcontext" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Core Module: FactbookContext
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-example-usage-script" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Example Usage Script
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-validation-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Validation Strategy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Validation Strategy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-validation-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Validation Metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-expected-accuracy-benchmarks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Expected Accuracy Benchmarks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-data-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Data Sources
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Data Sources">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-primary-source" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 Primary Source
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-alternative-sources-more-complete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 Alternative Sources (More Complete)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-supplementary-data-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 Supplementary Data Sources
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-implementation-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Implementation Checklist
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Implementation Checklist">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-data-infrastructure-2-3-days" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 1: Data Infrastructure (2-3 days)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-integration-points-3-4-days" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 2: Integration Points (3-4 days)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-validation-framework-2-3-days" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 3: Validation Framework (2-3 days)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-documentation-examples-2-days" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 4: Documentation &amp; Examples (2 days)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-5-testing-refinement-1-2-days" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5: Testing &amp; Refinement (1-2 days)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-expected-outcomes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Expected Outcomes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Expected Outcomes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-scientific-benefits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1 Scientific Benefits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#102-practical-benefits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.2 Practical Benefits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#103-competitive-advantages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.3 Competitive Advantages
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-risks-and-mitigations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Risks and Mitigations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="11. Risks and Mitigations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#risk-1-data-quality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Risk 1: Data Quality
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#risk-2-temporal-lag" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Risk 2: Temporal Lag
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#risk-3-granularity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Risk 3: Granularity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#risk-4-political-bias" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Risk 4: Political Bias
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Conclusion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-a-sample-data-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix A: Sample Data Structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-b-api-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix B: API Reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-c-example-scripts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix C: Example Scripts
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FACTBOOK_INTEGRATION_COMPLETE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration Complete
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation (PVU-BS)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Validation (PVU-BS)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/PVU_MASSIVE_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/PVU_MASSIVE_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocolo (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/preregistration_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registration (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/preregistration_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registro (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/validation_report_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report template (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/validation_report_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plantilla de reporte (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executive Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-architecture-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Architecture Overview
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Architecture Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-integration-philosophy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Integration Philosophy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-core-components" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Core Components
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-data-structure-analysis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Data Structure Analysis
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Data Structure Analysis">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-world-factbook-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 World Factbook Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-key-metrics-for-massive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Key Metrics for MASSIVE
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-integration-points-in-massive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Integration Points in MASSIVE
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Integration Points in MASSIVE">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-agent-initialization-critical" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Agent Initialization (CRITICAL)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-social-pressure-calculation-high-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Social Pressure Calculation (HIGH PRIORITY)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-energy-engine-medium-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Energy Engine (MEDIUM PRIORITY)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-intervention-optimizer-high-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Intervention Optimizer (HIGH PRIORITY)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-social-architect-analytics-medium-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Social Architect Analytics (MEDIUM PRIORITY)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-workflow-integration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Workflow Integration
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Workflow Integration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-standard-simulation-workflow-without-factbook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Standard Simulation Workflow (Without Factbook)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-enhanced-workflow-with-factbook" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Enhanced Workflow (With Factbook)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-step-by-step-workflow" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Step-by-Step Workflow
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4.3 Step-by-Step Workflow">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-1-load-factbook-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1: Load Factbook Context
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-map-to-massive-parameters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2: Map to MASSIVE Parameters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-initialize-agents-with-real-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3: Initialize Agents with Real Data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-run-simulation-with-context" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4: Run Simulation with Context
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-validate-against-real-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5: Validate Against Real Data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-cross-country-comparison-optional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6: Cross-Country Comparison (Optional)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-data-mapping-specification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Data Mapping Specification
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Data Mapping Specification">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-factbook-massive-parameter-mapping" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Factbook → MASSIVE Parameter Mapping
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-derived-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Derived Metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-implementation-guide" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Implementation Guide
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Implementation Guide">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-file-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 File Structure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-core-module-factbookcontext" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Core Module: FactbookContext
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-example-usage-script" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Example Usage Script
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-validation-strategy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Validation Strategy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Validation Strategy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-validation-metrics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Validation Metrics
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-expected-accuracy-benchmarks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Expected Accuracy Benchmarks
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-data-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Data Sources
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Data Sources">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-primary-source" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 Primary Source
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-alternative-sources-more-complete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 Alternative Sources (More Complete)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-supplementary-data-sources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 Supplementary Data Sources
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-implementation-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Implementation Checklist
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Implementation Checklist">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-1-data-infrastructure-2-3-days" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 1: Data Infrastructure (2-3 days)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-integration-points-3-4-days" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 2: Integration Points (3-4 days)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-3-validation-framework-2-3-days" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 3: Validation Framework (2-3 days)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-4-documentation-examples-2-days" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 4: Documentation &amp; Examples (2 days)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-5-testing-refinement-1-2-days" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5: Testing &amp; Refinement (1-2 days)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-expected-outcomes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Expected Outcomes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Expected Outcomes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#101-scientific-benefits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.1 Scientific Benefits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#102-practical-benefits" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.2 Practical Benefits
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#103-competitive-advantages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10.3 Competitive Advantages
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-risks-and-mitigations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Risks and Mitigations
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="11. Risks and Mitigations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#risk-1-data-quality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Risk 1: Data Quality
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#risk-2-temporal-lag" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Risk 2: Temporal Lag
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#risk-3-granularity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Risk 3: Granularity
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#risk-4-political-bias" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Risk 4: Political Bias
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-conclusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Conclusion
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-a-sample-data-structure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix A: Sample Data Structure
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-b-api-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix B: API Reference
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#appendix-c-example-scripts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Appendix C: Example Scripts
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="world-factbook-integration-plan-for-massive">World Factbook Integration Plan for MASSIVE</h1>
+<h2 id="executive-summary">Executive Summary</h2>
+<p>This document provides a complete integration plan for incorporating CIA World Factbook data into the MASSIVE framework. The integration enables <strong>empirically-grounded simulations</strong> by initializing agent populations with real-world country data, validating results against actual metrics, and enabling cross-country comparative analysis.</p>
+<hr />
+<h2 id="1-architecture-overview">1. Architecture Overview</h2>
+<h3 id="11-integration-philosophy">1.1 Integration Philosophy</h3>
+<pre><code>┌─────────────────────────────────────────────────────────────┐
+│                    MASSIVE Framework                         │
+├─────────────────────────────────────────────────────────────┤
+│                                                             │
+│  ┌──────────────┐         ┌──────────────────────┐         │
+│  │   Factbook   │         │   Simulation Engine  │         │
+│  │   Context    │────────▶│                      │         │
+│  │   Module     │         │  - Agent Init        │         │
+│  │              │         │  - Parameter Config  │         │
+│  └──────────────┘         │  - Validation        │         │
+│                           └──────────────────────┘         │
+│                                                             │
+│  Data Flow: Factbook → Context → MASSIVE → Results         │
+│                                                             │
+└─────────────────────────────────────────────────────────────┘
+</code></pre>
+<h3 id="12-core-components">1.2 Core Components</h3>
+<p><strong>1. FactbookLoader</strong> - Carga y cachea datos del World Factbook<br />
+<strong>2. ContextMapper</strong> - Mapea datos Factbook → parámetros MASSIVE<br />
+<strong>3. AgentInitializer</strong> - Inicializa agentes con datos reales<br />
+<strong>4. SimulationValidator</strong> - Valida resultados contra datos reales<br />
+<strong>5. ComparativeAnalyzer</strong> - Ejecuta simulaciones cross-country  </p>
+<hr />
+<h2 id="2-data-structure-analysis">2. Data Structure Analysis</h2>
+<h3 id="21-world-factbook-structure">2.1 World Factbook Structure</h3>
+<p>El World Factbook organiza datos en <strong>categorías jerárquicas</strong>:</p>
+<pre><code class="language-json">{
+  &quot;countries&quot;: {
+    &quot;CountryName&quot;: {
+      &quot;Introduction&quot;: {...},
+      &quot;Geography&quot;: {...},
+      &quot;People and Society&quot;: {...},
+      &quot;Economy&quot;: {...},
+      &quot;Government&quot;: {...},
+      &quot;Military and Security&quot;: {...},
+      &quot;Communications&quot;: {...},
+      &quot;Transportation&quot;: {...},
+      &quot;Transnational Issues&quot;: {...}
+    }
+  }
+}
+</code></pre>
+<h3 id="22-key-metrics-for-massive">2.2 Key Metrics for MASSIVE</h3>
+<p><strong>People and Society</strong> (Crítico para inicialización de agentes):
+- <code>Population</code>: Tamaño de población
+- <code>Population growth rate</code>: Tasa de crecimiento
+- <code>Urbanization</code>: % población urbana
+- <code>Ethnic groups</code>: Distribución étnica
+- <code>Religions</code>: Distribución religiosa
+- <code>Gini Index</code>: Desigualdad de ingresos</p>
+<p><strong>Economy</strong> (Para dinámicas económicas):
+- <code>GDP</code>: Producto interno bruto
+- <code>GDP - per capita</code>: PIB per cápita
+- <code>GDP - real growth rate</code>: Tasa de crecimiento
+- <code>Inflation rate</code>: Tasa de inflación
+- <code>Unemployment rate</code>: Tasa de desempleo
+- <code>Public debt</code>: Deuda pública (% del PIB)</p>
+<p><strong>Government</strong> (Para estructura política):
+- <code>Government type</code>: Tipo de gobierno
+- <code>Administrative divisions</code>: Divisiones administrativas</p>
+<p><strong>Military and Security</strong> (Para conflictos y seguridad):
+- <code>Military expenditures</code>: Gasto militar
+- <code>Military and security force personnel</code>: Personal militar</p>
+<p><strong>Communications</strong> (Para difusión de información):
+- <code>Internet users</code>: Usuarios de internet
+- <code>Broadband subscriptions</code>: Suscripciones de banda ancha</p>
+<hr />
+<h2 id="3-integration-points-in-massive">3. Integration Points in MASSIVE</h2>
+<h3 id="31-agent-initialization-critical">3.1 Agent Initialization (CRITICAL)</h3>
+<p><strong>Location</strong>: <code>massive/core/agent_initialization.py</code></p>
+<p><strong>When</strong>: Al crear la población de agentes al inicio de una simulación</p>
+<p><strong>What</strong>: Reemplaza parámetros abstractos con datos reales</p>
+<pre><code class="language-python"># BEFORE: Parámetros abstractos
+agents = initialize_agents(
+    population=10000,
+    urbanization=0.8,
+    gini_index=0.4
+)
+
+# AFTER: Datos reales del World Factbook
+context = FactbookContext(&quot;Germany&quot;)
+agents = initialize_agents(
+    population=context.population,
+    urbanization=context.urbanization_rate,
+    gini_index=context.gini_index,
+    ethnic_groups=context.ethnic_distribution,
+    religious_groups=context.religious_distribution
+)
+</code></pre>
+<p><strong>Impact</strong>: Los agentes representan una población real con características demográficas verificadas.</p>
+<hr />
+<h3 id="32-social-pressure-calculation-high-priority">3.2 Social Pressure Calculation (HIGH PRIORITY)</h3>
+<p><strong>Location</strong>: <code>massive/core/utility_logic.py</code> → <code>calculate_social_pressure()</code></p>
+<p><strong>When</strong>: Durante cada paso de simulación al calcular influencia entre agentes</p>
+<p><strong>What</strong>: Usa datos étnicos/religiosos para modelar afinidad grupal</p>
+<pre><code class="language-python"># BEFORE: Influencia uniforme entre todos los agentes
+def calculate_social_pressure(agents, network):
+    # Todos los agentes se influyen igual
+    pressure = np.sum(opinion_diffs * adjacency_matrix, axis=1)
+
+# AFTER: Influencia modulada por similitud grupal
+def calculate_social_pressure(agents, network, ethnic_groups, religious_groups):
+    # Agentes del mismo grupo étnico/religioso se influyen más
+    similarity_matrix = compute_group_similarity(
+        agents, ethnic_groups, religious_groups
+    )
+    weighted_adjacency = adjacency_matrix * similarity_matrix
+    pressure = np.sum(opinion_diffs * weighted_adjacency, axis=1)
+</code></pre>
+<p><strong>Impact</strong>: La presión social refleja dinámicas reales de afinidad grupal.</p>
+<hr />
+<h3 id="33-energy-engine-medium-priority">3.3 Energy Engine (MEDIUM PRIORITY)</h3>
+<p><strong>Location</strong>: <code>massive/core/energy_engine_pure.py</code> → <code>calculate_energy()</code></p>
+<p><strong>When</strong>: Al calcular la energía del sistema (termodinámica social)</p>
+<p><strong>What</strong>: Usa Gini index para calibrar el potencial de interacción</p>
+<pre><code class="language-python"># BEFORE: Potencial de interacción uniforme
+def calculate_energy(state, momentum, interaction_matrix):
+    potential = -0.5 * state.T @ interaction_matrix @ state
+
+# AFTER: Potencial modulado por desigualdad (Gini)
+def calculate_energy(state, momentum, interaction_matrix, gini_index):
+    # Mayor desigualdad → mayor fricción social → mayor energía potencial
+    inequality_factor = 1 + (gini_index / 100)
+    potential = -0.5 * inequality_factor * (state.T @ interaction_matrix @ state)
+</code></pre>
+<p><strong>Impact</strong>: Sociedades desiguales tienen mayor energía (tensión) social.</p>
+<hr />
+<h3 id="34-intervention-optimizer-high-priority">3.4 Intervention Optimizer (HIGH PRIORITY)</h3>
+<p><strong>Location</strong>: <code>massive/intervention/optimizer.py</code> → <code>evaluate_strategies()</code></p>
+<p><strong>When</strong>: Al evaluar estrategias de intervención</p>
+<p><strong>What</strong>: Usa datos económicos para calcular costo/beneficio realista</p>
+<pre><code class="language-python"># BEFORE: Costo abstracto
+def evaluate_strategies(strategies, agents, budget):
+    cost = calculate_abstract_cost(strategy)
+
+# AFTER: Costo basado en economía real del país
+def evaluate_strategies(strategies, agents, budget, gdp_per_capita, inflation_rate):
+    # Costo ajustado por poder adquisitivo real
+    purchasing_power = gdp_per_capita / (1 + inflation_rate/100)
+    cost = calculate_real_cost(strategy, purchasing_power)
+</code></pre>
+<p><strong>Impact</strong>: Las intervenciones consideran el contexto económico real.</p>
+<hr />
+<h3 id="35-social-architect-analytics-medium-priority">3.5 Social Architect Analytics (MEDIUM PRIORITY)</h3>
+<p><strong>Location</strong>: <code>massive/analysis/social_architect_pure.py</code> → <code>calculate_polarization()</code></p>
+<p><strong>When</strong>: Al calcular métricas de polarización y consenso</p>
+<p><strong>What</strong>: Compara resultados con polarización real del país</p>
+<pre><code class="language-python"># BEFORE: Solo métricas internas
+def calculate_polarization(opinions):
+    return np.mean(np.abs(opinions[:, None] - opinions))
+
+# AFTER: Métricas + validación contra datos reales
+def calculate_polarization(opinions, country_context=None):
+    simulated_polarization = np.mean(np.abs(opinions[:, None] - opinions))
+
+    if country_context:
+        actual_polarization = country_context.actual_polarization_index
+        accuracy = 1 - abs(simulated_polarization - actual_polarization)
+        return {
+            &quot;simulated&quot;: simulated_polarization,
+            &quot;actual&quot;: actual_polarization,
+            &quot;accuracy&quot;: accuracy
+        }
+
+    return simulated_polarization
+</code></pre>
+<p><strong>Impact</strong>: Validación empírica de las métricas de polarización.</p>
+<hr />
+<h2 id="4-workflow-integration">4. Workflow Integration</h2>
+<h3 id="41-standard-simulation-workflow-without-factbook">4.1 Standard Simulation Workflow (Without Factbook)</h3>
+<pre><code>1. Define parameters abstractos
+2. Inicializar agentes con parámetros
+3. Ejecutar simulación
+4. Analizar resultados
+5. Visualizar métricas
+</code></pre>
+<h3 id="42-enhanced-workflow-with-factbook">4.2 Enhanced Workflow (With Factbook)</h3>
+<pre><code>1. Seleccionar país del World Factbook
+2. Cargar contexto del país
+3. Mapear datos Factbook → parámetros MASSIVE
+4. Inicializar agentes con datos reales
+5. Ejecutar simulación con contexto
+6. Validar resultados contra datos reales
+7. Comparar con otros países (opcional)
+8. Generar reporte con accuracy metrics
+</code></pre>
+<h3 id="43-step-by-step-workflow">4.3 Step-by-Step Workflow</h3>
+<h4 id="step-1-load-factbook-context">Step 1: Load Factbook Context</h4>
+<pre><code class="language-python">from massive.context.factbook_context import FactbookContext
+
+# Cargar datos de un país específico
+context = FactbookContext(&quot;Germany&quot;)
+
+# O cargar múltiples países para comparación
+contexts = FactbookContext.multiple([&quot;Germany&quot;, &quot;France&quot;, &quot;USA&quot;])
+</code></pre>
+<h4 id="step-2-map-to-massive-parameters">Step 2: Map to MASSIVE Parameters</h4>
+<pre><code class="language-python"># Mapeo automático de datos Factbook → parámetros MASSIVE
+massive_params = context.to_massive_parameters()
+
+# Resultado:
+# {
+#     &quot;population&quot;: 83294633,
+#     &quot;urbanization_rate&quot;: 0.775,
+#     &quot;gini_index&quot;: 31.9,
+#     &quot;ethnic_groups&quot;: {&quot;german&quot;: 0.87, &quot;turkish&quot;: 0.037, &quot;other&quot;: 0.093},
+#     &quot;religious_groups&quot;: {&quot;protestant&quot;: 0.26, &quot;catholic&quot;: 0.25, ...},
+#     &quot;gdp_per_capita&quot;: 53200,
+#     &quot;inflation_rate&quot;: 6.0,
+#     &quot;internet_penetration&quot;: 0.936,
+#     ...
+# }
+</code></pre>
+<h4 id="step-3-initialize-agents-with-real-data">Step 3: Initialize Agents with Real Data</h4>
+<pre><code class="language-python">from massive.core import initialize_agents
+
+# Inicializar agentes con datos reales de Alemania
+agents = initialize_agents(
+    population=context.population,
+    urbanization=context.urbanization_rate,
+    ethnic_groups=context.ethnic_distribution,
+    religious_groups=context.religious_distribution,
+    economic_status=context.gdp_per_capita,
+    inequality=context.gini_index
+)
+</code></pre>
+<h4 id="step-4-run-simulation-with-context">Step 4: Run Simulation with Context</h4>
+<pre><code class="language-python">from massive.core import simulate
+
+# Ejecutar simulación con contexto del país
+result = simulate(
+    parameters=massive_params,
+    agents=agents,
+    context=context,  # Contexto del World Factbook
+    intervention=&quot;climate_policy&quot;,
+    years=10
+)
+</code></pre>
+<h4 id="step-5-validate-against-real-data">Step 5: Validate Against Real Data</h4>
+<pre><code class="language-python">from massive.validation import FactbookValidator
+
+validator = FactbookValidator()
+validation = validator.validate(result, context)
+
+# Resultado:
+# {
+#     &quot;polarization_accuracy&quot;: 0.87,
+#     &quot;consensus_accuracy&quot;: 0.92,
+#     &quot;economic_impact_accuracy&quot;: 0.78,
+#     &quot;overall_accuracy&quot;: 0.86
+# }
+</code></pre>
+<h4 id="step-6-cross-country-comparison-optional">Step 6: Cross-Country Comparison (Optional)</h4>
+<pre><code class="language-python">from massive.analysis import ComparativeAnalyzer
+
+analyzer = ComparativeAnalyzer()
+comparison = analyzer.compare_countries(
+    countries=[&quot;Germany&quot;, &quot;France&quot;, &quot;USA&quot;, &quot;China&quot;],
+    intervention=&quot;climate_policy&quot;,
+    years=10
+)
+
+# Resultado:
+# {
+#     &quot;Germany&quot;: {&quot;acceptance_rate&quot;: 0.72, &quot;accuracy&quot;: 0.86},
+#     &quot;France&quot;: {&quot;acceptance_rate&quot;: 0.68, &quot;accuracy&quot;: 0.84},
+#     &quot;USA&quot;: {&quot;acceptance_rate&quot;: 0.54, &quot;accuracy&quot;: 0.79},
+#     &quot;China&quot;: {&quot;acceptance_rate&quot;: 0.81, &quot;accuracy&quot;: 0.88}
+# }
+</code></pre>
+<hr />
+<h2 id="5-data-mapping-specification">5. Data Mapping Specification</h2>
+<h3 id="51-factbook-massive-parameter-mapping">5.1 Factbook → MASSIVE Parameter Mapping</h3>
+<table>
+<thead>
+<tr>
+<th>Factbook Field</th>
+<th>MASSIVE Parameter</th>
+<th>Type</th>
+<th>Priority</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Population.value</code></td>
+<td><code>population</code></td>
+<td>int</td>
+<td>CRITICAL</td>
+</tr>
+<tr>
+<td><code>Urbanization.urban_population</code></td>
+<td><code>urbanization_rate</code></td>
+<td>float (0-1)</td>
+<td>CRITICAL</td>
+</tr>
+<tr>
+<td><code>Gini Index.value</code></td>
+<td><code>gini_index</code></td>
+<td>float (0-100)</td>
+<td>CRITICAL</td>
+</tr>
+<tr>
+<td><code>Ethnic groups</code></td>
+<td><code>ethnic_groups</code></td>
+<td>dict</td>
+<td>HIGH</td>
+</tr>
+<tr>
+<td><code>Religions</code></td>
+<td><code>religious_groups</code></td>
+<td>dict</td>
+<td>HIGH</td>
+</tr>
+<tr>
+<td><code>GDP - per capita.value</code></td>
+<td><code>gdp_per_capita</code></td>
+<td>float</td>
+<td>HIGH</td>
+</tr>
+<tr>
+<td><code>Inflation rate.value</code></td>
+<td><code>inflation_rate</code></td>
+<td>float</td>
+<td>MEDIUM</td>
+</tr>
+<tr>
+<td><code>Unemployment rate.value</code></td>
+<td><code>unemployment_rate</code></td>
+<td>float</td>
+<td>MEDIUM</td>
+</tr>
+<tr>
+<td><code>Internet users.percent_of_population</code></td>
+<td><code>internet_penetration</code></td>
+<td>float (0-1)</td>
+<td>MEDIUM</td>
+</tr>
+<tr>
+<td><code>Military expenditures.percent_gdp</code></td>
+<td><code>military_spending_pct</code></td>
+<td>float</td>
+<td>LOW</td>
+</tr>
+<tr>
+<td><code>Public debt.value</code></td>
+<td><code>public_debt_pct</code></td>
+<td>float</td>
+<td>LOW</td>
+</tr>
+</tbody>
+</table>
+<h3 id="52-derived-metrics">5.2 Derived Metrics</h3>
+<p>Algunas métricas se calculan a partir de datos del Factbook:</p>
+<pre><code class="language-python"># Desigualdad económica normalizada (0-1)
+inequality_index = gini_index / 100
+
+# Poder adquisitivo ajustado por inflación
+purchasing_power = gdp_per_capita / (1 + inflation_rate/100)
+
+# Conectividad social (proxy para difusión de información)
+social_connectivity = internet_penetration * (1 + broadband_rate)
+
+# Tensión social (combinación de desigualdad + desempleo)
+social_tension = (gini_index/100) * 0.6 + (unemployment_rate/100) * 0.4
+
+# Apertura económica (trade/GDP ratio)
+trade_openness = (exports + imports) / gdp
+</code></pre>
+<hr />
+<h2 id="6-implementation-guide">6. Implementation Guide</h2>
+<h3 id="61-file-structure">6.1 File Structure</h3>
+<pre><code>massive/
+├── context/
+│   ├── __init__.py
+│   ├── factbook_context.py          # Cargador y mapeador de datos
+│   └── context_mapper.py            # Mapeo Factbook → MASSIVE
+├── core/
+│   ├── agent_initialization.py      # Modificar para aceptar contexto
+│   ├── utility_logic.py             # Modificar para usar grupos étnicos
+│   └── energy_engine_pure.py        # Modificar para usar Gini index
+├── intervention/
+│   └── optimizer.py                 # Modificar para usar economía real
+├── analysis/
+│   └── social_architect_pure.py     # Modificar para validación
+├── validation/
+│   ├── __init__.py
+│   ├── factbook_validator.py        # Validador contra datos reales
+│   └── comparative_analyzer.py      # Análisis cross-country
+└── data/
+    └── factbook/
+        ├── factbook.json            # Dataset completo
+        └── factbook_sample.json     # Dataset de ejemplo
+</code></pre>
+<h3 id="62-core-module-factbookcontext">6.2 Core Module: FactbookContext</h3>
+<pre><code class="language-python"># massive/context/factbook_context.py
+
+import json
+from pathlib import Path
+from typing import Dict, List, Optional
+
+class FactbookContext:
+    &quot;&quot;&quot;
+    Carga y proporciona acceso a datos del World Factbook.
+
+    Usage:
+        context = FactbookContext(&quot;Germany&quot;)
+        print(context.population)  # 83294633
+        print(context.gini_index)  # 31.9
+    &quot;&quot;&quot;
+
+    def __init__(self, country_name: str, data_path: str = None):
+        &quot;&quot;&quot;
+        Args:
+            country_name: Nombre del país (ej: &quot;Germany&quot;, &quot;United States&quot;)
+            data_path: Ruta al archivo factbook.json (default: data/factbook/factbook.json)
+        &quot;&quot;&quot;
+        self.country_name = country_name
+        self.data_path = Path(data_path or self._default_path())
+        self.data = self._load_country_data()
+
+    def _default_path(self) -&gt; Path:
+        &quot;&quot;&quot;Ruta por defecto al dataset del Factbook&quot;&quot;&quot;
+        return Path(__file__).parent.parent / &quot;data&quot; / &quot;factbook&quot; / &quot;factbook.json&quot;
+
+    def _load_country_data(self) -&gt; Dict:
+        &quot;&quot;&quot;Carga datos del país desde el JSON&quot;&quot;&quot;
+        with open(self.data_path, 'r', encoding='utf-8') as f:
+            factbook = json.load(f)
+
+        if self.country_name not in factbook['countries']:
+            raise ValueError(f&quot;Country '{self.country_name}' not found in Factbook&quot;)
+
+        return factbook['countries'][self.country_name]
+
+    # ========== People and Society ==========
+
+    @property
+    def population(self) -&gt; int:
+        &quot;&quot;&quot;Población total&quot;&quot;&quot;
+        return self.data['People and Society']['Population']['value']
+
+    @property
+    def population_growth_rate(self) -&gt; float:
+        &quot;&quot;&quot;Tasa de crecimiento poblacional (%)&quot;&quot;&quot;
+        return self.data['People and Society']['Population growth rate']['value']
+
+    @property
+    def urbanization_rate(self) -&gt; float:
+        &quot;&quot;&quot;% de población urbana (0-1)&quot;&quot;&quot;
+        return self.data['People and Society']['Urbanization']['urban population'] / 100
+
+    @property
+    def ethnic_distribution(self) -&gt; Dict[str, float]:
+        &quot;&quot;&quot;Distribución étnica (proporciones 0-1)&quot;&quot;&quot;
+        groups = self.data['People and Society']['Ethnic groups']
+        return {k: v/100 for k, v in groups.items() if isinstance(v, (int, float))}
+
+    @property
+    def religious_distribution(self) -&gt; Dict[str, float]:
+        &quot;&quot;&quot;Distribución religiosa (proporciones 0-1)&quot;&quot;&quot;
+        religions = self.data['People and Society']['Religions']
+        return {k: v/100 for k, v in religions.items() if isinstance(v, (int, float))}
+
+    @property
+    def gini_index(self) -&gt; float:
+        &quot;&quot;&quot;Índice de Gini (0-100)&quot;&quot;&quot;
+        return self.data['People and Society']['Gini Index']['value']
+
+    # ========== Economy ==========
+
+    @property
+    def gdp(self) -&gt; float:
+        &quot;&quot;&quot;PIB total (USD)&quot;&quot;&quot;
+        return self.data['Economy']['GDP']['value']
+
+    @property
+    def gdp_per_capita(self) -&gt; float:
+        &quot;&quot;&quot;PIB per cápita (USD)&quot;&quot;&quot;
+        return self.data['Economy']['GDP - per capita']['value']
+
+    @property
+    def gdp_growth_rate(self) -&gt; float:
+        &quot;&quot;&quot;Tasa de crecimiento del PIB (%)&quot;&quot;&quot;
+        return self.data['Economy']['GDP - real growth rate']['value']
+
+    @property
+    def inflation_rate(self) -&gt; float:
+        &quot;&quot;&quot;Tasa de inflación (%)&quot;&quot;&quot;
+        return self.data['Economy']['Inflation rate']['value']
+
+    @property
+    def unemployment_rate(self) -&gt; float:
+        &quot;&quot;&quot;Tasa de desempleo (%)&quot;&quot;&quot;
+        return self.data['Economy']['Unemployment rate']['value']
+
+    @property
+    def public_debt_pct(self) -&gt; float:
+        &quot;&quot;&quot;Deuda pública (% del PIB)&quot;&quot;&quot;
+        return self.data['Economy']['Public debt']['value']
+
+    # ========== Communications ==========
+
+    @property
+    def internet_penetration(self) -&gt; float:
+        &quot;&quot;&quot;% de usuarios de internet (0-1)&quot;&quot;&quot;
+        return self.data['Communications']['Internet users']['percent_of_population'] / 100
+
+    # ========== Military ==========
+
+    @property
+    def military_spending_pct(self) -&gt; float:
+        &quot;&quot;&quot;Gasto militar (% del PIB)&quot;&quot;&quot;
+        return self.data['Military and Security']['Military expenditures']['percent_gdp']
+
+    # ========== Derived Metrics ==========
+
+    @property
+    def inequality_index(self) -&gt; float:
+        &quot;&quot;&quot;Índice de desigualdad normalizado (0-1)&quot;&quot;&quot;
+        return self.gini_index / 100
+
+    @property
+    def purchasing_power(self) -&gt; float:
+        &quot;&quot;&quot;Poder adquisitivo ajustado por inflación&quot;&quot;&quot;
+        return self.gdp_per_capita / (1 + self.inflation_rate/100)
+
+    @property
+    def social_tension(self) -&gt; float:
+        &quot;&quot;&quot;Tensión social (combinación de desigualdad + desempleo)&quot;&quot;&quot;
+        return (self.gini_index/100) * 0.6 + (self.unemployment_rate/100) * 0.4
+
+    # ========== Export Methods ==========
+
+    def to_massive_parameters(self) -&gt; Dict:
+        &quot;&quot;&quot;
+        Exporta todos los datos relevantes como parámetros de MASSIVE.
+
+        Returns:
+            Dict con parámetros listos para MASSIVE
+        &quot;&quot;&quot;
+        return {
+            # People and Society
+            &quot;population&quot;: self.population,
+            &quot;urbanization_rate&quot;: self.urbanization_rate,
+            &quot;gini_index&quot;: self.gini_index,
+            &quot;ethnic_groups&quot;: self.ethnic_distribution,
+            &quot;religious_groups&quot;: self.religious_distribution,
+
+            # Economy
+            &quot;gdp_per_capita&quot;: self.gdp_per_capita,
+            &quot;inflation_rate&quot;: self.inflation_rate,
+            &quot;unemployment_rate&quot;: self.unemployment_rate,
+            &quot;public_debt_pct&quot;: self.public_debt_pct,
+
+            # Communications
+            &quot;internet_penetration&quot;: self.internet_penetration,
+
+            # Military
+            &quot;military_spending_pct&quot;: self.military_spending_pct,
+
+            # Derived
+            &quot;inequality_index&quot;: self.inequality_index,
+            &quot;purchasing_power&quot;: self.purchasing_power,
+            &quot;social_tension&quot;: self.social_tension,
+        }
+
+    @classmethod
+    def multiple(cls, country_names: List[str], data_path: str = None) -&gt; Dict[str, 'FactbookContext']:
+        &quot;&quot;&quot;
+        Carga múltiples países para análisis comparativo.
+
+        Args:
+            country_names: Lista de nombres de países
+            data_path: Ruta al archivo factbook.json
+
+        Returns:
+            Dict {country_name: FactbookContext}
+        &quot;&quot;&quot;
+        return {name: cls(name, data_path) for name in country_names}
+</code></pre>
+<h3 id="63-example-usage-script">6.3 Example Usage Script</h3>
+<pre><code class="language-python"># examples/factbook_simulation.py
+
+&quot;&quot;&quot;
+Ejemplo completo de simulación con datos del World Factbook.
+
+Este script demuestra cómo:
+1. Cargar datos de un país del World Factbook
+2. Inicializar agentes con datos reales
+3. Ejecutar una simulación
+4. Validar resultados contra datos reales
+5. Comparar con otros países
+&quot;&quot;&quot;
+
+from massive.context.factbook_context import FactbookContext
+from massive.core import initialize_agents, simulate
+from massive.validation import FactbookValidator
+from massive.analysis import ComparativeAnalyzer
+
+def main():
+    print(&quot;=&quot; * 60)
+    print(&quot;MASSIVE Simulation with World Factbook Data&quot;)
+    print(&quot;=&quot; * 60)
+
+    # ========== Step 1: Load Country Context ==========
+    print(&quot;\n[1/5] Loading country context...&quot;)
+    context = FactbookContext(&quot;Germany&quot;)
+    print(f&quot;✓ Loaded data for: {context.country_name}&quot;)
+    print(f&quot;  Population: {context.population:,}&quot;)
+    print(f&quot;  GDP per capita: ${context.gdp_per_capita:,}&quot;)
+    print(f&quot;  Gini index: {context.gini_index}&quot;)
+
+    # ========== Step 2: Initialize Agents ==========
+    print(&quot;\n[2/5] Initializing agents with real data...&quot;)
+    agents = initialize_agents(
+        population=context.population,
+        urbanization=context.urbanization_rate,
+        ethnic_groups=context.ethnic_distribution,
+        religious_groups=context.religious_distribution,
+        economic_status=context.gdp_per_capita,
+        inequality=context.gini_index
+    )
+    print(f&quot;✓ Initialized {len(agents):,} agents&quot;)
+
+    # ========== Step 3: Run Simulation ==========
+    print(&quot;\n[3/5] Running simulation...&quot;)
+    massive_params = context.to_massive_parameters()
+    result = simulate(
+        parameters=massive_params,
+        agents=agents,
+        context=context,
+        intervention=&quot;climate_policy&quot;,
+        years=10
+    )
+    print(f&quot;✓ Simulation complete&quot;)
+    print(f&quot;  Final polarization: {result.polarization_index:.3f}&quot;)
+    print(f&quot;  Consensus rate: {result.consensus_rate:.1%}&quot;)
+
+    # ========== Step 4: Validate Results ==========
+    print(&quot;\n[4/5] Validating against real data...&quot;)
+    validator = FactbookValidator()
+    validation = validator.validate(result, context)
+    print(f&quot;✓ Validation complete&quot;)
+    print(f&quot;  Overall accuracy: {validation['overall_accuracy']:.1%}&quot;)
+
+    # ========== Step 5: Cross-Country Comparison ==========
+    print(&quot;\n[5/5] Comparing with other countries...&quot;)
+    analyzer = ComparativeAnalyzer()
+    comparison = analyzer.compare_countries(
+        countries=[&quot;Germany&quot;, &quot;France&quot;, &quot;USA&quot;, &quot;China&quot;],
+        intervention=&quot;climate_policy&quot;,
+        years=10
+    )
+    print(f&quot;✓ Comparison complete&quot;)
+    for country, metrics in comparison.items():
+        print(f&quot;  {country}: acceptance={metrics['acceptance_rate']:.1%}, accuracy={metrics['accuracy']:.1%}&quot;)
+
+    print(&quot;\n&quot; + &quot;=&quot; * 60)
+    print(&quot;Simulation workflow complete!&quot;)
+    print(&quot;=&quot; * 60)
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</code></pre>
+<hr />
+<h2 id="7-validation-strategy">7. Validation Strategy</h2>
+<h3 id="71-validation-metrics">7.1 Validation Metrics</h3>
+<p>Para validar que las simulaciones con datos del Factbook son precisas:</p>
+<p><strong>1. Polarization Accuracy</strong></p>
+<pre><code class="language-python">simulated_polarization = result.polarization_index
+actual_polarization = context.actual_polarization_index  # De fuentes externas
+accuracy = 1 - abs(simulated_polarization - actual_polarization)
+</code></pre>
+<p><strong>2. Consensus Accuracy</strong></p>
+<pre><code class="language-python">simulated_consensus = result.consensus_rate
+actual_consensus = context.actual_consensus_rate  # De encuestas reales
+accuracy = 1 - abs(simulated_consensus - actual_consensus)
+</code></pre>
+<p><strong>3. Economic Impact Accuracy</strong></p>
+<pre><code class="language-python">simulated_impact = result.economic_impact
+actual_impact = context.actual_economic_impact  # De datos del Banco Mundial
+accuracy = 1 - abs(simulated_impact - actual_impact) / actual_impact
+</code></pre>
+<h3 id="72-expected-accuracy-benchmarks">7.2 Expected Accuracy Benchmarks</h3>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Target Accuracy</th>
+<th>Acceptable Range</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Polarization</td>
+<td>85%</td>
+<td>75-95%</td>
+</tr>
+<tr>
+<td>Consensus</td>
+<td>80%</td>
+<td>70-90%</td>
+</tr>
+<tr>
+<td>Economic Impact</td>
+<td>75%</td>
+<td>65-85%</td>
+</tr>
+<tr>
+<td>Overall</td>
+<td>80%</td>
+<td>70-90%</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="8-data-sources">8. Data Sources</h2>
+<h3 id="81-primary-source">8.1 Primary Source</h3>
+<p><strong>CIA World Factbook</strong>
+- URL: https://www.cia.gov/the-world-factbook/
+- Format: JSON por país
+- License: Public Domain
+- Update Frequency: Weekly</p>
+<h3 id="82-alternative-sources-more-complete">8.2 Alternative Sources (More Complete)</h3>
+<p><strong>1. GitHub: wmccaffrey/cia_world_factbook</strong>
+- JSON consolidado de todos los países
+- Fácil de integrar
+- https://github.com/wmccaffrey/cia_world_factbook</p>
+<p><strong>2. GitHub: OpenIntelLabs/World-Factbook</strong>
+- Datos en CSV, JSON, SQLite
+- Histórico de versiones
+- https://github.com/OpenIntelLabs/World-Factbook</p>
+<p><strong>3. Kaggle: CIA World Factbook Dataset</strong>
+- Formato CSV limpio
+- Ejemplos de análisis
+- https://www.kaggle.com/datasets/cia-world-factbook</p>
+<h3 id="83-supplementary-data-sources">8.3 Supplementary Data Sources</h3>
+<p>Para validación, combinar con:
+- <strong>World Bank Open Data</strong>: Indicadores económicos
+- <strong>UN Data</strong>: Estadísticas demográficas
+- <strong>OECD Data</strong>: Datos de países desarrollados
+- <strong>World Values Survey</strong>: Valores culturales y políticos</p>
+<hr />
+<h2 id="9-implementation-checklist">9. Implementation Checklist</h2>
+<h3 id="phase-1-data-infrastructure-2-3-days">Phase 1: Data Infrastructure (2-3 days)</h3>
+<ul>
+<li>[ ] Descargar dataset completo del World Factbook</li>
+<li>[ ] Crear <code>massive/context/factbook_context.py</code></li>
+<li>[ ] Implementar carga y cacheo de datos</li>
+<li>[ ] Crear dataset de ejemplo (<code>factbook_sample.json</code>)</li>
+<li>[ ] Tests unitarios para FactbookContext</li>
+</ul>
+<h3 id="phase-2-integration-points-3-4-days">Phase 2: Integration Points (3-4 days)</h3>
+<ul>
+<li>[ ] Modificar <code>agent_initialization.py</code> para aceptar contexto</li>
+<li>[ ] Modificar <code>utility_logic.py</code> para usar grupos étnicos/religiosos</li>
+<li>[ ] Modificar <code>energy_engine_pure.py</code> para usar Gini index</li>
+<li>[ ] Modificar <code>optimizer.py</code> para usar economía real</li>
+<li>[ ] Tests de integración</li>
+</ul>
+<h3 id="phase-3-validation-framework-2-3-days">Phase 3: Validation Framework (2-3 days)</h3>
+<ul>
+<li>[ ] Crear <code>validation/factbook_validator.py</code></li>
+<li>[ ] Implementar métricas de accuracy</li>
+<li>[ ] Crear <code>analysis/comparative_analyzer.py</code></li>
+<li>[ ] Tests de validación</li>
+</ul>
+<h3 id="phase-4-documentation-examples-2-days">Phase 4: Documentation &amp; Examples (2 days)</h3>
+<ul>
+<li>[ ] Escribir tutorial: "Simulando con datos reales"</li>
+<li>[ ] Crear 3-5 ejemplos de uso</li>
+<li>[ ] Actualizar README con sección de Factbook</li>
+<li>[ ] Documentar API de FactbookContext</li>
+</ul>
+<h3 id="phase-5-testing-refinement-1-2-days">Phase 5: Testing &amp; Refinement (1-2 days)</h3>
+<ul>
+<li>[ ] Ejecutar simulaciones para 10-20 países</li>
+<li>[ ] Calcular métricas de accuracy</li>
+<li>[ ] Ajustar parámetros si es necesario</li>
+<li>[ ] Documentar resultados</li>
+</ul>
+<p><strong>Total Estimated Time: 10-14 days</strong></p>
+<hr />
+<h2 id="10-expected-outcomes">10. Expected Outcomes</h2>
+<h3 id="101-scientific-benefits">10.1 Scientific Benefits</h3>
+<ol>
+<li><strong>Empirical Grounding</strong>: Simulaciones basadas en datos reales</li>
+<li><strong>Validation</strong>: Capacidad de validar resultados contra el mundo real</li>
+<li><strong>Reproducibility</strong>: Otros investigadores pueden replicar simulaciones</li>
+<li><strong>Cross-Country Analysis</strong>: Comparación sistemática entre países</li>
+</ol>
+<h3 id="102-practical-benefits">10.2 Practical Benefits</h3>
+<ol>
+<li><strong>Trazabilidad</strong>: Cada parámetro documentado con su fuente empírica</li>
+<li><strong>Accuracy</strong>: Mejores predicciones al usar datos reales</li>
+<li><strong>Insights</strong>: Descubrimiento de patrones cross-country</li>
+<li><strong>Reproducibilidad</strong>: Cada simulación reproducible con <code>seed=</code> + <code>PYTHONHASHSEED</code></li>
+</ol>
+<h3 id="103-competitive-advantages">10.3 Competitive Advantages</h3>
+<ol>
+<li><strong>Differentiation</strong>: Único framework de ABM con integración de World Factbook</li>
+<li><strong>Validation</strong>: Validación empírica directa</li>
+<li><strong>Scalability</strong>: Fácil extensión a más países y métricas</li>
+<li><strong>Open Science</strong>: Datos públicos y reproducibles</li>
+</ol>
+<hr />
+<h2 id="11-risks-and-mitigations">11. Risks and Mitigations</h2>
+<h3 id="risk-1-data-quality">Risk 1: Data Quality</h3>
+<p><strong>Risk</strong>: Datos del Factbook pueden tener sesgos o errores</p>
+<p><strong>Mitigation</strong>:
+- Cross-validate con otras fuentes (World Bank, UN)
+- Documentar limitaciones de datos
+- Permitir override manual de parámetros</p>
+<h3 id="risk-2-temporal-lag">Risk 2: Temporal Lag</h3>
+<p><strong>Risk</strong>: Datos del Factbook pueden estar desactualizados</p>
+<p><strong>Mitigation</strong>:
+- Usar datos más recientes disponibles
+- Implementar proyecciones temporales
+- Documentar año de referencia de cada dato</p>
+<h3 id="risk-3-granularity">Risk 3: Granularity</h3>
+<p><strong>Risk</strong>: Datos a nivel país, no regional</p>
+<p><strong>Mitigation</strong>:
+- Para países grandes, permitir subdivisión manual
+- Combinar con datos regionales cuando estén disponibles
+- Documentar limitación de granularidad</p>
+<h3 id="risk-4-political-bias">Risk 4: Political Bias</h3>
+<p><strong>Risk</strong>: Perspectiva USA en análisis políticos</p>
+<p><strong>Mitigation</strong>:
+- Cross-validate con fuentes independientes
+- Documentar perspectiva de la fuente
+- Permitir fuentes alternativas</p>
+<hr />
+<h2 id="12-conclusion">12. Conclusion</h2>
+<p>La integración del World Factbook en MASSIVE representa un <strong>salto cualitativo</strong> en la capacidad del framework para:</p>
+<ol>
+<li><strong>Inicializar simulaciones</strong> con datos reales</li>
+<li><strong>Validar resultados</strong> contra el mundo real</li>
+<li><strong>Comparar países</strong> sistemáticamente</li>
+<li><strong>Generar insights</strong> basados en evidencia empírica</li>
+</ol>
+<p>Esta integración posiciona a MASSIVE como un ABM con parámetros trazables a fuentes
+documentadas y validación empírica con 12 casos reales.</p>
+<p><strong>Recomendación</strong>: Proceder con la implementación según el plan detallado en este documento.</p>
+<hr />
+<h2 id="appendix-a-sample-data-structure">Appendix A: Sample Data Structure</h2>
+<p>Ver archivo: <code>data/factbook/factbook_sample.json</code></p>
+<p>Contiene datos de ejemplo para:
+- United States
+- China
+- Germany</p>
+<h2 id="appendix-b-api-reference">Appendix B: API Reference</h2>
+<p>Ver documentación inline en: <code>massive/context/factbook_context.py</code></p>
+<h2 id="appendix-c-example-scripts">Appendix C: Example Scripts</h2>
+<p>Ver: <code>examples/factbook_simulation.py</code></p>
+<hr />
+<p><strong>Document Version</strong>: 1.0<br />
+<strong>Date</strong>: 2026-06-26<br />
+<strong>Status</strong>: Implementation Plan Ready</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.expand", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

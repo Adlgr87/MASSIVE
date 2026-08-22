@@ -1,0 +1,2212 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="MASSIVE — Hybrid social dynamics simulator. Numerical core + LLM as regime selector.">
+      
+      
+      
+      
+        <link rel="prev" href="../README_ES/">
+      
+      
+        <link rel="next" href="../release-checklist/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Audit & Risk Matrix - MASSIVE Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#auditoria-de-production-readiness-massive" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="MASSIVE Documentation" class="md-header__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MASSIVE Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Audit & Risk Matrix
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="MASSIVE Documentation" class="md-nav__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    MASSIVE Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../README_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spanish Version
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Readiness
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Production Readiness
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Audit & Risk Matrix
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Audit & Risk Matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-estado-global" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Estado global
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-matriz-de-riesgos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Matriz de riesgos
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Matriz de riesgos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#estado-de-resolucion-2026-08-20-rama-de-trabajo-pr-85" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estado de resolución (2026-08-20, rama de trabajo → PR #85)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#riesgos-detectados-y-descartados-con-evidencia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Riesgos detectados y descartados (con evidencia)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-plan-por-hitos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Plan por hitos
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Plan por hitos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#propuesta-de-mejora-ci-requiere-owner-el-agente-no-puede-pushear-githubworkflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Propuesta de mejora CI (requiere owner — el agente no puede pushear .github/workflows/*)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hito-0-desbloquear-ejecucion-y-reproducibilidad-s" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hito 0 — Desbloquear ejecución y reproducibilidad (S)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hito-1-seguridad-criticaalta-sm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hito 1 — Seguridad crítica/alta (S/M)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hito-2-correctitud-funcional-y-contratos-m" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hito 2 — Correctitud funcional y contratos (M)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hito-3-test-suite-ci-y-calidad-ml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hito 3 — Test suite, CI y calidad (M/L)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hito-4-observabilidad-contenedores-y-operacion-m" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hito 4 — Observabilidad, contenedores y operación (M)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hito-5-rendimiento-y-escalabilidad-m" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hito 5 — Rendimiento y escalabilidad (M)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hito-6-endurecimiento-final-y-release-candidate-m" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hito 6 — Endurecimiento final y release candidate (M)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-cobertura-actual" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Cobertura actual
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-definicion-de-production-ready-checklist-ejecutable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Definición de "production-ready" (checklist ejecutable)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/current-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (current)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/target-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (target)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runbooks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Runbooks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runbooks/local-development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runbooks/operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runbooks/incidents/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Incidents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/threat-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/secrets-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secrets & Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/test-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../performance/baseline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Baseline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Factbook Integration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Factbook Integration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FACTBOOK_SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FACTBOOK_QUICKSTART/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FACTBOOK_INTEGRATION_PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FACTBOOK_INTEGRATION_COMPLETE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration Complete
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation (PVU-BS)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Validation (PVU-BS)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/PVU_MASSIVE_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/PVU_MASSIVE_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocolo (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/preregistration_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registration (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/preregistration_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registro (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/validation_report_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report template (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/validation_report_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plantilla de reporte (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-estado-global" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Estado global
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-matriz-de-riesgos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Matriz de riesgos
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Matriz de riesgos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#estado-de-resolucion-2026-08-20-rama-de-trabajo-pr-85" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estado de resolución (2026-08-20, rama de trabajo → PR #85)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#riesgos-detectados-y-descartados-con-evidencia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Riesgos detectados y descartados (con evidencia)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-plan-por-hitos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Plan por hitos
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Plan por hitos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#propuesta-de-mejora-ci-requiere-owner-el-agente-no-puede-pushear-githubworkflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Propuesta de mejora CI (requiere owner — el agente no puede pushear .github/workflows/*)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hito-0-desbloquear-ejecucion-y-reproducibilidad-s" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hito 0 — Desbloquear ejecución y reproducibilidad (S)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hito-1-seguridad-criticaalta-sm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hito 1 — Seguridad crítica/alta (S/M)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hito-2-correctitud-funcional-y-contratos-m" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hito 2 — Correctitud funcional y contratos (M)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hito-3-test-suite-ci-y-calidad-ml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hito 3 — Test suite, CI y calidad (M/L)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hito-4-observabilidad-contenedores-y-operacion-m" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hito 4 — Observabilidad, contenedores y operación (M)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hito-5-rendimiento-y-escalabilidad-m" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hito 5 — Rendimiento y escalabilidad (M)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hito-6-endurecimiento-final-y-release-candidate-m" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hito 6 — Endurecimiento final y release candidate (M)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-cobertura-actual" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Cobertura actual
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-definicion-de-production-ready-checklist-ejecutable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Definición de "production-ready" (checklist ejecutable)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="auditoria-de-production-readiness-massive">Auditoría de Production-Readiness — MASSIVE</h1>
+<blockquote>
+<p>Auditor: Agent (Arena) · Fecha inicio: 2026-08-20 · HEAD: <code>288ba9a</code> (main)
+Entorno de verificación: Python 3.11.2 (venv limpio), Node 22.22.3, pytest 8, ruff/black/mypy actuales.
+Sin Docker ni toolchain Rust en el sandbox (limitación documentada; esas verificaciones se delegan a CI).</p>
+<p><strong>Estado (2026-08-20, rama arena/01a01fbd-massive, PR #85):</strong>
+- <strong>Hito 0 COMPLETO</strong> (CI verificada en PR: core/scientific/api/pvu/full-suite/compose-build-health/frontend/lint/mypy ✅ — 14/15 checks; solo gitleaks 🔴 por SEC-01 pre-existente, ver §3).
+- <strong>Hito 1</strong>: SEC-02/03 implementados y testeados; SEC-01 (rotación token) <strong>pendiente del owner</strong>.
+- <strong>Hito 2</strong>: ARCH-01 resuelto (16 módulos huérfanos UI-NG eliminados del backend raíz); DOCS-01/OPS-02 resueltos; decisión kit UI-NG (ARCH-02) pendiente del owner.
+- <strong>Hito 4 (parcial)</strong>: request-id + access log estructurado; <code>/ready</code> redefinido (solo dependencias requeridas; degradación informativa de LLM).
+- <strong>Hito 5 (parcial)</strong>: baseline de rendimiento medido (docs/performance/baseline.md); cobertura real medida: <strong>68%</strong>.
+- Pendiente del owner: rotación token, workflow secret-scan determinista, branch protection, decisión UI-NG, merge PR #85.</p>
+</blockquote>
+<hr />
+<h2 id="1-estado-global">1. Estado global</h2>
+<table>
+<thead>
+<tr>
+<th>Dimensión</th>
+<th>Estado</th>
+<th>Evidencia clave</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Instalación de dependencias</td>
+<td>✅ OK</td>
+<td><code>pip install -r requirements.txt</code> exitoso; <code>pip-audit</code> → 0 vulnerabilidades conocidas</td>
+</tr>
+<tr>
+<td>Tests</td>
+<td>❌</td>
+<td>483 passed / 2 failed / 2 módulos sin colectar (import roto)</td>
+</tr>
+<tr>
+<td>Lint/Format/Types</td>
+<td>❌</td>
+<td>ruff 28 errores; black 2 archivos; mypy slice 1 error</td>
+</tr>
+<tr>
+<td>Frontend build</td>
+<td>❌</td>
+<td>Rollup no resuelve alias <code>@/</code></td>
+</tr>
+<tr>
+<td>Docker</td>
+<td>❌ (CI)</td>
+<td>workflow <code>Docker E2E Health</code> failure en main</td>
+</tr>
+<tr>
+<td>CI en main</td>
+<td>❌</td>
+<td>7/12 workflows en failure (incl. tests, lint, frontend, docker, publish)</td>
+</tr>
+<tr>
+<td>Secretos en árbol actual</td>
+<td>✅/⚠️</td>
+<td>sin secretos activos en el árbol; <strong>token Zapier en historial</strong> (requiere rotación del owner)</td>
+</tr>
+<tr>
+<td>Docs vs realidad</td>
+<td>❌</td>
+<td>quickstart README roto (<code>app.py</code> inexistente); signoff describe Makefile inexistente</td>
+</tr>
+</tbody>
+</table>
+<h2 id="2-matriz-de-riesgos">2. Matriz de riesgos</h2>
+<p>Severidad: 🔴 crítico · 🟠 alto · 🟡 medio · 🔵 bajo. Prob./Impacto: A(lta)/M(edia)/B(aja).</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Área</th>
+<th>Hallazgo</th>
+<th>Evidencia</th>
+<th>Sev</th>
+<th>Prob</th>
+<th>Imp</th>
+<th>Corrección propuesta</th>
+<th>Riesgo reg.</th>
+<th>Criterio de aceptación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SEC-01</td>
+<td>Secretos</td>
+<td>Token Zapier MCP (108 chars) queda en historial git público (commit <code>dc2240c</code>, <code>.codebuff/config.json</code>); borrado en PR #81 pero sin rotar</td>
+<td><code>gh api repos/.../commits/dc2240c...</code> → campo <code>ZAPIER_MCP_TOKEN</code> (valor redactado en este informe)</td>
+<td>🔴</td>
+<td>A</td>
+<td>A</td>
+<td><strong>Rotar el token en Zapier (acción del owner)</strong>; opcional: purga de historial (destructivo, requiere aprobación)</td>
+<td>n/a (acción externa)</td>
+<td>Token antiguo invalidado por el owner; <code>gitleaks</code> limpio en HEAD</td>
+</tr>
+<tr>
+<td>SEC-02</td>
+<td>Auth</td>
+<td><code>api.py</code> valida <code>MASSIVE_ENV == "dev"</code> pero el valor documentado/usado en el backend canónico es <code>"development"</code> → con <code>MASSIVE_ENV=development</code> sin <code>MASSIVE_API_KEY</code>, legacy responde 503 en vez del fallback dev documentado</td>
+<td><code>api.py:24</code> vs <code>backend/app/security.py:50-53</code> vs <code>.env.example:8</code></td>
+<td>🟠</td>
+<td>A</td>
+<td>M</td>
+<td>Unificar semántica de entornos en un solo helper compartido</td>
+<td>B</td>
+<td>Test que cubra dev/staging/production en ambos backends</td>
+</tr>
+<tr>
+<td>SEC-03</td>
+<td>Auth</td>
+<td>Comparación de API key no constant-time (<code>!=</code>) en ambos backends raíz</td>
+<td><code>api.py:29</code>, <code>backend/app/security.py:60</code></td>
+<td>🟡</td>
+<td>B</td>
+<td>M</td>
+<td><code>hmac.compare_digest</code></td>
+<td>B</td>
+<td>Test unitario + revisión</td>
+</tr>
+<tr>
+<td>SEC-04</td>
+<td>Auth</td>
+<td>Fallback <code>dev-secret-key</code> documentado en README; si alguien despliega con <code>MASSIVE_ENV</code> distinto de production acepta clave conocida</td>
+<td><code>README.md</code> (tabla endpoints), <code>backend/app/security.py:53</code></td>
+<td>🟡</td>
+<td>M</td>
+<td>A</td>
+<td>Warning en arranque + negar fallback salvo <code>development</code> explícito (ya casi lo hace); documentar</td>
+<td>B</td>
+<td>Test: <code>staging</code> sin key → 503 (ya se cumple en backend canónico; añadir a legacy)</td>
+</tr>
+<tr>
+<td>OPS-01</td>
+<td>CI</td>
+<td>main rojo desde PR #84 (7/12 workflows); PR se mergueó sin gates</td>
+<td><code>gh run list</code> run 32084191350 etc.</td>
+<td>🔴</td>
+<td>A</td>
+<td>A</td>
+<td>Arreglar bloqueos + branch protection (acción owner)</td>
+<td>B</td>
+<td>Todos los workflows esenciales verdes en main</td>
+</tr>
+<tr>
+<td>TEST-01</td>
+<td>Tests</td>
+<td><code>tests/test_llm_endpoint.py</code> y <code>tests/test_llm_orchestrator_coverage.py</code> no importan (<code>create_app</code> ya no existe en <code>backend.app.main</code>) — reescritos en PR #84 contra contrato del kit UI-NG</td>
+<td><code>pytest --collect-only</code> → 2 ImportError; contrato canónico en <code>configs/llm_contract/massive_llm_contract.json</code></td>
+<td>🔴</td>
+<td>A</td>
+<td>M</td>
+<td>Reescribir contra contrato canónico v1.1.0 (<code>app</code> + <code>X-API-Key</code>)</td>
+<td>B</td>
+<td><code>pytest tests/</code> colecta y pasa sin exclusiones</td>
+</tr>
+<tr>
+<td>TEST-02</td>
+<td>Tests</td>
+<td><code>test_estimate_intervention_cost</code> pasa array 1D a función documentada como matriz 2D</td>
+<td><code>tests/test_factbook_integration.py:232</code> vs <code>massive/core/intervention_optimizer.py:275</code></td>
+<td>🟠</td>
+<td>A</td>
+<td>M</td>
+<td>Corregir el test (reshape a <code>(n_phases, n_agents)</code> + seed)</td>
+<td>B</td>
+<td>Test pasa; función intacta</td>
+</tr>
+<tr>
+<td>TEST-03</td>
+<td>Tests</td>
+<td><code>test_describe_families_smoke_4clusters</code>: fixture de 20 sims hace imposible k=4 (<code>max_k=n//10=2</code>)</td>
+<td><code>micro_engine.py</code> <code>_kmeans_fallback</code>; experimento: con 60 sims silhouette k=4=0.952</td>
+<td>🟠</td>
+<td>A</td>
+<td>M</td>
+<td>Fixture <code>n_per=15</code> (60 sims); sin tocar el motor</td>
+<td>B</td>
+<td>Test pasa; <code>test_micro.py</code> sigue verde</td>
+</tr>
+<tr>
+<td>FE-01</td>
+<td>Frontend</td>
+<td><code>vite.config.ts</code> sin <code>resolve.alias</code> para <code>@</code> → build roto (CI Frontend + Docker build + TS validate en cascada)</td>
+<td><code>npm run build</code> → Rollup error <code>@/components/ui/button</code>; <code>frontend/vite.config.ts</code></td>
+<td>🔴</td>
+<td>A</td>
+<td>M</td>
+<td>Añadir alias <code>@ → ./src</code> (patrón estándar Vite)</td>
+<td>B</td>
+<td><code>npm run build</code> exitoso localmente; workflow verde</td>
+</tr>
+<tr>
+<td>LINT-01</td>
+<td>Calidad</td>
+<td>ruff 28 errores + black 2 archivos + mypy 1 error → workflow Lint rojo</td>
+<td><code>/tmp/ruff.txt</code>, <code>/tmp/black.txt</code>, <code>/tmp/mypy.txt</code></td>
+<td>🟠</td>
+<td>A</td>
+<td>M</td>
+<td><code>ruff --fix</code> + <code>black</code> en 2 archivos; fix tipado en <code>services/llm_orchestrator.py:683</code></td>
+<td>B</td>
+<td><code>ruff check .</code> y <code>black --check .</code> y slice mypy → 0 errores</td>
+</tr>
+<tr>
+<td>DOCS-01</td>
+<td>Docs</td>
+<td>README Quick Start referencia <code>python app.py</code> (Streamlit) inexistente; streamlit no está en requirements</td>
+<td><code>ls app.py</code> → no existe; <code>grep streamlit requirements.txt</code> → vacío</td>
+<td>🟠</td>
+<td>A</td>
+<td>M</td>
+<td>Reemplazar quickstart por API/UI reales; decidir destino de <code>/ui/</code> (streamlit) en nginx+supervisord</td>
+<td>B</td>
+<td>README ejecutado desde clonación limpia</td>
+</tr>
+<tr>
+<td>OPS-02</td>
+<td>Contenedores</td>
+<td>supervisord arranca <code>streamlit</code> (binario no instalado en imagen) → reinicio eterno dentro del contenedor; puerto 8501 y ruta <code>/ui/</code> muertos</td>
+<td><code>supervisord.conf:23-24</code>, <code>requirements.txt</code> sin streamlit</td>
+<td>🟠</td>
+<td>A</td>
+<td>M</td>
+<td>Quitar programa streamlit + puerto 8501 + location <code>/ui/</code> (o instalar streamlit si el owner lo quiere)</td>
+<td>B</td>
+<td>Contenedor arranca sin procesos en respawn loop (verificable en CI docker-e2e)</td>
+</tr>
+<tr>
+<td>ARCH-01</td>
+<td>Arquitectura</td>
+<td>3 backends/contratos conviven; <code>backend/app/services/llm_orchestrator.py</code> es un duplicado huérfano con contrato divergente (riesgo de que alguien lo cablee)</td>
+<td><code>ls backend/app/services/</code>, diff de contratos</td>
+<td>🟡</td>
+<td>M</td>
+<td>M</td>
+<td>Marcar/aislar el kit UI-NG; eliminar el duplicado huérfano tras caracterización</td>
+<td>M</td>
+<td>Ningún import al duplicado; contract tests del canónico</td>
+</tr>
+<tr>
+<td>ARCH-02</td>
+<td>Arquitectura</td>
+<td>Kit <code>massive-ui-ng/</code> completo (backend+frontend+tests+infra) mezclado en el árbol del repo; sus tests no corren en CI raíz</td>
+<td><code>massive-ui-ng/README.md</code> ("NO es standalone")</td>
+<td>🟡</td>
+<td>M</td>
+<td>M</td>
+<td>Decisión de producto: fusionar de verdad o mover a subdir ignorado — <strong>requiere decisión del owner</strong></td>
+<td>M</td>
+<td>Docs de arquitectura reflejan la decisión</td>
+</tr>
+<tr>
+<td>HYG-01</td>
+<td>Higiene</td>
+<td>Archivos basura: <code>0</code>, <code>test-zapier.txt</code>, <code>.github/test-zapier-dir.txt</code>, <code>README.backup.md</code>, <code>site/</code> (build MkDocs commiteado)</td>
+<td><code>ls</code> raíz; <code>git ls-files site/</code></td>
+<td>🔵</td>
+<td>A</td>
+<td>B</td>
+<td>Eliminar basura; ignorar <code>site/</code></td>
+<td>B</td>
+<td>Árbol limpio; CI docs sigue verde</td>
+</tr>
+<tr>
+<td>PERF-01</td>
+<td>Rendimiento</td>
+<td>Sin baseline reproducible de rendimiento en CI/CD verificable desde clonación limpia (benchmarks existen pero informales)</td>
+<td><code>benchmarks/</code>, <code>benchmark_scalability.py</code> (con errores de lint)</td>
+<td>🟡</td>
+<td>M</td>
+<td>M</td>
+<td>Crear <code>docs/performance/baseline.md</code> con método reproducible</td>
+<td>B</td>
+<td>Baseline documentado + script ejecutable</td>
+</tr>
+<tr>
+<td>REL-01</td>
+<td>Release</td>
+<td>Sin tags, sin releases, CHANGELOG mínimo; publish depende de tags que nunca se crearon</td>
+<td><code>git tag</code> → vacío; <code>gh release list</code> → vacío</td>
+<td>🟡</td>
+<td>M</td>
+<td>M</td>
+<td>Checklist de release + flujo semver documentado</td>
+<td>B</td>
+<td><code>docs/release-checklist.md</code> ejecutado en un RC</td>
+</tr>
+</tbody>
+</table>
+<h3 id="estado-de-resolucion-2026-08-20-rama-de-trabajo-pr-85">Estado de resolución (2026-08-20, rama de trabajo → PR #85)</h3>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Estado</th>
+<th>Evidencia de cierre</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TEST-01/02/03</td>
+<td>✅ resuelto</td>
+<td>suite completa 521→530 tests verdes sin exclusiones; CI <code>full-suite</code> ✅</td>
+</tr>
+<tr>
+<td>FE-01</td>
+<td>✅ resuelto</td>
+<td><code>npm run build</code> OK; CI <code>Build Frontend</code> / <code>compose-build-health</code> ✅ (compose valida build+arranque)</td>
+</tr>
+<tr>
+<td>LINT-01</td>
+<td>✅ resuelto</td>
+<td>ruff/black/mypy limpios; CI <code>Python Lint</code> ✅. Hallazgo adicional: 2 I001 en <code>massive-ui-ng/tests/</code> (llegaron con PR #84) enmascarados localmente por <code>.ruff_cache</code> rancia — CI era la fuente de verdad; usar <code>--no-cache</code> al dudar</td>
+</tr>
+<tr>
+<td>SEC-02/03</td>
+<td>✅ resuelto</td>
+<td>helper compartido <code>massive_core.config.api_auth</code> + 12 tests de paridad/auth</td>
+</tr>
+<tr>
+<td>SEC-01</td>
+<td>🔴 <strong>pendiente owner</strong></td>
+<td>token Zapier accesible en historial (commit d99b06b3; 77 commits lo contienen en árbol). Rotar. Ver <code>gitleaks.toml</code> (allowlist documentada) y propuesta de workflow en §3</td>
+</tr>
+<tr>
+<td>OPS-02</td>
+<td>✅ resuelto</td>
+<td>supervisord/nginx/Dockerfile/compose sin streamlit; <code>compose-build-health</code> ✅</td>
+</tr>
+<tr>
+<td>DOCS-01</td>
+<td>✅ resuelto</td>
+<td>quickstart con comandos reales; <code>massive-cli</code> verificado</td>
+</tr>
+<tr>
+<td>ARCH-01</td>
+<td>✅ resuelto</td>
+<td>16 módulos huérfanos eliminados (AST reachability + grep sin importadores); API funcional post-borrado (200 en /health, /v1/simulate, /v1/llm)</td>
+</tr>
+<tr>
+<td>ARCH-02</td>
+<td>🟡 pendiente owner</td>
+<td>decisión de destino del kit <code>massive-ui-ng/</code> (ver target-state D1)</td>
+</tr>
+<tr>
+<td>HYG-01</td>
+<td>✅ resuelto</td>
+<td>archivos basura eliminados; <code>site/</code> des-trackeado</td>
+</tr>
+<tr>
+<td>PERF-01</td>
+<td>✅ parcial</td>
+<td>baseline reproducible con números reales (docs/performance/baseline.md)</td>
+</tr>
+<tr>
+<td>REL-01</td>
+<td>🟡 pendiente</td>
+<td>checklist listo; requiere tag semver + branch protection (owner)</td>
+</tr>
+<tr>
+<td>NUEVO OBS-02</td>
+<td>✅ implementado</td>
+<td><code>/metrics</code> Prometheus (contadores por grupo + uptime), <code>X-Request-ID</code>, access log con duración, límite body 413 (<code>MASSIVE_MAX_BODY_MB</code>) — 9 tests</td>
+</tr>
+</tbody>
+</table>
+<h3 id="riesgos-detectados-y-descartados-con-evidencia">Riesgos detectados y descartados (con evidencia)</h3>
+<ul>
+<li><strong>Secretos en árbol actual</strong>: regex de patrones (sk-, gsk_, xox, AKIA, ghp_, hf_, Bearer largos) sobre <code>.py/.md/.yml/.json/.txt/.ts/.sh</code> → 0 hallazgos.</li>
+<li><strong>Vulnerabilidades de dependencias Python</strong>: <code>pip-audit -r requirements.txt</code> → "No known vulnerabilities found" (2026-08-20).</li>
+<li><strong>gitleaks en HEAD</strong>: workflow <code>Secret scan</code> verde en main.</li>
+</ul>
+<h2 id="3-plan-por-hitos">3. Plan por hitos</h2>
+<h3 id="propuesta-de-mejora-ci-requiere-owner-el-agente-no-puede-pushear-githubworkflows">Propuesta de mejora CI (requiere owner — el agente no puede pushear <code>.github/workflows/*</code>)</h3>
+<p><strong>Estado (2026-08-20): autorizado por el owner e implementado hasta donde la credencial lo permite.</strong> El agente tiene autorización explícita del owner para este cambio, pero el token de la App (<code>arena-ai-coding-agent[bot]</code>) carece del scope <code>workflows</code>: git push y la REST API lo rechazan (<code>refusing to allow a GitHub App to create or update workflow ... without workflows permission</code>). El YAML final quedó revertido a la versión vigente en la rama; aplicar el siguiente contenido exacto en <code>.github/workflows/secret_scan.yml</code> (vía GitHub web UI en la rama del PR o en main) cierra el check:</p>
+<pre><code class="language-yaml">name: Secret scan
+
+on: [pull_request, push]
+
+permissions:
+  contents: read
+
+jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine scan range
+        id: range
+        run: |
+          set -eu
+          if [ &quot;${{ github.event_name }}&quot; = &quot;pull_request&quot; ]; then
+            # Only the commits unique to this PR (symmetric difference with base)
+            RANGE=&quot;origin/${{ github.base_ref }}...HEAD&quot;
+          elif [ -n &quot;${{ github.event.before }}&quot; ] &amp;&amp; git cat-file -e &quot;${{ github.event.before }}&quot;^{commit} 2&gt;/dev/null; then
+            RANGE=&quot;${{ github.event.before }}..HEAD&quot;
+          else
+            # New branch or force-push without valid before: scan the tip commit
+            RANGE=&quot;HEAD~1..HEAD&quot;
+          fi
+          echo &quot;range=${RANGE}&quot; &gt;&gt; &quot;$GITHUB_OUTPUT&quot;
+          echo &quot;Scanning gitleaks range: ${RANGE}&quot;
+
+      - name: Run gitleaks (pinned)
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -eu
+          VERSION=8.24.3
+          curl -sL &quot;https://github.com/gitleaks/gitleaks/releases/download/v${VERSION}/gitleaks_${VERSION}_linux_x64.tar.gz&quot; \
+            | tar xz -C /usr/local/bin gitleaks
+          gitleaks git --redact --config gitleaks.toml --verbose \
+            --log-opts &quot;${{ steps.range.outputs.range }}&quot;
+</code></pre>
+<p>Contexto: el <code>secret_scan.yml</code> actual usa <code>gitleaks/gitleaks-action@v2</code>, que ante push de rama nueva/forzada (sin <code>before</code> válido) escanea el <strong>historial completo heredado</strong> y falla siempre por el token Zapier histórico (SEC-01). La variante determinista anterior escanea exactamente el cambio propuesto con el binario pinneado 8.24.3 + <code>gitleaks.toml</code> del repo (reglas por defecto + allowlist documentada). Auditoría ad-hoc del historial completo: <code>gitleaks git --log-opts=all</code>.yaml
+name: Secret scan
+on: [pull_request, push]
+permissions:
+  contents: read
+jobs:
+  gitleaks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: range
+        run: |
+          set -eu
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            RANGE="origin/${{ github.base_ref }}...HEAD"
+          elif [ -n "${{ github.event.before }}" ] &amp;&amp; git cat-file -e "${{ github.event.before }}"^{commit} 2&gt;/dev/null; then
+            RANGE="${{ github.event.before }}..HEAD"
+          else
+            RANGE="HEAD~1..HEAD"
+          fi
+          echo "range=${RANGE}" &gt;&gt; "$GITHUB_OUTPUT"
+      - run: |
+          set -eu
+          VERSION=8.24.3
+          curl -sL "https://github.com/gitleaks/gitleaks/releases/download/v${VERSION}/gitleaks_${VERSION}_linux_x64.tar.gz" | tar xz -C /usr/local/bin gitleaks
+          gitleaks git --redact --config gitleaks.toml --verbose --log-opts "${{ steps.range.outputs.range }}"
+```</p>
+<h3 id="hito-0-desbloquear-ejecucion-y-reproducibilidad-s">Hito 0 — Desbloquear ejecución y reproducibilidad (S)</h3>
+<p><strong>Objetivo:</strong> CI verde en lo esencial; clonación limpia funciona.
+- T0.1 (TEST-01/02/03): reparar 2 módulos de tests + 2 tests contra contrato canónico. [S/M] — rollback: revert commit.
+- T0.2 (FE-01): alias Vite. [S]
+- T0.3 (LINT-01): ruff/black/mypy. [S]
+- Criterio: <code>pytest tests/</code>, <code>ruff</code>, <code>black --check</code>, <code>npm run build</code>, slice mypy — todos verdes localmente.</p>
+<h3 id="hito-1-seguridad-criticaalta-sm">Hito 1 — Seguridad crítica/alta (S/M)</h3>
+<ul>
+<li>T1.1 (SEC-02/03): unificar helper de entornos + <code>compare_digest</code> + tests. [M]</li>
+<li>T1.2 (SEC-01): solicitar rotación del token Zapier (owner). [acción humana]</li>
+<li>Criterio: tests de auth cubren dev/staging/production; comparación constant-time.</li>
+</ul>
+<h3 id="hito-2-correctitud-funcional-y-contratos-m">Hito 2 — Correctitud funcional y contratos (M)</h3>
+<ul>
+<li>T2.1 (ARCH-01): eliminar duplicado huérfano tras caracterización. [M]</li>
+<li>T2.2 (DOCS-01/Ops README): quickstart real. [S]</li>
+<li>T2.3 (OPS-02): supervisord sin streamlit fantasma. [S] <em>(cambia comportamiento Docker → aviso en PR)</em></li>
+<li>Criterio: contract tests del endpoint LLM; README verificado; docker-e2e verde en CI.</li>
+</ul>
+<h3 id="hito-3-test-suite-ci-y-calidad-ml">Hito 3 — Test suite, CI y calidad (M/L)</h3>
+<ul>
+<li>T3.1: CI con gates obligatorios en PR (no solo push a main). [M]</li>
+<li>T3.2: smoke test de imagen en CI (ya existe <code>docker-e2e.yml</code>, mantener). [S]</li>
+<li>T3.3: umbral de cobertura razonable medido desde el actual (medir con <code>--cov</code>). [M]</li>
+<li>Criterio: PRs bloqueados si tests/lint/build fallan; cobertura reportada.</li>
+</ul>
+<h3 id="hito-4-observabilidad-contenedores-y-operacion-m">Hito 4 — Observabilidad, contenedores y operación (M)</h3>
+<ul>
+<li>T4.1: <code>/ready</code> que refleje dependencias reales; logs estructurados con request-id. [M]</li>
+<li>T4.2: runbooks completos (operations/incidents). [S]</li>
+<li>Criterio: runbooks ejecutables; health/readiness probados.</li>
+</ul>
+<h3 id="hito-5-rendimiento-y-escalabilidad-m">Hito 5 — Rendimiento y escalabilidad (M)</h3>
+<ul>
+<li>T5.1: baseline reproducible (<code>docs/performance/baseline.md</code>). [M]</li>
+<li>Criterio: benchmark ejecutable en &lt;10 min que registre tiempo/memoria por motor.</li>
+</ul>
+<h3 id="hito-6-endurecimiento-final-y-release-candidate-m">Hito 6 — Endurecimiento final y release candidate (M)</h3>
+<ul>
+<li>T6.1: branch protection (owner), tag semver, CHANGELOG, release checklist ejecutado. [M]</li>
+<li>Criterio: definición estricta de "production-ready" (§5) cumplida y documentada.</li>
+</ul>
+<h2 id="4-cobertura-actual">4. Cobertura actual</h2>
+<p>Medida en este entorno: pendiente de ejecutar <code>pytest --cov</code> completo (Hito 3).
+Referencia previa del repo (MASSIVE_PRODUCTION_SIGNOFF.md, 2026-08-16): 47% agregado (5142 stmts).
+No se fija umbral arbitrario hasta medir en HEAD actual.</p>
+<h2 id="5-definicion-de-production-ready-checklist-ejecutable">5. Definición de "production-ready" (checklist ejecutable)</h2>
+<ul>
+<li>[ ] Clonación limpia + instalación + arranque documentados y verificados.</li>
+<li>[ ] Build Python/Rust/frontend aplicable verde (Rust: vía CI mientras el sandbox no tenga toolchain).</li>
+<li>[ ] Docker/Compose construye y pasa smoke (CI).</li>
+<li>[ ] Rutas y flujos críticos con tests automatizados verdes.</li>
+<li>[ ] Sin fallos bloqueantes ni vulns críticas/altas sin aceptación explícita documentada.</li>
+<li>[ ] Secretos fuera del repo y de los logs.</li>
+<li>[ ] Configuración tipada, validada, segura por defecto.</li>
+<li>[ ] Health/readiness funcionales.</li>
+<li>[ ] Logs operables + métricas mínimas + runbooks.</li>
+<li>[ ] CI protege main (branch protection — owner).</li>
+<li>[ ] Release/rollback/recuperación documentados y probados.</li>
+<li>[ ] Benchmarks con baseline; optimizaciones con evidencia.</li>
+<li>[ ] README/docs de producción verificados desde cero.</li>
+<li>[ ] Cambios en PRs pequeños con pruebas.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.expand", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

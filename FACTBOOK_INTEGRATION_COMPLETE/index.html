@@ -1,0 +1,2841 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="MASSIVE — Hybrid social dynamics simulator. Numerical core + LLM as regime selector.">
+      
+      
+      
+      
+        <link rel="prev" href="../FACTBOOK_INTEGRATION_PLAN/">
+      
+      
+        <link rel="next" href="../validation/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Integration Complete - MASSIVE Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#integracion-del-cia-world-factbook-en-massive-completada" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="MASSIVE Documentation" class="md-header__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MASSIVE Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Integration Complete
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="MASSIVE Documentation" class="md-nav__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    MASSIVE Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../README_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spanish Version
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Readiness
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Production Readiness
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../production-readiness-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Audit & Risk Matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/current-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (current)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/target-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (target)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runbooks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Runbooks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runbooks/local-development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runbooks/operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runbooks/incidents/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Incidents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/threat-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/secrets-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secrets & Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/test-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../performance/baseline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Baseline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_5" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Factbook Integration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Factbook Integration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FACTBOOK_SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FACTBOOK_QUICKSTART/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FACTBOOK_INTEGRATION_PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration Complete
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration Complete
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#resumen-ejecutivo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Resumen Ejecutivo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estructura-implementada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📚 Estructura Implementada
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-puntos-de-integracion-implementados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 5 Puntos de Integración Implementados
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 5 Puntos de Integración Implementados">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-agent-initialization-critical" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. ✅ Agent Initialization (CRITICAL)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-social-pressure-high-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. ✅ Social Pressure (HIGH PRIORITY)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-energy-engine-medium-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. ✅ Energy Engine (MEDIUM PRIORITY)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-intervention-optimizer-high-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. ✅ Intervention Optimizer (HIGH PRIORITY)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-validation-framework-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. ✅ Validation Framework (NEW)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#datos-incluidos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📊 Datos Incluidos
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📊 Datos Incluidos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#paises-de-muestra-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Países de Muestra (3)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#campos-disponibles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Campos Disponibles
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#como-usar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚀 Cómo Usar
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚀 Cómo Usar">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#inicio-rapido" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inicio Rápido
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejemplo-completo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejemplo Completo
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔍 Validación
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔍 Validación">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ejecutar-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejecutar Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resultados-esperados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resultados Esperados
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#archivos-creadosmodificados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📁 Archivos Creados/Modificados
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📁 Archivos Creados/Modificados">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nuevos-archivos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nuevos Archivos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#archivos-modificados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Archivos Modificados
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mapeo-de-datos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎓 Mapeo de Datos
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎓 Mapeo de Datos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#de-factbook-a-massive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        De Factbook a MASSIVE
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workflow-de-uso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔄 Workflow de Uso
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paises-soportados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🌍 Países Soportados
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🌍 Países Soportados">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#como-agregar-mas-paises" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cómo Agregar Más Países
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recomendaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        💡 Recomendaciones
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="💡 Recomendaciones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#para-mejor-precision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Para Mejor Precisión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#para-desarrollo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Para Desarrollo
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#soporte" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📞 Soporte
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#proximos-pasos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Próximos Pasos
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Próximos Pasos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#corto-plazo-1-2-semanas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Corto Plazo (1-2 semanas)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mediano-plazo-1-mes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mediano Plazo (1 mes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#largo-plazo-3-meses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Largo Plazo (3+ meses)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#beneficios-de-la-integracion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✨ Beneficios de la Integración
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="✨ Beneficios de la Integración">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mayor-realismo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Mayor Realismo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validacion-objetiva" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📊 Validación Objetiva
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#intervenciones-realistas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        💰 Intervenciones Realistas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flexibilidad-global" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🌍 Flexibilidad Global
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🏆 Éxito!
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation (PVU-BS)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Validation (PVU-BS)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/PVU_MASSIVE_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/PVU_MASSIVE_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocolo (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/preregistration_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registration (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/preregistration_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registro (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/validation_report_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report template (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/validation_report_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plantilla de reporte (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#resumen-ejecutivo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Resumen Ejecutivo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estructura-implementada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📚 Estructura Implementada
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-puntos-de-integracion-implementados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 5 Puntos de Integración Implementados
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 5 Puntos de Integración Implementados">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-agent-initialization-critical" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. ✅ Agent Initialization (CRITICAL)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-social-pressure-high-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. ✅ Social Pressure (HIGH PRIORITY)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-energy-engine-medium-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. ✅ Energy Engine (MEDIUM PRIORITY)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#4-intervention-optimizer-high-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. ✅ Intervention Optimizer (HIGH PRIORITY)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#5-validation-framework-new" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. ✅ Validation Framework (NEW)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#datos-incluidos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📊 Datos Incluidos
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📊 Datos Incluidos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#paises-de-muestra-3" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Países de Muestra (3)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#campos-disponibles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Campos Disponibles
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#como-usar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🚀 Cómo Usar
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🚀 Cómo Usar">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#inicio-rapido" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inicio Rápido
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ejemplo-completo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejemplo Completo
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#validacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔍 Validación
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🔍 Validación">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ejecutar-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejecutar Tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resultados-esperados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resultados Esperados
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#archivos-creadosmodificados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📁 Archivos Creados/Modificados
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="📁 Archivos Creados/Modificados">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nuevos-archivos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Nuevos Archivos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#archivos-modificados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Archivos Modificados
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mapeo-de-datos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎓 Mapeo de Datos
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎓 Mapeo de Datos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#de-factbook-a-massive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        De Factbook a MASSIVE
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#workflow-de-uso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔄 Workflow de Uso
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#paises-soportados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🌍 Países Soportados
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🌍 Países Soportados">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#como-agregar-mas-paises" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cómo Agregar Más Países
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#recomendaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        💡 Recomendaciones
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="💡 Recomendaciones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#para-mejor-precision" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Para Mejor Precisión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#para-desarrollo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Para Desarrollo
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#soporte" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📞 Soporte
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#proximos-pasos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Próximos Pasos
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="🎯 Próximos Pasos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#corto-plazo-1-2-semanas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Corto Plazo (1-2 semanas)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#mediano-plazo-1-mes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mediano Plazo (1 mes)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#largo-plazo-3-meses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Largo Plazo (3+ meses)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#beneficios-de-la-integracion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✨ Beneficios de la Integración
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="✨ Beneficios de la Integración">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#mayor-realismo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🎯 Mayor Realismo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validacion-objetiva" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        📊 Validación Objetiva
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#intervenciones-realistas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        💰 Intervenciones Realistas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#flexibilidad-global" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🌍 Flexibilidad Global
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#exito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🏆 Éxito!
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="integracion-del-cia-world-factbook-en-massive-completada">✅ INTEGRACIÓN DEL CIA WORLD FACTBOOK EN MASSIVE - COMPLETADA</h1>
+<h2 id="resumen-ejecutivo">🎯 Resumen Ejecutivo</h2>
+<p><strong>Fecha:</strong> 26 de Junio de 2026<br />
+<strong>Estado:</strong> ✅ <strong>100% COMPLETADA</strong><br />
+<strong>Pruebas:</strong> 7/7 PASADAS<br />
+<strong>Países Soportados:</strong> 3 de muestra (US, CH, GM) + estructura para 260+ países</p>
+<hr />
+<h2 id="estructura-implementada">📚 Estructura Implementada</h2>
+<pre><code>MASSIVE/
+├── massive/core/
+│   └── factbook/
+│       ├── __init__.py          # Exports principales
+│       ├── context.py           # FactbookContext - Clase principal
+│       ├── loader.py            # FactbookDataLoader - Carga de datos
+│       ├── mappings.py          # Mapeo Factbook → MASSIVE parameters
+│       └── validator.py         # FactbookValidator - Validación
+│
+└── data/factbook/
+    └── factbook_sample.json     # Datos de muestra (3 países)
+</code></pre>
+<hr />
+<h2 id="5-puntos-de-integracion-implementados">🎯 5 Puntos de Integración Implementados</h2>
+<h3 id="1-agent-initialization-critical">1. ✅ <strong>Agent Initialization</strong> (CRITICAL)</h3>
+<p><strong>Archivo:</strong> <code>massive_engine.py</code> + <code>massive/core/utility_logic.py</code></p>
+<p><strong>Qué implementa:</strong>
+- Inicialización de agentes con contexto de país específico
+- Nº de agentes basado en población real
+- Matriz demográfica 5D de grupos de edad
+- Distribución de grupos étnicos, religiosos y lingüísticos</p>
+<p><strong>Ejemplo:</strong></p>
+<pre><code class="language-python">from massive.core.factbook import FactbookContext
+from massive_engine import MassiveEngine
+
+context = FactbookContext()
+context.load_country(&quot;US&quot;)
+params = context.get_massive_params(&quot;US&quot;)
+
+engine = MassiveEngine(config={&quot;n_agents&quot;: params[&quot;n_agents&quot;]})
+</code></pre>
+<p><strong>Parámetros generados:</strong>
+- <code>n_agents</code>: Escalado desde población real (máx 100,000)
+- <code>demographic_matrix</code>: Matriz 5x5 de sensibilidad por edad
+- <code>social_groups</code>: Dict con distribución étnica, religiosa, lingüística</p>
+<hr />
+<h3 id="2-social-pressure-high-priority">2. ✅ <strong>Social Pressure</strong> (HIGH PRIORITY)</h3>
+<p><strong>Archivo:</strong> <code>massive/core/utility_logic.py</code></p>
+<p><strong>Qué implementa:</strong>
+- Cálculo de presión social basado en diversidad étnica/religiosa
+- Grupos étnicos afectan dinámicas de grupo
+- Diversidad más alta = presión social más baja</p>
+<p><strong>Nuevas funciones:</strong></p>
+<pre><code class="language-python">from massive.core.utility_logic import (
+    calculate_social_pressure,
+    calculate_group_cohesion,
+    calculate_demographic_strategic_force,
+)
+
+# Usando datos del Factbook
+social_weights = context.get_social_pressure_weights(&quot;US&quot;)
+pressure = calculate_social_pressure(
+    agent_opinion=0.5,
+    neighbors_opinions=[0.6, 0.4, 0.7],
+    social_pressure_weights=social_weights
+)
+</code></pre>
+<p><strong>Integración:</strong>
+- <code>social_pressure_weights['ethnic']</code>: 1 - diversidad_étnica
+- <code>social_pressure_weights['religious']</code>: 1 - diversidad_religiosa
+- <code>social_pressure_weights['language']</code>: 1 - diversidad_lingüística</p>
+<hr />
+<h3 id="3-energy-engine-medium-priority">3. ✅ <strong>Energy Engine</strong> (MEDIUM PRIORITY)</h3>
+<p><strong>Archivo:</strong> <code>energy_engine.py</code></p>
+<p><strong>Qué implementa:</strong>
+- Integración del <strong>Gini Index</strong> en el paisaje de energía
+- Factor de desigualdad para ajustar profundidad de atractores
+- Paisajes económicos basados en datos reales</p>
+<p><strong>Nuevos métodos en <code>SocialEnergyEngine</code>:</strong></p>
+<pre><code class="language-python">from energy_engine import SocialEnergyEngine
+
+engine = SocialEnergyEngine(
+    gini_coefficient=0.415,  # Desde Factbook
+    inequality_factor=1.83,   # 1 + (gini/100)*2
+    economic_potential=params[&quot;economic_potential&quot;]
+)
+
+# Crear paisaje ajustado por Gini
+attractors, repellers = engine.create_gini_adjusted_landscape(
+    base_attractors, base_repellers
+)
+
+# O crear paisaje económico
+attractors, repellers = engine.create_economic_landscape(
+    mean_income=country.gdp_per_capita
+)
+</code></pre>
+<p><strong>Efectos:</strong>
+- Mayor Gini = atractores más fuertes (consenso más difícil)
+- Mayor Gini = repulsores más fuertes (polarización más probable)
+- Lambda social ajustado por desigualdad</p>
+<hr />
+<h3 id="4-intervention-optimizer-high-priority">4. ✅ <strong>Intervention Optimizer</strong> (HIGH PRIORITY)</h3>
+<p><strong>Archivo:</strong> <code>massive/core/intervention_optimizer.py</code></p>
+<p><strong>Qué implementa:</strong>
+- Costos de intervención escalados por PIB per cápita
+- Restricciones fiscales basadas en balance presupuestario
+- Multiplicadores por sector económico</p>
+<p><strong>Nuevas funciones:</strong></p>
+<pre><code class="language-python">from massive.core.intervention_optimizer import (
+    optimize_interventions,
+    create_economic_aware_optimizer,
+    estimate_intervention_cost,
+    get_intervention_feasibility,
+)
+
+# Optimizar con contexto económico
+constraints = context.get_intervention_constraints(&quot;US&quot;)
+result = optimize_interventions(
+    evaluate_fn=my_evaluator,
+    n_agents=1000,
+    n_phases=10,
+    country_code=&quot;US&quot;,
+    **constraints
+)
+
+# Optimizador pre-configurado
+us_optimizer = create_economic_aware_optimizer(&quot;US&quot;)
+result = us_optimizer(my_evaluator, n_agents=1000, n_phases=10)
+</code></pre>
+<p><strong>Parámetros económicos:</strong>
+- <code>cost_scale_factor</code>: log(PIB_per_cápita)/10
+- <code>fiscal_constraint</code>: [0,1] basado en surplus/déficit
+- <code>sector_multipliers</code>: Pesos de agricultura, industria, servicios</p>
+<hr />
+<h3 id="5-validation-framework-new">5. ✅ <strong>Validation Framework</strong> (NEW)</h3>
+<p><strong>Archivo:</strong> <code>massive/core/factbook/validator.py</code></p>
+<p><strong>Qué implementa:</strong>
+- Comparación de resultados de simulación vs datos reales
+- Cálculo de accuracy score (0-100)
+- Validación demográfica, económica y social
+- Generación de reportes detallados</p>
+<p><strong>Ejemplo:</strong></p>
+<pre><code class="language-python">from massive.core.factbook.validator import FactbookValidator
+
+validator = FactbookValidator()
+
+# Validar simulación
+report = validator.validate_simulation(
+    simulation_results=results,
+    country_identifier=&quot;US&quot;,
+    config=simulation_config
+)
+
+# Obtener score de accuracy
+accuracy = validator.get_accuracy_score(results, &quot;US&quot;)
+print(f&quot;Accuracy: {accuracy:.1f}%&quot;)
+
+# Guardar reporte
+report.save()
+</code></pre>
+<p><strong>Métricas validadas:</strong>
+- Población y estructura de edad
+- Gini index y desigualdad
+- PIB per cápita
+- Tasas de desempleo
+- Diversidad étnica/religiosa
+- Urbanización</p>
+<hr />
+<h2 id="datos-incluidos">📊 Datos Incluidos</h2>
+<h3 id="paises-de-muestra-3">Países de Muestra (3)</h3>
+<table>
+<thead>
+<tr>
+<th>Código</th>
+<th>País</th>
+<th>Población</th>
+<th>Gini</th>
+<th>PIB per cápita</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>US</td>
+<td>United States</td>
+<td>339,996,563</td>
+<td>41.5</td>
+<td>$79,300</td>
+</tr>
+<tr>
+<td>CH</td>
+<td>China</td>
+<td>1,425,671,352</td>
+<td>38.5</td>
+<td>$21,100</td>
+</tr>
+<tr>
+<td>GM</td>
+<td>Germany</td>
+<td>83,294,633</td>
+<td>28.5</td>
+<td>$55,500</td>
+</tr>
+</tbody>
+</table>
+<h3 id="campos-disponibles">Campos Disponibles</h3>
+<ul>
+<li><strong>Demográficos:</strong> Población, estructura de edad, grupos étnicos, religiones, idiomas, alfabetismo, urbanización, esperanza de vida, tasa de fertilidad</li>
+<li><strong>Económicos:</strong> PIB (PPP), PIB per cápita, Gini index, distribución del PIB por sector, fuerza laboral, tasa de desempleo, presupuesto (ingresos/egresos)</li>
+<li><strong>Políticos:</strong> Tipo de gobierno, partidos políticos</li>
+<li><strong>Sociales:</strong> Migración, sufragio</li>
+</ul>
+<hr />
+<h2 id="como-usar">🚀 Cómo Usar</h2>
+<h3 id="inicio-rapido">Inicio Rápido</h3>
+<pre><code class="language-python"># 1. Importar módulos
+from massive.core.factbook import FactbookContext, get_factbook_context
+from massive.core.utility_logic import calculate_social_pressure
+from energy_engine import SocialEnergyEngine
+
+# 2. Cargar contexto
+context = get_factbook_context()
+context.load_country(&quot;US&quot;)
+
+# 3. Obtener parámetros
+params = context.get_massive_params(&quot;US&quot;)
+
+# 4. Usar en simulación
+engine = SocialEnergyEngine(
+    gini_coefficient=params[&quot;gini_coefficient&quot;],
+    inequality_factor=params[&quot;inequality_factor&quot;]
+)
+</code></pre>
+<h3 id="ejemplo-completo">Ejemplo Completo</h3>
+<pre><code class="language-python">import numpy as np
+from massive.core.factbook import FactbookContext
+from massive.core.utility_logic import calculate_social_pressure
+from energy_engine import SocialEnergyEngine
+from massive_engine import MassiveEngine
+
+# Inicializar contexto
+context = FactbookContext()
+
+# Cargar país
+country_code = &quot;US&quot;
+context.load_country(country_code)
+country = context.get_country(country_code)
+
+# Obtener parámetros
+params = country.massive_params
+
+print(f&quot;Simulando {country.country_name}:&quot;)
+print(f&quot;  Población: {country.population:,}&quot;)
+print(f&quot;  Gini: {country.gini_index}&quot;)
+print(f&quot;  Diversidad Étnica: {country.ethnic_diversity:.3f}&quot;)
+
+# 1. Agent Initialization
+n_agents = params[&quot;n_agents&quot;]
+engine = MassiveEngine(config={&quot;n_agents&quot;: n_agents})
+
+# 2. Social Pressure
+demo_matrix = params[&quot;demographic_matrix&quot;]
+social_weights = params[&quot;social_pressure_weights&quot;]
+
+# 3. Energy Engine with Gini
+gini = params[&quot;gini_coefficient&quot;]
+inequality = params[&quot;inequality_factor&quot;]
+economic = params[&quot;economic_potential&quot;]
+
+energy_engine = SocialEnergyEngine(
+    gini_coefficient=gini,
+    inequality_factor=inequality,
+    economic_potential=economic
+)
+
+# Crear paisaje económico
+attractors, repellers = energy_engine.create_economic_landscape(
+    mean_income=country.gdp_per_capita
+)
+
+print(f&quot;\nParámetros de MASSIVE configurados:&quot;)
+print(f&quot;  Agentes: {n_agents}&quot;)
+print(f&quot;  Coeficiente Gini: {gini:.3f}&quot;)
+print(f&quot;  Factor de Desigualdad: {inequality:.3f}&quot;)
+print(f&quot;  Atractores: {len(attractors)}, Repulsores: {len(repellers)}&quot;)
+</code></pre>
+<hr />
+<h2 id="validacion">🔍 Validación</h2>
+<h3 id="ejecutar-tests">Ejecutar Tests</h3>
+<pre><code class="language-bash"># Todos los tests
+python test_factbook_integration.py
+
+# Test específico
+python test_factbook_integration.py --test social_pressure
+
+# Con verbose
+python test_factbook_integration.py --verbose
+</code></pre>
+<h3 id="resultados-esperados">Resultados Esperados</h3>
+<pre><code>============================================================
+CIA WORLD FACTBOOK INTEGRATION TESTS
+============================================================
+Running 7 test(s)
+Countries: US, CH, GM
+
+✅ FactbookContext tests PASSED
+✅ FactbookDataLoader tests PASSED
+✅ Social Pressure tests PASSED
+✅ Energy Engine tests PASSED
+✅ Intervention Optimizer tests PASSED
+✅ Validation Framework tests PASSED
+✅ Agent Initialization tests PASSED
+
+🎉 ALL TESTS PASSED! Factbook integration is working correctly.
+</code></pre>
+<hr />
+<h2 id="archivos-creadosmodificados">📁 Archivos Creados/Modificados</h2>
+<h3 id="nuevos-archivos">Nuevos Archivos</h3>
+<ol>
+<li><code>massive/core/factbook/__init__.py</code> - Package init</li>
+<li><code>massive/core/factbook/context.py</code> - FactbookContext principal</li>
+<li><code>massive/core/factbook/loader.py</code> - DataLoader</li>
+<li><code>massive/core/factbook/mappings.py</code> - Mapeo de parámetros</li>
+<li><code>massive/core/factbook/validator.py</code> - Validación</li>
+<li><code>data/factbook/factbook_sample.json</code> - Datos de muestra</li>
+<li><code>test_factbook_integration.py</code> - Script de prueba</li>
+<li><code>docs/FACTBOOK_INTEGRATION_COMPLETE.md</code> - Esta documentación</li>
+</ol>
+<h3 id="archivos-modificados">Archivos Modificados</h3>
+<ol>
+<li><code>massive/core/utility_logic.py</code> - Funciones de social pressure</li>
+<li><code>energy_engine.py</code> - Integración de Gini index</li>
+<li><code>massive/core/intervention_optimizer.py</code> - Costos económicos</li>
+<li><code>massive/core/__init__.py</code> - Exports de nuevos módulos</li>
+<li><code>massive/core/intervention_optimizer.py</code> - Creado nuevo</li>
+</ol>
+<hr />
+<h2 id="mapeo-de-datos">🎓 Mapeo de Datos</h2>
+<h3 id="de-factbook-a-massive">De Factbook a MASSIVE</h3>
+<table>
+<thead>
+<tr>
+<th><strong>Factbook Field</strong></th>
+<th><strong>MASSIVE Parameter</strong></th>
+<th><strong>Transformación</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>population</td>
+<td>n_agents</td>
+<td>scale_to_max(100000)</td>
+</tr>
+<tr>
+<td>age_structure</td>
+<td>demographic_matrix</td>
+<td>create_5d_demographic_matrix()</td>
+</tr>
+<tr>
+<td>ethnic_groups</td>
+<td>social_groups['ethnic']</td>
+<td>normalize_dict()</td>
+</tr>
+<tr>
+<td>religions</td>
+<td>social_groups['religion']</td>
+<td>normalize_dict()</td>
+</tr>
+<tr>
+<td>languages</td>
+<td>social_groups['language']</td>
+<td>normalize_dict()</td>
+</tr>
+<tr>
+<td>gini_index</td>
+<td>gini_coefficient</td>
+<td>normalize_0_100_to_0_1()</td>
+</tr>
+<tr>
+<td>gini_index</td>
+<td>inequality_factor</td>
+<td>1 + (gini/100)*2</td>
+</tr>
+<tr>
+<td>gdp_per_capita</td>
+<td>cost_scale_factor</td>
+<td>np.log1p(x)/10</td>
+</tr>
+<tr>
+<td>budget_surplus_deficit</td>
+<td>fiscal_constraint</td>
+<td>1 - (deficit/abs(deficit))*0.1</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="workflow-de-uso">🔄 Workflow de Uso</h2>
+<pre><code>1. Cargar datos del país
+   ↓
+2. Extraer parámetros MASSIVE
+   ↓
+3. Inicializar agentes con contexto demográfico
+   ↓
+4. Configurar energy engine con Gini index
+   ↓
+5. Calcular social pressure con grupos étnicos
+   ↓
+6. Optimizar intervenciones con restricciones económicas
+   ↓
+7. Validar resultados vs datos reales
+</code></pre>
+<hr />
+<h2 id="paises-soportados">🌍 Países Soportados</h2>
+<p>Actualmente se incluyen <strong>3 países de muestra</strong> en <code>factbook_sample.json</code>:
+- <strong>US</strong> - Estados Unidos
+- <strong>CH</strong> - China<br />
+- <strong>GM</strong> - Alemania</p>
+<h3 id="como-agregar-mas-paises">Cómo Agregar Más Países</h3>
+<ol>
+<li>
+<p><strong>Descargar dataset completo:</strong>
+   <code>bash
+   git clone https://github.com/wmccaffrey/cia_world_factbook.git
+   cp cia_world_factbook/factbook.json data/factbook/</code></p>
+</li>
+<li>
+<p><strong>O usar el loader:</strong>
+   <code>python
+   loader = FactbookDataLoader("path/to/factbook.json")</code></p>
+</li>
+<li>
+<p><strong>El sistema soporta automáticamente todos los países</strong> del Factbook</p>
+</li>
+</ol>
+<hr />
+<h2 id="recomendaciones">💡 Recomendaciones</h2>
+<h3 id="para-mejor-precision">Para Mejor Precisión</h3>
+<ol>
+<li><strong>Descargar dataset completo</strong> de https://github.com/wmccaffrey/cia_world_factbook</li>
+<li><strong>Usar datos oficiales</strong> de https://www.cia.gov/the-world-factbook/</li>
+<li><strong>Validar con múltiples países</strong> para comparar resultados</li>
+</ol>
+<h3 id="para-desarrollo">Para Desarrollo</h3>
+<ol>
+<li><strong>Extender mappings.py</strong> para nuevos campos</li>
+<li><strong>Agregar más países</strong> al dataset</li>
+<li><strong>Mejorar functions de transformación</strong> en mappings.py</li>
+</ol>
+<hr />
+<h2 id="soporte">📞 Soporte</h2>
+<p>Para problemas o preguntas sobre la integración:</p>
+<ol>
+<li><strong>Revisar los tests</strong> en <code>test_factbook_integration.py</code></li>
+<li><strong>Ver ejemplos</strong> en la documentación</li>
+<li><strong>Explorar datos</strong> con FactbookDataLoader</li>
+<li><strong>Validar resultados</strong> con FactbookValidator</li>
+</ol>
+<hr />
+<h2 id="proximos-pasos">🎯 Próximos Pasos</h2>
+<h3 id="corto-plazo-1-2-semanas">Corto Plazo (1-2 semanas)</h3>
+<ul>
+<li>[ ] Cargar dataset completo del Factbook (260+ países)</li>
+<li>[ ] Probar con más países y escenarios</li>
+<li>[ ] Optimizar rendimiento con datos reales</li>
+</ul>
+<h3 id="mediano-plazo-1-mes">Mediano Plazo (1 mes)</h3>
+<ul>
+<li>[ ] Integración con APIs en vivo del CIA</li>
+<li>[ ] Actualización automática de datos</li>
+<li>[ ] Soporte para series temporales</li>
+</ul>
+<h3 id="largo-plazo-3-meses">Largo Plazo (3+ meses)</h3>
+<ul>
+<li>[ ] Integración con otros datasets (Banco Mundial, ONU)</li>
+<li>[ ] Modelos predictivos basados en datos históricos</li>
+<li>[ ] Visualización de datos geográficos</li>
+</ul>
+<hr />
+<h2 id="beneficios-de-la-integracion">✨ Beneficios de la Integración</h2>
+<h3 id="mayor-realismo">🎯 <strong>Mayor Realismo</strong></h3>
+<ul>
+<li>Agentes basados en datos demográficos reales</li>
+<li>Presión social calculada con diversidad real</li>
+<li>Desigualdad económica que afecta dinámicas</li>
+</ul>
+<h3 id="validacion-objetiva">📊 <strong>Validación Objetiva</strong></h3>
+<ul>
+<li>Comparación con datos reales</li>
+<li>Score de accuracy (0-100)</li>
+<li>Identificación de discrepancias</li>
+</ul>
+<h3 id="intervenciones-realistas">💰 <strong>Intervenciones Realistas</strong></h3>
+<ul>
+<li>Costos basados en PIB real</li>
+<li>Restricciones fiscales verdaderas</li>
+<li>Eficiencia por sector económico</li>
+</ul>
+<h3 id="flexibilidad-global">🌍 <strong>Flexibilidad Global</strong></h3>
+<ul>
+<li>Soporte para cualquier país</li>
+<li>Fácil extensión a nuevos datasets</li>
+<li>Integración con estándares internacionales</li>
+</ul>
+<hr />
+<h2 id="exito">🏆 Éxito!</h2>
+<p>La integración del <strong>CIA World Factbook</strong> en <strong>MASSIVE</strong> está <strong>100% completada</strong> y <strong>funcionando</strong>!</p>
+<p>Todos los <strong>5 puntos de integración</strong> mencionados en el plan han sido implementados:</p>
+<ol>
+<li>✅ <strong>Agent Initialization</strong> - Agentes inicializados con contexto de país</li>
+<li>✅ <strong>Social Pressure</strong> - Presión social con datos étnicos/religiosos  </li>
+<li>✅ <strong>Energy Engine</strong> - Gini index integrado en paisaje energético</li>
+<li>✅ <strong>Intervention Optimizer</strong> - Costos y restricciones económicas reales</li>
+<li>✅ <strong>Validation Framework</strong> - Validación contra datos reales</li>
+</ol>
+<p><strong>¡Listo para usar!</strong> 🎉</p>
+<hr />
+<p><em>Documentación generada automáticamente | MASSIVE Research | 2026</em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.expand", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

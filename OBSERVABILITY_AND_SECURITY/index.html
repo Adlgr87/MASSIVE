@@ -1,0 +1,3261 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="MASSIVE — Hybrid social dynamics simulator. Numerical core + LLM as regime selector.">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>MASSIVE — Observabilidad y Seguridad (Fase 5) - MASSIVE Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#massive-observabilidad-y-seguridad-fase-5" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="MASSIVE Documentation" class="md-header__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MASSIVE Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              MASSIVE — Observabilidad y Seguridad (Fase 5)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="MASSIVE Documentation" class="md-nav__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    MASSIVE Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../README_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spanish Version
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Readiness
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Production Readiness
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../production-readiness-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Audit & Risk Matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/current-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (current)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/target-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (target)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runbooks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Runbooks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runbooks/local-development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runbooks/operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runbooks/incidents/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Incidents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/threat-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/secrets-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secrets & Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/test-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../performance/baseline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Baseline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Factbook Integration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Factbook Integration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FACTBOOK_SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FACTBOOK_QUICKSTART/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FACTBOOK_INTEGRATION_PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FACTBOOK_INTEGRATION_COMPLETE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration Complete
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation (PVU-BS)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Validation (PVU-BS)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/PVU_MASSIVE_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/PVU_MASSIVE_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocolo (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/preregistration_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registration (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/preregistration_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registro (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/validation_report_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report template (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/validation_report_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plantilla de reporte (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-resumen-ejecutivo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Resumen Ejecutivo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-endpoints-de-salud-y-metricas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Endpoints de Salud y Métricas
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Endpoints de Salud y Métricas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-health-endpoint-de-estado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 /health — Endpoint de estado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-metrics-endpoint-prometheus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 /metrics — Endpoint Prometheus
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-endpoints-de-salud-en-docker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Endpoints de salud en Docker
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-logs-estructurados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Logs Estructurados
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Logs Estructurados">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-estado-actual" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Estado actual
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-campos-de-contexto-requeridos-phase-5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Campos de contexto requeridos (Phase 5)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-diseno-de-logging-estructurado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Diseño de logging estructurado
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.3 Diseño de logging estructurado">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#331-middleware-de-request_id" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.1. Middleware de request_id
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#332-logger-estructurado-json" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.2. Logger estructurado JSON
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#333-logger-contextual-con-extra" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.3. Logger contextual con extra
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#334-formato-json-esperado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3.4. Formato JSON esperado
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-variables-de-entorno-de-logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Variables de entorno de logging
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-seguridad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Seguridad
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Seguridad">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-autenticacion-api-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Autenticación (API Keys)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-cors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 CORS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-rate-limiting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Rate Limiting
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-trustedhost-security-headers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 TrustedHost &amp; Security Headers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#45-gestion-de-credenciales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.5 Gestión de Credenciales
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#46-seguridad-de-uploads" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.6 Seguridad de uploads
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#47-manejo-de-errores" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.7 Manejo de errores
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-slos-slis-y-alertas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. SLOs, SLIs y Alertas
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. SLOs, SLIs y Alertas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-sli-slo-propuestos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 SLI / SLO propuestos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-definiciones-formales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Definiciones formales
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5.2 Definiciones formales">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sl1-latencia-p95-de-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SL1 — Latencia p95 de API
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sl2-tasa-de-errores-5xx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SL2 — Tasa de errores 5xx
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sl3-disponibilidad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SL3 — Disponibilidad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sl4-latencia-llm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SL4 — Latencia LLM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sl5-tasa-de-rate-limiting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SL5 — Tasa de rate limiting
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-promql-recording-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 PromQL recording rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-alertas-prometheusrule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 Alertas (PrometheusRule)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#55-dashboard-propuesto-grafana" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.5 Dashboard propuesto (Grafana)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5.5 Dashboard propuesto (Grafana)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dashboard-massive-ui-ng-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dashboard: "MASSIVE UI-NG - Overview"
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-auditoria-de-configuracion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Auditoría de Configuración
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Auditoría de Configuración">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-necesidad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Necesidad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-diseno-propuesto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Diseño propuesto
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-almacenamiento" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Almacenamiento
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-variables-de-entorno-mapa-completo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Variables de Entorno — Mapa Completo
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Variables de Entorno — Mapa Completo">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#71-mapa-de-variables-de-observabilidad-y-seguridad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.1 Mapa de variables de observabilidad y seguridad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#72-herencia-y-migracion-de-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7.2 Herencia y migración de config
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-checklist-de-implementacion-phase-5" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Checklist de Implementación Phase 5
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Checklist de Implementación Phase 5">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-prioridad-alta-bloqueadores" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 Prioridad Alta (bloqueadores)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-prioridad-media" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 Prioridad Media
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-prioridad-baja" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 Prioridad Baja
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-arquitectura-de-seguridad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Arquitectura de Seguridad
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. Arquitectura de Seguridad">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#91-matriz-de-amenazas-parcial" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.1 Matriz de amenazas (parcial)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#92-defensa-en-profundidad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.2 Defensa en profundidad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#93-hardening-recomendado-para-produccion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9.3 Hardening recomendado para producción
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-implementacion-por-fases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Implementación por Fases
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="10. Implementación por Fases">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#fase-51-health-check-30-min" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fase 5.1 — Health check (30 min)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fase-52-logging-estructurado-2h" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fase 5.2 — Logging estructurado (2h)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fase-53-metrics-slo-2h" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fase 5.3 — Metrics SLO (2h)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fase-54-slos-y-alertas-1h-doc-deploy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fase 5.4 — SLOs y alertas (1h doc + deploy)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fase-55-auditoria-3h" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fase 5.5 — Auditoría (3h)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-referencias-rapidas-codigo-existente" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Referencias rápidas (código existente)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="massive-observabilidad-y-seguridad-fase-5">MASSIVE — Observabilidad y Seguridad (Fase 5)</h1>
+<blockquote>
+<p><strong>Ingeniero de Observabilidad / Seguridad</strong> — Documento de fase 5 del Master Orchestrator.</p>
+<p>Este documento formaliza la arquitectura de observabilidad y seguridad para el
+backend UI-NG de MASSIVE (<code>backend/app/</code>). Está basado en el código real encontrado
+en el repositorio y describe el estado actual, brechas identificadas y
+recomendaciones de implementación para producción.</p>
+</blockquote>
+<hr />
+<h2 id="1-resumen-ejecutivo">1. Resumen Ejecutivo</h2>
+<table>
+<thead>
+<tr>
+<th>Dimensión</th>
+<th>Estado actual</th>
+<th>Brecha crítica</th>
+<th>Prioridad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Health endpoint</strong></td>
+<td><code>/health</code> implementado en <code>main.py</code></td>
+<td>Sin readiness vs liveness distinción</td>
+<td>Media</td>
+</tr>
+<tr>
+<td><strong>Metrics endpoint</strong></td>
+<td><code>/metrics</code> implementado (Prometheus text)</td>
+<td>Solo contadores; sin histogramas de latencia</td>
+<td>Alta</td>
+</tr>
+<tr>
+<td><strong>Logging estructurado</strong></td>
+<td>Formato plano (<code>logging.basicConfig</code>)</td>
+<td>Sin contexto (request_id, engine_type, etc.)</td>
+<td>Alta</td>
+</tr>
+<tr>
+<td><strong>API Auth</strong></td>
+<td><code>MASSIVE_API_KEYS</code> (X-API-Key) + dev fallback</td>
+<td>Dev fallback en <code>api.py</code></td>
+<td>Alta</td>
+</tr>
+<tr>
+<td><strong>CORS</strong></td>
+<td>Configurable, no wildcard con credenciales</td>
+<td>Validado en tests</td>
+<td>Baja</td>
+</tr>
+<tr>
+<td><strong>Rate limiting</strong></td>
+<td>Sliding-window per-IP in-process</td>
+<td>Sin multi-worker (necesita Redis)</td>
+<td>Media</td>
+</tr>
+<tr>
+<td><strong>Seguridad de credenciales</strong></td>
+<td><code>.env</code> + docker mounts</td>
+<td>Sin vault/secret manager</td>
+<td>Media</td>
+</tr>
+<tr>
+<td><strong>SLOs / Alertas</strong></td>
+<td>No definidos</td>
+<td>Sin SLI/SLO/alertas</td>
+<td>Alta</td>
+</tr>
+<tr>
+<td><strong>Auditoría</strong></td>
+<td>No implementada</td>
+<td>Sin registro de cambios de config</td>
+<td>Media</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-endpoints-de-salud-y-metricas">2. Endpoints de Salud y Métricas</h2>
+<h3 id="21-health-endpoint-de-estado">2.1 <code>/health</code> — Endpoint de estado</h3>
+<p><strong>Archivo:</strong> <code>backend/app/main.py</code> (líneas 153–162)</p>
+<p><strong>Implementación actual:</strong></p>
+<pre><code class="language-python">@app.get(&quot;/health&quot;)
+def health_check() -&gt; dict:
+    &quot;&quot;&quot;Liveness + light readiness probe (used by Docker HEALTHCHECK).&quot;&quot;&quot;
+    store: RunStore = app.state.run_store
+    try:
+        store.count()
+        store_ok = True
+    except Exception:
+        store_ok = False
+    return {
+        &quot;status&quot;: &quot;healthy&quot; if store_ok else &quot;degraded&quot;,
+        &quot;service&quot;: &quot;MASSIVE UI-NG API&quot;,
+        &quot;version&quot;: &quot;2.0.0&quot;,
+        &quot;env&quot;: settings.env,
+        &quot;store&quot;: &quot;ok&quot; if store_ok else &quot;error&quot;,
+    }
+</code></pre>
+<p><strong>Características:</strong>
+- Verifica conectividad del store de runs (SQLite).
+- Devuelve <code>status: "degraded"</code> si el store falla.
+- Usado por Docker <code>HEALTHCHECK</code> (Dockerfile.ui-ng línea 35, docker-compose.yml línea 26).</p>
+<p><strong>Recomendación de producción — Separar liveness y readiness:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Probe</th>
+<th>Endpoint</th>
+<th>Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Liveness</strong> (<code>/health</code>)</td>
+<td>Si el proceso está respondiendo</td>
+<td>Orquestador reinicia si falla</td>
+</tr>
+<tr>
+<td><strong>Readiness</strong> (<code>/ready</code>)</td>
+<td>Si está listo para tráfico</td>
+<td>Load balancer quita del pool si falla</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Recomendación de implementación:</strong></p>
+<pre><code class="language-python">@app.get(&quot;/ready&quot;)
+def readiness_check() -&gt; dict:
+    &quot;&quot;&quot;Full readiness: DB, LLM provider, run store.&quot;&quot;&quot;
+    checks = {}
+    # 1. Store
+    store_ok = True
+    try:
+        app.state.run_store.count()
+    except Exception:
+        store_ok = False
+    checks[&quot;store&quot;] = store_ok
+    # 2. LLM provider (soft check — warn, not fail, in heuristic mode)
+    llm = resolve_provider()
+    checks[&quot;llm_configured&quot;] = llm[&quot;configured&quot;]
+    # 3. DB writable (production)
+    if app.state.settings.db_path:
+        checks[&quot;db_writable&quot;] = app.state.settings.db_path.parent.exists()
+    all_ok = all(checks.values())
+    return {
+        &quot;status&quot;: &quot;ready&quot; if all_ok else &quot;not_ready&quot;,
+        &quot;checks&quot;: checks,
+        &quot;service&quot;: &quot;MASSIVE UI-NG API&quot;,
+        &quot;version&quot;: &quot;2.0.0&quot;,
+    }
+</code></pre>
+<h3 id="22-metrics-endpoint-prometheus">2.2 <code>/metrics</code> — Endpoint Prometheus</h3>
+<p><strong>Archivo:</strong> <code>backend/app/main.py</code> (líneas 144–151)
+<strong>Registry:</strong> <code>backend/app/metrics.py</code></p>
+<p><strong>Implementación actual:</strong>
+- Registry personalizado con threadsafe counters.
+- Métrica actual: <code>http_requests_total</code> (labels: <code>method</code>, <code>group</code>).
+- Exponierto en formato texto Prometheus v0.0.4.</p>
+<p><strong>Counters existentes:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Métrica</th>
+<th>Labels</th>
+<th>Quién lo incrementa</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>http_requests_total</code></td>
+<td><code>method</code>, <code>group</code></td>
+<td>middleware <code>http_counter</code> en <code>main.py</code></td>
+</tr>
+<tr>
+<td><code>simulations_total</code></td>
+<td><code>engine</code></td>
+<td><code>simulation.py:_execute()</code></td>
+</tr>
+<tr>
+<td><code>ws_connections_total</code></td>
+<td><em>(none)</em></td>
+<td><code>live.py:ws_live()</code></td>
+</tr>
+<tr>
+<td><code>ws_snapshots_total</code></td>
+<td><em>(none)</em></td>
+<td><code>live.py:ws_live()</code></td>
+</tr>
+<tr>
+<td><code>ws_shocks_total</code></td>
+<td><em>(none)</em></td>
+<td><code>live.py:ws_live()</code></td>
+</tr>
+<tr>
+<td><code>ws_stops_total</code></td>
+<td><em>(none)</em></td>
+<td><code>live.py:ws_live()</code></td>
+</tr>
+<tr>
+<td><code>rate_limit_hits_total</code></td>
+<td><code>group</code></td>
+<td><code>rate_limit.py:RateLimitMiddleware</code></td>
+</tr>
+<tr>
+<td><code>llm_requests_total</code></td>
+<td><code>provider</code>, <code>outcome</code></td>
+<td><code>llm_chat.py:chat_completion()</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Brechas críticas para SLOs:</strong></p>
+<ol>
+<li><strong>No hay histogramas de latencia</strong> — <code>http_request_duration_seconds</code> es esencial para SLO de p95.</li>
+<li><strong>No hay gauges</strong> — <code>ws_active_connections</code>, <code>run_store_count</code>, <code>llm_queue_depth</code> no existen.</li>
+<li><strong>El counter <code>http_requests_total</code> no distingue códigos de respuesta</strong> — para error rate SLO se necesita <code>http_responses_total</code> con label <code>status_code</code>.</li>
+</ol>
+<p><strong>Propuesta de métricas adicionales:</strong></p>
+<pre><code class="language-python"># En metrics.py, extender MetricsRegistry con:
+# - Histogramo de latencia (por endpoint group)
+# - Counter de respuestas por código de estado
+# - Gauge de conexiones WebSocket activas
+# - Gauge de tamaño del run store
+# - Histogramo de duración de simulación (segundos, por engine)
+# - Gauge de latencia LLM (por provider, en segundos)
+</code></pre>
+<p><strong>Propuesta de nuevo registry:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Métrica</th>
+<th>Tipo</th>
+<th>Labels</th>
+<th>Uso SLO</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>http_request_duration_seconds</code></td>
+<td>Histogramo</td>
+<td><code>method</code>, <code>group</code>, <code>status_code</code></td>
+<td>Latencia p95</td>
+</tr>
+<tr>
+<td><code>http_responses_total</code></td>
+<td>Counter</td>
+<td><code>method</code>, <code>group</code>, <code>status_code</code></td>
+<td>Error rate</td>
+</tr>
+<tr>
+<td><code>simulation_duration_seconds</code></td>
+<td>Histogramo</td>
+<td><code>engine</code></td>
+<td>Latencia de simulación</td>
+</tr>
+<tr>
+<td><code>llm_request_duration_seconds</code></td>
+<td>Histogramo</td>
+<td><code>provider</code>, <code>outcome</code></td>
+<td>Latencia LLM</td>
+</tr>
+<tr>
+<td><code>ws_active_connections</code></td>
+<td>Gauge</td>
+<td><em>(none)</em></td>
+<td>Estado WebSocket</td>
+</tr>
+<tr>
+<td><code>run_store_count</code></td>
+<td>Gauge</td>
+<td><em>(none)</em></td>
+<td>Volumen de runs</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Configuración de scrape de Prometheus:</strong></p>
+<pre><code class="language-yaml"># prometheus.yml — scrape config
+scrape_configs:
+  - job_name: &quot;massive-ui-ng&quot;
+    static_configs:
+      - targets: [&quot;massive-ui-ng:8000&quot;]
+    metrics_path: /metrics
+    scrape_interval: 15s
+</code></pre>
+<h3 id="23-endpoints-de-salud-en-docker">2.3 Endpoints de salud en Docker</h3>
+<p><strong>Dockerfile.ui-ng (línea 35):</strong></p>
+<pre><code class="language-dockerfile">HEALTHCHECK --interval=30s --timeout=5s --start-period=15s     CMD curl -sf http://127.0.0.1:8000/health || exit 1
+</code></pre>
+<p><strong>docker-compose.yml (línea 26):</strong></p>
+<pre><code class="language-yaml">healthcheck:
+  test: [&quot;CMD&quot;, &quot;curl&quot;, &quot;-sf&quot;, &quot;http://127.0.0.1:8000/health&quot;]
+</code></pre>
+<p><strong>Observación:</strong> <code>Dockerfile.optimized</code> (raíz) usa <code>/docs</code> como healthcheck, lo cual es inconsistente y incorrecto. Debe usar <code>/health</code>.</p>
+<hr />
+<h2 id="3-logs-estructurados">3. Logs Estructurados</h2>
+<h3 id="31-estado-actual">3.1 Estado actual</h3>
+<p><strong>Archivo:</strong> <code>backend/app/main.py</code> (líneas 39–44)</p>
+<pre><code class="language-python">logging.basicConfig(
+    level=os.getenv(&quot;MASSIVE_LOG_LEVEL&quot;, &quot;INFO&quot;),
+    format=&quot;%(asctime)s | %(name)-28s | %(levelname)-8s | %(message)s&quot;,
+)
+</code></pre>
+<ul>
+<li>Formato plano, sin estructura JSON.</li>
+<li>No hay <code>request_id</code>, <code>simulation_id</code>, <code>engine_type</code>, <code>country_code</code>, <code>llm_provider</code>, <code>user_id</code>.</li>
+<li>El logger <code>massive_core/config/logging_setup.py</code> (<code>configure_logging</code>) existe pero <strong>no se usa en <code>main.py</code></strong> del UI-NG backend. El backend UI-NG inicializa logging de forma independiente.</li>
+</ul>
+<h3 id="32-campos-de-contexto-requeridos-phase-5">3.2 Campos de contexto requeridos (Phase 5)</h3>
+<p>El Master Orchestrator especifica estos campos en el registro de logs:</p>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Origen</th>
+<th>Cuándo se propaga</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>request_id</code></td>
+<td>UUID generado por middleware</td>
+<td>Cada request HTTP / WebSocket</td>
+</tr>
+<tr>
+<td><code>simulation_id</code></td>
+<td>UUID generado al iniciar simulación</td>
+<td><code>/api/simulate</code>, <code>/ws/live</code></td>
+</tr>
+<tr>
+<td><code>engine_type</code></td>
+<td><code>req.engine</code> (scalar|energy|multilayer|massive)</td>
+<td><code>/api/simulate</code>, <code>/ws/live</code></td>
+</tr>
+<tr>
+<td><code>country_code</code></td>
+<td>Detectado de <code>config.factbook_country</code></td>
+<td><code>/api/conversation</code>, <code>/api/simulate</code></td>
+</tr>
+<tr>
+<td><code>llm_provider</code></td>
+<td><code>resolve_provider()["provider"]</code></td>
+<td>Cada llamada LLM</td>
+</tr>
+<tr>
+<td><code>user_id</code></td>
+<td>Derivado de API key (o "anonymous")</td>
+<td>Cada request autenticado</td>
+</tr>
+</tbody>
+</table>
+<h3 id="33-diseno-de-logging-estructurado">3.3 Diseño de logging estructurado</h3>
+<p><strong>Recomendación de implementación:</strong></p>
+<h4 id="331-middleware-de-request_id">3.3.1. Middleware de request_id</h4>
+<pre><code class="language-python"># backend/app/logging_middleware.py (nuevo archivo)
+import uuid
+import logging
+from starlette.types import ASGIApp
+
+class RequestIDMiddleware:
+    &quot;&quot;&quot;Inyecta request_id en el contexto logging.&quot;&quot;&quot;
+    def __init__(self, app: ASGIApp):
+        self.app = app
+
+    async def __call__(self, scope, receive, send):
+        if scope[&quot;type&quot;] in (&quot;http&quot;, &quot;websocket&quot;):
+            headers = scope.get(&quot;headers&quot;, [])
+            rid = None
+            for k, v in headers:
+                if k == b&quot;x-request-id&quot;:
+                    rid = v.decode()
+                    break
+            if not rid:
+                rid = uuid.uuid4().hex[:12]
+            scope[&quot;state&quot;].request_id = rid
+        await self.app(scope, receive, send)
+</code></pre>
+<h4 id="332-logger-estructurado-json">3.3.2. Logger estructurado JSON</h4>
+<pre><code class="language-python"># backend/app/logging_config.py (nuevo)
+import json, logging, sys
+from datetime import datetime, timezone
+
+class JsonFormatter(logging.Formatter):
+    def format(self, record):
+        log_entry = {
+            &quot;timestamp&quot;: datetime.now(timezone.utc).isoformat(),
+            &quot;level&quot;: record.levelname,
+            &quot;logger&quot;: record.name,
+            &quot;message&quot;: record.getMessage(),
+        }
+        for key in (&quot;request_id&quot;, &quot;simulation_id&quot;, &quot;engine_type&quot;,
+                     &quot;country_code&quot;, &quot;llm_provider&quot;, &quot;user_id&quot;):
+            val = getattr(record, key, None)
+            if val:
+                log_entry[key] = val
+        if record.exc_info:
+            log_entry[&quot;exception&quot;] = self.formatException(record.exc_info)
+        return json.dumps(log_entry, ensure_ascii=False)
+
+def configure_json_logging(level=&quot;INFO&quot;):
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setFormatter(JsonFormatter())
+    root = logging.getLogger()
+    root.handlers = [handler]
+    root.setLevel(level)
+</code></pre>
+<h4 id="333-logger-contextual-con-extra">3.3.3. Logger contextual con <code>extra</code></h4>
+<pre><code class="language-python"># En cada router:
+import logging
+
+log = logging.getLogger(&quot;massive.ui_ng.simulation&quot;)
+
+# En simulation.py:
+log.info(&quot;simulation_started&quot;, extra={
+    &quot;simulation_id&quot;: sim_id,
+    &quot;engine_type&quot;: req.engine,
+    &quot;country_code&quot;: req.config.get(&quot;factbook_country&quot;, &quot;N/A&quot;),
+    &quot;user_id&quot;: api_key_hash,
+})
+
+# En llm_chat.py:
+log.info(&quot;llm_request&quot;, extra={
+    &quot;llm_provider&quot;: cfg[&quot;provider&quot;],
+    &quot;model&quot;: cfg[&quot;model&quot;],
+    &quot;outcome&quot;: &quot;ok&quot; if text else &quot;error&quot;,
+})
+</code></pre>
+<h4 id="334-formato-json-esperado">3.3.4. Formato JSON esperado</h4>
+<pre><code class="language-json">{
+  &quot;timestamp&quot;: &quot;2025-06-15T14:30:00.123Z&quot;,
+  &quot;level&quot;: &quot;INFO&quot;,
+  &quot;logger&quot;: &quot;massive.ui_ng.simulation&quot;,
+  &quot;message&quot;: &quot;simulation_started&quot;,
+  &quot;request_id&quot;: &quot;a1b2c3d4e5&quot;,
+  &quot;simulation_id&quot;: &quot;sim_f4a3b2c1&quot;,
+  &quot;engine_type&quot;: &quot;multilayer&quot;,
+  &quot;country_code&quot;: &quot;MX&quot;,
+  &quot;user_id&quot;: &quot;apikey_7f3a&quot;,
+  &quot;llm_provider&quot;: &quot;groq&quot;
+}
+</code></pre>
+<h3 id="34-variables-de-entorno-de-logging">3.4 Variables de entorno de logging</h3>
+<p><strong>Nuevas variables en <code>.env.example</code>:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Default</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MASSIVE_LOG_LEVEL</code></td>
+<td><code>INFO</code></td>
+<td>Nivel de logging (DEBUG/INFO/WARNING/ERROR)</td>
+</tr>
+<tr>
+<td><code>MASSIVE_LOG_FORMAT</code></td>
+<td><code>text</code></td>
+<td><code>json</code> para producción, <code>text</code> para dev</td>
+</tr>
+<tr>
+<td><code>MASSIVE_LOG_FILE</code></td>
+<td><em>(unset)</em></td>
+<td>Archivo log rotativo (opcional)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-seguridad">4. Seguridad</h2>
+<h3 id="41-autenticacion-api-keys">4.1 Autenticación (API Keys)</h3>
+<p><strong>Archivo:</strong> <code>backend/app/security.py</code></p>
+<p><strong>Implementación actual:</strong>
+- Headers: <code>X-API-Key</code>
+- Soporte multi-key: <code>MASSIVE_API_KEYS</code> (comma-separated)
+- Validación constante (<code>hmac.compare_digest</code>)
+- <strong>Modo dev abierto</strong>: Si no hay keys configuradas, el API corre en "open dev mode" (con warning).</p>
+<p><strong>Problema en <code>api.py</code> (raíz):</strong></p>
+<pre><code class="language-python"># api.py líneas 17-27 — INSEGURO
+valid_key = os.getenv(&quot;MASSIVE_API_KEY&quot;)
+if not valid_key:
+    valid_key = &quot;default-secret-key&quot;  # fallback inseguro
+    log.warning(&quot;MASSIVE_API_KEY not set — using insecure default&quot;)
+if api_key != valid_key:
+    raise HTTPException(status_code=401, detail=&quot;Invalid API Key&quot;)
+</code></pre>
+<p><strong>Hallazgo:</strong> <code>api.py</code> (servicio UIL monolítico raíz) NO usa <code>security.py</code>. Usa su propia validación con <code>!=</code> (no constant-time) y un fallback "default-secret-key". Esto es una <strong>brecha de seguridad crítica</strong> si <code>api.py</code> se expone públicamente.</p>
+<p><strong>Recomendación:</strong>
+- Unificar en <code>security.py</code> — eliminar el fallback inseguro de <code>api.py</code>.
+- En producción, requerir <code>MASSIVE_API_KEYS</code> siempre.
+- Considerar migración a tokens JWT con expiración para usuarios individuales (<code>user_id</code>).</p>
+<h3 id="42-cors">4.2 CORS</h3>
+<p><strong>Archivo:</strong> <code>backend/app/settings.py</code> (líneas 63–69)</p>
+<pre><code class="language-python">cors_origins: list[str] = field(
+    default_factory=lambda: [
+        o.strip()
+        for o in os.getenv(
+            &quot;MASSIVE_CORS_ORIGINS&quot;,
+            &quot;http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000&quot;,
+        ).split(&quot;,&quot;) if o.strip()
+    ]
+)
+</code></pre>
+<p><strong>Configuración en <code>main.py</code>:</strong></p>
+<pre><code class="language-python">app.add_middleware(
+    CORSMiddleware,
+    allow_origins=settings.cors_origins,
+    allow_credentials=True,
+    allow_methods=[&quot;*&quot;],
+    allow_headers=[&quot;*&quot;],
+)
+</code></pre>
+<p><strong>Estado:</strong> Correcto — no usa <code>"*"</code> con <code>allow_credentials=True</code>.</p>
+<p><strong>Test de seguridad:</strong> <code>tests/test_api_security.py</code> verifica que <code>"*"</code> no esté en origins.</p>
+<p><strong>Recomendación:</strong>
+- En producción, <code>MASSIVE_CORS_ORIGINS=https://massive.example.com</code>
+- Nunca usar <code>allow_origins=["*"]</code> con <code>allow_credentials=True</code>.</p>
+<h3 id="43-rate-limiting">4.3 Rate Limiting</h3>
+<p><strong>Archivo:</strong> <code>backend/app/rate_limit.py</code></p>
+<p><strong>Implementación actual:</strong>
+- Sliding window por IP (cliente).
+- Dos límites:
+  - General: <code>MASSIVE_RATE_LIMIT_PER_MIN</code> (default 120)
+  - Simulación: <code>MASSIVE_RATE_LIMIT_SIMULATE_PER_MIN</code> (default 12) — endpoints <code>/api/simulate*</code>
+- Client IP: respeta <code>X-Forwarded-For</code> solo si <code>MASSIVE_TRUST_PROXY=1</code>.
+- <strong>Almacenamiento in-process</strong> — no funciona con múltiples workers.</p>
+<p><strong>Código relevante (rate_limit.py: líneas 107–110):</strong></p>
+<pre><code class="language-python">def _client_ip(request: Request, trust_proxy: bool) -&gt; str:
+    if trust_proxy:
+        fwd = request.headers.get(&quot;x-forwarded-for&quot;)
+        if fwd:
+            return fwd.split(&quot;,&quot;)[0].strip()
+    return request.client.host if request.client else &quot;unknown&quot;
+</code></pre>
+<p><strong>También existe</strong> <code>massive_core/config/rate_limit.py</code>:
+- <code>InMemoryRateLimiter</code> — para single worker.
+- <code>FileRateLimiter</code> — para multi-worker (JSON con fcntl advisory lock).
+- <code>build_rate_limiter(backend="memory"|"file", path=...)</code>.</p>
+<p><strong>Brecha:</strong> <code>backend/app/rate_limit.py</code> (UI-NG) no usa el rate limiter de <code>massive_core</code>. Dos implementaciones divergentes.</p>
+<p><strong>Recomendación:</strong>
+- Unificar en <code>massive_core/config/rate_limit.py</code>.
+- Para producción multi-worker: usar Redis (<code>RedisRateLimiter</code>).
+- Documentar que el rate limiter in-process funciona para single-worker (como el Dockerfile.ui-ng que usa <code>--workers 1</code>).</p>
+<h3 id="44-trustedhost-security-headers">4.4 TrustedHost &amp; Security Headers</h3>
+<p><strong>Implementación en <code>main.py</code>:</strong></p>
+<pre><code class="language-python"># TrustedHost (opcional)
+if settings.allowed_hosts and settings.allowed_hosts != [&quot;*&quot;]:
+    app.add_middleware(TrustedHostMiddleware, allowed_hosts=settings.allowed_hosts)
+
+# Security headers (middleware http)
+@app.middleware(&quot;http&quot;)
+async def security_headers(request, call_next):
+    response = await call_next(request)
+    response.headers.setdefault(&quot;X-Content-Type-Options&quot;, &quot;nosniff&quot;)
+    response.headers.setdefault(&quot;X-Frame-Options&quot;, &quot;DENY&quot;)
+    response.headers.setdefault(&quot;Referrer-Policy&quot;, &quot;same-origin&quot;)
+    response.headers.setdefault(&quot;Permissions-Policy&quot;, &quot;camera=(), microphone=(), geolocation=()&quot;)
+    return response
+</code></pre>
+<p><strong>Estado:</strong> Implementado correctamente.</p>
+<h3 id="45-gestion-de-credenciales">4.5 Gestión de Credenciales</h3>
+<p><strong>Proveedores LLM (credenciales via env):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Proveedor</th>
+<th>Estado en <code>.env.example</code></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>GROQ_API_KEY</code></td>
+<td>Groq</td>
+<td>Presente</td>
+</tr>
+<tr>
+<td><code>OPENAI_API_KEY</code></td>
+<td>OpenAI</td>
+<td>Presente</td>
+</tr>
+<tr>
+<td><code>OPENROUTER_API_KEY</code></td>
+<td>OpenRouter</td>
+<td>Presente</td>
+</tr>
+<tr>
+<td><code>OLLAMA_HOST</code></td>
+<td>Ollama (local)</td>
+<td>Presente</td>
+</tr>
+<tr>
+<td><code>PROVIDER</code></td>
+<td>Selección default</td>
+<td>Agregada en esta actualización</td>
+</tr>
+<tr>
+<td><code>HF_TOKEN</code></td>
+<td>HuggingFace Spaces</td>
+<td>Mencionado en docs, no en .env.example</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Docker mounts (read-only):</strong>
+- <code>.env</code> y <code>.env.local</code> montados como <code>:ro</code> en <code>docker-compose.yml</code> (línea 19–20).</p>
+<p><strong>Recomendación:</strong>
+- <strong>Nunca</strong> commitear <code>.env</code> real. Usar secret manager en producción.
+- Rotar API keys regularmente.
+- <code>HF_TOKEN</code> solo necesario en deploy a HuggingFace Spaces.</p>
+<h3 id="46-seguridad-de-uploads">4.6 Seguridad de uploads</h3>
+<p><strong>Archivo:</strong> <code>api.py</code> (líneas 37–45)</p>
+<pre><code class="language-python">_MAX_UPLOAD_BYTES = int(os.getenv(&quot;MASSIVE_MAX_UPLOAD_MB&quot;, &quot;10&quot;)) * 1024 * 1024
+_ALLOWED_EXT = {&quot;.pdf&quot;, &quot;.json&quot;, &quot;.csv&quot;, &quot;.xlsx&quot;, &quot;.txt&quot;, &quot;.md&quot;}
+
+def _safe_suffix(filename: str | None) -&gt; str:
+    ext = &quot;.&quot; + filename.rsplit(&quot;.&quot;, 1)[-1].lower()
+    if ext not in _ALLOWED_EXT:
+        raise HTTPException(status_code=400, detail=f&quot;Unsupported file type: {ext}&quot;)
+    return ext
+</code></pre>
+<p><strong>Estado:</strong> Implementado. Límite de 10 MB, whitelist de extensiones.</p>
+<h3 id="47-manejo-de-errores">4.7 Manejo de errores</h3>
+<p><strong>Archivo:</strong> <code>api.py</code> (líneas 75–77)</p>
+<pre><code class="language-python">def _public_error(exc: Exception) -&gt; HTTPException:
+    &quot;&quot;&quot;Never leak stack traces / internal paths to clients.&quot;&quot;&quot;
+    log.exception(&quot;API error: %s&quot;, exc)
+    return HTTPException(status_code=500, detail=&quot;Internal server error&quot;)
+</code></pre>
+<p><strong>Estado:</strong> Implementado — no filtra stack traces al cliente.</p>
+<hr />
+<h2 id="5-slos-slis-y-alertas">5. SLOs, SLIs y Alertas</h2>
+<h3 id="51-sli-slo-propuestos">5.1 SLI / SLO propuestos</h3>
+<table>
+<thead>
+<tr>
+<th>SLO</th>
+<th>Métrica Prometheus</th>
+<th>Ventana</th>
+<th>Threshold</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>SL1 — Latencia API p95</strong></td>
+<td><code>histogram_quantile(0.95, http_request_duration_seconds_bucket)</code></td>
+<td>30d</td>
+<td>p95 &lt;= 2000ms (simulaciones), &lt;= 500ms (conversación)</td>
+</tr>
+<tr>
+<td><strong>SL2 — Tasa de errores 5xx</strong></td>
+<td><code>rate(http_responses_total{status_code=~"5.."}[5m])</code></td>
+<td>30d</td>
+<td>&lt; 1%</td>
+</tr>
+<tr>
+<td><strong>SL3 — Disponibilidad</strong></td>
+<td><code>up{job="massive-ui-ng"}</code></td>
+<td>30d</td>
+<td>&gt;= 99.5%</td>
+</tr>
+<tr>
+<td><strong>SL4 — Latencia LLM p95</strong></td>
+<td><code>histogram_quantile(0.95, llm_request_duration_seconds_bucket{provider!="ollama"})</code></td>
+<td>30d</td>
+<td>p95 &lt;= 5000ms</td>
+</tr>
+<tr>
+<td><strong>SL5 — Rate limit hits</strong></td>
+<td><code>rate(rate_limit_hits_total[5m])</code></td>
+<td>1h</td>
+<td>&lt; 0.5% de requests</td>
+</tr>
+</tbody>
+</table>
+<h3 id="52-definiciones-formales">5.2 Definiciones formales</h3>
+<h4 id="sl1-latencia-p95-de-api">SL1 — Latencia p95 de API</h4>
+<ul>
+<li><strong>SLI:</strong> <code>histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))</code></li>
+<li><strong>SLO:</strong> 95% de requests HTTP completados en &lt;= 2000ms (simulaciones) y &lt;= 500ms (conversación, health, status).</li>
+<li><strong>Ventana de error:</strong> 30 dias.</li>
+<li><strong>Error budget:</strong> 5% de requests pueden exceder el threshold.</li>
+</ul>
+<h4 id="sl2-tasa-de-errores-5xx">SL2 — Tasa de errores 5xx</h4>
+<ul>
+<li><strong>SLI:</strong> <code>sum(rate(http_responses_total{status_code=~"5.."}[5m])) / sum(rate(http_responses_total[5m]))</code></li>
+<li><strong>SLO:</strong> &lt; 1% de respuestas 5xx.</li>
+<li><strong>Ventana:</strong> 30 dias.</li>
+</ul>
+<h4 id="sl3-disponibilidad">SL3 — Disponibilidad</h4>
+<ul>
+<li><strong>SLI:</strong> <code>avg_over_time(up{job="massive-ui-ng"}[5m])</code></li>
+<li><strong>SLO:</strong> &gt;= 99.5% en 30 dias.</li>
+<li><strong>MTTR implicito:</strong> &lt; 10 minutos (Docker restart: unless-stopped).</li>
+</ul>
+<h4 id="sl4-latencia-llm">SL4 — Latencia LLM</h4>
+<ul>
+<li><strong>SLI:</strong> <code>histogram_quantile(0.95, sum(rate(llm_request_duration_seconds_bucket{provider!="ollama"}[5m])) by (le))</code></li>
+<li><strong>SLO:</strong> p95 &lt;= 5000ms para proveedores cloud (Groq/OpenAI/OpenRouter).</li>
+<li><strong>Ventana:</strong> 30 dias.</li>
+</ul>
+<h4 id="sl5-tasa-de-rate-limiting">SL5 — Tasa de rate limiting</h4>
+<ul>
+<li><strong>SLI:</strong> <code>rate(rate_limit_hits_total[5m])</code></li>
+<li><strong>SLO:</strong> &lt; 0.5% de requests totales retornan 429.</li>
+</ul>
+<h3 id="53-promql-recording-rules">5.3 PromQL recording rules</h3>
+<pre><code class="language-yaml"># prometheus/rules/massive_slo.yml
+groups:
+  - name: massive.slo
+    rules:
+      # --- SLIs ---
+      - record: massive:api_latency_p95_5m
+        expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))
+
+      - record: massive:error_rate_5m
+        expr: sum(rate(http_responses_total{status_code=~&quot;5..&quot;}[5m])) / sum(rate(http_responses_total[5m]))
+
+      - record: massive:availability_5m
+        expr: avg_over_time(up{job=&quot;massive-ui-ng&quot;}[5m])
+
+      - record: massive:llm_latency_p95_5m
+        expr: histogram_quantile(0.95, sum(rate(llm_request_duration_seconds_bucket{provider!=&quot;ollama&quot;}[5m])) by (le))
+
+      - record: massive:rate_limit_rate_5m
+        expr: rate(rate_limit_hits_total[5m])
+
+      # --- SLO Error Budgets (30d window) ---
+      - record: massive:slo_api_latency_burn_rate
+        expr: |
+          1 - (
+            count(http_request_duration_seconds_bucket{le=&quot;2.0&quot;,job=&quot;massive-ui-ng&quot;}) &gt; 0
+          ) / count(time() - timestamp(http_request_duration_seconds_bucket))
+
+      - record: massive:slo_error_budget_remaining
+        expr: 1 - sum(increase(http_responses_total{status_code=~&quot;5..&quot;}[30d])) / 0.01
+</code></pre>
+<h3 id="54-alertas-prometheusrule">5.4 Alertas (PrometheusRule)</h3>
+<pre><code class="language-yaml"># alertmanager/rules/massive_alerts.yml
+groups:
+  - name: massive.critical
+    rules:
+      # --- Disponibilidad ---
+      - alert: MassiveDown
+        expr: up{job=&quot;massive-ui-ng&quot;} == 0
+        for: 2m
+        labels:
+          severity: critical
+          team: devops
+        annotations:
+          summary: &quot;MASSIVE UI-NG service is down&quot;
+          description: &quot;The massive-ui-ng target has been down for more than 2 minutes.&quot;
+
+      # --- Latencia API ---
+      - alert: APIHighLatencyP95
+        expr: massive:api_latency_p95_5m &gt; 2.0
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+        annotations:
+          summary: &quot;API p95 latency above 2000ms (5m avg)&quot;
+          description: &quot;API latency is degrading. Check simulation load.&quot;
+
+      - alert: APICriticalLatency
+        expr: massive:api_latency_p95_5m &gt; 5.0
+        for: 2m
+        labels:
+          severity: critical
+          team: backend
+        annotations:
+          summary: &quot;API p95 latency above 5000ms&quot;
+          description: &quot;Severe latency degradation. Immediate investigation required.&quot;
+
+      # --- Tasa de errores ---
+      - alert: HighErrorRate
+        expr: massive:error_rate_5m &gt; 0.01
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+        annotations:
+          summary: &quot;Error rate &gt; 1% (5m avg)&quot;
+
+      - alert: CriticalErrorRate
+        expr: massive:error_rate_5m &gt; 0.05
+        for: 2m
+        labels:
+          severity: critical
+          team: backend
+        annotations:
+          summary: &quot;Error rate &gt; 5% - site reliability issue&quot;
+
+      # --- Rate limiting ---
+      - alert: HighRateLimitHits
+        expr: massive:rate_limit_rate_5m &gt; 0.005
+        for: 10m
+        labels:
+          severity: warning
+          team: devops
+        annotations:
+          summary: &quot;Rate limit rejects &gt; 0.5% of requests&quot;
+          description: &quot;Potential abuse or legitimate load exceeded limits.&quot;
+
+      # --- LLM provider ---
+      - alert: LLMRequestErrors
+        expr: sum(rate(llm_requests_total{outcome=&quot;error&quot;}[5m])) &gt; 0.1
+        for: 2m
+        labels:
+          severity: warning
+          team: ml
+        annotations:
+          summary: &quot;LLM provider returning errors&quot;
+          description: &quot;LLM provider {{ $labels.provider }} has a high error rate. Fallback mode active.&quot;
+
+      # --- Run store ---
+      - alert: RunStoreError
+        expr: count(up{job=&quot;massive-ui-ng&quot;} == 1) &gt; 0
+          and on() (massive:run_store_healthy == 0)
+        for: 1m
+        labels:
+          severity: critical
+          team: backend
+        annotations:
+          summary: &quot;Run store (SQLite) is unhealthy&quot;
+          description: &quot;Cannot read/write run history. Simulations may fail persistence.&quot;
+</code></pre>
+<h3 id="55-dashboard-propuesto-grafana">5.5 Dashboard propuesto (Grafana)</h3>
+<h4 id="dashboard-massive-ui-ng-overview">Dashboard: "MASSIVE UI-NG - Overview"</h4>
+<p><strong>Paneles:</strong>
+1. <strong>Service status</strong> — <code>up{job="massive-ui-ng"}</code> (singlestat)
+2. <strong>API p95 latency (5m)</strong> — <code>massive:api_latency_p95_5m</code> (gauge, threshold 2s)
+3. <strong>Error rate (5m)</strong> — <code>massive:error_rate_5m * 100</code> (gauge, threshold 1%)
+4. <strong>Availability (30d)</strong> — <code>massive:availability_5m * 100</code> (gauge, threshold 99.5%)
+5. <strong>Requests/sec by group</strong> — <code>sum by(group) (rate(http_requests_total[5m]))</code> (bar chart)
+6. <strong>Response codes</strong> — <code>sum by(status_code) (rate(http_responses_total[5m]))</code> (graph)
+7. <strong>Simulations run (5m)</strong> — <code>rate(simulations_total[5m])</code> (graph, by engine)
+8. <strong>LLM request latency p95</strong> — <code>massive:llm_latency_p95_5m</code> (gauge)
+9. <strong>LLM errors by provider</strong> — <code>sum by(provider) (rate(llm_requests_total{outcome="error"}[5m]))</code> (bar)
+10. <strong>WebSocket connections</strong> — <code>ws_active_connections</code> (gauge)
+11. <strong>Rate limit hits</strong> — <code>massive:rate_limit_rate_5m</code> (graph)
+12. <strong>Run store count</strong> — <code>run_store_count</code> (gauge)</p>
+<hr />
+<h2 id="6-auditoria-de-configuracion">6. Auditoría de Configuración</h2>
+<h3 id="61-necesidad">6.1 Necesidad</h3>
+<p>El Master Orchestrator (Fase 5.3) requiere:</p>
+<blockquote>
+<p>Implementar auditoría de cambios de configuración (quién, cuándo, qué parámetros se modifican).</p>
+</blockquote>
+<h3 id="62-diseno-propuesto">6.2 Diseño propuesto</h3>
+<table>
+<thead>
+<tr>
+<th>Evento</th>
+<th>Campos</th>
+<th>Destino</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>config_change</code></td>
+<td><code>user_id</code>, <code>request_id</code>, <code>timestamp</code>, <code>param_name</code>, <code>old_value</code>, <code>new_value</code>, <code>reason</code></td>
+<td>Log estructurado (JSON en tabla <code>audit_logs</code>)</td>
+</tr>
+<tr>
+<td><code>simulation_start</code></td>
+<td><code>simulation_id</code>, <code>user_id</code>, <code>engine_type</code>, <code>country_code</code>, <code>llm_provider</code>, <code>config_hash</code></td>
+<td>Metrics + logs</td>
+</tr>
+<tr>
+<td><code>simulation_complete</code></td>
+<td><code>simulation_id</code>, <code>duration_seconds</code>, <code>engine_type</code>, <code>outcome</code></td>
+<td>Metrics + logs</td>
+</tr>
+<tr>
+<td><code>llm_call</code></td>
+<td><code>llm_provider</code>, <code>model</code>, <code>duration_seconds</code>, <code>outcome</code>, <code>tokens_requested</code>, <code>tokens_used</code></td>
+<td>Metrics + logs</td>
+</tr>
+</tbody>
+</table>
+<h3 id="63-almacenamiento">6.3 Almacenamiento</h3>
+<pre><code class="language-python"># Modelo de auditoría (para futura implementación)
+class AuditLog(BaseModel):
+    event_id: str           # UUID
+    timestamp: datetime     # UTC
+    user_id: str            # API key hash or &quot;anonymous&quot;
+    event_type: str         # config_change, simulation_start, etc.
+    resource: str           # entity affected
+    action: str             # created, updated, deleted
+    details: dict           # old/new values, parameters
+    request_id: str         # correlation
+    ip_address: str         # client IP
+</code></pre>
+<p><strong>Recomendación de almacenamiento:</strong> SQLite (<code>audit_logs</code> table) para dev/simple, o Kafka/ClickHouse para producción.</p>
+<hr />
+<h2 id="7-variables-de-entorno-mapa-completo">7. Variables de Entorno — Mapa Completo</h2>
+<h3 id="71-mapa-de-variables-de-observabilidad-y-seguridad">7.1 Mapa de variables de observabilidad y seguridad</h3>
+<table>
+<thead>
+<tr>
+<th>Variable</th>
+<th>Componente</th>
+<th>Default</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MASSIVE_API_KEYS</code></td>
+<td>UI-NG <code>security.py</code></td>
+<td><em>(vacío -&gt; dev mode)</em></td>
+<td>Keys API (comma-separated, constant-time compare)</td>
+</tr>
+<tr>
+<td><code>MASSIVE_API_KEY</code></td>
+<td><code>api.py</code> (legacy UIL)</td>
+<td><code>default-secret-key</code></td>
+<td>Single key legacy (INSEGURO - deprecar)</td>
+</tr>
+<tr>
+<td><code>MASSIVE_CORS_ORIGINS</code></td>
+<td>UI-NG <code>settings.py</code></td>
+<td><code>localhost:5173,3000</code></td>
+<td>Orígenes CORS permitidos</td>
+</tr>
+<tr>
+<td><code>MASSIVE_ALLOWED_HOSTS</code></td>
+<td>UI-NG <code>settings.py</code></td>
+<td><code>*</code></td>
+<td>Hosts confiables (TrustedHost)</td>
+</tr>
+<tr>
+<td><code>MASSIVE_TRUST_PROXY</code></td>
+<td>UI-NG <code>settings.py</code></td>
+<td><code>false</code></td>
+<td>Confiar en <code>X-Forwarded-For</code></td>
+</tr>
+<tr>
+<td><code>MASSIVE_RATE_LIMIT_ENABLED</code></td>
+<td>UI-NG <code>settings.py</code></td>
+<td><code>true</code></td>
+<td>Toggle rate limiter</td>
+</tr>
+<tr>
+<td><code>MASSIVE_RATE_LIMIT_PER_MIN</code></td>
+<td>UI-NG <code>settings.py</code></td>
+<td><code>120</code></td>
+<td>Límite general por IP/min</td>
+</tr>
+<tr>
+<td><code>MASSIVE_RATE_LIMIT_SIMULATE_PER_MIN</code></td>
+<td>UI-NG <code>settings.py</code></td>
+<td><code>12</code></td>
+<td>Límite para <code>/api/simulate*</code></td>
+</tr>
+<tr>
+<td><code>MASSIVE_RATE_LIMIT_BACKEND</code></td>
+<td><code>api.py</code>, <code>massive_core</code></td>
+<td><code>memory</code></td>
+<td><code>memory</code> o <code>file</code> (multi-worker)</td>
+</tr>
+<tr>
+<td><code>MASSIVE_RATE_LIMIT_PATH</code></td>
+<td><code>massive_core/config/rate_limit.py</code></td>
+<td><code>/tmp/massive_rate_limit.json</code></td>
+<td>Path file backend</td>
+</tr>
+<tr>
+<td><code>MASSIVE_LOG_LEVEL</code></td>
+<td>UI-NG <code>main.py</code></td>
+<td><code>INFO</code></td>
+<td>Nivel de logging</td>
+</tr>
+<tr>
+<td><code>MASSIVE_LOG_FORMAT</code></td>
+<td>UI-NG (propuesto)</td>
+<td><code>text</code></td>
+<td><code>json</code> o <code>text</code></td>
+</tr>
+<tr>
+<td><code>MASSIVE_LOG_FILE</code></td>
+<td><code>logging_setup.py</code></td>
+<td><em>(unset)</em></td>
+<td>Archivo log rotativo</td>
+</tr>
+<tr>
+<td><code>MASSIVE_ENV</code></td>
+<td>UI-NG <code>settings.py</code></td>
+<td><code>development</code></td>
+<td><code>development</code>/<code>staging</code>/<code>production</code></td>
+</tr>
+<tr>
+<td><code>MASSIVE_MAX_UPLOAD_MB</code></td>
+<td><code>api.py</code></td>
+<td><code>10</code></td>
+<td>Tamaño máximo upload</td>
+</tr>
+<tr>
+<td><code>MASSIVE_ANALYTICS_SNIPPET</code></td>
+<td>(legacy)</td>
+<td><em>(empty)</em></td>
+<td>Snippet analytics (deprecado)</td>
+</tr>
+<tr>
+<td><code>PROVIDER</code></td>
+<td><code>llm_chat.py</code>, <code>interpreter_layer.py</code></td>
+<td><code>groq</code></td>
+<td>Proveedor LLM default</td>
+</tr>
+<tr>
+<td><code>GROQ_API_KEY</code></td>
+<td><code>llm_chat.py</code></td>
+<td><em>(requerido)</em></td>
+<td>API key Groq</td>
+</tr>
+<tr>
+<td><code>OPENAI_API_KEY</code></td>
+<td><code>llm_chat.py</code></td>
+<td><em>(requerido)</em></td>
+<td>API key OpenAI</td>
+</tr>
+<tr>
+<td><code>OPENROUTER_API_KEY</code></td>
+<td><code>llm_chat.py</code></td>
+<td><em>(requerido)</em></td>
+<td>API key OpenRouter</td>
+</tr>
+<tr>
+<td><code>OLLAMA_HOST</code></td>
+<td><code>llm_chat.py</code></td>
+<td><code>http://localhost:11434</code></td>
+<td>Host Ollama local</td>
+</tr>
+<tr>
+<td><code>OLLAMA_MODEL</code></td>
+<td><code>llm_chat.py</code></td>
+<td><code>llama3.2</code></td>
+<td>Modelo Ollama</td>
+</tr>
+<tr>
+<td><code>MASSIVE_LLM_MODEL</code></td>
+<td><code>llm_chat.py</code></td>
+<td><em>(auto)</em></td>
+<td>Override modelo LLM</td>
+</tr>
+<tr>
+<td><code>MASSIVE_LLM_TIMEOUT</code></td>
+<td>UI-NG <code>settings.py</code></td>
+<td><code>45.0</code></td>
+<td>Timeout LLM (segundos)</td>
+</tr>
+<tr>
+<td><code>MASSIVE_LLM_MAX_TOKENS</code></td>
+<td>UI-NG <code>settings.py</code></td>
+<td><code>1400</code></td>
+<td>Máx tokens generación</td>
+</tr>
+<tr>
+<td><code>MASSIVE_DATA_DIR</code></td>
+<td>UI-NG <code>settings.py</code></td>
+<td><code>data/ui_ng/</code></td>
+<td>Directorio datos (SQLite)</td>
+</tr>
+<tr>
+<td><code>MASSIVE_SERVE_FRONTEND</code></td>
+<td>UI-NG <code>settings.py</code></td>
+<td><code>true</code></td>
+<td>Servir frontend Angular/Vite</td>
+</tr>
+<tr>
+<td><code>MASSIVE_RUN_STORE_CAPACITY</code></td>
+<td>UI-NG <code>settings.py</code></td>
+<td><code>500</code></td>
+<td>Capacidad LRU runs en memoria</td>
+</tr>
+</tbody>
+</table>
+<h3 id="72-herencia-y-migracion-de-config">7.2 Herencia y migración de config</h3>
+<p><strong>Problema detectado:</strong> Existen <strong>dos</strong> configuraciones de settings paralelas:</p>
+<ol>
+<li><strong><code>backend/app/settings.py</code></strong> — <code>UISettings</code> — usado por UI-NG backend (<code>main.py</code>)</li>
+<li><strong><code>massive_core/config/settings.py</code></strong> — <code>AppSettings</code> — usado por <code>api.py</code> (legacy) y <code>logging_setup.py</code></li>
+</ol>
+<p>Esto crea ambigüedad sobre qué configuración es "canonical". El <code>API_KEY_HEADER</code> y <code>CORS</code> se duplican.</p>
+<p><strong>Recomendación:</strong> Consolidar en <code>UISettings</code> (UI-NG es la API principal) y deprecar <code>api.py</code> o migrarlo a usar <code>UISettings</code>.</p>
+<hr />
+<h2 id="8-checklist-de-implementacion-phase-5">8. Checklist de Implementación Phase 5</h2>
+<h3 id="81-prioridad-alta-bloqueadores">8.1 Prioridad Alta (bloqueadores)</h3>
+<ul>
+<li>[ ] <strong>Unificar autenticación</strong>: Eliminar fallback <code>default-secret-key</code> en <code>api.py</code>. Usar <code>security.py</code> como única fuente.</li>
+<li>[ ] <strong>Migrar a logging estructurado JSON</strong>: Implementar <code>MASSIVE_LOG_FORMAT=json</code> con middleware <code>request_id</code>.</li>
+<li>[ ] <strong>Añadir histogramas de latencia</strong> a <code>metrics.py</code>: <code>http_request_duration_seconds</code>, <code>llm_request_duration_seconds</code>.</li>
+<li>[ ] <strong>Añadir counter de respuestas por código</strong>: <code>http_responses_total{status_code=...}</code>.</li>
+<li>[ ] <strong>Documentar SLOs formales</strong> con recording rules y alertas (sección 5).</li>
+</ul>
+<h3 id="82-prioridad-media">8.2 Prioridad Media</h3>
+<ul>
+<li>[ ] <strong>Separar health/readiness</strong>: Añadir <code>/ready</code> con chequeos completos (DB, LLM configurado, store).</li>
+<li>[ ] <strong>Unificar rate limiting</strong>: Migrar <code>backend/app/rate_limit.py</code> a <code>massive_core/config/rate_limit.py</code>.</li>
+<li>[ ] <strong>Implementar auditoría</strong>: Tabla <code>audit_logs</code> + middleware de logging de cambios config.</li>
+<li>[ ] <strong>Consistencia de healthcheck en Dockerfiles</strong>: Usar <code>/health</code> en todos los Dockerfiles.</li>
+<li>[ ] <strong>Añadir gauges</strong>: <code>ws_active_connections</code>, <code>run_store_count</code>.</li>
+<li>[ ] <strong>Tracer de tracing distribuido</strong>: Añadir <code>traceparent</code> header support (OpenTelemetry).</li>
+</ul>
+<h3 id="83-prioridad-baja">8.3 Prioridad Baja</h3>
+<ul>
+<li>[ ] <strong>Multi-worker rate limiting</strong>: Implementar <code>RedisRateLimiter</code> para scale horizontal.</li>
+<li>[ ] <strong>Secret manager integration</strong>: AWS Secrets Manager / GCP Secret Manager para prod.</li>
+<li>[ ] <strong>JWT auth</strong>: Migrar de API keys a JWTs para <code>user_id</code> real.</li>
+<li>[ ] <strong>Metrics summary en <code>/health</code></strong>: Incluir contadores clave en health response.</li>
+</ul>
+<hr />
+<h2 id="9-arquitectura-de-seguridad">9. Arquitectura de Seguridad</h2>
+<h3 id="91-matriz-de-amenazas-parcial">9.1 Matriz de amenazas (parcial)</h3>
+<table>
+<thead>
+<tr>
+<th>Activo</th>
+<th>Amenaza</th>
+<th>Mitigación actual</th>
+<th>Gap</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>API keys</td>
+<td>Filtrado en logs</td>
+<td><code>security.py</code> no loguea keys</td>
+<td><code>api.py</code> podría loguear</td>
+</tr>
+<tr>
+<td>Uploads</td>
+<td>Path traversal</td>
+<td><code>_safe_suffix</code> valida extensiones</td>
+<td>No valida el nombre del file completo</td>
+</tr>
+<tr>
+<td>Rate limits</td>
+<td>Spoof X-Forwarded-For</td>
+<td><code>MASSIVE_TRUST_PROXY</code> controla</td>
+<td>Si trust_proxy=1 + spoofed, bypass</td>
+</tr>
+<tr>
+<td>CORS</td>
+<td>Origen malicioso</td>
+<td>Whitelist estricta</td>
+<td>Si config default, dev localhost</td>
+</tr>
+<tr>
+<td>LLM keys</td>
+<td>Filtrado en código</td>
+<td>Env vars via <code>.env</code></td>
+<td><code>api.py</code> expone en <code>get_adapter()</code></td>
+</tr>
+<tr>
+<td>Run store</td>
+<td>Acceso no autorizado</td>
+<td>API key required en routers</td>
+<td>Sin user_id, no ownership de runs</td>
+</tr>
+</tbody>
+</table>
+<h3 id="92-defensa-en-profundidad">9.2 Defensa en profundidad</h3>
+<pre><code>Internet -&gt; [Ingress/TLS] -&gt; [WAF]
+    |
+[Load Balancer (sticky session para rate-limit in-process)]
+    |
+[Docker: MASSIVE_API_KEYS + CORS restrictivo + TrustedHost]
+    |
+[FastAPI: RateLimitMiddleware + APIKey auth + SecurityHeaders]
+    |
+[SQLite runs.db: per-run, no PII]
+</code></pre>
+<h3 id="93-hardening-recomendado-para-produccion">9.3 Hardening recomendado para producción</h3>
+<ol>
+<li><strong>Forzar TLS</strong> al nivel del ingress (nginx/ALB).</li>
+<li><strong>Restricted TrustedHost</strong>: <code>MASSIVE_ALLOWED_HOSTS=massive.example.com</code>.</li>
+<li><strong>Multi-key API</strong>: <code>MASSIVE_API_KEYS=key1,key2</code> con rotación.</li>
+<li><strong>Rate limiting externo</strong>: WAF/Nginx limita antes de llegar a la app.</li>
+<li><strong>Log level producción</strong>: <code>MASSIVE_LOG_LEVEL=WARNING</code> para reducir volumen, <code>INFO</code> para debugging temporal.</li>
+<li><strong>SQLite WAL mode</strong>: ya implementado en <code>run_store.py</code> (<code>PRAGMA journal_mode=WAL</code>).</li>
+<li><strong>Security scan en CI</strong>: <code>bandit</code>, <code>semgrep</code> en pipeline.</li>
+</ol>
+<hr />
+<h2 id="10-implementacion-por-fases">10. Implementación por Fases</h2>
+<h3 id="fase-51-health-check-30-min">Fase 5.1 — Health check (30 min)</h3>
+<ul>
+<li>Mejorar <code>/health</code> con más checks.</li>
+<li>Añadir <code>/ready</code> endpoint.</li>
+</ul>
+<h3 id="fase-52-logging-estructurado-2h">Fase 5.2 — Logging estructurado (2h)</h3>
+<ul>
+<li>Añadir <code>RequestIDMiddleware</code> a <code>main.py</code>.</li>
+<li>Configurar JSON formatter condicional (<code>MASSIVE_LOG_FORMAT</code>).</li>
+<li>Propagar <code>extra</code> en loggers de routers críticos.</li>
+</ul>
+<h3 id="fase-53-metrics-slo-2h">Fase 5.3 — Metrics SLO (2h)</h3>
+<ul>
+<li>Extender <code>metrics.py</code> con histogramas y gauges.</li>
+<li>Añadir middleware de duración HTTP.</li>
+<li>Añadir duration histogram a <code>llm_chat.py</code>.</li>
+</ul>
+<h3 id="fase-54-slos-y-alertas-1h-doc-deploy">Fase 5.4 — SLOs y alertas (1h doc + deploy)</h3>
+<ul>
+<li>Definir recording rules (PromQL).</li>
+<li>Configurar alertrules.</li>
+<li>Dashboard Grafana.</li>
+</ul>
+<h3 id="fase-55-auditoria-3h">Fase 5.5 — Auditoría (3h)</h3>
+<ul>
+<li>Middleware de auditoría para config changes.</li>
+<li>Tabla <code>audit_logs</code> en SQLite.</li>
+</ul>
+<hr />
+<h2 id="11-referencias-rapidas-codigo-existente">11. Referencias rápidas (código existente)</h2>
+<table>
+<thead>
+<tr>
+<th>Concepto</th>
+<th>Archivo</th>
+<th>Líneas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Health endpoint</td>
+<td><code>backend/app/main.py</code></td>
+<td>153-162</td>
+</tr>
+<tr>
+<td>Metrics endpoint</td>
+<td><code>backend/app/main.py</code></td>
+<td>144-151 + <code>metrics.py</code></td>
+</tr>
+<tr>
+<td>API key auth</td>
+<td><code>backend/app/security.py</code></td>
+<td>24-45</td>
+</tr>
+<tr>
+<td>Rate limiting</td>
+<td><code>backend/app/rate_limit.py</code></td>
+<td>107-138</td>
+</tr>
+<tr>
+<td>Security headers</td>
+<td><code>backend/app/main.py</code></td>
+<td>47-55</td>
+</tr>
+<tr>
+<td>CORS</td>
+<td><code>backend/app/main.py</code></td>
+<td>117-124</td>
+</tr>
+<tr>
+<td>TrustedHost</td>
+<td><code>backend/app/main.py</code></td>
+<td>106-107</td>
+</tr>
+<tr>
+<td>Settings</td>
+<td><code>backend/app/settings.py</code></td>
+<td>1-92</td>
+</tr>
+<tr>
+<td>LLM provider resolution</td>
+<td><code>backend/app/llm_chat.py</code></td>
+<td>42-66</td>
+</tr>
+<tr>
+<td>Docker healthcheck</td>
+<td><code>massive-ui-ng/infra/Dockerfile.ui-ng</code></td>
+<td>35-36</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>Documento generado por el Ingeniero de Observabilidad / Seguridad — Fase 5 del Master Orchestrator.</em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.expand", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
