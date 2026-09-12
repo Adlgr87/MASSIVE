@@ -60,8 +60,12 @@ curl -H "X-API-Key: dev-secret-key" -X POST localhost:8000/v1/simulate \
 Or use the CLI, no server needed:
 
 ```bash
-python -m massive.cli simulate --pasos 30     # scalar engine + JSON summary
+python -m massive.cli simulate --pasos 30            # scalar engine + JSON summary
+python -m massive.cli scientific --pasos 100 --report --enkf   # scientific run + diagnostics
+python -m massive.cli forecast --state '{"opinion":0.5}' --mode monte_carlo --n-runs 200
+python -m massive.cli benchmark --offline --seed 42  # PVU-BS validation
 python -m massive.cli version
+python -m massive.cli serve                            # uvicorn on :8000
 ```
 
 Or pure Python, zero server:
@@ -76,9 +80,19 @@ print(result["landscape"])
 
 ```bash
 cp .env.example .env
-docker compose -f docker-compose.single.yml up -d --build   # API + UI on :8000
+docker compose up -d --build   # nginx :80 (SPA + API gateway) · :8000 (direct API) · :8501 (Streamlit legacy)
 curl -fsS localhost:8000/health
+curl -fsS localhost:80/docs
 ```
+
+The multi-stage `Dockerfile` (Python builder → Vite frontend build → slim
+runtime) runs **supervisord** as a **non-root user**: `uvicorn` (FastAPI,
+`:8000`) + **nginx** (`:80`, serving the React SPA + proxying `/api/`,
+`/v1/`, `/docs`, `/health`, `/ready`, `/version`, `/metrics` with WebSocket
+upgrade support for the Streamlit legacy UI on `:8501`). `setcap` grants
+nginx the `CAP_NET_BIND_SERVICE` capability so it can bind `:80` inside the
+non-root container; security headers (CSP, HSTS, X-Frame-Options `DENY`,
+`nosniff`) are injected at the edge.
 
 > Minimum: Python 3.11, 500 MB RAM. Rust/CUDA/torch/LLM keys are all optional —
 > every optional layer has a deterministic fallback.
@@ -143,7 +157,10 @@ Key invariants:
 
 ## 📡 HTTP API
 
-**Canonical — `backend.app.main:app`** (recommended for new integrations)
+**Canonical — `backend.app.main:app`** (recommended for new integrations).
+Routes are served under **both** `/v1/*` (canonical) and `/api/v1/*`
+(compat alias so the `frontend/src/services/api.ts` client — which uses
+`baseURL: "/api"` — keeps working without changes).
 
 | Endpoint | Method | Purpose |
 |---|---|---|
@@ -217,11 +234,11 @@ halved direction error on the Brexit case (54.5 % → 53.2 % Leave; 10/10 seeds)
 
 | Signal | Status |
 |---|---|
-| Test suite | **530 tests, ~38 s**, no exclusions — `make test` / `pytest tests/` |
+| Test suite | **592 tests, ~24 s** (20 optional skipped), no exclusions — `make test` / `pytest tests/` |
 | Coverage | 68 % branch (scope: engines + services + backend) — `make test-cov` |
 | Static quality | ruff + black + mypy (gradual slice) green in CI |
 | CI | 16 checks per PR: lint, types, core/scientific/api/full suites, frontend build+lint, Docker compose health, TS-type sync, secret scan, semgrep, PVU benchmark |
-| Security | fail-closed auth, rate & body limits, constant-time compares, no secrets in tree (one historical token documented + pending rotation, see `docs/security/threat-model.md`) |
+| Security | fail-closed auth, rate & body limits (`MASSIVE_MAX_BODY_MB`, streaming upload guard), constant-time compares, `n_agents` cap (prevents 8 TB OOM), `max_intentos` clamp (prevents LLM DoS), CSP/HSTS/X-Frame-Options at nginx edge, no secrets in tree |
 | Observability | `/metrics` Prometheus, `X-Request-ID`, structured access logs, degraded-mode readiness |
 | Runbooks | local dev · operations · incidents — `docs/runbooks/` |
 
