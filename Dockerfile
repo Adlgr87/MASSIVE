@@ -46,7 +46,9 @@ RUN apt-get update \
 # Non-root user for app processes
 RUN adduser --disabled-password --gecos "" appuser
 
-# Install python deps from wheels built in Stage 1 (no network at runtime)
+# Install python deps from wheels built in Stage 1 (no network at runtime).
+# Also install the package itself so console_scripts (`massive-cli`) and the
+# `backend`/`massive_core`/`services` namespaces resolve in the container.
 COPY --from=builder-py /wheels /wheels
 COPY requirements.txt /app/requirements.txt
 RUN python -m pip install --upgrade pip setuptools \
@@ -61,12 +63,17 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # App sources (chown to appuser)
 COPY . /app
-RUN chown -R appuser:appuser /app /usr/share/nginx/html
+RUN pip install --no-deps -e /app \
+    && chown -R appuser:appuser /app /usr/share/nginx/html
+
+# Grant nginx (running as root via supervisord) the right to bind :80 so the
+# non-root `appuser` container entrypoint does not silently lose port 80.
+RUN setcap 'cap_net_bind_service=+ep' /usr/sbin/nginx
 
 USER appuser
 
-# Ports: 80 (nginx front), 8000 (FastAPI)
-EXPOSE 80 8000
+# Ports: 80 (nginx front), 8000 (FastAPI), 8501 (Streamlit UI)
+EXPOSE 80 8000 8501
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s \
     CMD curl -f http://127.0.0.1:8000/health || exit 1

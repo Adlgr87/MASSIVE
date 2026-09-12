@@ -34,7 +34,6 @@ async def v1_forecast(request: Request, payload: dict[str, Any]) -> ForecastResp
     Returns:
         ``ForecastResponse`` validated against the DTO schema.
     """
-    from forecast.engine import forecast
     from forecast.temporal_config import TemporalConfig
 
     if not isinstance(payload, dict):
@@ -50,7 +49,16 @@ async def v1_forecast(request: Request, payload: dict[str, Any]) -> ForecastResp
             status_code=422,
             detail=exc.errors(),
         ) from exc
-    result = forecast(
+
+    import asyncio
+
+    from forecast.engine import forecast as _run_forecast
+
+    # Monte Carlo mode with high n_runs is CPU-bound (numpy batch sampling).
+    # Offload to a thread pool so the FastAPI event loop stays responsive
+    # and concurrent requests are not blocked by a single slow forecast.
+    result = await asyncio.to_thread(
+        _run_forecast,
         sim_state,
         temporal_config=temporal_config,
         mode=payload.get("mode", "analytical"),

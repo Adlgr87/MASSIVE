@@ -91,7 +91,7 @@ def extract_trajectory_features(
     op = arr[:, :, 0]  # opinion  (T, N)
     co = arr[:, :, 1]  # cooperation
     hi = arr[:, :, 2]  # hierarchy
-    arr[:, :, 3]  # income/status
+    in_come = arr[:, :, 3]  # income/status
     ia = arr[:, :, 4]  # info_access/trust
 
     # Estado final
@@ -169,6 +169,7 @@ def extract_trajectory_features(
         "opinion_delta": op_delta,
         "cooperation_delta": co_delta,
         "extreme_fraction": extreme_frac,
+        "income_mean": float(np.mean(in_come[-1, :])),
     }
 
 
@@ -686,7 +687,8 @@ class FamilyOfFuturesAnalyzer:
                 continue
 
             mean_feats = np.mean(feature_matrix[mask], axis=0)
-            np.std(feature_matrix[mask], axis=0)
+            _std_feats = np.std(feature_matrix[mask], axis=0)  # std per feature (reserved for family spread)
+            feat_names = self._get_feature_names(feature_matrix.shape[1])  # Fix (Finding): bound orphaned result
 
             # Parámetros típicos de esta familia
             params_array = np.array(

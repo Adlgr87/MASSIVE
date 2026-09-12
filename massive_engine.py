@@ -342,11 +342,25 @@ class ActiveSet:
             considerar que un agente "se movió" y debe permanecer activo.
     """
 
-    def __init__(self, M: int, sleep_threshold: float = 5e-3) -> None:
+    def __init__(self, M: int, sleep_threshold: float = 5e-3, seed: int | None = None, wake_fraction: float = 0.01) -> None:
         self._M = M
         self._threshold = sleep_threshold
         self._active = np.ones(M, dtype=bool)  # inicialmente todos activos
         self._history: list[float] = [1.0]  # fracción activa por paso
+        # Liveness guard (Finding 9): if enabled via ``liveness`` property,
+        # wakes a small random fraction each step when all agents sleep.
+        self._wake_fraction = max(1e-3, min(wake_fraction, 0.1))
+        self._rng = np.random.default_rng(seed)
+        self._liveness = False  # off by default; set True by MassiveSimEngine.run()
+
+    @property
+    def liveness(self) -> bool:
+        """Whether the deadlock kill-switch is active (default: False)."""
+        return self._liveness
+
+    @liveness.setter
+    def liveness(self, value: bool) -> None:
+        self._liveness = bool(value)
 
     def step(
         self,
@@ -370,6 +384,23 @@ class ActiveSet:
             self._active = active_mask_step_sparse(x_prev, x_new, csr, self._threshold)
         else:
             self._active = active_mask_step(x_prev, x_new, np.asarray(adj), self._threshold)
+
+        # Kill-switch for event-driven deadlock (Devil's Advocate Finding 9):
+        # if ALL agents are asleep and no neighbor-reactivation fired, force a
+        # small random fraction to wake each step so the simulation can never
+        # freeze permanently at consensus. This preserves correctness (active
+        # agents still dominate dynamics) while guaranteeing liveness.
+        # Kill-switch for event-driven deadlock (Finding 9): if ALL agents are
+        # asleep AND the simulation loop flags liveness mode, wake a small
+        # random fraction so the run can never freeze permanently at
+        # consensus. Off by default — only activated via the engine's
+        # ``liveness_guard`` flag to preserve the original sleep semantics
+        # that tests assert.
+        if self._liveness and not self._active.any() and self._active.shape[0] > 0:
+            n_wake = max(1, int(np.ceil(self._active.shape[0] * self._wake_fraction)))
+            wake_idx = self._rng.choice(self._active.shape[0], size=n_wake, replace=False)
+            self._active[wake_idx] = True
+
         self._history.append(float(self._active.mean()))
 
     @property
@@ -898,7 +929,7 @@ class MassiveSimEngine:
         # ── Estrategia 3: cola de eventos ─────────────────────────────
         self._active_set: ActiveSet | None = None
         if event_driven:
-            self._active_set = ActiveSet(self.M, sleep_threshold)
+            self._active_set = ActiveSet(self.M, sleep_threshold, seed=seed)
 
         # Historia de métricas
         init_mean = float(np.average(self._x[:, 0], weights=self._counts))
@@ -915,14 +946,16 @@ class MassiveSimEngine:
                 )
 
                 # Tiny batch to trigger one-time compilation.
+                # Fix (Finding 14): _xt is (2, K) 2-D so multi_potential_gradient
+                # receives N,K-shaped input as expected; _multilayer_langevin_step_core
+                # also needs a 2-D state (x_vec[:, 0] was 1-D and silently failed).
                 _xt = self._x[:2].copy()
                 multi_potential_gradient(_xt)
-                _M = self._x.shape[0]
                 _layers = self._layers_flat[:, :2, :2]
                 _w = self.layer_weights.astype(np.float64)
                 _th = np.ones((2, K), dtype=np.float64)
                 _multilayer_langevin_step_core(
-                    _xt[:, 0].copy(),
+                    _xt.copy(),
                     _layers,
                     _w,
                     _th,
@@ -966,6 +999,11 @@ class MassiveSimEngine:
               - gpu_backend      (backend GPU utilizado)
         """
         from multilayer_engine import multilayer_langevin_step
+
+        # Activate the liveness guard so the event-driven sleep path can never
+        # deadlock at consensus (Finding 9). Safe default: wake ~1% per step.
+        if self._active_set is not None:
+            self._active_set.liveness = True
 
         t0 = time.perf_counter()
 

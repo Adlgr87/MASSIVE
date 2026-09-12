@@ -144,8 +144,25 @@ async def api_extract(
     adapter = get_adapter()
     suffix = _safe_suffix(file.filename)
     tmp_path = None
+
+    # Streaming size guard *before* reading the body — prevents a memory-
+    # exhaustion DoS where a multi-GB upload is fully buffered only to be
+    # rejected afterwards. (Devil's Advocate Finding 16 — api.py:148)
+    content_length = file.headers.get("content-length")
+    if content_length and content_length.isdigit() and int(content_length) > _MAX_UPLOAD_BYTES:
+        raise HTTPException(status_code=413, detail="File too large")
+
     try:
-        content = await file.read()
+        # Read in chunks so we reject oversized uploads without buffering
+        # the full body; aborts at the size limit rather than after.
+        content = b""
+        while True:
+            chunk = await file.read(1024 * 1024)  # 1 MB chunks
+            if not chunk:
+                break
+            content += chunk
+            if len(content) > _MAX_UPLOAD_BYTES:
+                raise HTTPException(status_code=413, detail="File too large")
         if len(content) > _MAX_UPLOAD_BYTES:
             raise HTTPException(status_code=413, detail="File too large")
         with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
@@ -269,7 +286,9 @@ async def api_architect(
         estrategia, narrativa, intentos, historial = buscar_estrategia_inversa(
             estado_inicial=estado_inicial,
             objetivo_usuario=objetivo_usuario,
-            max_intentos=int(payload.get("max_intentos", 3)),
+            # Clamp to prevent API abuse: unbounded max_intentos blocks a
+            # worker for an unbounded number of LLM+simulation calls (Finding 23).
+            max_intentos=min(int(payload.get("max_intentos", 3)), 10),
             config=payload.get("config"),
             modo_simulacion=payload.get("modo_simulacion", "macro"),
             metricas_red=payload.get("metricas_red", ""),

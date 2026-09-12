@@ -148,6 +148,78 @@ class CfCTauMatrix(nn.Module):
         return self.net(attributes) + 0.1
 
 
+class CfCResidualCorrector(nn.Module):
+    """
+    Closed-form Continuous-time residual-correction cell.
+
+    Trained to predict the residual ``r(t) = actual_leave - simulated_leave``
+    so that the corrected energy-engine output is ``final(t) = ŷ(t) + r̂(t)``.
+    (calibration_log.md §4 — CfCResidualCorrector-N9H64)
+
+    Input layout (9 features):
+      [time_normalized, actual_leave_pct, simulated_leave_pct,
+       residual_t-6, residual_t-5, residual_t-4, residual_t-3,
+       residual_t-2, residual_t-1]
+
+    The hidden state is a CfC cell with dynamic τ; a readout head projects
+    the final hidden state to a scalar residual estimate.
+
+    Note:
+        The trained model has R² = -18.7 per-step (poor point-wise
+        generalization) but its *bias direction* is reliable — calibration
+        uses the mean prediction for adaptive bias correction
+        (see ``calibration_log.md §7``).
+    """
+
+    def __init__(
+        self,
+        input_dim: int = 9,
+        hidden_size: int = 64,
+        eps: float = 1e-3,
+    ) -> None:
+        super().__init__()
+        self.input_dim = input_dim
+        self.hidden_size = hidden_size
+        self.u_encoder = nn.Sequential(
+            nn.Linear(input_dim, hidden_size),
+            nn.Tanh(),
+        )
+        # tau_net / f_net share the concatenated (hidden + input) context (73 = 64 + 9)
+        self.tau_net = nn.Sequential(
+            nn.Linear(hidden_size + input_dim, hidden_size),
+            nn.Softplus(),
+        )
+        self.f_net = nn.Sequential(
+            nn.Linear(hidden_size + input_dim, hidden_size),
+            nn.Tanh(),
+        )
+        self.readout = nn.Linear(hidden_size, 1)
+        self._eps = eps
+
+    def forward(
+        self,
+        x: torch.Tensor,
+        u: torch.Tensor,
+        dt: float = 0.1,
+    ) -> torch.Tensor:
+        """One Euler step of the residual ODE, returning new hidden state.
+
+        Args:
+            x: Hidden state (batch, hidden_size).
+            u: Input features (batch, input_dim).
+            dt: Integration step (matches training config).
+
+        Returns:
+            Predicted residual r̂(t) (batch, 1).
+        """
+        _ = self.u_encoder(u)                                 # (batch, hidden) — encoder path
+        tau = self.tau_net(torch.cat([x, u], dim=-1)) + self._eps
+        f = self.f_net(torch.cat([x, u], dim=-1))
+        dx = (-1.0 / tau) * x + f
+        x_new = x + dt * dx
+        return self.readout(x_new)
+
+
 class CfCArchitectPolicy(nn.Module):
     """
     Política de arquitecto social: propone una estrategia de intervención

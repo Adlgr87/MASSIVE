@@ -8,6 +8,7 @@ services:
     ports:
       - "80:80"       # Frontend + API (nginx)
       - "8000:8000"   # API (direct, optional)
+      - "8501:8501"   # Streamlit UI (legacy UIL demo flow)
     volumes:
       - ./.env.local:/app/.env.local:ro
       - ./.env:/app/.env:ro

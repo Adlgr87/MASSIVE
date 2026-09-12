@@ -77,7 +77,35 @@ def run_energy_simulation(
             )
 
     initial_op = history[0]["mean_opinion"]
-    final_op = history[-1]["mean_opinion"]
+    final_op_uncorrected = history[-1]["mean_opinion"]
+
+    # CfC residual correction (calibration_log.md §6). When enabled, loads the
+    # trained CfCResidualCorrector via CfCRouter and applies:
+    #   final(t) = ŷ(t) + r̂(t) — adaptive bias correction scaled 50% toward
+    #   the known baseline error. Transparent fallback: skipped if torch/model
+    #   missing, leaving final_op unchanged.
+    use_cfc = bool(config_overrides.get("use_cfc_correction", False)) if config_overrides else False
+    if use_cfc:
+        from cfc_router import CfCRouter
+
+        router = CfCRouter.get()
+        if router.status.get("residual_corrector"):
+            sim_series = [h["mean_opinion"] for h in history]
+            # Bipolar [-1,1] → convert to leave% scale for the residual model.
+            sim_leave = [(v + 1.0) / 2.0 for v in sim_series]
+            actual_leave = config_overrides.get("actual_leave_pct")
+            corrected, src = router.correct_residual(
+                history=sim_leave,
+                simulated=sim_leave[-1],
+                actual=actual_leave,
+            )
+            final_op = (corrected * 2.0) - 1.0  # back to bipolar
+            history[-1]["mean_opinion_cfc_corrected"] = final_op
+            history[-1]["cfc_correction_source"] = src
+        else:
+            final_op = final_op_uncorrected
+    else:
+        final_op = final_op_uncorrected
     delta = final_op - initial_op
     neutro = 0.0 if range_type == "bipolar" else 0.5
     all_means = [h["mean_opinion"] for h in history]

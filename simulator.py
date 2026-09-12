@@ -1859,12 +1859,19 @@ def simular_multiples_dask(
                 estado_ruido[k] = float(np.clip(v + noise_row[idx], r["min"], r["max"]))
             else:
                 estado_ruido[k] = v
+        # Fix (Finding 11): dask path was passing `config` (which may carry the
+        # same seed for all replicas) instead of a per-replica `run_cfg` with a
+        # unique seed. This violated Monte Carlo independence — all replicas
+        # shared the same internal RNG stream. Now each replica gets a
+        # deterministic, distinct seed derived from the master seed.
+        rep_seed = int(rng.integers(0, 2**31 - 1))
+        run_cfg = {**(config or {}), "seed": rep_seed}
         hist = simular(
             estado_ruido,
             escenario=escenario,
             pasos=pasos,
             cada_n_pasos=cada_n_pasos,
-            config=config,
+            config=run_cfg,
             verbose=False,
         )
         return hist[-1]["opinion"]

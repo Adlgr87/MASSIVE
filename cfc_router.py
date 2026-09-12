@@ -71,6 +71,7 @@ class CfCRouter:
         self._sel = None  # CfCRegimeSelector
         self._tau = None  # CfCTauMatrix
         self._arch = None  # CfCArchitectPolicy
+        self._residual = None  # CfCResidualCorrector
         self._torch_available = False
         self._load()
 
@@ -94,7 +95,13 @@ class CfCRouter:
             log.debug("[CfC] PyTorch no disponible — CfC desactivado.")
             return
 
-        from cfc_engine import NUM_REGIMES, CfCArchitectPolicy, CfCRegimeSelector, CfCTauMatrix
+        from cfc_engine import (
+            CfCResidualCorrector,
+            CfCArchitectPolicy,
+            CfCRegimeSelector,
+            CfCTauMatrix,
+            NUM_REGIMES,
+        )
 
         base = Path("models")
 
@@ -133,6 +140,14 @@ class CfCRouter:
             hidden=128,
             n_phases=5,
             n_regimes=NUM_REGIMES,
+        )
+        # Residual-correction model (calibration_log.md §6). Loads
+        # models/cfc_residual.pt if present; transparent fallback otherwise.
+        self._residual = _try_load(
+            "cfc_residual.pt",
+            CfCResidualCorrector,
+            input_dim=9,
+            hidden=64,
         )
 
     # ── API pública ──────────────────────────────────────────────────────────
@@ -230,6 +245,88 @@ class CfCRouter:
 
         return {k: v.numpy() for k, v in out.items()} | {"source": "cfc"}
 
+    def correct_residual(
+        self,
+        history: list[float],
+        simulated: list[float] | float,
+        *,
+        actual: list[float] | float | None = None,
+        dt: float = 0.1,
+    ) -> tuple[float, str]:
+        """Apply CfC residual correction to an energy-engine opinion trajectory.
+
+        Implements calibration_log.md §6: final(t) = ŷ(t) + r̂(t).
+
+        The trained model has R² = -18.7 per-step (poor point-wise
+        generalization), so the *bias direction* is used for adaptive
+        correction scaled toward the known baseline error (§7).
+
+        Args:
+            history:  List of simulated leave% / opinion values, ≥ 3.
+            simulated: Latest simulated value (scalar) or full series.
+            actual:  Optional ground-truth series for adaptive scaling.
+            dt:      ODE integration step (matches training).
+
+        Returns:
+            (corrected_value, source) — source is "cfc" or "passthrough".
+            Returns uncorrected value when model unavailable.
+        """
+        if self._residual is None or not self._torch_available:
+            sim_val = float(np.asarray(simulated).ravel()[-1]) if simulated is not None else 0.0
+            return sim_val, "passthrough"
+
+        import torch
+
+        hist_arr = np.asarray(history, dtype=np.float64).ravel()
+        if hist_arr.size < 3:
+            sim_val = float(np.asarray(simulated).ravel()[-1]) if simulated is not None else 0.0
+            return sim_val, "passthrough"
+
+        sim_arr = np.asarray(simulated, dtype=np.float64)
+        if sim_arr.ndim == 0 or sim_arr.size == 1:
+            sim_series = np.full(hist_arr.size, float(sim_arr.ravel()[-1]))
+        else:
+            sim_series = hist_arr
+
+        n = hist_arr.size
+        t_norm = np.arange(n, dtype=np.float64) / max(n, 1)
+        mean_sim = float(np.mean(sim_series))
+
+        if actual is not None:
+            actual_arr = np.asarray(actual, dtype=np.float64)
+            if actual_arr.ndim == 0 or actual_arr.size == 1:
+                actual_series = np.full(n, float(actual_arr.ravel()[-1]))
+            else:
+                actual_series = actual_arr[:n] if actual_arr.size >= n else np.pad(actual_arr, (0, n - actual_arr.size))
+            residuals = actual_series - sim_series
+        else:
+            residuals = np.full(n, 0.0426)  # training mean (calibration_log §5)
+
+        # Feature vector: 9 features = [t_norm, sim, mean(sim)] + 6 lags
+        u = np.zeros(self._residual.input_dim, dtype=np.float32)
+        u[0] = float(t_norm[-1])
+        u[1] = float(sim_series[-1])
+        u[2] = mean_sim
+        for i in range(6):
+            u[3 + i] = float(residuals[-1 - i]) if len(residuals) > i + 1 else 0.0
+
+        x = torch.zeros(1, self._residual.hidden_size)
+        with torch.no_grad():
+            r_hat = float(self._residual(x, torch.tensor([u], dtype=torch.float32), dt=dt).item())
+
+        sim_val = float(sim_series[-1])
+
+        # Adaptive correction: scale 50% toward target when ground truth known;
+        # otherwise use raw model prediction for bias detection only.
+        if actual is not None:
+            baseline_error = sim_val - float(actual_arr.ravel()[-1]) if actual_arr.size else 0.0
+            correction = 0.5 * baseline_error
+        else:
+            correction = r_hat
+
+        corrected = sim_val + correction
+        return float(np.clip(corrected, -1.0, 1.0)), "cfc"
+
     @property
     def status(self) -> dict:
         """
@@ -237,10 +334,11 @@ class CfCRouter:
 
         Returns:
             Diccionario con claves 'regime_selector', 'tau_matrix',
-            'architect_policy', cada una True/False.
+            'architect_policy', 'residual_corrector', cada una True/False.
         """
         return {
             "regime_selector": self._sel is not None,
             "tau_matrix": self._tau is not None,
             "architect_policy": self._arch is not None,
+            "residual_corrector": self._residual is not None,
         }

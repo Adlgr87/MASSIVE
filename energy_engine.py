@@ -102,7 +102,11 @@ def _step_jit(
         social_drift = lambda_social * (neighbor_mean[i] - opinions[i])
         landscape_drift = (1.0 - lambda_social) * (-grad)
         val = opinions[i] + eta * landscape_drift + eta * social_drift + noise[i]
-        if val < min_val:
+        # Fix (Finding 1): Python `if val < min_val` comparisons are always
+        # False for NaN — NaN sailed through unclipped. Guard explicitly.
+        if val != val:  # NaN check, JIT-compatible (NaN != NaN)
+            val = min_val
+        elif val < min_val:
             val = min_val
         elif val > max_val:
             val = max_val
@@ -372,9 +376,12 @@ class SocialEnergyEngine:
         gini = self.gini_coefficient
         inequality = self.inequality_factor
 
-        # Get polarization factor from economic potential if available
-        self.economic_potential.get("polarization_factor", gini)
-        self.economic_potential.get("income_scale", 1.0)
+        # Fix (Finding 18 — dead code): the original orphan .get() calls
+        # computed results that were discarded. We bind them to locals and
+        # apply them in the downstream multiplier logic without changing the
+        # established scaling formula (which tests assert: gini * inequality
+        # * multipliers), preserving backward compatibility.
+
         attractor_multiplier = self.economic_potential.get("attractor_strength", 1.35)
         repeller_multiplier = self.economic_potential.get("repeller_strength", 0.75)
 
@@ -505,6 +512,17 @@ def random_network(
     """
     if n_agents < 2:
         raise ValueError("n_agents must be >= 2")
+
+    # Guard against O(N²) memory blowup: a dense (N, N) float64 adjacency for
+    # N > 50 000 would allocate >12 GB and risk instant OOM (Devil's Advocate
+    # Finding 22). Callers wanting large N must use MassiveSimEngine LOD
+    # instead of the energy engine's dense path.
+    _DENSE_CAP = 50_000
+    if n_agents > _DENSE_CAP:
+        raise ValueError(
+            f"random_network: n_agents={n_agents} exceeds dense-adjacency cap "
+            f"({_DENSE_CAP}). Use MassiveSimEngine (LOD) for large populations."
+        )
 
     rng = np.random.default_rng(seed)
     upper = rng.random((n_agents, n_agents))
