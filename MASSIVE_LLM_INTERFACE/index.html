@@ -1,0 +1,2143 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="MASSIVE — Hybrid social dynamics simulator. Numerical core + LLM as regime selector.">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>MASSIVE-LLM Interface - MASSIVE Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#massive-llm-interface" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="MASSIVE Documentation" class="md-header__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MASSIVE Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              MASSIVE-LLM Interface
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="MASSIVE Documentation" class="md-nav__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    MASSIVE Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../README_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Spanish Version
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Readiness
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Production Readiness
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../production-readiness-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Audit & Risk Matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../release-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/current-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (current)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/target-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (target)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runbooks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Runbooks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runbooks/local-development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runbooks/operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../runbooks/incidents/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Incidents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_6" id="__nav_4_6_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/threat-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../security/secrets-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secrets & Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../testing/test-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../performance/baseline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Baseline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Factbook Integration
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Factbook Integration
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FACTBOOK_SUMMARY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Summary
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FACTBOOK_QUICKSTART/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Quickstart
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FACTBOOK_INTEGRATION_PLAN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration Plan
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../FACTBOOK_INTEGRATION_COMPLETE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration Complete
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation (PVU-BS)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Validation (PVU-BS)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/PVU_MASSIVE_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/PVU_MASSIVE_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocolo (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/preregistration_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registration (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/preregistration_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registro (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/validation_report_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report template (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation/validation_report_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plantilla de reporte (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-resumen-ejecutable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Resumen ejecutable
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-flujos-soportados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Flujos soportados
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Flujos soportados">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-flujo-canonico-nl-config-run-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Flujo canónico (NL → config → run → summary)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-endpoints-directos-bypass-nlconfig" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Endpoints directos (bypass NL→config)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-especificacion-del-endpoint-post-v1llmrun_simulation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Especificación del endpoint POST /v1/llm/run_simulation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Especificación del endpoint POST /v1/llm/run_simulation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Request
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-respuesta-200-ok" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Respuesta (200 OK)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-codigos-de-error" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Códigos de error
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-reglas-de-seleccion-de-motor-motor-classification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Reglas de selección de motor (motor classification)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-campos-de-entrada-que-el-llm-debe-solicitar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Campos de entrada que el LLM debe solicitar
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Campos de entrada que el LLM debe solicitar">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#supuestos-por-defecto-anunciables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supuestos por defecto anunciables
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-campos-de-salida" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Campos de salida
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Campos de salida">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-indicadores-numericos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Indicadores numéricos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-resumenes-textuales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Resúmenes textuales
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-artefactos-estructurados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Artefactos estructurados
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-plantillas-de-prompts-base" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Plantillas de prompts base
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Plantillas de prompts base">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ejemplo-de-prompt-del-wizard-wc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ejemplo de prompt del Wizard (WC)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-ejemplos-de-uso-curl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Ejemplos de uso (curl)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Ejemplos de uso (curl)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#81-simulacion-sin-pais-multilayer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.1 Simulación sin país (multilayer)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#82-pronostico-con-country-motor-explicito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.2 Pronóstico con country + motor explícito
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#83-intent-ambiguo-422" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.3 Intent ambiguo → 422
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#84-motor-que-requiere-llm-key-no-configurada-503" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8.4 Motor que requiere LLM key no configurada → 503
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-wireup-de-codigo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Wireup de código
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-integracion-con-observabilidad-futuro" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Integración con observabilidad (futuro)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="massive-llm-interface">MASSIVE-LLM Interface</h1>
+<blockquote>
+<p><strong>Fase 6 — Diseñador de Prompts LLM + Integrador LLM–Backend</strong><br />
+<strong>Versión:</strong> 1.1.0 · <strong>Contrato origen:</strong> <code>configs/llm_contract/massive_llm_contract.json</code></p>
+</blockquote>
+<p>Este documento describe la interfaz canónica mediante la cual un agente LLM
+interactúa con el backend MASSIVE: el endpoint <strong><code>POST /v1/llm/run_simulation</code></strong>,
+las reglas de selección de motor, los campos de entrada/salida, los prompts de
+referencia, la autenticación y los ejemplos de uso.</p>
+<hr />
+<h2 id="1-resumen-ejecutable">1. Resumen ejecutable</h2>
+<table>
+<thead>
+<tr>
+<th>Concepto</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Endpoint</strong></td>
+<td><code>POST /v1/llm/run_simulation</code></td>
+</tr>
+<tr>
+<td><strong>Auth</strong></td>
+<td><code>X-API-Key</code> (server-side) + LLM provider key configurada (verificado en <code>/ready</code>)</td>
+</tr>
+<tr>
+<td><strong>Rate-limit</strong></td>
+<td>30 req/min por IP (<code>MASSIVE_ENV=development</code> → <code>dev-secret-key</code>)</td>
+</tr>
+<tr>
+<td><strong>Entry point código</strong></td>
+<td><code>backend/app/routers/llm.py</code> → <code>services/llm_orchestrator.run_llm_simulation</code></td>
+</tr>
+<tr>
+<td><strong>DTOs</strong></td>
+<td><code>backend/app/models/dto_llm.py</code> (<code>LLMRunRequest</code>, <code>LLMRunResponse</code>, <code>LLMAmbiguityResponse</code>)</td>
+</tr>
+<tr>
+<td><strong>Prompts de referencia</strong></td>
+<td><code>docs/LLM_PROMPTS.md</code> (RT, WC, NR, AC)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-flujos-soportados">2. Flujos soportados</h2>
+<p>Véase también <code>massive_llm_contract.json</code> → sección <code>supported_flows</code>.</p>
+<h3 id="21-flujo-canonico-nl-config-run-summary">2.1 Flujo canónico (NL → config → run → summary)</h3>
+<pre><code>LLM client
+   │ POST /v1/llm/run_simulation {intent, motor?, country?, partial_config?}
+   ▼
+Backend (services.llm_orchestrator)
+   ├─ 1. classify_motor(intent, motor_hint?)   ← reglas del contrato
+   ├─ 2. (opcional) wizard_config(intent)      ← NL → config (InterpreterLayer)
+   ├─ 3. Factbook augmentation si country       ← services.factbook_service
+   ├─ 4. Dispatch engine por `motor`
+   ├─ 5. Narrate (ResultNarratorChain)
+   └─ Devolver LLMRunResponse {sim_id, motor, config, summary, narrative, results, assumptions, factbook_params}
+</code></pre>
+<h3 id="22-endpoints-directos-bypass-nlconfig">2.2 Endpoints directos (bypass NL→config)</h3>
+<p>Cuando el LLM ya posee parámetros estructurados, puede invocar directamente:</p>
+<table>
+<thead>
+<tr>
+<th>Endpoint</th>
+<th>Uso</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>POST /v1/simulate</code></td>
+<td>Dinámica de opiniones legacy (scalar <code>simular</code>)</td>
+</tr>
+<tr>
+<td><code>POST /v1/engine/energy</code></td>
+<td>Motor Langevin + paisaje de energía</td>
+</tr>
+<tr>
+<td><code>POST /v1/engine/architect</code></td>
+<td>Búsqueda inversa de intervenciones</td>
+</tr>
+<tr>
+<td><code>POST /v1/forecast</code></td>
+<td>Pronóstico temporal (analytical / monte_carlo)</td>
+</tr>
+<tr>
+<td><code>POST /v1/benchmarks</code></td>
+<td>PVU-BS benchmark (offline/real/llm)</td>
+</tr>
+<tr>
+<td><code>GET /ready</code></td>
+<td>Verificar disponibilidad del provider LLM + adapter UIL</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-especificacion-del-endpoint-post-v1llmrun_simulation">3. Especificación del endpoint <code>POST /v1/llm/run_simulation</code></h2>
+<h3 id="31-request">3.1 Request</h3>
+<pre><code class="language-jsonc">{
+  &quot;intent&quot;: &quot;Quiero entender cómo evoluciona la opinión en un país con alta desigualdad económica&quot;, // string, REQUIRED
+  &quot;motor&quot;: &quot;energy_engine&quot;,            // opcional; si se omite, el backend clasifica
+  &quot;country&quot;: &quot;Brazil&quot;,                 // opcional; para augmentación Factbook
+  &quot;partial_config&quot;: { &quot;seed&quot;: 7 },     // opcional; overrides estructurados
+  &quot;llm&quot;: { &quot;provider&quot;: &quot;groq&quot;, &quot;model&quot;: &quot;llama-3.3-70b-versatile&quot; }, // opcional
+  &quot;simulation_steps&quot;: 100,             // opcional (default 50)
+  &quot;seed&quot;: 42,                          // opcional (default 42)
+  &quot;config_overrides&quot;: { &quot;temperature&quot;: 0.12 } // opcional; engine-specific
+}
+</code></pre>
+<p><strong>Validación de DTO</strong> (<code>LLMRunRequest</code>, <code>extra="forbid"</code>):
+- <code>intent</code> requerido (mín 1 carácter).
+- <code>motor</code> ∈ <code>{energy_engine, social_architect, forecast, multilayer_engine, massive_engine, micro_massive, benchmark_offline, factbook_validation}</code>.
+- Campos desconocidos → <code>422</code>.</p>
+<h3 id="32-respuesta-200-ok">3.2 Respuesta (200 OK)</h3>
+<pre><code class="language-jsonc">{
+  &quot;sim_id&quot;: &quot;sim_3f7c1a2b9e8d&quot;,
+  &quot;motor&quot;: &quot;energy_engine&quot;,
+  &quot;config&quot;: {
+    &quot;estado_inicial&quot;: {&quot;opinion&quot;: 0.0, &quot;propaganda&quot;: 0.0},
+    &quot;escenario&quot;: &quot;campana&quot;,
+    &quot;pasos&quot;: 100,
+    &quot;config&quot;: { /* DEFAULT_CONFIG mergeado + overrides + Factbook */ },
+    &quot;country&quot;: &quot;Brazil&quot;
+  },
+  &quot;summary&quot;: {
+    &quot;motor&quot;: &quot;energy_engine&quot;,
+    &quot;indicators&quot;: {
+      &quot;mean_opinion&quot;: 0.31,
+      &quot;std_opinion&quot;: 0.12,
+      &quot;polarizacion&quot;: 0.28,
+      &quot;consenso&quot;: 0.62,
+      &quot;delta_total&quot;: 0.25
+    },
+    &quot;regla_dominante&quot;: &quot;confirmation_bias&quot;,
+    &quot;factbook_country&quot;: &quot;Brazil&quot;
+  },
+  &quot;narrative&quot;: &quot;Simulación completada. Opinión media evolucionó de 0.0 a 0.31...&quot;,
+  &quot;results&quot;: {
+    &quot;sim_id&quot;: &quot;sim_3f7c1a2b9e8d&quot;,
+    &quot;motor&quot;: &quot;energy_engine&quot;,
+    &quot;payload&quot;: { /* output crudo del motor */ },
+    &quot;timeline&quot;: [ { &quot;tick&quot;: 0, &quot;mean_opinion&quot;: 0.0, &quot;polarization&quot;: null }, ... ],
+    &quot;final_state&quot;: { &quot;mean_opinion&quot;: 0.31, &quot;std_opinion&quot;: 0.12, &quot;polarizacion&quot;: 0.28 }
+  },
+  &quot;assumptions&quot;: [
+    &quot;country detectado desde la intención: Brazil&quot;,
+    &quot;params de Factbook inyectados para Brazil: n_agents=1000, gini=0.35&quot;,
+    &quot;seed=42 (reproducible)&quot;,
+    &quot;horizonte por defecto según motor (contract.llm_guidelines)&quot;
+  ],
+  &quot;factbook_params&quot;: { &quot;country&quot;: &quot;Brazil&quot;, &quot;n_agents&quot;: 1000, &quot;gini_coefficient&quot;: 0.35, ... }
+}
+</code></pre>
+<h3 id="33-codigos-de-error">3.3 Códigos de error</h3>
+<table>
+<thead>
+<tr>
+<th>Código</th>
+<th>Condición</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>400</code></td>
+<td><code>intent</code> vacío o payload inválido.</td>
+</tr>
+<tr>
+<td><code>401</code></td>
+<td><code>X-API-Key</code> ausente o inválida.</td>
+</tr>
+<tr>
+<td><code>422</code></td>
+<td><em>Intent ambiguo</em> y no resoluble con defaults. Devuelve <code>{detail, requested_fields, motor}</code>. El LLM cliente debe recoger los campos faltantes y re-enviar.</td>
+</tr>
+<tr>
+<td><code>429</code></td>
+<td>Rate limit excedido (30/min).</td>
+</tr>
+<tr>
+<td><code>503</code></td>
+<td>Motor requiere LLM key no configurada (p. ej. <code>social_architect</code>). Verificar <code>/ready</code>.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-reglas-de-seleccion-de-motor-motor-classification">4. Reglas de selección de motor (motor classification)</h2>
+<p>Implementadas en <code>services/llm_orchestrator.classify_motor</code>, derivadas de
+<code>massive_llm_contract.json</code> → <code>llm_guidelines</code>. Si el LLM envía <code>motor</code>
+explícito y es válido, se respeta.</p>
+<table>
+<thead>
+<tr>
+<th>Señal en <code>intent</code></th>
+<th>Motor asignado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>"energía", "desigualdad", "polarización", "conflicto social"</em> + country</td>
+<td><code>energy_engine</code></td>
+</tr>
+<tr>
+<td><em>"estrategia inversa", "cómo llegar a", "qué intervención", "reducir polarización"</em></td>
+<td><code>social_architect</code></td>
+</tr>
+<tr>
+<td><em>"pronosticar", "predecir", "probabilidad de", "viral", "semanas"</em></td>
+<td><code>forecast</code></td>
+</tr>
+<tr>
+<td><em>"múltiples escalas", "millones de agentes", "gran escala", "masivo"</em></td>
+<td><code>massive_engine</code></td>
+</tr>
+<tr>
+<td><em>"familias de futuros", "grupo pequeño", "amigos", "organizacional"</em></td>
+<td><code>micro_massive</code></td>
+</tr>
+<tr>
+<td><em>"benchmark", "validación CI", "puntos de inflexión"</em></td>
+<td><code>benchmark_offline</code></td>
+</tr>
+<tr>
+<td><em>"validar", "validación", "datos reales"</em> + country</td>
+<td><code>factbook_validation</code></td>
+</tr>
+<tr>
+<td>(default) dinámica de opiniones general</td>
+<td><code>multilayer_engine</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-campos-de-entrada-que-el-llm-debe-solicitar">5. Campos de entrada que el LLM debe solicitar</h2>
+<p>Fuente: <code>massive_llm_contract.json</code> → <code>llm_requested_fields.when_ambiguous</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Tipo</th>
+<th>¿Por qué se pide?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>country</code></td>
+<td>string</td>
+<td>Factbook augmentation (gini, n_agents, social_pressure_weights). Detectar de nombres como <em>United States</em>, <em>México</em>, <em>Brasil</em>, <em>US</em>, <em>MX</em>.</td>
+</tr>
+<tr>
+<td><code>horizon_steps</code></td>
+<td>int</td>
+<td>Duración. Preguntar si el intent menciona <em>"durante X meses/semanas"</em>.</td>
+</tr>
+<tr>
+<td><code>n_agents</code></td>
+<td>int</td>
+<td>Escala poblacional (multilayer/massive).</td>
+</tr>
+<tr>
+<td><code>seed</code></td>
+<td>int</td>
+<td>Reproducibilidad (default 42).</td>
+</tr>
+<tr>
+<td><code>confidence_interval</code></td>
+<td>bool</td>
+<td>Si el usuario quiere rangos → <code>forecast</code> modo <code>monte_carlo</code> con <code>n_runs</code>.</td>
+</tr>
+<tr>
+<td><code>temporal_horizon_days</code></td>
+<td>int</td>
+<td>Para flows <code>forecast</code>: <em>"2 semanas"</em> → <code>n_steps=14, step_duration_days=1</code>.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="supuestos-por-defecto-anunciables">Supuestos por defecto anunciables</h3>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Default anunciado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>horizonte</td>
+<td>50 pasos (legacy), 100 (energy_engine), 14 días (forecast viral_online)</td>
+</tr>
+<tr>
+<td><code>range_type</code></td>
+<td><code>"bipolar"</code></td>
+</tr>
+<tr>
+<td><code>connectivity</code></td>
+<td><code>0.3</code></td>
+</tr>
+<tr>
+<td><code>n_agents</code></td>
+<td>50 (energy), 100 (multilayer); escalable via Factbook</td>
+</tr>
+<tr>
+<td><code>seed</code></td>
+<td><code>42</code> (reproducible; anunciar siempre)</td>
+</tr>
+<tr>
+<td><code>mode</code> (forecast)</td>
+<td><code>"analytical"</code></td>
+</tr>
+<tr>
+<td><code>mode</code> (benchmark)</td>
+<td><code>"offline"</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="6-campos-de-salida">6. Campos de salida</h2>
+<p>Fuente: <code>massive_llm_contract.json</code> → <code>llm_output_fields</code>.</p>
+<h3 id="61-indicadores-numericos">6.1 Indicadores numéricos</h3>
+<table>
+<thead>
+<tr>
+<th>Nombre</th>
+<th>Rango</th>
+<th>Descripción</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mean_opinion</code></td>
+<td>[-1, 1] ∥ [0, 1]</td>
+<td>Opinión media poblacional</td>
+</tr>
+<tr>
+<td><code>std_opinion</code></td>
+<td>[0, 1]</td>
+<td>Desviación típica</td>
+</tr>
+<tr>
+<td><code>polarizacion</code></td>
+<td>[0, 1]</td>
+<td>Índice de polarización (↑ = más dividida)</td>
+</tr>
+<tr>
+<td><code>consenso</code></td>
+<td>[0, 1]</td>
+<td>Tasa de consenso</td>
+</tr>
+<tr>
+<td><code>p_event</code></td>
+<td>[0, 1]</td>
+<td>Probabilidad de evento umbral (forecast)</td>
+</tr>
+<tr>
+<td><code>delta_total</code></td>
+<td>[-2, 2]</td>
+<td>Cambio neto de opinión</td>
+</tr>
+<tr>
+<td><code>feasibility_score</code></td>
+<td>[0, 1]</td>
+<td>Viabilidad objetivo (forecast)</td>
+</tr>
+<tr>
+<td><code>horizon_ticks</code></td>
+<td>int</td>
+<td>Horizonte temporal (forecast)</td>
+</tr>
+<tr>
+<td><code>attempts</code></td>
+<td>int</td>
+<td>Intentos del Social Architect</td>
+</tr>
+</tbody>
+</table>
+<h3 id="62-resumenes-textuales">6.2 Resúmenes textuales</h3>
+<p><code>diagnostico</code>, <code>dinamica_clave</code>, <code>implicaciones</code>, <code>recomendaciones</code> (lista),
+<code>narrative</code>, <code>regla_dominante</code>, <code>confidence_label</code>.</p>
+<h3 id="63-artefactos-estructurados">6.3 Artefactos estructurados</h3>
+<p><code>config</code>, <code>history</code> (o slice), <code>final_state</code>, <code>metrics_timeline</code>, <code>strategy</code>
+(architect), <code>feasibility</code> {score, label, rationale}, <code>factbook_params</code>.</p>
+<hr />
+<h2 id="7-plantillas-de-prompts-base">7. Plantillas de prompts base</h2>
+<p>Véase <code>docs/LLM_PROMPTS.md</code> para las plantillas completas (Jinja2):</p>
+<table>
+<thead>
+<tr>
+<th>Prompt</th>
+<th>Rol</th>
+<th>Uso</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>RT</strong> (Router Intento/Motor)</td>
+<td>Clasificar intención → motor</td>
+<td>Antes del dispatch, o validación local del LLM cliente</td>
+</tr>
+<tr>
+<td><strong>WC</strong> (Wizard NL→Config)</td>
+<td>Traducir intención a config estructurado</td>
+<td><code>services.llm_service.wizard_config</code> (InterpreterLayer.wizard)</td>
+</tr>
+<tr>
+<td><strong>NR</strong> (Narrador)</td>
+<td>Resultados → síntesis narrativa</td>
+<td>Post-simulación, produce <code>narrative</code></td>
+</tr>
+<tr>
+<td><strong>AC</strong> (Validador Ambigüedad)</td>
+<td>Decidir si pedir campos faltantes</td>
+<td>Determina 422 vs proceed-with-defaults</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ejemplo-de-prompt-del-wizard-wc">Ejemplo de prompt del Wizard (WC)</h3>
+<pre><code class="language-text">Eres el Asistente de Configuración MASSIVE, versión 1.1.0.
+Convierte la descripción del usuario en parámetros de simulación MASSIVE,
+anunciando cada supuesto de forma explícita.
+
+PARÁMETROS Y RANGOS:
+  opinion [-1,1], confianza [0,1], propaganda [-1,1],
+  identidad_grupo [0,1], sesgo_confirmacion [0,1], homofilia_tasa [0,1],
+  pasos [10,500], regla ∈ {degroot, hegselmann_krause, ...}
+
+EJEMPLOS:
+  &quot;hay mucha polarización&quot; → opinion≈0.0, identidad_grupo≈0.8, regla=hegselmann_krause
+  &quot;todos están de acuerdo&quot; → opinion≈0.7, identidad_grupo≈0.2, regla=degroot
+
+Salida JSON:
+{
+  &quot;config&quot;: {...},
+  &quot;motor_sugerido&quot;: &quot;&lt;motor&gt;&quot;,
+  &quot;supuestos&quot;: [&quot;seed=42&quot;, &quot;horizonte=100 pasos (energy_engine)&quot;],
+  &quot;advertencias&quot;: [...],
+  &quot;confianza&quot;: 0.0-1.0
+}
+
+Texto del usuario:
+{{INTENT_TEXT}}
+</code></pre>
+<hr />
+<h2 id="8-ejemplos-de-uso-curl">8. Ejemplos de uso (curl)</h2>
+<h3 id="81-simulacion-sin-pais-multilayer">8.1 Simulación sin país (multilayer)</h3>
+<pre><code class="language-bash">curl -X POST http://localhost:8000/v1/llm/run_simulation \
+  -H &quot;X-API-Key: dev-secret-key&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{
+    &quot;intent&quot;: &quot;Simula la dinámica de opinión para 1000 agentes con red tipo mundo pequeño&quot;,
+    &quot;seed&quot;: 42,
+    &quot;simulation_steps&quot;: 150
+  }'
+</code></pre>
+<h3 id="82-pronostico-con-country-motor-explicito">8.2 Pronóstico con country + motor explícito</h3>
+<pre><code class="language-bash">curl -X POST http://localhost:8000/v1/llm/run_simulation \
+  -H &quot;X-API-Key: dev-secret-key&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{
+    &quot;intent&quot;: &quot;Pronostica si una protesta será viral en las próximas 2 semanas en México&quot;,
+    &quot;motor&quot;: &quot;forecast&quot;,
+    &quot;country&quot;: &quot;Mexico&quot;,
+    &quot;partial_config&quot;: {
+      &quot;temporal_config&quot;: {&quot;n_steps&quot;: 14, &quot;step_duration_days&quot;: 1, &quot;event_type&quot;: &quot;viral_online&quot;},
+      &quot;simulation_state&quot;: {&quot;historial&quot;: [{&quot;opinion&quot;: 0.45}, {&quot;opinion&quot;: 0.52}, {&quot;opinion&quot;: 0.58}],
+                           &quot;ews&quot;: {&quot;metrics&quot;: {&quot;variance&quot;: 0.08, &quot;autocorr&quot;: 0.65}}}
+    }
+  }'
+</code></pre>
+<h3 id="83-intent-ambiguo-422">8.3 Intent ambiguo → 422</h3>
+<pre><code class="language-bash">curl -X POST http://localhost:8000/v1/llm/run_simulation \
+  -H &quot;X-API-Key: dev-secret-key&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{&quot;intent&quot;: &quot;Quiero pronosticar algo&quot;}'
+# → 422 { &quot;detail&quot;: &quot;...&quot;, &quot;requested_fields&quot;: [&quot;country&quot;,&quot;temporal_horizon_days&quot;], &quot;motor&quot;: &quot;forecast&quot; }
+</code></pre>
+<h3 id="84-motor-que-requiere-llm-key-no-configurada-503">8.4 Motor que requiere LLM key no configurada → 503</h3>
+<pre><code class="language-bash">curl -X POST http://localhost:8000/v1/llm/run_simulation \
+  -H &quot;X-API-Key: dev-secret-key&quot; \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{&quot;intent&quot;:&quot;Reduce la polarización en España&quot;,&quot;motor&quot;:&quot;social_architect&quot;,&quot;country&quot;:&quot;Spain&quot;}'
+# → 503 &quot;social_architect motor requires an LLM API key...&quot;
+</code></pre>
+<hr />
+<h2 id="9-wireup-de-codigo">9. Wireup de código</h2>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Rol</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>configs/llm_contract/massive_llm_contract.json</code></td>
+<td>Contrato canónico (flujos, campos, prompts, reglas). V 1.1.0.</td>
+</tr>
+<tr>
+<td><code>backend/app/models/dto_llm.py</code></td>
+<td>DTOs <code>LLMRunRequest</code> / <code>LLMRunResponse</code> / <code>LLMAmbiguityResponse</code>.</td>
+</tr>
+<tr>
+<td><code>backend/app/routers/llm.py</code></td>
+<td>Router FastAPI <code>POST /v1/llm/run_simulation</code>. Auth + rate-limit.</td>
+</tr>
+<tr>
+<td><code>backend/app/main.py</code></td>
+<td>Registro del router: <code>app.include_router(llm.router, prefix="/v1")</code>.</td>
+</tr>
+<tr>
+<td><code>services/llm_orchestrator.py</code></td>
+<td>Orquestación: <code>classify_motor</code>, <code>run_llm_simulation</code>, <code>_dispatch</code>, <code>_narrate</code>.</td>
+</tr>
+<tr>
+<td><code>services/llm_service.py</code></td>
+<td><code>wizard_config</code> (NL→config) vía <code>InterpreterLayer.wizard</code>.</td>
+</tr>
+<tr>
+<td><code>services/factbook_service.py</code></td>
+<td><code>country_params</code> (Factbook augmentation).</td>
+</tr>
+<tr>
+<td><code>services/__init__.py</code></td>
+<td>Re-exporta <code>run_llm_simulation</code>.</td>
+</tr>
+<tr>
+<td><code>interpreter_layer.py</code></td>
+<td><code>InterpreterLayer</code> con cadenas Wizard/Explainer/Narrator/Translator.</td>
+</tr>
+<tr>
+<td><code>docs/LLM_PROMPTS.md</code></td>
+<td>Plantillas de prompts de referencia (RT, WC, NR, AC).</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="10-integracion-con-observabilidad-futuro">10. Integración con observabilidad (futuro)</h2>
+<ul>
+<li><strong>Trace IDs</strong>: inyectar <code>X-Request-ID</code> en el response header para trazabilidad.</li>
+<li><strong>Métrica de latencia</strong>: instrumentar <code>run_llm_simulation</code> con OpenTelemetry
+  (<code>@instrument</code> decorator sobre el dispatcher).</li>
+<li><strong>Contador de dispatch por motor</strong>: <code>massive.llm.motor_dispatch_total{motor="energy_engine"}</code>.</li>
+<li><strong>SLO</strong>: P95 <code>&lt; 30 s</code> para endpoints LLM (contract <code>rate_limit_tiers.llm</code>).</li>
+</ul>
+<hr />
+<p><em>Documento generado por Diseñador de Prompts LLM + Integrador LLM–Backend — MASSIVE Master Orchestrator, Fase 6.</em>
+<em>Última actualización: 2026-08-16.</em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.sections", "navigation.expand", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
