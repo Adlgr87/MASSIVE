@@ -383,7 +383,6 @@
       "intent": "Analiza las familias de futuros para un grupo pequeño de amigos con alta diversidad",
       "motor": "micro_massive",
       "config": {
-        "endpoint": "Streamlit /ui/",
         "payload": {
           "n_members": 6,
           "context": "friends",
@@ -403,7 +402,7 @@
     "Cuando el usuario pida 'pronosticar', 'predecir' o 'probabilidad de', usa el motor forecast con modo 'analytical' (rápido, determinista) y pasa la configuración TemporalConfig adecuada. Usa 'monte_carlo' si pide intervalos de confianza explícitos.",
     "Cuando el usuario pida 'estrategia inversa', 'cómo llegar a' o 'qué intervención', usa el motor social_architect (POST /v1/engine/architect) con estado_inicial y objetivo_usuario.",
     "Para simulaciones estándar de dinámica de opinión sin contexto de país, usa el motor multilayer_engine (POST /v1/simulate) con el escenario apropiado (campana=bipolar, bimodal=presiona grupos).",
-    "Para análisis de grupos pequeños (3-15 agentes) con 'familias de futuros', redirige al micro_massive (Streamlit /ui/) con el contexto y perfiles de miembros.",
+    "Para análisis de grupos pequeños (3-15 agentes) con 'familias de futuros', usa el motor micro_massive (POST /v1/simulate) con el contexto y perfiles de miembros.",
     "Resumen siempre + datos estructurados: toda respuesta debe incluir un resumen en lenguaje natural breve y un bloque JSON con los resultados estructurados (history, metrics, score, etc.).",
     "Supuesto de horizonte temporal: si el usuario no especifica horizonte, asume 50 pasos para simulaciones legacy, 100 para energy_engine, y 14 días para forecast viral_online.",
     "Tipo de motor: si el usuario pide 'múltiples escalas' o 'millones de agentes', usa massive_engine (LOD). Para análisis de grupos, usa micro_massive. Para dinámica de opiniones estándar, usa multilayer_engine.",

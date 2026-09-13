@@ -337,8 +337,9 @@ log = get_logger("massive.micro_orchestrator")  # para micro_massive
 | `/` | `/usr/share/nginx/html` (SPA) |
 | `/api/` | `api_backend` (127.0.0.1:8000) |
 | `/docs`, `/openapi.json`, `/health`, `/ready`, `/version` | `api_backend` |
-| `/ui/` | `streamlit_backend` (8501, con Upgrade headers) |
 | `/{static assets}` | nginx directo (cache 30d) |
+
+> **Nota**: La ruta `/ui/` (Streamlit) fue removida en OPS-02. `micro_massive` y todos los motores se acceden vía el API v1 directamente.
 
 ---
 

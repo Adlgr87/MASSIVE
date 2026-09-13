@@ -27,7 +27,7 @@ de la tabla de flujos soportados en el contrato MASSIVE-LLM
 - forecast             → POST /v1/forecast            (pronóstico temporal probabilístico)
 - multilayer_engine    → POST /v1/simulate            (dinámica de opiniones multicapa)
 - massive_engine       → POST /v1/simulate (LOD)      (escala masiva con super-agentes)
-- micro_massive        → Streamlit /ui/               (grupos pequeños, familias de futuros)
+- micro_massive        → POST /v1/simulate            (grupos pequeños, familias de futuros)
 - benchmark_offline    → POST /v1/benchmarks          (validación CI sin LLM)
 - factbook_validation  → POST /v1/engine/energy (+Factbook)
 

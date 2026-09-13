@@ -330,9 +330,71 @@ def _dispatch(
             config_overrides=energy_overrides,
         )
 
-    if motor in ("multilayer_engine", "massive_engine", "factbook_validation"):
-        # Default target engine when intent is opinion-dynamics oriented.
-        # Prefer the scalar legacy engine path which is universally available.
+    if motor == "multilayer_engine":
+        # FIX (CRIT-1): Dispatch to the real MultilayerEngine instead of
+        # falling back to the legacy scalar simulator. Uses 5D Langevin
+        # opinion dynamics across social/digital/economic layers.
+        from services.simulation_service import run_multilayer_simulation
+
+        n_steps = int(steps or config.get("pasos", _DEFAULT_STEPS.get(motor, 50)))
+        n_agents = int(config.get("n_agents", 100))
+        seed_val = int(seed if seed is not None else 42)
+        layer_weights = (
+            float(config.get("layer_weights", [0.4, 0.3, 0.3])[0]),
+            float(config.get("layer_weights", [0.4, 0.3, 0.3])[1]),
+            float(config.get("layer_weights", [0.4, 0.3, 0.3])[2]),
+        )
+        result = run_multilayer_simulation(
+            n_agents=n_agents,
+            steps=n_steps,
+            seed=seed_val,
+            layer_weights=layer_weights,
+        )
+        # Build a timeline-compatible history for _extract_timeline.
+        series = result.get("series", {})
+        social_series = series.get("social", [])
+        history = [
+            {"_paso": i, "mean_opinion": v, "polarizacion": 0.0}
+            for i, v in enumerate(social_series)
+        ]
+        result["history"] = history
+        result["motor"] = "multilayer_engine"
+        return result
+
+    if motor == "massive_engine":
+        # FIX (CRIT-1): Dispatch to the real MassiveSimEngine (LOD /
+        # event-driven) instead of the legacy scalar simulator. Enables
+        # population-scale simulation via uint8-super-agent compression.
+        from services.simulation_service import run_massive_sim
+
+        n_steps = int(steps or config.get("pasos", _DEFAULT_STEPS.get(motor, 50)))
+        n_agents = int(config.get("n_agents", 10_000))
+        seed_val = int(seed if seed is not None else 42)
+        m_clusters = config.get("m_clusters")
+        result = run_massive_sim(
+            n_agents=n_agents,
+            m_clusters=m_clusters,
+            steps=n_steps,
+            seed=seed_val,
+            quantize=config.get("quantize", True),
+            event_driven=config.get("event_driven", True),
+        )
+        # Build a timeline-compatible history for _extract_timeline.
+        opinion_hist = result.get("opinion_history")
+        if opinion_hist is None:
+            opinion_hist = result.get("series", {}).get("opinion", [])
+        if hasattr(opinion_hist, "tolist"):
+            opinion_hist = opinion_hist.tolist()
+        result["history"] = [
+            {"_paso": i, "mean_opinion": float(v), "polarizacion": 0.0}
+            for i, v in enumerate(opinion_hist)
+        ]
+        result["motor"] = "massive_engine"
+        return result
+
+    if motor in ("factbook_validation",):
+        # Factbook validation still uses scalar simulation with Factbook
+        # derived country params (gini, social_pressure_weights, etc).
         estado = config.get("estado_inicial", {"opinion": 0.0, "propaganda": 0.0})
         escenario = str(config.get("escenario", "campana"))
         sim_cfg = {
@@ -353,14 +415,15 @@ def _dispatch(
             or key in DEFAULT_CONFIG_KEYS
         }
         sim_cfg.update(overrides)
-        # Map pasos/steps
         n_steps = int(steps or config.get("pasos", _DEFAULT_STEPS.get(motor, 50)))
-        return run_scalar_simulation(
+        result = run_scalar_simulation(
             estado_inicial=estado,
             escenario=escenario,
             pasos=n_steps,
             config=sim_cfg,
         )
+        result["motor"] = "factbook_validation"
+        return result
 
     if motor == "social_architect":
         # This flow is LLM-driven (buscar_estrategia_inversa calls setup_client).
@@ -432,11 +495,29 @@ def _dispatch(
         return {"return_code": rc, "mode": "offline", "seed": seed}
 
     if motor == "micro_massive":
-        # Streamlit UI is the canonical path; orchestrator returns a stub
-        # directing the LLM client to launch the micro-massive UI.
+        # FIX (CRIT-2): Streamlit UI was removed (CHANGELOG.md:OPS-02).
+        # Dispatch directly to the programmatic MicroOrchestrator API instead
+        # of redirecting to the dead /ui/ endpoint.
+        from micro_massive.core.orchestrator import MicroOrchestrator
+
+        n_steps = int(steps or config.get("pasos", _DEFAULT_STEPS.get(motor, 100)))
+        n_particles = int(config.get("n_particles", 8))
+        seed_val = int(seed if seed is not None else 42)
+        cohesion = float(config.get("initial_cohesion", 0.3))
+
+        orchestrator = MicroOrchestrator(
+            n_particles=n_particles,
+            initial_cohesion=cohesion,
+            seed=seed_val,
+        )
+        history = orchestrator.run(steps=n_steps)
         return {
-            "note": "micro_massive requiere la UI Streamlit (/ui/). Dirija al cliente a ese endpoint.",
-            "payload": config,
+            "motor": "micro_massive",
+            "n_particles": n_particles,
+            "steps": n_steps,
+            "seed": seed_val,
+            "history": history,
+            "final_state": history[-1] if history else {},
         }
 
     # Fallback to scalar simulation.
