@@ -1,28 +1,23 @@
-# Phase 4 — Validation & QA Report
+# Phase 4 — Validation & QA Report (MASSIVE v2)
 
 ## Context
-Validation of the Master Orchestrator workflow (PDF: Equipo_OPtimizacion.pdf) executed against the MASSIVE repository. The repo was found to **already contain all Fases 0–5 implemented** (31 optimization commits, 940 files changed). This Phase 4 report validates the **additional fixes** applied to close the 5 remaining kill-switches identified by the Devil's Advocate agent audit (30 findings).
+Validation of the Master Orchestrator workflow (4-agent team) executed against the MASSIVE repository. This Phase 4 report validates the **Phase 3 v2 fixes** applied to close the critical issues identified by the agent audit.
 
-## Scope of changes (this session)
+## Scope of changes (Phase 3 v2 — this session)
 
 | # | Fix | File(s) | Lines | Finding ref |
 |---|-----|---------|-------|-------------|
-| 1 | Streaming upload size guard (read-before-check DoS) | `api.py` | 148-165 | F16 |
-| 2 | Dense adjacency OOM guard (8TB allocation) | `energy_engine.py` | 509-516 | F22 |
-| 3 | `max_intentos` clamp (LLM API DoS) | `api.py` | 289 | F23 |
-| 4 | NaN propagation guard in JIT kernel | `energy_engine.py` | 104-110 | F1 |
-| 5 | Event-driven deadlock liveness guard | `massive_engine.py` | 345-370, 378-388 | F9, F14 |
-| 6 | Dask seed bug (MC reproducibility) | `simulator.py` | 1862-1871 | F11 |
-| 7 | JIT warm-up shape bug (1D→2D) | `massive_engine.py` | 933-948 | F14 |
-| 8 | Vectorized Monte Carlo forecast | `forecast/engine.py` | 155-175 | (Arquitecto) |
-| 9 | Forecast offloaded to thread pool | `routers/forecast.py` | 54-66 | (Arquitecto) |
-| 10 | `/api/v1/*` route prefix alias | `main.py` | 212-223 | (Arquitecto CRIT-3) |
-| 11 | JIT warm-up at startup (lifespan) | `main.py` | 66-101 | (Arquitecto CRIT-implied) |
-| 12 | Streamlit in Docker + nginx + compose | `Dockerfile`, `supervisord.conf`, `nginx.conf`, `docker-compose.yml`, `requirements.txt`, `pyproject.toml` | — | (Arquitecto CRIT-1) |
-| 13 | nginx :80 non-root bind fix | `Dockerfile` | 66-67 | (Arquitecto CRIT-2) |
-| 14 | Security headers (CSP, HSTS, X-Frame-Options) | `nginx.conf` | — | (Arquitecto) |
-| 15 | `correct_residual` + `CfCResidualCorrector` | `cfc_router.py`, `cfc_engine.py` | — | (Científico Degraded-2) |
-| 16 | CfC residual correction wiring | `energy_runner.py` | 78-108 | (Científico Degraded-2) |
+| 1 | Dispatcher: multilayer_engine → run_multilayer_simulation() | `services/llm_orchestrator.py` | 333-362 | CRIT-1 |
+| 2 | Dispatcher: massive_engine → run_massive_sim() | `services/llm_orchestrator.py` | 364-399 | CRIT-1 |
+| 3 | Dispatcher: factbook_validation explicit motor key | `services/llm_orchestrator.py` | 401-422 | CRIT-1 |
+| 4 | micro_massive: stub redirect → real MicroOrchestrator API | `services/llm_orchestrator.py` | 479-505 | CRIT-2 |
+| 5 | nginx: remove streamlit_backend + /ui/ location | `nginx.conf` | 26-28, 67-77 | CRIT-2 |
+| 6 | supervisord.conf: remove [program:streamlit] | `supervisord.conf` | 27-39 | CRIT-2 |
+| 7 | llm_contract.json: remove 'endpoint: Streamlit /ui/' | `configs/llm_contract/massive_llm_contract.json` | 386 | CRIT-2 |
+| 8 | LLM_PROMPTS.md: micro_massive → POST /v1/simulate | `docs/LLM_PROMPTS.md` | 30 | CRIT-2 |
+| 9 | PRODUCTION_ARCHITECTURE_SPEC.md: remove /ui/ route | `PRODUCTION_ARCHITECTURE_SPEC.md` | 340 | CRIT-2 |
+| 10 | README: '50% direction error' → '~27% RMSE reduction' | `README.md` | 31 | Scientific honesty |
+| 11 | Timeline compatibility for multilayer/massive history | `services/llm_orchestrator.py` | 353-361, 383-399 | CRIT-1 compat |
 | 17 | CLI `scientific` + `forecast` subcommands | `massive/cli/main.py` | — | (Arquitecto) |
 | 18 | Dead code: `micro_engine.py:94` income feature | `micro_engine.py` | 94 | (Científico) |
 | 19 | Dead code: `energy_engine.py:376-377` | `energy_engine.py` | 379-381 | (Científico) |
@@ -39,22 +34,20 @@ PYTHONHASHSEED=42 .venv/bin/python -m pytest tests/ -p no:cacheprovider
 
 | Component | Tests | Result |
 |-----------|-------|--------|
-| Energy engine (NaN guard, landscape) | 27 | ✅ Pass |
-| Forecast (vectorized MC) | 6 | ✅ Pass |
-| RNG reproducibility (dask seed fix) | 5 | ✅ Pass |
-| MassiveEngine (ActiveSet liveness, JIT warmup) | 50 | ✅ Pass |
-| Root engine smoke tests | 3 | ✅ Pass |
-| Backend observability (routes, lifespan) | 9 | ✅ Pass |
+| LLM endpoint dispatch (multilayer/massive/micro) | 23 | ✅ Pass |
+| LLM orchestrator coverage | 6 | ✅ Pass |
+| Full test suite | 592 | ✅ Pass (20 skipped) |
 
 ### Targeted functional verification
 
 | Check | Method | Result |
 |-------|--------|--------|
-| NaN guard in JIT kernel | `python3 -c "..."` — fed NaN opinions → clamped to `min_val` | ✅ NaN does not propagate |
-| Vectorized MC forecast | `python3 -c "..."` — 50-run MC with seed=42 | ✅ `p_event=0.6`, valid CI |
-| Route prefix alias | `app.openapi()` — both `/v1/simulate` and `/api/v1/simulate` present | ✅ Both registered |
-| CfC residual corrector | `_residual` attribute present, `correct_residual` callable | ✅ Method works with fallback |
-| Streamlit dependency | `pip show streamlit` in venv | ✅ Available |
+| MultilayerEngine dispatch | `_post(client, {"intent": "Simula la dinámica..."})` → `run_multilayer_simulation()` | ✅ Returns `multilayer_engine` + timeline |
+| MassiveEngine dispatch | `run_llm_simulation(motor="massive_engine")` | ✅ Returns `massive_engine` + real trajectory |
+| MicroOrchestrator dispatch | `run_llm_simulation(motor="micro_massive")` | ✅ Returns real `history`, no /ui/ redirect |
+| Factbook dispatch | `factbook_validation` intent → `run_scalar_simulation` | ✅ Explicit motor key |
+| Streamlit dead-end cleanup | `grep -rn 'Streamlit.*ui/' services/ configs/ docs/` | ✅ No active redirects remain |
+| Scientific honesty | README vs calibration_log.md RMSE | ✅ 27% documented, not 50% |
 
 ## Devil's Advocate findings — resolution status
 
