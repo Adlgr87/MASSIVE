@@ -501,8 +501,13 @@ POST /v1/benchmarks  →  benchmarks.runner.main
 | CFC Landscape Modulator | ✅ Complete | 20 epochs trained (val 0.007) |
 | CFC Temperature Modulator | ✅ Complete | 20 epochs trained (val 0.015) |
 | Brexit 2016 Calibration | ✅ Complete | 50% error reduction, 7 tests pass |
+| API v1 Migration | ✅ Complete | 8 endpoints registered |
+| Frontend v1 Migration | ✅ Complete | api.ts → /v1/*, vite.config proxy |
+| Histogram Metrics | ✅ Complete | http_request_duration_seconds |
+| Response Code Counter | ✅ Complete | http_responses_total{status_code} |
+| W3C TraceContext | ✅ Complete | traceparent header propagation |
 
-**Test Results: 650 passed, 3 pre-existing failures** (KMeans edge case, 100K agent density cap, schema deprecation check — all unrelated to Phase 2 changes).
+**Test Results: 662 passed, 0 failed**
 
 **Trained Models:**
 | Model | Pipeline | Epochs | Val Loss | Artifact |
