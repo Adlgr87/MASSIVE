@@ -187,7 +187,8 @@ async def deprecation_warning(request: Request, call_next):
 
 @app.middleware("http")
 async def request_context(request: Request, call_next):
-    """Propagate/generate X-Request-ID and emit one structured access line.
+    """Propagate/generate X-Request-ID, record histogram + response-code metrics,
+    and support distributed tracing via the W3C TraceContext traceparent header.
 
     The ID is accepted from trusted upstream proxies (nginx sets none today,
     so it is client-supplied only when the proxy allows it) and echoed back so
@@ -196,23 +197,51 @@ async def request_context(request: Request, call_next):
     request_id = request.headers.get("x-request-id") or uuid.uuid4().hex[:16]
     start = time.perf_counter()
     response = await call_next(request)
-    elapsed_ms = (time.perf_counter() - start) * 1000.0
-    response.headers["X-Request-ID"] = request_id
+    elapsed_s = time.perf_counter() - start
+    path_group = _path_group(request.url.path)
+    status_code = str(response.status_code)
+
+    # ── Metric recording ─────────────────────────────────────────────────
     metrics_registry.inc(
         "http_requests_total",
-        {
-            "method": request.method,
-            "group": _path_group(request.url.path),
-            "status": str(response.status_code),
-        },
+        {"method": request.method, "group": path_group, "status": status_code},
     )
+    metrics_registry.inc(
+        "http_responses_total",
+        {"method": request.method, "group": path_group, "status_code": status_code},
+    )
+    metrics_registry.observe(
+        "http_request_duration_seconds",
+        elapsed_s,
+        {"method": request.method, "group": path_group},
+    )
+
+    # ── Response headers ─────────────────────────────────────────────────
+    response.headers["X-Request-ID"] = request_id
+
+    # Propagate / generate W3C TraceContext traceparent for distributed tracing.
+    # Format: version-traceid-spanid-traceflags (hex, 32-16-16-2 chars).
+    incoming_tp = request.headers.get("traceparent")
+    if incoming_tp:
+        traceparent = incoming_tp
+        response.headers["traceparent"] = incoming_tp
+    else:
+        trace_id = uuid.uuid4().hex[:32]
+        span_id = uuid.uuid4().hex[:16]
+        traceparent = f"00-{trace_id}-{span_id}-01"
+        response.headers["traceparent"] = traceparent
+    response.headers.setdefault(
+        "access-control-expose-headers", "X-Request-ID, traceparent"
+    )
+
     log.info(
-        "http request_id=%s method=%s path=%s status=%s duration_ms=%.1f",
+        "http request_id=%s traceparent=%s method=%s path=%s status=%s duration_s=%.4f",
         request_id,
+        traceparent,
         request.method,
         request.url.path,
-        response.status_code,
-        elapsed_ms,
+        status_code,
+        elapsed_s,
     )
     return response
 
