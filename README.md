@@ -178,7 +178,7 @@ Routes are served under **both** `/v1/*` (canonical) and `/api/v1/*`
 `POST /api/extract` (PDF/CSV/JSON/XLSX → config) · `POST /api/wizard` (LLM) ·
 `POST /api/simulate-uil` · `POST /api/v1/{architect,forecast,energy}`
 
-**Operational defaults**: `X-API-Key` auth (constant-time compare) · 60 req/min per IP
+**Operational defaults**: `X-API-Key` auth (constant-time compare via `hmac.compare_digest` in `massive_core/config/api_auth.py`) · 60 req/min per IP
 (`MASSIVE_RATE_LIMIT_PER_MIN`) · 10 MB body limit (`MASSIVE_MAX_BODY_MB`) ·
 CORS allowlist without wildcards · upload extension allowlist ·
 `X-Request-ID` correlation on every response · structured access log with duration.
