@@ -1,4 +1,14 @@
 """
+⚠️ DEPRECATION NOTICE
+====================
+This file is part of a legacy schema system.
+
+Canonical location: massive/core/schemas.py
+This file: Energy-specific schemas (deprecated, moved to massive/core/)
+
+Migration: Update all imports from schemas.py to massive.core.schemas
+"""
+"""
 energy_schemas.py — Modelos Pydantic v2 para MASSIVE Energy Engine
 Validación estricta, autocompletado IDE, serialización segura.
 """
