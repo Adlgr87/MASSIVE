@@ -71,19 +71,16 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Install full requirements
+      - name: Install full requirements + coverage
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      - name: Full pytest
-        run: |
-          PYTHONHASHSEED=42 python -m pytest tests/ -q --tb=line
-      - name: Coverage snapshot (informational)
-        continue-on-error: true
-        run: |
           pip install "pytest-cov>=5.0"
-          PYTHONHASHSEED=42 python -m pytest tests/test_opt_phase5.py tests/test_opt_phase5_b4.py \
-            tests/test_opt_phase5_closeout.py tests/test_engine_reproducibility.py \
-            --cov=massive_core.config --cov=massive_core.numerics.steppers \
-            --cov=massive_core.data_assimilation --cov=services \
-            --cov-report=term-missing:skip-covered -q
+      - name: Full pytest with coverage gate (fail-under 30%)
+        run: |
+          PYTHONHASHSEED=42 python -m pytest tests/ -q --tb=line \
+            --cov=massive --cov=massive_core --cov=micro_massive --cov=services \
+            --cov=backend --cov=forecast --cov=energy_engine --cov=massive_engine \
+            --cov=multilayer_engine --cov=micro_engine --cov=simulator --cov=api \
+            --cov-report=term-missing:skip-covered \
+            --cov-fail-under=30 -q

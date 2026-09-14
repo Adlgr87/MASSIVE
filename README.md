@@ -11,7 +11,7 @@ intervention outcomes over complex social systems — from 10 agents to 100 mill
 [![Python: 3.11+](https://img.shields.io/badge/Python-3.11+-blue?logo=python)](pyproject.toml)
 [![Tests](https://github.com/Adlgr87/MASSIVE/actions/workflows/pytest.yml/badge.svg?branch=main)](.github/workflows/pytest.yml)
 [![Type-check: MyPy](https://github.com/Adlgr87/MASSIVE/actions/workflows/typecheck.yml/badge.svg)](.github/workflows/typecheck.yml)
-[![Rust: optional](https://img.shields.io/badge/Rust-optional_acceleration-orange?logo=rust)](Cargo.toml)
+[![Rust: optional PoC](https://img.shields.io/badge/Rust-optional_poc-orange?logo=rust)](rust_core/)  <!-- 3 kernels: conceptual PoC, not a significant speedup yet -->
 
 [Quick start](#-quick-start) · [Architecture](#-architecture) · [API](#-http-api) · [The LLM layer](#-the-llm-layer-natural-language--mathematics) · [Benchmarks](#-benchmarks) · [Docs](#-documentation)
 
@@ -32,7 +32,7 @@ MASSIVE is **hybrid by design** at every layer:
 | 📡 **Data assimilation for opinion dynamics** | Sparse Ensemble Kalman Filter fuses real-world observations into the running state, the way numerical weather prediction does. | `massive_core/data_assimilation/` |
 | ⚗️ **Scientific opt-in layer** | Adaptive steppers, stability & bifurcation analysis, physics-informed neural nets, network inference and statistical mechanics — all behind explicit config flags that never alter the default dynamics. | `massive_core/` |
 | 🧬 **Inverse intervention design** | Ask *"what campaign reaches this consensus?"* — the social architect searches the intervention space backwards from the goal. | `social_architect.py` |
-| ⚡ **Optional Rust kernels** | Hot-path numerics compiled with pyo3/maturin, with transparent pure-Python fallbacks. | `rust_core/` → `massive_rust_core` |
+| ⚡ **Optional Rust kernels** | 3 kernels (multi_potential_gradient, langevin_opinion_update, active_mask_step) compiled with pyo3/maturin — a conceptual PoC, not yet a significant speedup. Transparent pure-Python fallbacks everywhere. | `rust_core/` → `massive_rust_core` |
 | 🔬 **Validation-first culture** | Pre-registered anti-leakage protocol, seeded RNG everywhere, contract-validated APIs, 16-check CI, offline PVU benchmark suite. | `datasets/pvu_cases/`, `benchmarks/` |
 
 ---
@@ -80,7 +80,7 @@ print(result["landscape"])
 
 ```bash
 cp .env.example .env
-docker compose up -d --build   # nginx :80 (SPA + API gateway) · :8000 (direct API) · :8501 (Streamlit legacy)
+docker compose up -d --build   # nginx :80 (SPA + API gateway) · :8000 (direct API)
 curl -fsS localhost:8000/health
 curl -fsS localhost:80/docs
 ```
@@ -88,8 +88,7 @@ curl -fsS localhost:80/docs
 The multi-stage `Dockerfile` (Python builder → Vite frontend build → slim
 runtime) runs **supervisord** as a **non-root user**: `uvicorn` (FastAPI,
 `:8000`) + **nginx** (`:80`, serving the React SPA + proxying `/api/`,
-`/v1/`, `/docs`, `/health`, `/ready`, `/version`, `/metrics` with WebSocket
-upgrade support for the Streamlit legacy UI on `:8501`). `setcap` grants
+`/v1/`, `/docs`, `/health`, `/ready`, `/version`, `/metrics`). `setcap` grants
 nginx the `CAP_NET_BIND_SERVICE` capability so it can bind `:80` inside the
 non-root container; security headers (CSP, HSTS, X-Frame-Options `DENY`,
 `nosniff`) are injected at the edge.
@@ -111,7 +110,7 @@ flowchart TB
 
     subgraph API["FastAPI backends"]
         V1["Canonical /v1 (backend/app/)<br/>simulate · forecast · engine · benchmarks · llm<br/>typed DTOs (extra=forbid) · X-API-Key · rate limit"]
-        LEG["Legacy /api (api.py)<br/>extract · wizard · simulate-uil"]
+        LEG["Legacy /api (api.py)<br/>extract · wizard · simulate-uil<br/><em>deprecated</em>"]
     end
 
     subgraph Services["services/ — orchestration boundary"]
@@ -226,7 +225,10 @@ energy 50×100 **0.012 s** — method in [`docs/performance/baseline.md`](docs/p
 **Scientific validation**: the PVU-MASSIVE protocol runs real-case studies offline
 (`python -m benchmarks.runner --cases datasets/pvu_cases --offline`), with a
 pre-registration template to prevent analysis leakage. The calibrated CfC corrector
-halved direction error on the Brexit case (54.5 % → 53.2 % Leave; 10/10 seeds).
+reduced **absolute Leave-percentage error** on the Brexit case by ~50 % (54.5 % →
+53.2 % Leave; actual 51.9 %; 10/10 seeds improved). This is a **direction-error**
+metric — the ~27 % *RMSE* reduction (the primary scientific metric) is detailed in
+`calibration_log.md` §4 with the negative-R² caveat.
 
 ---
 
@@ -262,12 +264,12 @@ MASSIVE/
 ├── cfc_*.py              # CfC (liquid NN) residual corrector: engine, router, trainer
 ├── rust_core/            # Optional pyo3 kernels (massive_rust_core)
 ├── frontend/             # React 18 + Vite + TS SPA (typed DTOs generated from Python)
-├── massive-ui-ng/        # Next-gen UI kit (LLM translator UX; see its README)
+├── massive-ui-ng/        # Separate Next-gen UI kit (LLM translator UX; not in CI root — see ARCH-02)
 ├── configs/llm_contract/ # Machine-readable MASSIVE↔LLM contract (v1.1.0)
 ├── datasets/pvu_cases/   # Offline validation cases (pre-registered)
 ├── benchmarks/           # PVU-BS runner + scientific benchmarks
 ├── docs/                 # MkDocs site + production-readiness suite
-└── tests/                # 530 tests: unit, integration, contract, security, reproducibility
+└── tests/                # 592 tests, 20 optional skipped: unit, integration, contract, security, reproducibility
 ```
 
 ---

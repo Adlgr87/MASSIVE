@@ -9,7 +9,7 @@ Endpoints (versioned)
     POST  /v1/engine/energy      →  energy_runner.run_energy_simulation
     POST  /v1/engine/architect   →  social_architect.buscar_estrategia_inversa
     POST  /v1/benchmarks         →  benchmarks.runner.main
-    POST  /v1/llm/run_simulation →  uil_adapter.full_pipeline (via api.py compat bridge)
+    POST  /v1/llm/run_simulation →  services.llm_orchestrator.run_llm_simulation
 
 Infra endpoints
     GET   /                        → service info
@@ -21,11 +21,6 @@ Infra endpoints
 Auth
     All ``/v1/*`` endpoints require ``X-API-Key`` (fail-closed in production).
     Rate-limit: 60 / min per IP (configurable via ``MASSIVE_RATE_LIMIT_PER_MIN``).
-
-Migration note (ADR-001)
-    During v0.1 the uvicorn target remains ``api:app``.  When
-    ``backend/app/main.py`` is ready, swap the Docker/supervisord target
-    to ``backend.app.main:app``.
 """
 
 from __future__ import annotations

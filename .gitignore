@@ -50,3 +50,13 @@ site/
 .env
 .env.*
 uv.lock
+
+# ─── Model Checkpoints (Git LFS recommended) ─────────────────────────
+models/**/*.pt
+models/**/*.pth
+models/**/checkpoints/
+*.pt
+*.pth
+experiments/**/results.json
+experiments/**/metrics.json
+reports/**/*.json

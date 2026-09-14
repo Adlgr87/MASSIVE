@@ -166,7 +166,7 @@ def test_ws_live_auth_required():
 
 
 def test_ws_live_unknown_engine_rejected(client):
-    with client.websocket_connect("/ws/live?engine=quantum&n_agents=8&pasos=3") as ws:
+    with client.websocket_connect("/ws/live?engine=massive&n_agents=8&pasos=3") as ws:
         msg = ws.receive_json()
         assert msg["type"] == "event" and msg["event"] == "error"
 
