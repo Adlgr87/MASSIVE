@@ -11,7 +11,7 @@ intervention outcomes over complex social systems — from 10 agents to 100 mill
 [![Python: 3.11+](https://img.shields.io/badge/Python-3.11+-blue?logo=python)](pyproject.toml)
 [![Tests](https://github.com/Adlgr87/MASSIVE/actions/workflows/pytest.yml/badge.svg?branch=main)](.github/workflows/pytest.yml)
 [![Type-check: MyPy](https://github.com/Adlgr87/MASSIVE/actions/workflows/typecheck.yml/badge.svg)](.github/workflows/typecheck.yml)
-[![Rust: optional PoC](https://img.shields.io/badge/Rust-optional_poc-orange?logo=rust)](rust_core/)  <!-- 3 kernels: conceptual PoC, not a significant speedup yet -->
+[![Rust: optional PoC](https://img.shields.io/badge/Rust-optional_compilable-orange?logo=rust)](rust_core/)  <!-- Cargo.toml added. Kernels compilables pero no optimizados aún -->
 
 [Quick start](#-quick-start) · [Architecture](#-architecture) · [API](#-http-api) · [The LLM layer](#-the-llm-layer-natural-language--mathematics) · [Benchmarks](#-benchmarks) · [Docs](#-documentation)
 
@@ -27,13 +27,13 @@ MASSIVE is **hybrid by design** at every layer:
 | Frontier | What we do | Where |
 |---|---|---|
 | 🌍 **Population-scale via LOD compression** | Agents with identical features collapse into *super-agents*, so **100 million agents run in ~8 GB RAM** — near-constant memory with event-driven, uint8-quantized sparse updates. | `massive_engine.py` |
-| 🤖 **LLM as a *mathematical translator*, not a chatbot** | Natural language → validated simulation config under a **versioned machine contract** (v1.1.0): intent classification routes to the right engine, ambiguous requests get `422 + requested_fields`, and every run degrades **deterministically without any API key**. | `services/llm_orchestrator.py`, `configs/llm_contract/` |
+| 🤖 **LLM as a *mathematical translator*, not a chatbot** | Natural language → validated simulation config under a **versioned machine contract** (v1.1.0): intent classification routes to the right engine, ambiguous requests get `422 + requested_fields`, and every run degrades **deterministically** — basic simulations run without LLM; advanced inverse design fails closed with 503 when no LLM key configured. | `services/llm_orchestrator.py`, `configs/llm_contract/` |
 | 🧠 **Liquid neural residual correction** | A Closed-form Continuous-time (CfC) network learns the *systematic bias* of the physics engine and corrects it — **~27 % RMSE reduction** on the Brexit 2016 referendum case (validated on 10/10 seeds, see `calibration_log.md` for full metrics incl. negative R² caveat). | `cfc_engine.py`, `models/cfc_calibrated/`, `calibration_log.md` |
 | 📡 **Data assimilation for opinion dynamics** | Sparse Ensemble Kalman Filter fuses real-world observations into the running state, the way numerical weather prediction does. | `massive_core/data_assimilation/` |
 | ⚗️ **Scientific opt-in layer** | Adaptive steppers, stability & bifurcation analysis, physics-informed neural nets, network inference and statistical mechanics — all behind explicit config flags that never alter the default dynamics. | `massive_core/` |
 | 🧬 **Inverse intervention design** | Ask *"what campaign reaches this consensus?"* — the social architect searches the intervention space backwards from the goal. | `social_architect.py` |
 | ⚡ **Optional Rust kernels** | 3 kernels (multi_potential_gradient, langevin_opinion_update, active_mask_step) compiled with pyo3/maturin — a conceptual PoC, not yet a significant speedup. Transparent pure-Python fallbacks everywhere. | `rust_core/` → `massive_rust_core` |
-| 🔬 **Validation-first culture** | Pre-registered anti-leakage protocol, seeded RNG everywhere, contract-validated APIs, 16-check CI, offline PVU benchmark suite. | `datasets/pvu_cases/`, `benchmarks/` |
+| 🔬 **Validation-first culture** | Pre-registered anti-leakage protocol, seeded RNG everywhere, contract-validated APIs, 16-check CI, offline PVU benchmark suite. | `datasets/pvu_cases/` (sample cases + `datasets/real_cases/` for validation), `benchmarks/` |
 
 ---
 
@@ -139,7 +139,7 @@ flowchart TB
         C4["optional Rust kernels (massive_rust_core)"]
     end
 
-    DATA["CIA World Factbook (260+ countries)<br/>demographics · Gini · GDP · diversity"]
+    DATA["CIA World Factbook (sample: 5 countries in `data/factbook/`; full dataset external) (260+ countries)<br/>demographics · Gini · GDP · diversity"]
 
     Clients --> API --> Services --> Engines --> Core
     FB --> DATA
@@ -150,7 +150,7 @@ Key invariants:
 
 - **The engines are the product** — APIs, CLI and LLM layers are thin, typed boundaries over them.
 - **Optional means optional**: no Rust build, no GPU, no LLM key, no Factbook data → everything still runs deterministically (seeds + `PYTHONHASHSEED` respected).
-- **Fail-closed security**: staging/production refuse to start serving without `MASSIVE_API_KEY`; the dev fallback key is loudly logged and impossible in production.
+- **Fail-closed security**: staging/production refuse to start serving without `MASSIVE_API_KEY` (singular) and `MASSIVE_API_KEYS` (plural, for multi-key rotation); the dev fallback key is loudly logged and impossible in production.
 
 ---
 
@@ -236,10 +236,10 @@ metric — the ~27 % *RMSE* reduction (the primary scientific metric) is detaile
 
 | Signal | Status |
 |---|---|
-| Test suite | **592 tests, ~24 s** (20 optional skipped), no exclusions — `make test` / `pytest tests/` |
+| Test suite | **597 tests, ~24 s** (20 optional skipped), no exclusions — `make test` / `pytest tests/` |
 | Coverage | 68 % branch (scope: engines + services + backend) — `make test-cov` |
 | Static quality | ruff + black + mypy (gradual slice) green in CI |
-| CI | 16 checks per PR: lint, types, core/scientific/api/full suites, frontend build+lint, Docker compose health, TS-type sync, secret scan, semgrep, PVU benchmark |
+| CI | 13 CI workflows per PR: lint, types, core/scientific/api/full suites, frontend build+lint, Docker compose health, TS-type sync, secret scan, semgrep, PVU benchmark |
 | Security | fail-closed auth, rate & body limits (`MASSIVE_MAX_BODY_MB`, streaming upload guard), constant-time compares, `n_agents` cap (prevents 8 TB OOM), `max_intentos` clamp (prevents LLM DoS), CSP/HSTS/X-Frame-Options at nginx edge, no secrets in tree |
 | Observability | `/metrics` Prometheus, `X-Request-ID`, structured access logs, degraded-mode readiness |
 | Runbooks | local dev · operations · incidents — `docs/runbooks/` |
@@ -269,7 +269,7 @@ MASSIVE/
 ├── datasets/pvu_cases/   # Offline validation cases (pre-registered)
 ├── benchmarks/           # PVU-BS runner + scientific benchmarks
 ├── docs/                 # MkDocs site + production-readiness suite
-└── tests/                # 592 tests, 20 optional skipped: unit, integration, contract, security, reproducibility
+└── tests/                # 597 tests, 20 optional skipped: unit, integration, contract, security, reproducibility
 ```
 
 ---
