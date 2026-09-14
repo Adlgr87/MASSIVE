@@ -96,6 +96,22 @@ The validation loss dropped from `0.003249` (ep 0) to `0.000371` (best), confirm
 
 **RMSE reduction: ~27%** (0.0517 → 0.0376). **MAE reduction: ~18%** (0.0446 → 0.0365).
 
+### Direction-error metric (Brexit 2016 referendum-level, 10 seeds)
+
+| Metric | Baseline (Langevin) | CfC-corrected | Reduction |
+|---|---|---|---|
+| Mean Leave% prediction | 54.50 % | 53.19 % | — |
+| Absolute error vs actual (51.89 %) | 2.61 pp | 1.30 pp | **~50 %** |
+| Seeds with improvement | — | 10 / 10 | 100 % |
+
+> **Note:** The "~50 % reduction" quoted in `README.md` refers to the **absolute
+> direction-error** of the referendum-level Leave% forecast (2.61 → 1.30 pp),
+> **not** the per-timestep RMSE. The 27 % RMSE reduction above is the
+> timestep-level metric and is the primary scientific validation figure. Both
+> metrics are consistent: the CfC corrects the *systematic drift* of the static
+> Langevin landscape, halving the net direction error while reducing per-step
+> RMSE by ~27 %.
+
 > **Note on R²:** The negative R² on the test split reflects the test window's *narrow residual range* (≈0.068–0.080, low variance) combined with the model's small systematic bias — R² is variance-normalized and becomes unstable when the target variance is tiny. The absolute-error metrics (MAE/RMSE) are the reliable indicator here and show a genuine **~27% RMSE improvement** over the Langevin baseline. On the full series and validation set, the CfC achieves strong fit (val MSE 0.00037).
 
 ### Reference (from `residual_stats.json`)

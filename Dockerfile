@@ -72,8 +72,8 @@ RUN setcap 'cap_net_bind_service=+ep' /usr/sbin/nginx
 
 USER appuser
 
-# Ports: 80 (nginx front), 8000 (FastAPI), 8501 (Streamlit UI)
-EXPOSE 80 8000 8501
+# Ports: 80 (nginx front), 8000 (FastAPI API)
+EXPOSE 80 8000
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s \
     CMD curl -f http://127.0.0.1:8000/health || exit 1

@@ -18,21 +18,8 @@ Autor: MASSIVE Research
 """
 
 import numpy as np
-
-# Graceful fallback for torch (matching energy_engine.py pattern)
-try:
-    import torch
-    import torch.nn as nn
-    _HAS_TORCH = True
-except ImportError as _e:
-    _HAS_TORCH = False
-    torch = None  # type: ignore[assignment]
-    nn = type("nn", (), {"Module": object})()  # type: ignore[assignment,misc]
-    import warnings
-    warnings.warn(
-        f"PyTorch no disponible: {_e}. CFC engine usará implementación NumPy fallback. "
-        "Instale con: pip install torch"
-    )
+import torch
+import torch.nn as nn
 
 # Número de regímenes (reglas 0–12 definidas en simulator.py → NOMBRES_REGLAS)
 NUM_REGIMES: int = 13

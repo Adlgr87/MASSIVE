@@ -1,3 +1,15 @@
+"""
+⚠️ DEPRECATED - Legacy API Module
+================================
+This is a legacy API layer. The canonical API is now in:
+  backend/app/  (FastAPI with routers: sim.py, forecast.py, engine.py, llm.py)
+
+This file is maintained for backward compatibility only.
+Please migrate to backend/app/ immediately.
+
+Migration guide: See docs/architecture/current-state.md
+"""
+
 from __future__ import annotations
 
 import contextlib

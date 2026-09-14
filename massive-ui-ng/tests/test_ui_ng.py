@@ -238,7 +238,7 @@ def test_simulate_multilayer(client):
 
 def test_simulate_unknown_engine_400(client):
     # Pydantic rejects non-Literal engine values at validation time (422).
-    r = client.post("/api/simulate", json={**_SCALAR, "engine": "quantum"})
+    r = client.post("/api/simulate", json={**_SCALAR, "engine": "massive"})
     assert r.status_code in (400, 422)
 
 

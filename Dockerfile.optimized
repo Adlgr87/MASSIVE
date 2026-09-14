@@ -1,3 +1,5 @@
+⚠️ DEPRECATED: Use Dockerfile (main) instead of Dockerfile.optimized
+
 # Multi-stage optimized Dockerfile for MASSIVE-UIL
 # Goals: build wheels once, keep final image small, avoid re-downloading heavy packages
 
