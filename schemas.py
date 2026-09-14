@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 """
 ⚠️ DEPRECATION NOTICE
 ====================
@@ -11,6 +9,8 @@ This file: Primary schema file - contains core DTOs
 Migration: Update all imports from schemas.py to massive.core.schemas
 """
 """@deprecated — re-export only. Use massive.core.schemas directly."""
+
+from __future__ import annotations
 
 import warnings
 
