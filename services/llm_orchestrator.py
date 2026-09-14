@@ -311,6 +311,10 @@ def _dispatch(
 
         n_steps = int(steps or config.get("pasos") or _DEFAULT_STEPS.get(motor, 100))
         n_agents = int(config.get("n_agents") or 50)
+        # Cap to dense-adjacency safe range (see energy_engine.random_network)
+        # Dense adjacency is O(n²); 5000 agents keeps memory < 200 MB.
+        if n_agents > 5000:
+            n_agents = 5000
         connectivity = float(config.get("connectivity") or 0.3)
         range_type = str(config.get("range_type") or "bipolar").strip().lower()
         if range_type not in ("bipolar", "unipolar"):

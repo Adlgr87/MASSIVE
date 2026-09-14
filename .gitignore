@@ -60,3 +60,15 @@ models/**/checkpoints/
 experiments/**/results.json
 experiments/**/metrics.json
 reports/**/*.json
+
+# ─── Security: Prevent credential leaks ─────────────────────────────
+# Never commit secrets
+**/.env
+**/.env.*
+!**/.env.example
+!**/.env.local.example
+secrets/
+credentials/
+keys/
+*.pem
+*.key

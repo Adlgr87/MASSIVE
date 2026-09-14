@@ -22,6 +22,7 @@ import logging
 from typing import Any
 
 import numpy as np
+from metrics.unified_metrics import calculate_polarization
 
 log = logging.getLogger("massive")
 
@@ -102,7 +103,7 @@ def extract_trajectory_features(
 
     # Polarización: desviación estándar de opiniones al final
     # (alta = grupo dividido, baja = consenso)
-    pol = float(np.std(op_end))
+    pol = calculate_polarization(op_end, "bipolar")
 
     # Qué tan jerárquico es el grupo (mean + spread)
     hier_mean = float(np.mean(hi_end))
@@ -546,6 +547,10 @@ class FamilyOfFuturesAnalyzer:
             n_noise = int((labels == -1).sum())
             n_found = len(set(labels)) - (1 if -1 in labels else 0)
             log.info(f"[Micro] HDBSCAN: {n_found} clusters, {n_noise} ruido")
+            # Normalize all-noise case: if every point is noise (-1), they
+            # are a single homogeneous group — relabel to 0 for consistency.
+            if n_noise == n_sims:
+                return np.zeros(n_sims, dtype=int)
             if n_found < 2 and n_sims >= 20:
                 log.info("[Micro] HDBSCAN no encontró estructura, usando KMeans")
                 return self._kmeans_fallback(X)

@@ -1,0 +1,57 @@
+# Prometheus alerting rules for MASSIVE SLOs (PRODUCTION_ARCHITECTURE_SPEC.md §5.3)
+groups:
+  - name: massive.slo
+    rules:
+      # Error budget: < 5% 5xx error rate over 5-minute window
+      - alert: HighErrorRate
+        expr: sum(rate(http_requests_total{status=~"5.."}[5m])) / sum(rate(http_requests_total[5m])) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+          tier: slo
+        annotations:
+          summary: "Error rate exceeds 5% SLO"
+          description: "{{ $value | humanizePercentage }} of requests are returning 5xx errors"
+
+      # P95 latency for simulation endpoints < 2s
+      - alert: HighSimulationLatency
+        expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{group="simulate"}[5m])) by (le)) > 2.0
+        for: 5m
+        labels:
+          severity: warning
+          tier: slo
+        annotations:
+          summary: "Simulation P95 latency exceeds 2s"
+          description: "P95 latency for /v1/simulate is {{ $value }}s"
+
+      # P95 latency for LLM endpoints < 30s
+      - alert: HighLLMLatency
+        expr: histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{group="llm"}[5m])) by (le)) > 30.0
+        for: 5m
+        labels:
+          severity: warning
+          tier: slo
+        annotations:
+          summary: "LLM P95 latency exceeds 30s"
+          description: "P95 latency for /v1/llm/* is {{ $value }}s"
+
+      # Availability: service down
+      - alert: ServiceDown
+        expr: up{job="massive-api"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          tier: slo
+        annotations:
+          summary: "MASSIVE API is down"
+          description: "The service has not responded to health checks for more than 1 minute"
+
+      # Process restarts too frequent
+      - alert: FrequentRestarts
+        expr: changes(massive_uptime_seconds[10m]) > 2
+        labels:
+          severity: critical
+          tier: infra
+        annotations:
+          summary: "MASSIVE API is restarting frequently"
+          description: "Process has restarted {{ $value }} times in the last 10 minutes"

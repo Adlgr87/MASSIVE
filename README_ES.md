@@ -292,6 +292,6 @@ Apache License 2.0 — ver [`LICENSE`](LICENSE).
 
 <div align="center">
 
-*MASSIVE fue desarrollado previamente como **BeyondSight** (archivado en el historial git). Renombrado el 2026-06-29.*
+*MASSIVE fue desarrollado previamente como **MASSIVE** (archivado en el historial git). Renombrado el 2026-06-29.*
 
 </div>

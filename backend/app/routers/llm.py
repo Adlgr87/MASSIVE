@@ -15,14 +15,42 @@ adds value while preserving the existing auth + rate-limit middleware pattern.
 from __future__ import annotations
 
 import logging
+import os
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile
 
-from backend.app.models import LLMAmbiguityResponse, LLMRunRequest, LLMRunResponse
+from backend.app.models import (
+    LLMAmbiguityResponse,
+    LLMExtractResponse,
+    LLMRunRequest,
+    LLMRunResponse,
+    LLMWizardRequest,
+    LLMWizardResponse,
+)
 from backend.app.security import get_api_key, rate_limit_dependency
 from services.llm_orchestrator import classify_motor
 
 log = logging.getLogger("massive.backend.routers.llm")
+
+# Upload limits + helpers (shared by /extract endpoints)
+_ALLOWED_EXT = {".pdf", ".json", ".csv", ".xlsx", ".docx"}
+_MAX_UPLOAD_BYTES = 10 * 1024 * 1024  # 10 MB
+
+
+def _safe_suffix(filename: str | None) -> str:
+    """Return the file extension, rejecting unsupported types."""
+    if not filename or "." not in filename:
+        return ".tmp"
+    ext = "." + filename.rsplit(".", 1)[-1].lower()
+    if ext not in _ALLOWED_EXT:
+        raise HTTPException(status_code=400, detail=f"Unsupported file type: {ext}")
+    return ext
+
+
+def _public_error(exc: Exception) -> HTTPException:
+    """Never leak stack traces / internal paths to clients."""
+    log.exception("API error: %s", exc)
+    return HTTPException(status_code=500, detail="Internal server error")
 
 router = APIRouter(
     prefix="/llm",
@@ -113,3 +141,83 @@ async def v1_llm_run_simulation(
         assumptions=result["assumptions"],
         factbook_params=result["factbook_params"],
     )
+
+
+@router.post(
+    "/wizard",
+    response_model=LLMWizardResponse,
+    dependencies=[Depends(get_api_key), Depends(rate_limit_dependency)],
+)
+async def v1_llm_wizard(payload: LLMWizardRequest) -> LLMWizardResponse:
+    """Translate natural language into a MASSIVE config.
+
+    Accepts ``{"description": "...", "llm": {...}}`` and returns the
+    generated config dict.
+    """
+    from services.llm_service import wizard_config
+
+    provider = payload.llm.provider if payload.llm else os.getenv("PROVIDER", "groq")
+    api_key = payload.llm.api_key if payload.llm else None
+
+    try:
+        config = wizard_config(
+            description=payload.description,
+            provider=provider,
+            api_key=api_key,
+        )
+    except RuntimeError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+
+    return LLMWizardResponse(config=config)
+
+
+@router.post(
+    "/extract",
+    response_model=LLMExtractResponse,
+    dependencies=[Depends(get_api_key), Depends(rate_limit_dependency)],
+)
+async def v1_llm_extract(
+    request: Request,
+    file: UploadFile = File(...),
+) -> LLMExtractResponse:
+    """Upload a file (pdf/json/csv/xlsx) and return extracted MASSIVE config."""
+    import contextlib
+    import tempfile
+
+    _MAX_UPLOAD_BYTES = 10 * 1024 * 1024  # 10 MB
+
+    content_length = file.headers.get("content-length")
+    if content_length and content_length.isdigit() and int(content_length) > _MAX_UPLOAD_BYTES:
+        raise HTTPException(status_code=413, detail="File too large")
+
+    tmp_path: str | None = None
+    try:
+        content = b""
+        while True:
+            chunk = await file.read(1024 * 1024)
+            if not chunk:
+                break
+            content += chunk
+            if len(content) > _MAX_UPLOAD_BYTES:
+                raise HTTPException(status_code=413, detail="File too large")
+
+        suffix = _safe_suffix(file.filename)
+        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+            tmp.write(content)
+            tmp_path = tmp.name
+
+        from uil_adapter import create_uil_adapter
+        adapter = create_uil_adapter(
+            llm_provider=os.getenv("PROVIDER", "groq"),
+            llm_api_key=os.getenv("GROQ_API_KEY", os.getenv("OPENAI_API_KEY", "")),
+        )
+        config = adapter.from_document(tmp_path)
+        return LLMExtractResponse(config=config)
+    except HTTPException:
+        raise
+    except Exception as exc:
+        raise _public_error(exc) from exc
+    finally:
+        if tmp_path:
+            with contextlib.suppress(OSError):
+                os.unlink(tmp_path)

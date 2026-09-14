@@ -1,0 +1,21 @@
+{
+  "model_name": "CfCLandscapeModulator-N5H32",
+  "input_features": [
+    "polarization_t",
+    "delta_pol_t1",
+    "delta_pol_t5",
+    "gini",
+    "volatility"
+  ],
+  "targets": [
+    "sigma_p",
+    "attractor_strength",
+    "repeller_strength",
+    "attractor_pos",
+    "repeller_pos"
+  ],
+  "hidden_size": 32,
+  "epochs_run": 20,
+  "best_val_loss": 0.006717943120747805,
+  "architecture": "CfCCell(ODE) + Linear readout + Mixed Activations"
+}

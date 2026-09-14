@@ -176,7 +176,7 @@ Tests que fallan y causa raíz:
 
 ## 9. Código muerto / archivos accidentales (verificados)
 
-- `0` (archivo vacío en raíz), `test-zapier.txt`, `.github/test-zapier-dir.txt` — basura del incidente del token Zapier (PR #81).
+- `0` (archivo vacío en raíz), `Resolved test artifact`, `.github/test-zapier-dir.txt` — basura del incidente del token Zapier (PR #81).
 - `README.backup.md`, `site/` (build MkDocs **commiteado** al repo).
 - ~~`backend/app/services/llm_orchestrator.py`~~ + 15 módulos UI-NG huérfanos — **eliminados 2026-08-20** (PR #85, verificados sin importadores; persisten en `massive-ui-ng/backend/`).
 - `frontend/src/MASSIVE_UIL_demo.jsx` — demo no referenciado por el build (a confirmar en FASE 2).

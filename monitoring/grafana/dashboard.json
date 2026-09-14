@@ -1,0 +1,11 @@
+{
+  "title": "MASSIVE SLO Dashboard",
+  "panels": [
+    {"title": "Request Error Rate", "expr": "sum(rate(http_requests_total{status=~\"5..\"}[5m])) / sum(rate(http_requests_total[5m]))", "threshold": 0.05},
+    {"title": "P95 Latency (simulate)", "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{group=\"simulate\"}[5m])) by (le))", "threshold": 2.0},
+    {"title": "P95 Latency (LLM)", "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{group=\"llm\"}[5m])) by (le))", "threshold": 30.0},
+    {"title": "Availability", "expr": "up{job=\"massive-api\"}", "threshold": 0.999},
+    {"title": "Throughput", "expr": "sum(rate(http_requests_total[5m]))", "threshold": 100},
+    {"title": "Process Restarts", "expr": "changes(massive_uptime_seconds[10m])", "threshold": 2}
+  ]
+}
