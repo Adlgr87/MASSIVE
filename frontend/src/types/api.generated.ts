@@ -131,3 +131,71 @@ export interface ArchitectEventMessage {
   timestamp: string;
   schema_version?: string | null;
 }
+
+export interface LLMRunRequest {
+  intent: string;
+  motor?: "energy_engine" | "social_architect" | "forecast" | "multilayer_engine" | "massive_engine" | "micro_massive" | "benchmark_offline" | "factbook_validation" | null;
+  country?: string | null;
+  partial_config?: Record<string, unknown> | null;
+  llm?: LLMLlmHint | null;
+  simulation_steps?: number | null;
+  seed?: number | null;
+  config_overrides?: Record<string, unknown> | null;
+}
+
+export interface LLMRunResponse {
+  sim_id: string;
+  motor: "energy_engine" | "social_architect" | "forecast" | "multilayer_engine" | "massive_engine" | "micro_massive" | "benchmark_offline" | "factbook_validation";
+  config: Record<string, unknown>;
+  summary: LLMSummary;
+  narrative: string;
+  results: LLMResults;
+  assumptions: string[];
+  factbook_params?: Record<string, unknown> | null;
+}
+
+export interface LLMWizardRequest {
+  description: string;
+  llm?: LLMLlmHint | null;
+}
+
+export interface LLMWizardResponse {
+  config: Record<string, unknown>;
+}
+
+export interface LLMExtractResponse {
+  config: Record<string, unknown>;
+}
+
+export interface LLMSummary {
+  motor: string;
+  indicators: Record<string, unknown>;
+  regla_dominante?: string | null;
+  factbook_country?: string | null;
+}
+
+export interface LLMResults {
+  sim_id: string;
+  motor: "energy_engine" | "social_architect" | "forecast" | "multilayer_engine" | "massive_engine" | "micro_massive" | "benchmark_offline" | "factbook_validation";
+  payload: Record<string, unknown>;
+  timeline?: LLMTimelinePoint[] | null;
+  final_state?: Record<string, unknown> | null;
+}
+
+export interface LLMTimelinePoint {
+  tick: number;
+  mean_opinion?: number | null;
+  polarization?: number | null;
+  active_agents?: number | null;
+}
+
+export interface LLMLlmHint {
+  provider?: "groq" | "openai" | "openrouter";
+  model?: string | null;
+}
+
+export interface LLMAmbiguityResponse {
+  detail?: string;
+  requested_fields: string[];
+  motor?: string | null;
+}

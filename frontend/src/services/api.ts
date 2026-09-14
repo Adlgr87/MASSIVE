@@ -2,26 +2,29 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 import type { ForecastResponse } from "../types/api.generated";
 
 /**
- * API service bound to the MASSIVE backend contract (api.py).
+ * API service bound to the MASSIVE v1 API contract.
  *
- * Endpoints (all require `X-API-Key` header, see constructor):
- *  - POST /api/v1/forecast  → ForecastResponse (with raw engine payload)
- *  - POST /api/v1/architect → { strategy, narrative, attempts, history_summary, history_length }
- *  - POST /api/v1/energy    → Langevin energy engine result dict
+ * The base URL is "/v1"; every endpoint below is relative to it:
  *
- * Legacy endpoints retained for the UIL demo flow:
- *  - POST /api/extract
- *  - POST /api/wizard
- *  - POST /api/simulate-uil
+ * v1 typed endpoints:
+ *  - POST /v1/forecast         → ForecastResponse (with raw engine payload)
+ *  - POST /v1/engine/architect → { strategy, narrative, attempts, history_summary, history_length }
+ *  - POST /v1/engine/energy    → Langevin energy engine result dict
  *
- * The base URL is '/api'; v1 endpoints prepend '/v1'.
+ * v1 LLM + UIL endpoints:
+ *  - POST /v1/simulate         → full UIL pipeline from a description (was /api/simulate-uil)
+ *  - POST /v1/llm/extract      → upload a document and return an extracted config (was /api/extract)
+ *  - POST /v1/llm/wizard       → generate a config from natural-language description (was /api/wizard)
+ *
+ * All endpoints require the `X-API-Key` header (injected in the constructor).
+ * The deprecated /api/* aliases are no longer referenced by this client.
  */
 class ApiService {
   private client: AxiosInstance;
 
   constructor() {
     this.client = axios.create({
-      baseURL: "/api",
+      baseURL: "/v1",
       headers: {
         "Content-Type": "application/json",
       },
@@ -99,7 +102,7 @@ class ApiService {
 
   /* ───────────── v1 typed endpoints ───────────── */
 
-  /** POST /api/v1/forecast — projected risk / opinion state over a horizon. */
+  /** POST /v1/forecast — projected risk / opinion state over a horizon. */
   async forecast(payload: {
     simulation_state: Record<string, unknown>;
     sim_id?: string | null;
@@ -107,10 +110,10 @@ class ApiService {
     mode?: "analytical" | "monte_carlo";
     n_runs?: number;
   }): Promise<{ forecast: ForecastResponse; raw: Record<string, unknown> }> {
-    return this.post("/api/v1/forecast", payload);
+    return this.post("/forecast", payload);
   }
 
-  /** POST /api/v1/architect — inverse-search strategy for a user goal. */
+  /** POST /v1/engine/architect — inverse-search strategy for a user goal. */
   async architect(payload: {
     estado_inicial: Record<string, unknown>;
     objetivo_usuario: string;
@@ -125,10 +128,10 @@ class ApiService {
     history_summary: unknown[];
     history_length: number;
   }> {
-    return this.post("/api/v1/architect", payload);
+    return this.post("/engine/architect", payload);
   }
 
-  /** POST /api/v1/energy — Langevin energy landscape simulation. */
+  /** POST /v1/engine/energy — Langevin energy landscape simulation. */
   async energy(payload: {
     user_goal: string;
     n_agents?: number;
@@ -160,36 +163,36 @@ class ApiService {
     config_used: Record<string, unknown>;
     archetype_info: Record<string, unknown>;
   }> {
-    return this.post("/api/v1/energy", payload);
+    return this.post("/engine/energy", payload);
   }
 
-  /* ───────────── legacy UIL demo endpoints ───────────── */
+  /* ───────────── v1 LLM + UIL endpoints ───────────── */
 
-  /** POST /api/extract — upload a document and get an extracted config. */
-  async extractDocument(
-    file: File,
-  ): Promise<{ config: Record<string, unknown> }> {
-    const form = new FormData();
-    form.append("file", file);
-    return this.post("/api/extract", form, {
-      headers: { "Content-Type": "multipart/form-data" },
-    });
-  }
-
-  /** POST /api/wizard — generate a config from a natural-language description. */
-  async wizard(
-    description: string,
-  ): Promise<{ config: Record<string, unknown> }> {
-    return this.post("/api/wizard", { description });
-  }
-
-  /** POST /api/simulate-uil — run the full UIL pipeline from a description. */
+  /** POST /v1/simulate — run the full UIL pipeline from a description (was /api/simulate-uil). */
   async simulateUil(description: string): Promise<{
     config: Record<string, unknown>;
     summary: Record<string, unknown>;
     n_steps: number;
   }> {
-    return this.post("/api/simulate-uil", { description });
+    return this.post("/simulate", { description });
+  }
+
+  /** POST /v1/llm/extract — upload a document and get an extracted config (was /api/extract). */
+  async extractDocument(
+    file: File,
+  ): Promise<{ config: Record<string, unknown> }> {
+    const form = new FormData();
+    form.append("file", file);
+    return this.post("/llm/extract", form, {
+      headers: { "Content-Type": "multipart/form-data" },
+    });
+  }
+
+  /** POST /v1/llm/wizard — generate a config from a natural-language description (was /api/wizard). */
+  async wizard(
+    description: string,
+  ): Promise<{ config: Record<string, unknown> }> {
+    return this.post("/llm/wizard", { description });
   }
 }
 
