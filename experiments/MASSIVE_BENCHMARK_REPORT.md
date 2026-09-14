@@ -26,7 +26,7 @@
 
 ### Fase 0 — Auditoría Estructural ✅
 - **quantum eliminado:** El import obsoleto `from quantum.integration import ...` en `multilayer_engine.py:32` fue corregido a `from massive.core.state_compression import ...`. El módulo `quantum` fue eliminado del proyecto.
-- **BeyondSight → MASSIVE:** Todos los nombres `BEYONDSIGHT_*` en `app.py` fueron renombrados a `MASSIVE_*`. Referencias en `README.md`, `docs/DOCKER.md`, y `LICENSE` actualizadas.
+- **MASSIVE → MASSIVE:** Todos los nombres `MASSIVE_*` en `app.py` fueron renombrados a `MASSIVE_*`. Referencias en `README.md`, `docs/DOCKER.md`, y `LICENSE` actualizadas.
 - **336 tests pytest:** 331 PASS, 5 FAIL (API de MultilayerEngine desactualizada en tests).
 - **38 parámetros empíricos:** 28 master + 10 runtime, cobertura 88.4%, `_NULL_PARAMS` vacío.
 

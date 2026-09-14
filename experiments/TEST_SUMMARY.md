@@ -29,7 +29,7 @@ Se ejecutó un plan de 8 fases (FASE 0-7 + reporte final) para validar el funcio
 | Acción | Archivos |
 |---|---|
 | Módulo `quantum` eliminado | `multilayer_engine.py:32` → `from massive.core.state_compression import ...` |
-| `BeyondSight` → `MASSIVE` | `app.py`, `README.md`, `docs/DOCKER.md`, `LICENSE` |
+| `MASSIVE` → `MASSIVE` | `app.py`, `README.md`, `docs/DOCKER.md`, `LICENSE` |
 
 ---
 
