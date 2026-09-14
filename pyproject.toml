@@ -71,7 +71,7 @@ massive_core = ["config/defaults.yaml"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
-addopts = "-q"
+addopts = "-q -p no:libtmux"
 
 [tool.coverage.run]
 source = ["massive", "massive_core", "micro_massive", "services", "backend",
