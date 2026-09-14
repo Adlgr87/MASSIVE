@@ -44,6 +44,7 @@ from typing import Any
 
 import numpy as np
 from scipy import sparse
+from metrics.unified_metrics import calculate_polarization
 
 from massive_core.rust_core import active_mask_step
 
@@ -1237,7 +1238,9 @@ class MassiveSimEngine:
         return {
             "mean_opinion": w_mean,
             "std_opinion": w_std,
-            "polarization": float(np.average(np.abs(x_f[:, 0]), weights=counts_f)),
+            # Note: unified polarization metric uses np.std (unweighted). 
+            # Replacing weighted average of absolute values for consistency.
+            "polarization": calculate_polarization(x_f[:, 0], "bipolar"),
             "mean_cooperation": (
                 float(np.average(x_f[:, 1], weights=counts_f)) if self.K > 1 else 0.0
             ),

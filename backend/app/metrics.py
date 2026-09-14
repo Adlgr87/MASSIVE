@@ -8,6 +8,12 @@ Usage:
     from backend.app.metrics import registry
     registry.inc("http_requests_total", {"method": "GET", "status": "200"})
     text = registry.render()
+
+SLOs (defined in PRODUCTION_ARCHITECTURE_SPEC.md §5.3):
+    - Error budget: < 5% error rate (500/502 responses)
+    - P95 latency:  < 2s  (simulations < 100 steps)
+                     < 30s (LLM calls)
+    - Availability:  99.9% (max ~8.77 min/month downtime)
 """
 
 from __future__ import annotations
@@ -56,6 +62,21 @@ class MetricsRegistry:
         lines.append("# HELP massive_uptime_seconds Process uptime in seconds.")
         lines.append("# TYPE massive_uptime_seconds gauge")
         lines.append(f"massive_uptime_seconds {uptime:.2f}")
+
+        # SLO target annotations (consumed by Prometheus alerting rules)
+        lines.append("# HELP massive_slo_error_budget Maximum allowable 5xx error rate (0.05 = 5%).")
+        lines.append("# TYPE massive_slo_error_budget gauge")
+        lines.append("massive_slo_error_budget 0.05")
+        lines.append("# HELP massive_slo_p95_latency_max Maximum P95 latency in seconds (<100 steps).")
+        lines.append("# TYPE massive_slo_p95_latency_max gauge")
+        lines.append("massive_slo_p95_latency_max 2.0")
+        lines.append("# HELP massive_slo_p95_latency_llm Maximum P95 latency in seconds (LLM).")
+        lines.append("# TYPE massive_slo_p95_latency_llm gauge")
+        lines.append("massive_slo_p95_latency_llm 30.0")
+        lines.append("# HELP massive_slo_availability_target Availability target (0.999 = 99.9%).")
+        lines.append("# TYPE massive_slo_availability_target gauge")
+        lines.append("massive_slo_availability_target 0.999")
+
         return "\n".join(lines) + "\n"
 
 

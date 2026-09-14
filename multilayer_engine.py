@@ -28,6 +28,7 @@ Autor: MASSIVE Research
 import networkx as nx
 import numpy as np
 import pandas as pd
+from metrics.unified_metrics import calculate_polarization
 from scipy import sparse
 
 from llm_credentials import resolve_provider_api_key
@@ -824,7 +825,7 @@ class MultilayerEngine:
                 {
                     "mean_opinion": float(ops0.mean()),
                     "std_opinion": float(ops0.std()),
-                    "polarization": float(np.mean(np.abs(ops0))),
+                    "polarization": calculate_polarization(ops0, self.range_type),
                     "sample_size": int(ops0.size),
                 }
             ]
@@ -838,7 +839,7 @@ class MultilayerEngine:
                     {
                         "mean_opinion": float(ops.mean()),
                         "std_opinion": float(ops.std()),
-                        "polarization": float(np.mean(np.abs(ops))),
+                        "polarization": calculate_polarization(ops, self.range_type),
                         "sample_size": int(ops.size),
                     }
                 )
@@ -859,7 +860,7 @@ class MultilayerEngine:
                     {
                         "mean_opinion": float(ops.mean()),
                         "std_opinion": float(ops.std()),
-                        "polarization": float(np.mean(np.abs(ops))),
+                        "polarization": calculate_polarization(ops, self.range_type),
                         "sample_size": int(ops.size),
                     }
                 )
@@ -882,7 +883,7 @@ class MultilayerEngine:
         return {
             "mean_opinion": float(np.mean(opinions)),
             "std_opinion": float(np.std(opinions)),
-            "polarization": float(np.mean(np.abs(opinions))),
+            "polarization": calculate_polarization(opinions, self.range_type),
             "mean_cooperation": float(np.mean(x[:, COL_COOP])),
             "mean_hierarchy": float(np.mean(x[:, COL_HIER])),
         }

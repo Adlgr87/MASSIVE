@@ -44,6 +44,7 @@ import requests
 from scipy import stats
 from scipy.integrate import solve_ivp
 from scipy.special import erf
+from metrics.unified_metrics import calculate_polarization, calculate_partisanship
 
 from benchmarks.butterfly_diagnostic import run_butterfly_diagnostic_core
 from empirical_calibration import (
@@ -564,28 +565,30 @@ def regla_backlash(estado: dict, params: dict, cfg: dict) -> dict:
     return nuevo
 
 
-def regla_polarizacion(estado: dict, params: dict, cfg: dict) -> dict:
+def regla_polarizacion(estado: dict, params: dict, cfg: dict, gini_coeff: float = 0.0) -> dict:
     """
     Polarization/Echo chamber rule.
     Moves opinion further away from the neutral point.
+    Inequality (Gini) amplifies this effect.
 
     Args:
         estado: Current state.
         params: Rule parameters (fuerza).
         cfg: Global configuration.
-
+        gini_coeff: Gini coefficient (0.0 to 1.0) representing inequality.
     Returns:
         Updated state.
     """
     fuerza = params.get("fuerza", 0.1)
+    eff_fuerza = fuerza * (1.0 + gini_coeff)
     opinion = estado["opinion"]
     neutro = _neutro(cfg)
     r = _get_rango(cfg)
     nuevo = estado.copy()
     if opinion >= neutro:
-        val = opinion + fuerza * (r["max"] - opinion)
+        val = opinion + eff_fuerza * (r["max"] - opinion)
     else:
-        val = opinion - fuerza * (opinion - r["min"])
+        val = opinion - eff_fuerza * (opinion - r["min"])
     nuevo["opinion"] = _clip(val, cfg)
     return nuevo
 
@@ -1126,10 +1129,12 @@ Decision Examples:
 - evolutionary pressure between group strategies → replicador
 - groups converging, coordination equilibrium → nash
 - probabilistic belief update with evidence → bayesiano
-- epidemic-like opinion spread → sir"""
+- epidemic-like opinion spread → sir
+- high Gini coefficient amplifies echo chambers → polarizacion"""
 
     base_prompt = f"""You are a rule selector for a social dynamics simulation.
 Scenario: {escenario} | Range: {rango_desc}
+Contexto de desigualdad: Gini coefficient = {cfg.get('gini_coefficient', 0.0):.3f}
 
 State:
 {json.dumps(estado_fmt, ensure_ascii=False)}
@@ -1639,7 +1644,11 @@ def simular(
 
         # Aplicar regla elegida
         regla_func = REGLAS[escenario].get(regla_actual, regla_lineal)
-        estado_regla = regla_func(estado, params_actuales, cfg)
+        # Pass gini_coeff if the rule is regla_polarizacion
+        if regla_func == regla_polarizacion:
+            estado_regla = regla_func(estado, params_actuales, cfg, gini_coeff=cfg.get("gini_coefficient", 0.0))
+        else:
+            estado_regla = regla_func(estado, params_actuales, cfg)
         opinion_regla = _clip(estado_regla["opinion"], cfg)
 
         # Tendencia base + blending
@@ -1928,7 +1937,7 @@ def resumen_historial(historial: list[dict], config: dict | None = None) -> dict
         "desviacion": float(opiniones.std()),
         "minimo": float(opiniones.min()),
         "maximo": float(opiniones.max()),
-        "polarizacion_media": float(np.mean(np.abs(opiniones - neutro))),
+        "polarizacion_media": calculate_partisanship(opiniones, neutral=neutro, range_type=cfg.get("rango", "bipolar")),
         "pasos": len(historial) - 1,
         "regla_dominante": Counter(reglas).most_common(1)[0][0] if reglas else "—",
         "neutro": neutro,

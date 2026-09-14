@@ -149,3 +149,28 @@ class LLMAmbiguityResponse(BaseModel):
     detail: str = "Intent ambiguous; please provide the requested fields."
     requested_fields: list[str]
     motor: str | None = None
+
+
+class LLMWizardRequest(BaseModel):
+    """Request body for the wizard endpoint (NL → config)."""
+
+    model_config = {"extra": "forbid"}
+
+    description: str = Field(..., min_length=1, max_length=2000, description="Natural-language scenario description")
+    llm: LLMLlmHint | None = None
+
+
+class LLMWizardResponse(BaseModel):
+    """Response body for the wizard endpoint."""
+
+    model_config = {"extra": "forbid"}
+
+    config: dict[str, Any]
+
+
+class LLMExtractResponse(BaseModel):
+    """Response body for the extract endpoint."""
+
+    model_config = {"extra": "forbid"}
+
+    config: dict[str, Any]

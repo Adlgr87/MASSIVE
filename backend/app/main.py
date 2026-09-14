@@ -168,6 +168,24 @@ def _path_group(path: str) -> str:
 
 
 @app.middleware("http")
+async def deprecation_warning(request: Request, call_next):
+    """Emit X-API-Warn header on legacy /api/* (non-v1) routes.
+
+    These endpoints are superseded by the /v1/* API surface and will be
+    removed in v1.0. The warning gives clients a migration signal without
+    breaking existing integrations.
+    """
+    response = await call_next(request)
+    path = request.url.path
+    if path.startswith("/api/") and not path.startswith("/api/v1"):
+        response.headers["X-API-Warn"] = (
+            "Deprecated endpoint. Use /v1/* instead. "
+            "See PRODUCTION_ARCHITECTURE_SPEC.md §5.1"
+        )
+    return response
+
+
+@app.middleware("http")
 async def request_context(request: Request, call_next):
     """Propagate/generate X-Request-ID and emit one structured access line.
 
@@ -310,3 +328,18 @@ async def version_info() -> dict[str, Any]:
         "service": "MASSIVE UIL API",
         "entrypoint": "backend.app.main:app",
     }
+
+
+@app.get("/openapi/v1.json")
+async def openapi_v1_spec() -> dict[str, Any]:
+    """Export the canonical OpenAPI v1 spec (excluding /docs, /metrics, etc.)."""
+    schema = app.openapi()
+    v1_paths = {
+        path: methods
+        for path, methods in schema["paths"].items()
+        if path.startswith("/v1")
+    }
+    schema["paths"] = v1_paths
+    schema.setdefault("info", {})["version"] = "1.0.0"
+    schema["info"]["title"] = "MASSIVE UIL API v1"
+    return schema

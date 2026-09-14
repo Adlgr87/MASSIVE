@@ -100,18 +100,31 @@ class CfCRouter:
             CfCArchitectPolicy,
             CfCRegimeSelector,
             CfCTauMatrix,
+            CfCLambdaCorrector,
+            CfCLandscapeModulator,
             NUM_REGIMES,
         )
 
+        # Check both models/ root and models/cfc_calibrated/ for trained weights.
+        # The calibrated residual corrector lives in models/cfc_calibrated/.
         base = Path("models")
+        alt_base = Path("models/cfc_calibrated")
 
         def _try_load(filename, model_cls, *args, **kwargs):
             path = base / filename
             if not path.exists():
+                path = alt_base / filename
+            if not path.exists():
                 return None
             try:
                 m = model_cls(*args, **kwargs)
-                m.load_state_dict(torch.load(path, map_location="cpu", weights_only=True))
+                ckpt = torch.load(path, map_location="cpu", weights_only=True)
+                # Handle both flat and nested {"cell_state", "readout_state"} formats
+                if "cell_state" in ckpt:
+                    m.cell.load_state_dict(ckpt["cell_state"])
+                    m.readout.load_state_dict(ckpt["readout_state"])
+                else:
+                    m.load_state_dict(ckpt)
                 m.eval()
                 log.info(f"[CfC] Modelo cargado: {filename}")
                 return m
@@ -147,7 +160,22 @@ class CfCRouter:
             "cfc_residual.pt",
             CfCResidualCorrector,
             input_dim=9,
-            hidden=64,
+            hidden_size=64,
+        )
+        # Lambda correction model (CfCLambdaCorrector).
+        # Loads models/cfc_lambda_corrector.pt if present.
+        self._lambda_corrector = _try_load(
+            "cfc_lambda_corrector.pt",
+            CfCLambdaCorrector,
+            input_dim=5,
+            hidden_size=32,
+        )
+        # Landscape modulation model (CfCLandscapeModulator).
+        self._landscape_corrector = _try_load(
+            "cfc_landscape.pt",
+            CfCLandscapeModulator,
+            input_dim=5,
+            hidden_size=32,
         )
 
     # ── API pública ──────────────────────────────────────────────────────────
@@ -245,6 +273,85 @@ class CfCRouter:
 
         return {k: v.numpy() for k, v in out.items()} | {"source": "cfc"}
 
+    def propose_lambda(
+        self,
+        features: dict,
+    ) -> tuple[float, str]:
+        """
+        Propose a lambda_social correction based on polarization/Gini context.
+        
+        Args:
+            features: Dict containing polarization, delta_p1, delta_p5, gini, volatility.
+        
+        Returns:
+            (lambda_value, source) where source is "cfc" or "passthrough".
+        """
+        if self._lambda_corrector is None or not self._torch_available:
+            return 0.5, "passthrough"
+
+        import torch
+
+        # Build 5-feature vector: [polarization, delta_p1, delta_p5, gini, volatility]
+        try:
+            u_vec = [
+                float(features.get("polarization", 0.0)),
+                float(features.get("delta_p1", 0.0)),
+                float(features.get("delta_p5", 0.0)),
+                float(features.get("gini", 0.35)),
+                float(features.get("volatility", 0.0)),
+            ]
+            u_tensor = torch.tensor([u_vec], dtype=torch.float32)
+        except (ValueError, TypeError):
+            return 0.5, "passthrough"
+
+        with torch.no_grad():
+            # Forward pass: returns a scalar lambda value
+            lambda_val = float(self._lambda_corrector(u_tensor).item())
+
+        return float(np.clip(lambda_val, 0.0, 1.0)), "cfc"
+
+    def propose_landscape(
+        self,
+        features: dict,
+    ) -> tuple[dict | None, str]:
+        """
+        Propose new landscape parameters using the trained CfC landscape modulator.
+
+        Args:
+            features: Dict containing polarization, delta_p1, delta_p5, skewness, gini.
+
+        Returns:
+            (landscape_params, source) where landscape_params is a dict with
+            'sigma_p', 'attractor_position', 'attractor_strength',
+            'repeller_position', 'repeller_strength', or None if unavailable.
+            Source is "cfc" or "none".
+        """
+        if self._landscape_corrector is None or not self._torch_available:
+            return None, "none"
+
+        try:
+            import torch
+            u_vec = [
+                float(features.get("polarization", 0.0)),
+                float(features.get("delta_p1", 0.0)),
+                float(features.get("delta_p5", 0.0)),
+                float(features.get("skewness", 0.0)),
+                float(features.get("gini", 0.35)),
+            ]
+            u_tensor = torch.from_numpy(np.array(u_vec, dtype=np.float32)).unsqueeze(0)
+            with torch.no_grad():
+                vals = self._landscape_corrector(u_tensor)[0]
+
+            return {
+                "sigma_p": float(vals[0].item()),
+                "attractor_strength": float(vals[1].item()),
+                "repeller_strength": float(vals[2].item()),
+                "attractor_position": float(vals[3].item()),
+                "repeller_position": float(vals[4].item()),
+            }, "cfc"
+        except Exception:
+            return None, "none"
+
     def correct_residual(
         self,
         history: list[float],
@@ -311,8 +418,9 @@ class CfCRouter:
             u[3 + i] = float(residuals[-1 - i]) if len(residuals) > i + 1 else 0.0
 
         x = torch.zeros(1, self._residual.hidden_size)
+        u_tensor = torch.from_numpy(u).unsqueeze(0)
         with torch.no_grad():
-            r_hat = float(self._residual(x, torch.tensor([u], dtype=torch.float32), dt=dt).item())
+            r_hat = float(self._residual(x, u_tensor, dt=dt).item())
 
         sim_val = float(sim_series[-1])
 
@@ -320,11 +428,11 @@ class CfCRouter:
         # otherwise use raw model prediction for bias detection only.
         if actual is not None:
             baseline_error = sim_val - float(actual_arr.ravel()[-1]) if actual_arr.size else 0.0
-            correction = 0.5 * baseline_error
+            correction = 0.5 * baseline_error  # positive when sim overestimates
         else:
             correction = r_hat
 
-        corrected = sim_val + correction
+        corrected = sim_val - correction  # subtract to move toward actual
         return float(np.clip(corrected, -1.0, 1.0)), "cfc"
 
     @property
@@ -341,4 +449,6 @@ class CfCRouter:
             "tau_matrix": self._tau is not None,
             "architect_policy": self._arch is not None,
             "residual_corrector": self._residual is not None,
+            "lambda_corrector": self._lambda_corrector is not None,
+            "landscape_corrector": self._landscape_corrector is not None,
         }

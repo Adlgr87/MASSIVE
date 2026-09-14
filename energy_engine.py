@@ -20,9 +20,18 @@ Integración con CIA World Factbook:
 import logging
 from typing import Any
 
+from metrics.unified_metrics import calculate_polarization
+
 import numpy as np
 
 log = logging.getLogger("massive")
+
+try:
+    import torch as _torch
+    _TORCH_AVAILABLE = True
+except ImportError:
+    _torch = None  # type: ignore[assignment]
+    _TORCH_AVAILABLE = False
 
 try:
     from numba import njit
@@ -43,6 +52,18 @@ except ImportError:
 
 # Ancho gaussiano por defecto para pozos/picos del paisaje
 _SIGMA = 0.3
+
+
+def _ews_fallback_multiplier(flags: dict) -> float:
+    """Rule-based temperature multiplier for EWS flags (fallback when no LNN model)."""
+    mult = 1.0
+    if flags.get("high_variance"):
+        mult *= 1.5
+    if flags.get("high_autocorr"):
+        mult *= 1.3
+    if flags.get("high_skewness"):
+        mult *= 1.2
+    return min(mult, 2.0)
 
 
 @njit(cache=True)
@@ -219,6 +240,146 @@ class SocialEnergyEngine:
         else:
             self.rng = np.random.default_rng()
 
+        # Torch availability flag for optional LNN features
+        self._torch_available = _TORCH_AVAILABLE
+
+        # Load trained CfC temperature modulator (optional, for EWS trigger).
+        # Transparent fallback: if torch or model is missing, use rule-based multipliers.
+        self._temp_model = self._load_temperature_model()
+
+        # Load trained CfC lambda corrector (optional, for adaptive lambda)
+        self._lambda_model = self._load_lambda_model()
+
+        # Load trained CfC landscape modulator (optional, for EWS landscape adaptation)
+        self._landscape_model = self._load_landscape_model()
+
+    def _load_temperature_model(self):
+        """Load the trained CfC temperature modulator, or None if unavailable."""
+        if not self._torch_available:
+            return None
+        try:
+            from pathlib import Path
+            from cfc_engine import CfCTempModulator
+
+            path = Path("models/cfc_calibrated/cfc_temperature.pt")
+            if not path.exists():
+                path = Path("models/cfc_temperature.pt")
+            if not path.exists():
+                return None
+
+            ckpt = _torch.load(path, map_location="cpu", weights_only=True)
+            model = CfCTempModulator(input_dim=5, hidden_size=32)
+            # Handle both flat and nested state_dict formats
+            if "cell_state" in ckpt:
+                model.cell.load_state_dict(ckpt["cell_state"])
+                model.readout.load_state_dict(ckpt["readout_state"])
+            else:
+                model.load_state_dict(ckpt)
+            model.eval()
+            return model
+        except Exception as exc:
+            log.warning(f"[EnergyEngine] Could not load temperature model: {exc}")
+            return None
+
+    def _load_lambda_model(self):
+        """Load the trained CfC lambda corrector, or None if unavailable."""
+        if not self._torch_available:
+            return None
+        try:
+            from pathlib import Path
+            from cfc_engine import CfCLambdaCorrector
+            path = Path("models/cfc_calibrated/cfc_lambda_corrector.pt")
+            if not path.exists():
+                path = Path("models/cfc_lambda_corrector.pt")
+            if not path.exists():
+                return None
+            model = CfCLambdaCorrector(input_dim=5, hidden_size=32)
+            model.load_state_dict(_torch.load(path, map_location="cpu", weights_only=True))
+            model.eval()
+            return model
+        except Exception as exc:
+            log.warning(f"[EnergyEngine] Could not load lambda model: {exc}")
+            return None
+
+    def propose_lambda(self, features: dict) -> float:
+        """Propose a corrected lambda_social using the trained LNN.
+
+        Falls back to self.lambda_social if the model is unavailable.
+        """
+        if self._lambda_model is not None and self._torch_available:
+            try:
+                feat = _torch.tensor([[
+                    float(features.get("polarization", 0.0)),
+                    float(features.get("delta_p1", 0.0)),
+                    float(features.get("delta_p5", 0.0)),
+                    float(features.get("gini", self.gini_coefficient)),
+                    float(features.get("volatility", 0.0)),
+                ]], dtype=_torch.float32)
+                with _torch.no_grad():
+                    val = float(self._lambda_model(feat).item())
+                return max(0.0, min(1.0, val))
+            except Exception:
+                pass
+        return self.lambda_social
+
+    def _load_landscape_model(self):
+        """Load the trained CfC landscape modulator, or None if unavailable."""
+        if not self._torch_available:
+            return None
+        try:
+            from pathlib import Path
+            from cfc_engine import CfCLandscapeModulator
+
+            path = Path("models/cfc_calibrated/cfc_landscape.pt")
+            if not path.exists():
+                path = Path("models/cfc_landscape.pt")
+            if not path.exists():
+                return None
+
+            ckpt = _torch.load(path, map_location="cpu", weights_only=True)
+            model = CfCLandscapeModulator(input_dim=5, hidden_size=32)
+            if "cell_state" in ckpt:
+                model.cell.load_state_dict(ckpt["cell_state"])
+                model.readout.load_state_dict(ckpt["readout_state"])
+            else:
+                model.load_state_dict(ckpt)
+            model.eval()
+            return model
+        except Exception as exc:
+            log.warning(f"[EnergyEngine] Could not load landscape model: {exc}")
+            return None
+
+    def propose_landscape(self, features: dict) -> tuple[list, list]:
+        """Propose new attractor/repeller parameters using the trained LNN.
+
+        Returns:
+            (new_attractors, new_repellers) lists of dicts with 'position' and 'strength'.
+            Falls back to original values if the model is unavailable.
+        """
+        if self._landscape_model is None or not self._torch_available:
+            return None
+
+        try:
+            feat = _torch.tensor([[
+                float(features.get("polarization", 0.0)),
+                float(features.get("delta_p1", 0.0)),
+                float(features.get("delta_p5", 0.0)),
+                float(features.get("skewness", 0.0)),
+                float(features.get("gini", self.gini_coefficient)),
+            ]], dtype=_torch.float32)
+            with _torch.no_grad():
+                vals = self._landscape_model(feat)[0].numpy()
+            # Output: [sigma_p, attractor_str, repeller_str, attractor_pos, repeller_pos]
+            attractors = [
+                {"position": float(vals[3]), "strength": float(vals[1])},
+            ]
+            repellers = [
+                {"position": float(vals[4]), "strength": float(vals[2])},
+            ]
+            return attractors, repellers
+        except Exception:
+            return None
+
     def step(
         self,
         opinions: np.ndarray,
@@ -226,6 +387,7 @@ class SocialEnergyEngine:
         attractors: list,
         repellers: list,
         eta: float = 0.01,
+        ews_flags: dict | None = None,
     ) -> np.ndarray:
         """
         Avanza un paso de integración de Langevin (Euler-Maruyama).
@@ -242,13 +404,39 @@ class SocialEnergyEngine:
         """
         n = len(opinions)
 
+        # ── EWS Temperature Trigger ────────────────────────────────────────────
+        # When EWS flags fire, modulate temperature to help agents escape
+        # boundary saturation and echo chambers. Uses the trained CfC
+        # temperature modulator when full feature values are available;
+        # falls back to rule-based multipliers for boolean-only flags.
+        effective_temp = self.temperature
+        if ews_flags:
+            has_features = any(k in ews_flags for k in ("polarization", "delta_p1", "delta_p5", "skewness"))
+            if self._temp_model is not None and self._torch_available and has_features:
+                try:
+                    feat = np.array([[
+                        float(ews_flags.get("polarization", 0.0)),
+                        float(ews_flags.get("delta_p1", 0.0)),
+                        float(ews_flags.get("delta_p5", 0.0)),
+                        float(ews_flags.get("skewness", 0.0)),
+                        float(ews_flags.get("gini", self.gini_coefficient)),
+                    ]], dtype=np.float32)
+                    u_tensor = _torch.from_numpy(feat)
+                    with _torch.no_grad():
+                        learned_mult = float(self._temp_model(u_tensor).item())
+                    effective_temp *= min(max(learned_mult, 0.5), 2.0)
+                except Exception:
+                    effective_temp *= _ews_fallback_multiplier(ews_flags)
+            else:
+                effective_temp *= _ews_fallback_multiplier(ews_flags)
+
         # ── Fuerza social: media ponderada de vecinos ─────────────────────────
         row_sums = adj.sum(axis=1)
         row_sums = np.where(row_sums == 0, 1.0, row_sums)
         neighbor_mean = (adj @ opinions) / row_sums
 
         # ── Ruido estocástico (una muestra por agente) ─────────────────────────
-        noise = np.sqrt(2.0 * eta * self.temperature) * self.rng.standard_normal(n)
+        noise = np.sqrt(2.0 * eta * effective_temp) * self.rng.standard_normal(n)
 
         # ── Extract arrays for JIT-compiled hot path ───────────────────────────
         sigma2 = _SIGMA**2
@@ -278,7 +466,7 @@ class SocialEnergyEngine:
                     local_drift[i] = landscape_drift + social_drift
                 return local_drift
 
-            diffusion = np.sqrt(2.0 * self.temperature) if self.temperature > 0.0 else None
+            diffusion = np.sqrt(2.0 * effective_temp) if effective_temp > 0.0 else None
             step_noise = self.rng.standard_normal(n) if diffusion is not None else None
             result = self._stepper.step(
                 opinions.astype(np.float64),
@@ -471,8 +659,7 @@ class SocialEnergyEngine:
         std = float(np.std(opinions))
 
         # Polarización: desviación estándar normalizada al semi-rango
-        half_range = (self.max_val - self.min_val) / 2.0
-        polarizacion = float(std / half_range) if half_range > 0 else 0.0
+        polarizacion = calculate_polarization(opinions, self.range_type)
 
         # Energía total del sistema
         energies = [_landscape_energy(x, attractors, repellers) for x in opinions]

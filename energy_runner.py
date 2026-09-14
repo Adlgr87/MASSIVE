@@ -9,6 +9,7 @@ import numpy as np
 from energy_engine import SocialEnergyEngine, random_network
 from energy_schemas import EnergyConfig
 from programmatic_architect import ProgrammaticArchitect
+from simulator import calculate_ews_metrics, check_ews_signals
 
 
 def run_energy_simulation(
@@ -72,8 +73,28 @@ def run_energy_simulation(
             metrics_timeline.append(mets)
 
         if t < steps:
+            # ── EWS Detection: compute instability signals from rolling window ──
+            ews_flags = None
+            if len(history) >= 10:
+                window = [h["mean_opinion"] for h in history[-10:]]
+                ews_metrics = calculate_ews_metrics(window)
+                ews_flags = check_ews_signals(ews_metrics, {})
+                # Augment EWS flags with numeric features for the trained
+                # CfC temperature modulator (which needs polarization, deltas,
+                # skewness, Gini — not just boolean signals).
+                ews_flags["polarization"] = float(np.std(opinions))
+                ews_flags["delta_p1"] = float(window[-1] - window[-2]) if len(window) >= 2 else 0.0
+                ews_flags["delta_p5"] = float(window[-1] - window[-5]) if len(window) >= 5 else 0.0
+                ews_flags["skewness"] = float(np.mean(np.abs(ews_metrics["skewness"])))
+                ews_flags["gini"] = engine.gini_coefficient
+                history[-1]["ews"] = {
+                    "metrics": ews_metrics,
+                    "flags": ews_flags,
+                }
+
             opinions = engine.step(
-                opinions, adj, params["attractors"], params["repellers"], eta=eta
+                opinions, adj, params["attractors"], params["repellers"], eta=eta,
+                ews_flags=ews_flags,
             )
 
     initial_op = history[0]["mean_opinion"]

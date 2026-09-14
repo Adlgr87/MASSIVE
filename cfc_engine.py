@@ -193,10 +193,7 @@ class CfCResidualCorrector(nn.Module):
         super().__init__()
         self.input_dim = input_dim
         self.hidden_size = hidden_size
-        self.u_encoder = nn.Sequential(
-            nn.Linear(input_dim, hidden_size),
-            nn.Tanh(),
-        )
+        self.u_encoder = nn.Linear(input_dim, hidden_size)
         # tau_net / f_net share the concatenated (hidden + input) context (73 = 64 + 9)
         self.tau_net = nn.Sequential(
             nn.Linear(hidden_size + input_dim, hidden_size),
@@ -290,14 +287,69 @@ class CfCArchitectPolicy(nn.Module):
         }
 
 
-def select_regime(features, history):
-    """Pick regime from {stable, oscillatory, critical, collapse}."""
-    energy = np.dot(features.ravel(), features.ravel()) / features.size
-    if energy < 0.1:
-        return "stable"
-    elif energy < 0.5:
-        return "oscillatory"
-    elif energy < 1.0:
-        return "critical"
-    else:
-        return "collapse"
+class CfCLambdaCorrector(nn.Module):
+    """
+    Lightweight CfC-based corrector for lambda_social.
+    Trained to propose a corrected lambda based on polarization/Gini context.
+    
+    Architecture: CfCCell (ODE) -> Linear Readout -> Softplus
+    """
+    def __init__(self, input_dim: int = 5, hidden_size: int = 32) -> None:
+        super().__init__()
+        self.cell = CfCCell(input_dim, hidden_size)
+        self.readout = nn.Linear(hidden_size, 1)
+
+    def forward(self, u: torch.Tensor, dt: float = 0.1) -> torch.Tensor:
+        # Initial hidden state is zeros
+        h = torch.zeros(u.shape[0], self.cell.hidden_size, device=u.device)
+        h = self.cell(h, u, dt=dt)
+        return torch.nn.Softplus()(self.readout(h))
+
+
+class CfCTempModulator(nn.Module):
+    """
+    Lightweight CfC-based temperature modulator for the energy engine.
+    Trained to propose a temperature multiplier in [0.5, 2.0] based on
+    polarization/volatility/Gini context.
+
+    Architecture: CfCCell (ODE) -> Linear Readout -> Softplus -> affine [0.5, 2.0]
+    """
+    def __init__(self, input_dim: int = 5, hidden_size: int = 32) -> None:
+        super().__init__()
+        self.cell = CfCCell(input_dim, hidden_size)
+        self.readout = nn.Linear(hidden_size, 1)
+
+    def forward(self, u: torch.Tensor, dt: float = 0.1) -> torch.Tensor:
+        # Initial hidden state is zeros
+        h = torch.zeros(u.shape[0], self.cell.hidden_size, device=u.device)
+        h = self.cell(h, u, dt=dt)
+        raw = torch.nn.Softplus()(self.readout(h))
+        # Affine map to [0.5, 2.0]: 0.5 + 1.5 * s / (1 + s)
+        return 0.5 + 1.5 * raw / (1.0 + raw)
+
+
+class CfCLandscapeModulator(nn.Module):
+    """
+    Lightweight CfC-based landscape modulator for the energy engine.
+    Trained to propose landscape parameters reactively based on
+    polarization/Gini/volatility context.
+
+    Architecture: CfCCell (ODE) -> Linear Readout -> [Softplus | Tanh constraints]
+    """
+    def __init__(self, input_dim: int = 5, hidden_size: int = 32) -> None:
+        super().__init__()
+        self.cell = CfCCell(input_dim, hidden_size)
+        self.readout = nn.Linear(hidden_size, 5)  # [sigma_p, att_str, rep_str, att_pos, rep_pos]
+
+    def forward(self, u: torch.Tensor, dt: float = 0.1) -> torch.Tensor:
+        # Initial hidden state is zeros
+        h = torch.zeros(u.shape[0], self.cell.hidden_size, device=u.device)
+        h = self.cell(h, u, dt=dt)
+        # 5 outputs: [sigma_p, attractor_str, repeller_str, attractor_pos, repeller_pos]
+        raw = self.readout(h)
+        out = torch.cat([
+            torch.nn.Softplus()(raw[:, :3]),
+            torch.sigmoid(raw[:, 3:4]) * 2.0 - 1.0,
+            torch.tanh(raw[:, 4:5]),
+        ], dim=-1)
+        return out
