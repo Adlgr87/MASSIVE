@@ -86,7 +86,7 @@
 │  ├── simulator.py           — núcleo legacy (simular, resumen_historial)          │
 │  ├── multilayer_engine.py   — dinámica Langevin multicapa (5D state vector)       │
 │  ├── massive_engine.py      — LOD super-agentes, uint8, event-driven, GPU         │
-│  ├── energy_engine.py       — SocialEnergyEngine (Langevin 1D + Numba JIT)          │
+│  ├── energy_engine.py       — SocialEnergyEngine (Langevin 1D)          │
 │  ├── micro_engine.py        — micro-MASSIVE (grupos pequeños)                     │
 │  ├── micro_schemas.py       — GroupProfile, MemberProfile (micro)                 │
 │  ├── cfc_engine.py          — contrafactual científico                             │
@@ -199,7 +199,7 @@ energy_runner.run_energy_simulation()
   │     └── social_architect.setup_client() (lazy)
   ├── energy_schemas.EnergyConfig.model_validate() → validación
   └── energy_engine.SocialEnergyEngine
-        ├── Langevin discreta JIT (Numba): x_i(t+η) = x_i - η∇U + ηλ(x̄_nb - x_i) + √(2ηT)ε
+        ├── Langevin discreta: x_i(t+η) = x_i - η∇U + ηλ(x̄_nb - x_i) + √(2ηT)ε
         ├── attractores/repulsores gaussianos
         └── system_metrics() (polarización, consenso, etc.)
   ↓

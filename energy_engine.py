@@ -353,7 +353,7 @@ class SocialEnergyEngine:
         # ── Ruido estocástico (una muestra por agente) ─────────────────────────
         noise = np.sqrt(2.0 * eta * effective_temp) * self.rng.standard_normal(n)
 
-        # ── Extract arrays for JIT-compiled hot path ───────────────────────────
+        # ── Prepare arrays for hot path ───────────────────────────────────────
         sigma2 = _SIGMA**2
         if attractors:
             att_positions = np.array([a["position"] for a in attractors], dtype=np.float64)

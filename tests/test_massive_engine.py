@@ -485,7 +485,7 @@ class TestPerformance:
     def test_large_N_runs_fast(self):
         """N=50 000, M=100, 200 steps en < 15 segundos."""
         engine = MassiveSimEngine(N=50_000, M=100, seed=0)
-        # Warm-up Numba JIT
+        # Warm-up run to stabilize measurements
         engine.run(steps=2)
 
         engine2 = MassiveSimEngine(N=50_000, M=100, seed=1)

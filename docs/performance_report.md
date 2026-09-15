@@ -34,7 +34,7 @@
 
 1. **MultilayerEngine is fastest at small scale** (1K-10K) with 64K-55K ag/s throughput
 2. **EnergyEngine scales linearly** in memory (constant ~0.78 GB regardless of N)
-3. **Numba JIT critical for production** — would provide 10x+ speedup on EnergyEngine
+3. **EnergyEngine scales linearly** in memory with O(N) complexity
 4. **Dense engines cap at ~10K** due to O(N²) memory (adjacency matrix)
 
 ---

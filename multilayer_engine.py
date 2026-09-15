@@ -259,7 +259,7 @@ def compute_theta(attributes_df: pd.DataFrame, K: int = 5) -> np.ndarray:
 
 
 # ============================================================
-# POTENCIAL MULTIDIMENSIONAL (JIT)
+# POTENCIAL MULTIDIMENSIONAL
 # ============================================================
 
 
@@ -315,7 +315,7 @@ def multi_potential_gradient(x: np.ndarray) -> np.ndarray:
 
 
 # ============================================================
-# PASO DE LANGEVIN MULTICAPA (JIT)
+# PASO DE LANGEVIN MULTICAPA
 # ============================================================
 
 
@@ -330,7 +330,7 @@ def _multilayer_langevin_step_core(
     x_max: float,
     noise: np.ndarray,
 ) -> np.ndarray:
-    """Numba core of Euler-Maruyama multilayer step (noise pre-sampled).
+    """Core of Euler-Maruyama multilayer step (noise pre-sampled).
 
     Operates on a DENSE layers_flat array ``(L, N, N)``. For sparse graphs use
     ``_multilayer_langevin_step_core_sparse`` which avoids the O(N²) path."""
@@ -447,7 +447,7 @@ def multilayer_langevin_step(
 
     # Dispatch to the sparse-aware core when layers are scipy CSR matrices,
     # keeping the O(L·N·k) runtime for sparse graphs. Otherwise use the
-    # Numba-compiled dense kernel (backward compatible).
+    # Dense kernel (backward compatible).
     is_sparse = (
         isinstance(layers_flat, (list, tuple)) and layers_flat and hasattr(layers_flat[0], "format")
     )

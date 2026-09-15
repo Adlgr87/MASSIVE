@@ -4,7 +4,7 @@ Tests para el Motor Multicapa Sociodemográfico de MASSIVE.
 Cubre los 4 tests obligatorios del problema:
   1. Recuperar comportamiento original (layer_weights=[1,0,0])
   2. Verificar theta modulación (religiosos polarizan más)
-  3. 1000 steps < 10s (Numba)
+  3. 1000 steps < 10s (performance benchmark)
   4. Plots multidimensionales funcionan
 """
 
@@ -130,16 +130,16 @@ class TestThetaModulation:
 
 
 # ============================================================
-# TEST 3 — 1000 steps < 10s (Numba)
+# TEST 3 — 1000 steps < 10s (performance benchmark)
 # ============================================================
 
 
-class TestNumbaPerformance:
+class TestPerformance:
 
     def test_1000_steps_under_10_seconds(self):
-        """1000 pasos con N=200 agentes deben completarse en < 10 s con Numba."""
+        """1000 pasos con N=200 agentes deben completarse en < 10 s."""
         engine = MultilayerEngine(N=200, seed=0)
-        # Warm-up: compilar JIT antes de medir
+        # Warm-up run to stabilize measurements
         engine.run(steps=2)
 
         engine2 = MultilayerEngine(N=200, seed=1)

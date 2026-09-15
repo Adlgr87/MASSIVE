@@ -22,8 +22,8 @@ la CPU:
      Fallback automático a NumPy si no hay GPU disponible.
 
 Compatibilidad total con MultilayerEngine de multilayer_engine.py:
-  - Reutiliza `multilayer_langevin_step` (Numba JIT) para M ≤ N.
-  - Reutiliza `multi_potential_gradient` (Numba JIT).
+  - Reutiliza `multilayer_langevin_step` para M ≤ N.
+  - Reutiliza `multi_potential_gradient` .
   - Las API devueltas son equivalentes a las de MultilayerEngine.
 
 Ejemplo de uso::
@@ -746,7 +746,7 @@ def _langevin_step_gpu(
                 coupling * float(lw_gpu[ell]) * (layers_gpu[ell] @ x_gpu[:, _COL_OPINION])
             )
 
-        # Potential gradient (must run on CPU with Numba JIT, then transfer)
+        # Potential gradient (pure Python, runs on CPU)
         grad_U_cpu = multi_potential_gradient(x)
         grad_U = cp.asarray(grad_U_cpu)
 
@@ -938,36 +938,7 @@ class MassiveSimEngine:
         self._active_fraction_history: list[float] = [1.0]
         self._steps_run: int = 0
 
-        # ── Warm-up Numba JIT (cache=True avoids recomile across sessions) ──
-        if not getattr(self, "_jit_woken", False):
-            try:
-                from multilayer_engine import (
-                    _multilayer_langevin_step_core,
-                    multi_potential_gradient,
-                )
-
-                # Tiny batch to trigger one-time compilation.
-                # Fix (Finding 14): _xt is (2, K) 2-D so multi_potential_gradient
-                # receives N,K-shaped input as expected; _multilayer_langevin_step_core
-                # also needs a 2-D state (x_vec[:, 0] was 1-D and silently failed).
-                _xt = self._x[:2].copy()
-                multi_potential_gradient(_xt)
-                _layers = self._layers_flat[:, :2, :2]
-                _w = self.layer_weights.astype(np.float64)
-                _th = np.ones((2, K), dtype=np.float64)
-                _multilayer_langevin_step_core(
-                    _xt.copy(),
-                    _layers,
-                    _w,
-                    _th,
-                    self.coupling,
-                    self.dt,
-                    -1.0,
-                    1.0,
-                )
-                self._jit_woken = True
-            except Exception:
-                pass  # JIT missing or not needed — runtime path handles it
+        # No JIT warm-up needed (all kernels are pure Python now)
 
     # ------------------------------------------------------------------
     # Ejecución
@@ -1041,7 +1012,7 @@ class MassiveSimEngine:
                 active_frac = float(self._active_set.mask.mean())
 
             else:
-                # Paso completo con Numba JIT (estrategia base: LOD + JIT)
+                # Paso completo (estrategia base: LOD)
                 self._x = multilayer_langevin_step(
                     self._x,
                     self._layers_flat,

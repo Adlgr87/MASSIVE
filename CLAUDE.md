@@ -64,7 +64,7 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 
 ## MASSIVE-specific conventions
 
-- Numba JIT kernels (`@njit`) accept only plain numpy arrays — no dicts, DataFrames, or Python objects.
+- JIT-compiled kernels accept only plain numpy arrays — no dicts, DataFrames, or Python objects.
 - All opinion values stay within their declared range (unipolar `[0,1]` or bipolar `[-1,1]`); use `np.clip` after every update.
 - The main simulation API (`simular`, `simular_multiples`) must remain backward-compatible. New features live in new modules.
 - New modules follow the existing docstring style (Google-style with Args/Returns).
