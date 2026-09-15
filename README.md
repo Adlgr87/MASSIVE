@@ -285,7 +285,7 @@ MASSIVE/
 ├── scripts/              # Backup automation, security audit, TS type generator
 ├── docs/                 # MkDocs site + production-readiness suite
 ├── monitoring/           # Prometheus alert rules + Grafana dashboard spec
-└── tests/                # 662+ tests: unit, integration, contract, security, reproducibility
+└── tests/                # 679 tests: unit, integration, contract, security, reproducibility
 ```
 
 ---
