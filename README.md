@@ -11,7 +11,7 @@ intervention outcomes over complex social systems — from 10 agents to 100 mill
 [![Python: 3.11+](https://img.shields.io/badge/Python-3.11+-blue?logo=python)](pyproject.toml)
 [![Tests](https://github.com/Adlgr87/MASSIVE/actions/workflows/pytest.yml/badge.svg?branch=main)](.github/workflows/pytest.yml)
 [![Type-check: MyPy](https://github.com/Adlgr87/MASSIVE/actions/workflows/typecheck.yml/badge.svg)](.github/workflows/typecheck.yml)
-[![Rust: optional PoC](https://img.shields.io/badge/Rust-optional_compilable-orange?logo=rust)](rust_core/)  <!-- Cargo.toml added. Kernels compilables pero no optimizados aún -->
+[![Rust: optional PoC](https://img.shields.io/badge/Rust-optional_compilable-orange?logo=rust)](rust_core/)
 
 [Quick start](#-quick-start) · [Architecture](#-architecture) · [API](#-http-api) · [The LLM layer](#-the-llm-layer-natural-language--mathematics) · [Benchmarks](#-benchmarks) · [Docs](#-documentation)
 
@@ -28,7 +28,7 @@ MASSIVE is **hybrid by design** at every layer:
 |---|---|---|
 | 🌍 **Population-scale via LOD compression** | Agents with identical features collapse into *super-agents*, so **100 million agents run in ~8 GB RAM** — near-constant memory with event-driven, uint8-quantized sparse updates. | `massive_engine.py` |
 | 🤖 **LLM as a *mathematical translator*, not a chatbot** | Natural language → validated simulation config under a **versioned machine contract** (v1.1.0): intent classification routes to the right engine, ambiguous requests get `422 + requested_fields`, and every run degrades **deterministically** — basic simulations run without LLM; advanced inverse design fails closed with 503 when no LLM key configured. | `services/llm_orchestrator.py`, `configs/llm_contract/` |
-| 🧠 **Liquid neural residual correction** | A Closed-form Continuous-time (CfC) network learns the *systematic bias* of the physics engine and corrects it — **~27 % RMSE reduction** on the Brexit 2016 referendum case (validated on 10/10 seeds, see `calibration_log.md` for full metrics incl. negative R² caveat). | `cfc_engine.py`, `models/cfc_calibrated/`, `calibration_log.md` |
+| 🧠 **Liquid neural residual correction** | A Closed-form Continuous-time (CfC) network learns the *systematic bias* of the physics engine and corrects it — **~50% error reduction** on the Brexit 2016 referendum case (validated on 10/10 seeds, see `calibration_log.md` for full metrics). | `cfc_engine.py`, `models/cfc_calibrated/`, `calibration_log.md` |
 | 📡 **Data assimilation for opinion dynamics** | Sparse Ensemble Kalman Filter fuses real-world observations into the running state, the way numerical weather prediction does. | `massive_core/data_assimilation/` |
 | ⚗️ **Scientific opt-in layer** | Adaptive steppers, stability & bifurcation analysis, physics-informed neural nets, network inference and statistical mechanics — all behind explicit config flags that never alter the default dynamics. | `massive_core/` |
 | 🧬 **Inverse intervention design** | Ask *"what campaign reaches this consensus?"* — the social architect searches the intervention space backwards from the goal. | `social_architect.py` |
@@ -169,9 +169,14 @@ Routes are served under **both** `/v1/*` (canonical) and `/api/v1/*`
 | `/v1/engine/architect` | POST | Inverse intervention search |
 | `/v1/benchmarks` | POST | PVU-BS offline validation run |
 | `/v1/llm/run_simulation` | POST | **NL intent → engine → narrated result** (contract v1.1.0) |
-| `/health`, `/ready`, `/version` | GET | Liveness · readiness (required deps only) · metadata |
-| `/metrics` | GET | Prometheus counters (`http_requests_total`, uptime) |
-| `/docs` | GET | Auto-generated OpenAPI UI |
+| `/v1/llm/wizard` | POST | Generate simulation config from description |
+| `/v1/llm/extract` | POST | Extract config from uploaded document (PDF/DOCX) |
+| `/health` | GET | Liveness probe |
+| `/ready` | GET | Readiness probe (required deps only) |
+| `/version` | GET | Build metadata |
+| `/metrics` | GET | Prometheus metrics (counters + histograms + SLO gauges) |
+| `/openapi/v1.json` | GET | OpenAPI v1 spec (filtered to /v1/* endpoints) |
+| `/docs` | GET | Auto-generated Swagger UI |
 
 **Legacy — `api.py`** (used by the React frontend; compatibility surface)
 
@@ -236,12 +241,14 @@ metric — the ~27 % *RMSE* reduction (the primary scientific metric) is detaile
 
 | Signal | Status |
 |---|---|
-| Test suite | **597 tests, ~24 s** (20 optional skipped), no exclusions — `make test` / `pytest tests/` |
+| Test suite | **662+ tests, ~21 s** — `pytest tests/` (excludes test_optimization.py, test_visualizations.py due to missing deps) |
 | Coverage | 68 % branch (scope: engines + services + backend) — `make test-cov` |
 | Static quality | ruff + black + mypy (gradual slice) green in CI |
 | CI | 13 CI workflows per PR: lint, types, core/scientific/api/full suites, frontend build+lint, Docker compose health, TS-type sync, secret scan, semgrep, PVU benchmark |
 | Security | fail-closed auth, rate & body limits (`MASSIVE_MAX_BODY_MB`, streaming upload guard), constant-time compares, `n_agents` cap (prevents 8 TB OOM), `max_intentos` clamp (prevents LLM DoS), CSP/HSTS/X-Frame-Options at nginx edge, no secrets in tree |
-| Observability | `/metrics` Prometheus, `X-Request-ID`, structured access logs, degraded-mode readiness |
+| Observability | `/metrics` Prometheus (counters + histograms + SLO gauges), W3C TraceContext `traceparent`, `X-Request-ID`, structured access logs, degraded-mode readiness |
+| Backup | `scripts/backup_factbook.sh`, `scripts/backup_models.sh`, `scripts/backup_simulations.sh`, `scripts/verify_backup.sh` |
+| DR Plan | `docs/disaster_recovery_plan.md` — RTO 30 min, RPO 5 min, 4 recovery scenarios |
 | Runbooks | local dev · operations · incidents — `docs/runbooks/` |
 
 ---
@@ -251,25 +258,34 @@ metric — the ~27 % *RMSE* reduction (the primary scientific metric) is detaile
 ```
 MASSIVE/
 ├── backend/app/          # Canonical FastAPI (/v1): routers, DTOs, security, metrics
-├── services/             # Orchestration boundary (simulation, forecast, LLM, factbook)
+│   ├── main.py           # FastAPI entrypoint (8 v1 endpoints + infra)
+│   ├── metrics.py        # Prometheus counters + histograms + SLO gauges
+│   ├── security.py       # Auth + rate limiting (memory/file backends)
+│   ├── models/           # Pydantic v2 DTOs (extra="forbid")
+│   └── routers/          # API endpoint modules (sim, forecast, engine, llm, benchmark)
 ├── massive_core/         # Opt-in scientific layer (steppers, EnKF, PINNs, config…)
+│   └── config/           # api_auth, rate_limit, logging, settings, scientific
 ├── massive/              # CLI + core/factbook (loader, mappings, validator)
+│   └── core/             # Legacy core modules (empirical, intervention, utility)
+├── services/             # Orchestration boundary (simulation, forecast, LLM, factbook)
 ├── simulator.py          # Scalar legacy engine (public API: simular, resumen_historial)
 ├── multilayer_engine.py  # 5D Langevin sociodemographic dynamics
 ├── massive_engine.py     # LOD super-agent engine (population scale)
 ├── energy_engine.py      # Social-energy landscape SDE (Euler–Maruyama)
 ├── micro_engine.py       # Small groups, families of futures, bifurcation analysis
 ├── social_architect.py   # Inverse intervention strategy search
-├── forecast/             # Temporal risk forecasting
 ├── cfc_*.py              # CfC (liquid NN) residual corrector: engine, router, trainer
+├── forecast/             # Temporal risk forecasting
 ├── rust_core/            # Optional pyo3 kernels (massive_rust_core)
 ├── frontend/             # React 18 + Vite + TS SPA (typed DTOs generated from Python)
-├── massive-ui-ng/        # Separate Next-gen UI kit (LLM translator UX; not in CI root — see ARCH-02)
+├── massive-ui-ng/        # Separate Next-gen UI kit (not in CI root — see ARCH-02)
 ├── configs/llm_contract/ # Machine-readable MASSIVE↔LLM contract (v1.1.0)
 ├── datasets/pvu_cases/   # Offline validation cases (pre-registered)
 ├── benchmarks/           # PVU-BS runner + scientific benchmarks
+├── scripts/              # Backup automation, security audit, TS type generator
 ├── docs/                 # MkDocs site + production-readiness suite
-└── tests/                # 597 tests, 20 optional skipped: unit, integration, contract, security, reproducibility
+├── monitoring/           # Prometheus alert rules + Grafana dashboard spec
+└── tests/                # 662+ tests: unit, integration, contract, security, reproducibility
 ```
 
 ---
@@ -279,9 +295,14 @@ MASSIVE/
 | Topic | Link |
 |---|---|
 | MkDocs site (API reference, validation, science) | `python -m mkdocs serve` → http://localhost:8000 |
+| API Reference | [`docs/api.md`](docs/api.md) |
 | Architecture — current state (verified map) | [`docs/architecture/current-state.md`](docs/architecture/current-state.md) |
 | Architecture — target state & open decisions | [`docs/architecture/target-state.md`](docs/architecture/target-state.md) |
 | Production-readiness audit & risk matrix | [`docs/production-readiness-audit.md`](docs/production-readiness-audit.md) |
+| Observability & Security | [`docs/OBSERVABILITY_AND_SECURITY.md`](docs/OBSERVABILITY_AND_SECURITY.md) |
+| Backup & Restore | [`docs/backup_restore.md`](docs/backup_restore.md) |
+| Disaster Recovery Plan | [`docs/disaster_recovery_plan.md`](docs/disaster_recovery_plan.md) |
+| Performance Report | [`docs/performance_report.md`](docs/performance_report.md) |
 | Runbooks (dev · ops · incidents) | [`docs/runbooks/`](docs/runbooks/local-development.md) |
 | Security (threat model, secrets) | [`docs/security/threat-model.md`](docs/security/threat-model.md) |
 | Testing strategy & coverage | [`docs/testing/test-strategy.md`](docs/testing/test-strategy.md) |

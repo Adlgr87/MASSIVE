@@ -52,6 +52,24 @@ async def v1_benchmarks(request: Request, payload: dict[str, Any]) -> dict[str, 
     seed = int(payload.get("seed", 42))
     out = payload.get("out", "reports/validation/ci")
 
+    # Path sanitization: reject absolute paths or directory traversal
+    def _sanitize_path(p: str) -> str:
+        """Ensure path is relative and contains no traversal sequences."""
+        if p.startswith("/") or p.startswith(".."):
+            raise HTTPException(
+                status_code=400,
+                detail="Path must be relative (no leading / or ..)",
+            )
+        if ".." in p.split(os.sep):
+            raise HTTPException(
+                status_code=400,
+                detail="Path contains directory traversal (..)",
+            )
+        return p
+
+    cases = _sanitize_path(cases)
+    out = _sanitize_path(out)
+
     argv = ["--cases", cases, "--out", out, "--seed", str(seed)]
     if mode == "llm":
         argv.append("--llm")

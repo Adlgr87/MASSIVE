@@ -25,10 +25,24 @@ class RateLimiter(ABC):
 
 
 class InMemoryRateLimiter(RateLimiter):
-    """Single-process rate limiter (default)."""
+    """Single-process rate limiter (default).
+
+    Prunes stale keys periodically to prevent unbounded dict growth.
+    """
 
     def __init__(self) -> None:
         self._hits: dict[str, list[float]] = defaultdict(list)
+        self._prune_counter: int = 0
+
+    def _prune(self) -> None:
+        """Remove keys with empty or expired timestamp lists."""
+        now = time.time()
+        stale = [
+            k for k, ts in self._hits.items()
+            if not [t for t in ts if now - t < 60.0]
+        ]
+        for k in stale:
+            del self._hits[k]
 
     def allow(self, key: str, limit_per_min: int) -> bool:
         now = time.time()
@@ -38,6 +52,10 @@ class InMemoryRateLimiter(RateLimiter):
             return False
         window.append(now)
         self._hits[key] = window
+        # Prune stale keys every ~60 calls to keep dict bounded
+        self._prune_counter += 1
+        if self._prune_counter % 60 == 0:
+            self._prune()
         return True
 
 
