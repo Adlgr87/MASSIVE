@@ -1,0 +1,48 @@
+# CODEOWNERS — canonical reviewers per area
+# See https://docs.github.com/en/repositories/managing-your-repositories-in-github/
+#     /customizing-your-repositories/about-codes-owners
+
+*                           @Adlgr87
+
+# Core numerical engines (cf. AGENTS.md — agente Foundation)
+massive_engine.py           @Adlgr87
+micro_engine.py            @Adlgr87
+energy_engine.py           @Adlgr87
+simulator.py               @Adlgr87
+multilayer_engine*.py      @Adlgr87
+massive_core/              @Adlgr87
+
+# CFC / neural-physics
+cfc_engine.py              @Adlgr87
+cfc_router.py              @Adlgr87
+cfc_trainer.py             @Adlgr87
+train_cfc_*.py             @Adlgr87
+
+# Fast API backend (canonical surface — see Production Architecture Spec)
+backend/                   @Adlgr87
+
+# Services layer
+services/                  @Adlgr87
+
+# Forecast
+forecast/                  @Adlgr87
+
+# Frontend — two frontends under review (W5-T01 decision tracked in CANONICAL_SOURCES.md)
+frontend/                  @Adlgr87
+massive-ui-ng/frontend/    @Adlgr87
+
+# CI/CD configuration
+.github/                   @Adlgr87
+Makefile                   @Adlgr87
+pyproject.toml             @Adlgr87
+requirements.txt           @Adlgr87
+Dockerfile                 @Adlgr87
+docker-compose*.yml        @Adlgr87
+
+# Documentation
+docs/                      @Adlgr87
+*.md                       @Adlgr87
+
+# Infrastructure / Rust core
+rust_core/                 @Adlgr87
+Cargo.toml                 @Adlgr87

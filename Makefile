@@ -6,7 +6,8 @@ VENV ?= .venv
 BIN := $(VENV)/bin
 
 .PHONY: help install test test-cov lint format typecheck api api-legacy \
-        cli-verify frontend-install frontend-dev frontend-build benchmark clean
+        verify verify-baseline cli-verify frontend-install frontend-dev \
+        frontend-build benchmark clean
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2}'
@@ -33,6 +34,12 @@ format: ## Apply ruff --fix + black
 
 typecheck: ## Gradual mypy slice
 	$(BIN)/python scripts/typecheck_slice.py
+
+verify: ## Full verification harness (lint, types, tests, docs, G-1 guardrails)
+	$(PYTHON) scripts/verify_harness.py
+
+verify-baseline: ## Snapshot audit baseline -> reports/audit_baseline.json
+	$(PYTHON) scripts/verify_harness.py --baseline
 
 api: ## Start canonical /v1 API on :8000
 	$(BIN)/uvicorn backend.app.main:app --host 0.0.0.0 --port 8000

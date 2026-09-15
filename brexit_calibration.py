@@ -62,11 +62,11 @@ def run_brexit_calibration(
 
     adj = random_network(n_agents, connectivity=0.3, seed=seed)
     attractors = [
-        {"position": 0.6, "strength": 1.2},   # Leave attractor
+        {"position": 0.6, "strength": 1.2},  # Leave attractor
         {"position": -0.4, "strength": 0.8},  # Remain attractor
     ]
     repellers = [
-        {"position": 0.0, "strength": 0.5},    # Neutral repeller
+        {"position": 0.0, "strength": 0.5},  # Neutral repeller
     ]
 
     # Simulation loop with EWS detection and CFC integration
@@ -87,8 +87,12 @@ def run_brexit_calibration(
             gini = engine.gini_coefficient
 
             # Compute polarization deltas
-            delta_p1 = opinion_history[-1] - opinion_history[-2] if len(opinion_history) >= 2 else 0.0
-            delta_p5 = opinion_history[-1] - opinion_history[-6] if len(opinion_history) >= 6 else 0.0
+            delta_p1 = (
+                opinion_history[-1] - opinion_history[-2] if len(opinion_history) >= 2 else 0.0
+            )
+            delta_p5 = (
+                opinion_history[-1] - opinion_history[-6] if len(opinion_history) >= 6 else 0.0
+            )
 
             features = {
                 "polarization": max(0.0, min(1.0, pol)),
@@ -107,15 +111,27 @@ def run_brexit_calibration(
                 # Use landscape modulator to adapt attractors/repellers
                 new_landscape, src = router.propose_landscape(features)
                 if new_landscape:
-                    attractors = [{"position": new_landscape["attractor_position"],
-                                   "strength": new_landscape["attractor_strength"]}]
-                    repellers = [{"position": new_landscape["repeller_position"],
-                                  "strength": new_landscape["repeller_strength"]}]
+                    attractors = [
+                        {
+                            "position": new_landscape["attractor_position"],
+                            "strength": new_landscape["attractor_strength"],
+                        }
+                    ]
+                    repellers = [
+                        {
+                            "position": new_landscape["repeller_position"],
+                            "strength": new_landscape["repeller_strength"],
+                        }
+                    ]
                     engine._sigma = new_landscape["sigma_p"]
 
         # Step the simulation
         opinions = engine.step(
-            opinions, adj, attractors, repellers, eta=0.01,
+            opinions,
+            adj,
+            attractors,
+            repellers,
+            eta=0.01,
             ews_flags=ews_flags,
         )
         opinion_history.append(float(np.mean(opinions)))

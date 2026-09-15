@@ -15,11 +15,13 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
+
 class SimMode(StrEnum):
     """Operating mode of a simulation snapshot."""
 
     live = "live"
     replay = "replay"
+
 
 class SimEventKind(StrEnum):
     """Lifecycle events emitted by the simulation engine."""
@@ -28,6 +30,7 @@ class SimEventKind(StrEnum):
     stopped = "stopped"
     reset = "reset"
     error = "error"
+
 
 class SimAgentLite(BaseModel):
     """Lightweight agent representation suitable for real-time streaming.."""
@@ -41,6 +44,7 @@ class SimAgentLite(BaseModel):
     z: float = 0.0
     opinion: float = Field(..., ge=-1.0, le=1.0)
     metadata: dict[str, Any] | None = None
+
 
 class SimAggregateMetrics(BaseModel):
     """Aggregate population-level metrics for one simulation tick.."""
@@ -56,6 +60,7 @@ class SimAggregateMetrics(BaseModel):
     active_agents: int
     schema_version: str | None = None
 
+
 class SimulationSnapshotPayload(BaseModel):
     """State snapshot for a single tick, embedded inside ``SimSnapshotMessage``.."""
 
@@ -67,6 +72,7 @@ class SimulationSnapshotPayload(BaseModel):
     mode: SimMode = SimMode.live
     schema_version: str | None = None
 
+
 class SimSnapshotMessage(BaseModel):
     """WebSocket message carrying a full state snapshot.."""
 
@@ -77,6 +83,7 @@ class SimSnapshotMessage(BaseModel):
     timestamp: datetime
     payload: SimulationSnapshotPayload
     schema_version: str | None = None
+
 
 class SimEventMessage(BaseModel):
     """WebSocket message signalling a simulation lifecycle event.."""

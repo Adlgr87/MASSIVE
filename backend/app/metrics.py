@@ -33,7 +33,6 @@ def _escape_label(value: str) -> str:
     return value.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
 
 
-
 def _bucket_key(name: str, key: tuple, bound: float) -> str:
     """Build a Prometheus bucket key without escaped quotes in f-strings."""
     if not key:
@@ -85,7 +84,6 @@ class Histogram:
             total_count = dict(self._total_count)
             sum_vals = dict(self._sum)
 
-
         # Render each bucket
         for bound in self.buckets:
             bucket_name = f"{self.name}_bucket"
@@ -99,9 +97,9 @@ class Histogram:
                         cum_count += self._counts.get(bk, {}).get((), 0)
                 if key:
                     label_str = ",".join(f'{k}="{_escape_label(v)}"' for k, v in key)
-                    lines.append(f"{bucket_name}{{{label_str},le=\"{bound}\"}} {cum_count}")
+                    lines.append(f'{bucket_name}{{{label_str},le="{bound}"}} {cum_count}')
                 else:
-                    lines.append(f"{bucket_name}{{le=\"{bound}\"}} {cum_count}")
+                    lines.append(f'{bucket_name}{{le="{bound}"}} {cum_count}')
 
         # +Inf bucket
         for key in total_count:
@@ -175,10 +173,14 @@ class MetricsRegistry:
         lines.append(f"massive_uptime_seconds {uptime:.2f}")
 
         # SLO target annotations
-        lines.append("# HELP massive_slo_error_budget Maximum allowable 5xx error rate (0.05 = 5%).")
+        lines.append(
+            "# HELP massive_slo_error_budget Maximum allowable 5xx error rate (0.05 = 5%)."
+        )
         lines.append("# TYPE massive_slo_error_budget gauge")
         lines.append("massive_slo_error_budget 0.05")
-        lines.append("# HELP massive_slo_p95_latency_max Maximum P95 latency in seconds (<100 steps).")
+        lines.append(
+            "# HELP massive_slo_p95_latency_max Maximum P95 latency in seconds (<100 steps)."
+        )
         lines.append("# TYPE massive_slo_p95_latency_max gauge")
         lines.append("massive_slo_p95_latency_max 2.0")
         lines.append("# HELP massive_slo_p95_latency_llm Maximum P95 latency in seconds (LLM).")

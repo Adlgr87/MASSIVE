@@ -1,4 +1,5 @@
-"""
+"""MASSIVE UI-NG — FastAPI application (Next-Gen UI backend).
+
 ⚠️ DEPRECATED - MASSIVE-UI-Ng Backend
 =====================================
 This is a duplicate backend implementation.
@@ -6,9 +7,6 @@ The canonical backend is in the main repository at:
   backend/app/
 
 This file will be deprecated in favor of the unified backend.
-"""
-
-"""MASSIVE UI-NG — FastAPI application (Next-Gen UI backend).
 
 Production-ready entrypoint that powers the React translator UI. Features:
 

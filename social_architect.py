@@ -492,7 +492,7 @@ def buscar_estrategia_inversa(
     estado_inicial: dict,
     objetivo_usuario: str,
     max_intentos: int = 3,
-    config: dict = None,
+    config: dict | None = None,
     modo_simulacion: str = "macro",
     metricas_red: str = "",
     use_langchain: bool = False,

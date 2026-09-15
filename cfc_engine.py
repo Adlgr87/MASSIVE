@@ -17,21 +17,10 @@ Modelos:
 Autor: MASSIVE Research
 """
 
+from __future__ import annotations
 
-# Graceful fallback for torch (matching energy_engine.py pattern)
-try:
-    import torch
-    import torch.nn as nn
-    _HAS_TORCH = True
-except ImportError as _e:
-    _HAS_TORCH = False
-    torch = None  # type: ignore[assignment]
-    nn = type("nn", (), {"Module": object})()  # type: ignore[assignment,misc]
-    import warnings
-    warnings.warn(
-        f"PyTorch no disponible: {_e}. CFC engine usará implementación NumPy fallback. "
-        "Instale con: pip install torch"
-    )
+import torch
+import torch.nn as nn
 
 # Número de regímenes (reglas 0–12 definidas en simulator.py → NOMBRES_REGLAS)
 NUM_REGIMES: int = 13
@@ -221,7 +210,7 @@ class CfCResidualCorrector(nn.Module):
         Returns:
             Predicted residual r̂(t) (batch, 1).
         """
-        _ = self.u_encoder(u)                                 # (batch, hidden) — encoder path
+        _ = self.u_encoder(u)  # (batch, hidden) — encoder path
         tau = self.tau_net(torch.cat([x, u], dim=-1)) + self._eps
         f = self.f_net(torch.cat([x, u], dim=-1))
         dx = (-1.0 / tau) * x + f
@@ -290,9 +279,10 @@ class CfCLambdaCorrector(nn.Module):
     """
     Lightweight CfC-based corrector for lambda_social.
     Trained to propose a corrected lambda based on polarization/Gini context.
-    
+
     Architecture: CfCCell (ODE) -> Linear Readout -> Softplus
     """
+
     def __init__(self, input_dim: int = 5, hidden_size: int = 32) -> None:
         super().__init__()
         self.cell = CfCCell(input_dim, hidden_size)
@@ -313,6 +303,7 @@ class CfCTempModulator(nn.Module):
 
     Architecture: CfCCell (ODE) -> Linear Readout -> Softplus -> affine [0.5, 2.0]
     """
+
     def __init__(self, input_dim: int = 5, hidden_size: int = 32) -> None:
         super().__init__()
         self.cell = CfCCell(input_dim, hidden_size)
@@ -335,6 +326,7 @@ class CfCLandscapeModulator(nn.Module):
 
     Architecture: CfCCell (ODE) -> Linear Readout -> [Softplus | Tanh constraints]
     """
+
     def __init__(self, input_dim: int = 5, hidden_size: int = 32) -> None:
         super().__init__()
         self.cell = CfCCell(input_dim, hidden_size)
@@ -346,9 +338,12 @@ class CfCLandscapeModulator(nn.Module):
         h = self.cell(h, u, dt=dt)
         # 5 outputs: [sigma_p, attractor_str, repeller_str, attractor_pos, repeller_pos]
         raw = self.readout(h)
-        out = torch.cat([
-            torch.nn.Softplus()(raw[:, :3]),
-            torch.sigmoid(raw[:, 3:4]) * 2.0 - 1.0,
-            torch.tanh(raw[:, 4:5]),
-        ], dim=-1)
+        out = torch.cat(
+            [
+                torch.nn.Softplus()(raw[:, :3]),
+                torch.sigmoid(raw[:, 3:4]) * 2.0 - 1.0,
+                torch.tanh(raw[:, 4:5]),
+            ],
+            dim=-1,
+        )
         return out

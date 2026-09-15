@@ -28,6 +28,7 @@ log = logging.getLogger("massive")
 
 try:
     import torch as _torch
+
     _TORCH_AVAILABLE = True
 except ImportError:
     _torch = None  # type: ignore[assignment]
@@ -205,6 +206,7 @@ class SocialEnergyEngine:
             from pathlib import Path
 
             from cfc_engine import CfCLambdaCorrector
+
             path = Path("models/cfc_calibrated/cfc_lambda_corrector.pt")
             if not path.exists():
                 path = Path("models/cfc_lambda_corrector.pt")
@@ -225,13 +227,18 @@ class SocialEnergyEngine:
         """
         if self._lambda_model is not None and self._torch_available:
             try:
-                feat = _torch.tensor([[
-                    float(features.get("polarization", 0.0)),
-                    float(features.get("delta_p1", 0.0)),
-                    float(features.get("delta_p5", 0.0)),
-                    float(features.get("gini", self.gini_coefficient)),
-                    float(features.get("volatility", 0.0)),
-                ]], dtype=_torch.float32)
+                feat = _torch.tensor(
+                    [
+                        [
+                            float(features.get("polarization", 0.0)),
+                            float(features.get("delta_p1", 0.0)),
+                            float(features.get("delta_p5", 0.0)),
+                            float(features.get("gini", self.gini_coefficient)),
+                            float(features.get("volatility", 0.0)),
+                        ]
+                    ],
+                    dtype=_torch.float32,
+                )
                 with _torch.no_grad():
                     val = float(self._lambda_model(feat).item())
                 return max(0.0, min(1.0, val))
@@ -278,13 +285,18 @@ class SocialEnergyEngine:
             return None
 
         try:
-            feat = _torch.tensor([[
-                float(features.get("polarization", 0.0)),
-                float(features.get("delta_p1", 0.0)),
-                float(features.get("delta_p5", 0.0)),
-                float(features.get("skewness", 0.0)),
-                float(features.get("gini", self.gini_coefficient)),
-            ]], dtype=_torch.float32)
+            feat = _torch.tensor(
+                [
+                    [
+                        float(features.get("polarization", 0.0)),
+                        float(features.get("delta_p1", 0.0)),
+                        float(features.get("delta_p5", 0.0)),
+                        float(features.get("skewness", 0.0)),
+                        float(features.get("gini", self.gini_coefficient)),
+                    ]
+                ],
+                dtype=_torch.float32,
+            )
             with _torch.no_grad():
                 vals = self._landscape_model(feat)[0].numpy()
             # Output: [sigma_p, attractor_str, repeller_str, attractor_pos, repeller_pos]
@@ -329,16 +341,23 @@ class SocialEnergyEngine:
         # falls back to rule-based multipliers for boolean-only flags.
         effective_temp = self.temperature
         if ews_flags:
-            has_features = any(k in ews_flags for k in ("polarization", "delta_p1", "delta_p5", "skewness"))
+            has_features = any(
+                k in ews_flags for k in ("polarization", "delta_p1", "delta_p5", "skewness")
+            )
             if self._temp_model is not None and self._torch_available and has_features:
                 try:
-                    feat = np.array([[
-                        float(ews_flags.get("polarization", 0.0)),
-                        float(ews_flags.get("delta_p1", 0.0)),
-                        float(ews_flags.get("delta_p5", 0.0)),
-                        float(ews_flags.get("skewness", 0.0)),
-                        float(ews_flags.get("gini", self.gini_coefficient)),
-                    ]], dtype=np.float32)
+                    feat = np.array(
+                        [
+                            [
+                                float(ews_flags.get("polarization", 0.0)),
+                                float(ews_flags.get("delta_p1", 0.0)),
+                                float(ews_flags.get("delta_p5", 0.0)),
+                                float(ews_flags.get("skewness", 0.0)),
+                                float(ews_flags.get("gini", self.gini_coefficient)),
+                            ]
+                        ],
+                        dtype=np.float32,
+                    )
                     u_tensor = _torch.from_numpy(feat)
                     with _torch.no_grad():
                         learned_mult = float(self._temp_model(u_tensor).item())
@@ -403,9 +422,7 @@ class SocialEnergyEngine:
             grad = _landscape_gradient(opinions[i], attractors, repellers)
             social_drift = self.lambda_social * (neighbor_mean[i] - opinions[i])
             landscape_drift = (1.0 - self.lambda_social) * (-grad)
-            new_opinions[i] = (
-                    opinions[i] + eta * landscape_drift + eta * social_drift + noise[i]
-                )
+            new_opinions[i] = opinions[i] + eta * landscape_drift + eta * social_drift + noise[i]
             new_opinions = np.clip(new_opinions, self.min_val, self.max_val)
 
         return new_opinions

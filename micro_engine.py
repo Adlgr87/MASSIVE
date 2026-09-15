@@ -693,8 +693,12 @@ class FamilyOfFuturesAnalyzer:
                 continue
 
             mean_feats = np.mean(feature_matrix[mask], axis=0)
-            _std_feats = np.std(feature_matrix[mask], axis=0)  # std per feature (reserved for family spread)
-            feat_names = self._get_feature_names(feature_matrix.shape[1])  # Fix (Finding): bound orphaned result
+            _std_feats = np.std(
+                feature_matrix[mask], axis=0
+            )  # std per feature (reserved for family spread)
+            feat_names = self._get_feature_names(
+                feature_matrix.shape[1]
+            )  # Fix (Finding): bound orphaned result
 
             # Parámetros típicos de esta familia
             params_array = np.array(

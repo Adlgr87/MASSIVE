@@ -20,7 +20,7 @@ def run_energy_simulation(
     range_type: str = "bipolar",
     seed: int = 42,
     llm_client=None,
-    config_overrides: dict = None,
+    config_overrides: dict | None = None,
     metrics_every_n: int = 1,
 ) -> dict:
     if n_agents < 2 or steps < 1:
@@ -93,7 +93,11 @@ def run_energy_simulation(
                 }
 
             opinions = engine.step(
-                opinions, adj, params["attractors"], params["repellers"], eta=eta,
+                opinions,
+                adj,
+                params["attractors"],
+                params["repellers"],
+                eta=eta,
                 ews_flags=ews_flags,
             )
 

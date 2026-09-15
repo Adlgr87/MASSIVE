@@ -54,8 +54,6 @@ except Exception:  # pragma: no cover - fallback if config unavailable
 _app_settings = get_app_settings()
 
 
-
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):  # noqa: ANN001
     yield
@@ -146,8 +144,7 @@ async def deprecation_warning(request: Request, call_next):
     path = request.url.path
     if path.startswith("/api/") and not path.startswith("/api/v1"):
         response.headers["X-API-Warn"] = (
-            "Deprecated endpoint. Use /v1/* instead. "
-            "See PRODUCTION_ARCHITECTURE_SPEC.md §5.1"
+            "Deprecated endpoint. Use /v1/* instead. " "See PRODUCTION_ARCHITECTURE_SPEC.md §5.1"
         )
     return response
 
@@ -197,9 +194,7 @@ async def request_context(request: Request, call_next):
         span_id = uuid.uuid4().hex[:16]
         traceparent = f"00-{trace_id}-{span_id}-01"
         response.headers["traceparent"] = traceparent
-    response.headers.setdefault(
-        "access-control-expose-headers", "X-Request-ID, traceparent"
-    )
+    response.headers.setdefault("access-control-expose-headers", "X-Request-ID, traceparent")
 
     log.info(
         "http request_id=%s traceparent=%s method=%s path=%s status=%s duration_s=%.4f",
@@ -331,9 +326,7 @@ async def openapi_v1_spec() -> dict[str, Any]:
     """Export the canonical OpenAPI v1 spec (excluding /docs, /metrics, etc.)."""
     schema = app.openapi()
     v1_paths = {
-        path: methods
-        for path, methods in schema["paths"].items()
-        if path.startswith("/v1")
+        path: methods for path, methods in schema["paths"].items() if path.startswith("/v1")
     }
     schema["paths"] = v1_paths
     schema.setdefault("info", {})["version"] = "1.0.0"

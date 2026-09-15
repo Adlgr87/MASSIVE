@@ -23,6 +23,7 @@ nav:
   - Spanish Version: README_ES.md
   - Production Readiness:
       - Audit & Risk Matrix: production-readiness-audit.md
+      - Audit Findings Tracker: AUDIT_FINDINGS_TRACKER.md
       - Release Checklist: release-checklist.md
       - Architecture (current): architecture/current-state.md
       - Architecture (target): architecture/target-state.md

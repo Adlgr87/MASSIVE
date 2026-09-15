@@ -139,23 +139,42 @@ def _build_parser() -> argparse.ArgumentParser:
     p_sim.set_defaults(func=_cmd_simulate)
 
     # scientific
-    p_sci = sub.add_parser("scientific", help="Run a scientific/multilayer simulation with diagnostics")
+    p_sci = sub.add_parser(
+        "scientific", help="Run a scientific/multilayer simulation with diagnostics"
+    )
     p_sci.add_argument("--estado", type=str, default=None, help="JSON initial state dict")
     p_sci.add_argument("--escenario", type=str, default="campana", help="Scenario key")
     p_sci.add_argument("--pasos", type=int, default=100, help="Number of simulation steps")
     p_sci.add_argument("--report", action="store_true", help="Generate scientific report")
-    p_sci.add_argument("--enkf", action="store_true", help="Enable Ensemble Kalman Filter data assimilation")
+    p_sci.add_argument(
+        "--enkf", action="store_true", help="Enable Ensemble Kalman Filter data assimilation"
+    )
     p_sci.set_defaults(func=_cmd_scientific)
 
     # forecast
     p_fc = sub.add_parser("forecast", help="Run temporal risk forecasting")
     p_fc.add_argument("--state", type=str, default=None, help="JSON simulation state snapshot")
-    p_fc.add_argument("--event-type", type=str, default="policy_adoption",
-                      choices=["viral_online", "protest_campaign", "labor_conflict",
-                               "electoral_campaign", "policy_adoption", "cultural_shift"],
-                      help="Event type for step-duration mapping")
-    p_fc.add_argument("--mode", type=str, default="analytical",
-                      choices=["analytical", "monte_carlo"], help="Forecast mode")
+    p_fc.add_argument(
+        "--event-type",
+        type=str,
+        default="policy_adoption",
+        choices=[
+            "viral_online",
+            "protest_campaign",
+            "labor_conflict",
+            "electoral_campaign",
+            "policy_adoption",
+            "cultural_shift",
+        ],
+        help="Event type for step-duration mapping",
+    )
+    p_fc.add_argument(
+        "--mode",
+        type=str,
+        default="analytical",
+        choices=["analytical", "monte_carlo"],
+        help="Forecast mode",
+    )
     p_fc.add_argument("--n-runs", type=int, default=200, help="Monte Carlo iterations")
     p_fc.set_defaults(func=_cmd_forecast)
 

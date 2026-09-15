@@ -59,6 +59,8 @@ from massive_engine import MassiveEngine
 from metrics.unified_metrics import calculate_partisanship
 from multilayer_engine import MultilayerEngine
 
+log = logging.getLogger("massive")
+
 try:
     from persim import wasserstein as wasserstein_dist
     from ripser import ripser as ripser_compute
@@ -76,9 +78,7 @@ try:
     EXTENDED_MODELS_AVAILABLE = True
 except ImportError:
     EXTENDED_MODELS_AVAILABLE = False
-    log.warning(
-        "[simulator] extended_models no disponible — reglas Bayes/Nash/SIR desactivadas."
-    )
+    log.warning("[simulator] extended_models no disponible — reglas Bayes/Nash/SIR desactivadas.")
 
 # CfC INTEGRATION — fast path neuronal para selector de régimen
 try:
@@ -1649,7 +1649,9 @@ def simular(
         regla_func = REGLAS[escenario].get(regla_actual, regla_lineal)
         # Pass gini_coeff if the rule is regla_polarizacion
         if regla_func == regla_polarizacion:
-            estado_regla = regla_func(estado, params_actuales, cfg, gini_coeff=cfg.get("gini_coefficient", 0.0))
+            estado_regla = regla_func(
+                estado, params_actuales, cfg, gini_coeff=cfg.get("gini_coefficient", 0.0)
+            )
         else:
             estado_regla = regla_func(estado, params_actuales, cfg)
         opinion_regla = _clip(estado_regla["opinion"], cfg)
@@ -1940,7 +1942,9 @@ def resumen_historial(historial: list[dict], config: dict | None = None) -> dict
         "desviacion": float(opiniones.std()),
         "minimo": float(opiniones.min()),
         "maximo": float(opiniones.max()),
-        "polarizacion_media": calculate_partisanship(opiniones, neutral=neutro, range_type=cfg.get("rango", "bipolar")),
+        "polarizacion_media": calculate_partisanship(
+            opiniones, neutral=neutro, range_type=cfg.get("rango", "bipolar")
+        ),
         "pasos": len(historial) - 1,
         "regla_dominante": Counter(reglas).most_common(1)[0][0] if reglas else "—",
         "neutro": neutro,

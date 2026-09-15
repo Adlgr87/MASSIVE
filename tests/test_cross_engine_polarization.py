@@ -61,7 +61,9 @@ class TestCrossEngineConsistency:
         neutro = 0.0  # bipolar
         old_formula = float(np.mean(np.abs(OPINIONS_BIPOLAR - neutro)))
         # Partisanship normalizes by half_range too
-        new_partisanship = calculate_partisanship(OPINIONS_BIPOLAR, neutral=0.0, range_type="bipolar")
+        new_partisanship = calculate_partisanship(
+            OPINIONS_BIPOLAR, neutral=0.0, range_type="bipolar"
+        )
         # For bipolar, half_range = 1.0, so old formula (mean|op|) == partisanship
         assert new_partisanship == pytest.approx(old_formula, abs=1e-6)
 
@@ -95,14 +97,17 @@ class TestReactiveCoherence:
         """Moving to a more dispersed state should increase URCC polarization."""
         low_disp = np.array([-0.1, 0.0, 0.1])
         high_disp = np.array([-0.9, 0.0, 0.9])
-        assert calculate_polarization(high_disp, "bipolar") > calculate_polarization(low_disp, "bipolar")
+        assert calculate_polarization(high_disp, "bipolar") > calculate_polarization(
+            low_disp, "bipolar"
+        )
 
     def test_partisanship_increasing(self):
         """Moving to a more partisan state should increase partisanship."""
         low_part = np.array([0.0, 0.1, -0.1])  # near neutral
         high_part = np.array([0.9, 0.95, 0.85])  # far from neutral (bipolar)
-        assert calculate_partisanship(high_part, neutral=0.0, range_type="bipolar") > \
-               calculate_partisanship(low_part, neutral=0.0, range_type="bipolar")
+        assert calculate_partisanship(
+            high_part, neutral=0.0, range_type="bipolar"
+        ) > calculate_partisanship(low_part, neutral=0.0, range_type="bipolar")
 
     def test_cooperation_decreasing_with_dispersion(self):
         """Higher dispersion should correlate with lower cooperation.
@@ -120,6 +125,7 @@ class TestReactiveCoherence:
 
         # And polarization should be higher for the spread case
         from metrics.unified_metrics import calculate_polarization
+
         pol_clustered = calculate_polarization(np.array([-0.02, 0.02, 0.0, -0.01]), "bipolar")
         pol_spread = calculate_polarization(np.array([-0.9, 0.2, 0.5, 0.7]), "bipolar")
         assert pol_spread > pol_clustered  # spread = more polarization

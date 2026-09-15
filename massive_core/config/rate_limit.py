@@ -37,10 +37,7 @@ class InMemoryRateLimiter(RateLimiter):
     def _prune(self) -> None:
         """Remove keys with empty or expired timestamp lists."""
         now = time.time()
-        stale = [
-            k for k, ts in self._hits.items()
-            if not [t for t in ts if now - t < 60.0]
-        ]
+        stale = [k for k, ts in self._hits.items() if not [t for t in ts if now - t < 60.0]]
         for k in stale:
             del self._hits[k]
 

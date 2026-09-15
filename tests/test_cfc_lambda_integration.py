@@ -7,12 +7,31 @@ Verifies:
 4. Energy engine integration doesn't break existing behavior
 """
 
+from pathlib import Path
+
 import numpy as np
 import pytest
 import torch
 
 from cfc_engine import CfCLambdaCorrector
 from cfc_router import CfCRouter
+
+# ── Skip-condition: trained Lambda-corrector weights ─────────────────────
+# The trained model artifact ``models/cfc_calibrated/cfc_lambda_corrector.pt``
+# is a large binary file that is **git-ignored** (see .gitignore: ``*.pt``).
+# It is therefore absent in fresh checkouts and CI. Tests that require the
+# trained weights are skipped here with a clear reason; transparent fallback
+# behavior (returning 0.5 / "passthrough") is covered by tests that do NOT
+# carry this marker and run unconditionally.
+_LAMBDA_WEIGHTS = Path("models/cfc_calibrated/cfc_lambda_corrector.pt")
+skip_no_lambda_weights = pytest.mark.skipif(
+    not _LAMBDA_WEIGHTS.exists(),
+    reason=(
+        f"Trained CfC lambda-corrector weights not found ({_LAMBDA_WEIGHTS}). "
+        "The *.pt artifacts are git-ignored; regenerate via cfc_trainer.py. "
+        "Fallback behavior is still covered by unmarked tests."
+    ),
+)
 
 
 @pytest.fixture(autouse=True)
@@ -31,12 +50,14 @@ def router():
 @pytest.fixture
 def engine():
     from energy_engine import SocialEnergyEngine
+
     return SocialEnergyEngine(range_type="bipolar", temperature=0.05, lambda_social=0.5, seed=42)
 
 
 class TestLambdaCorrectorModel:
     """Test the CfCLambdaCorrector architecture directly."""
 
+    @skip_no_lambda_weights
     def test_loads_from_trained_weights(self):
         """The trained model file should load into CfCLambdaCorrector."""
         model = CfCLambdaCorrector(input_dim=5, hidden_size=32)
@@ -57,6 +78,7 @@ class TestLambdaCorrectorModel:
 class TestRouterLambdaIntegration:
     """Test the router's lambda corrector integration."""
 
+    @skip_no_lambda_weights
     def test_lambda_corrector_loaded(self, router):
         """Router should report lambda_corrector=True in status."""
         status = router.status
@@ -77,6 +99,7 @@ class TestRouterLambdaIntegration:
         assert 0.0 <= lam <= 1.0 + 1e-6
         assert source in ("cfc", "passthrough")
 
+    @skip_no_lambda_weights
     def test_reactive_different_inputs(self, router):
         """Different feature inputs should produce different lambda values."""
         features_low = {
@@ -98,6 +121,7 @@ class TestRouterLambdaIntegration:
         # High polarization+Gini should produce different lambda
         assert lambda_low != pytest.approx(lambda_high, abs=0.01)
 
+    @skip_no_lambda_weights
     def test_reactive_high_gini_reduces_coupling(self, router):
         """High Gini + high polarization should reduce social coupling."""
         features_moderate = {
@@ -126,6 +150,7 @@ class TestEnergyEngineLambdaIntegration:
     def test_energy_engine_with_ews_flags(self, engine, setup=None):
         """Energy engine step should work with EWS flags enabled."""
         from energy_engine import random_network
+
         N = 10
         adj = random_network(N, connectivity=0.3, seed=42)
         attractors = [{"position": 0.8, "strength": 1.0}]
@@ -137,15 +162,14 @@ class TestEnergyEngineLambdaIntegration:
             "high_autocorr": True,
             "high_skewness": True,
         }
-        result = engine.step(
-            opinions, adj, attractors, repellers, eta=0.01, ews_flags=ews_flags
-        )
+        result = engine.step(opinions, adj, attractors, repellers, eta=0.01, ews_flags=ews_flags)
         assert result.shape == (N,)
         assert np.all(np.isfinite(result))
 
     def test_backward_compatible_no_ews(self, engine):
         """Without ews_flags, engine should work exactly as before."""
         from energy_engine import random_network
+
         N = 10
         adj = random_network(N, connectivity=0.3, seed=42)
         attractors = [{"position": 0.8, "strength": 1.0}]

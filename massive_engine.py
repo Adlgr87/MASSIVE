@@ -343,7 +343,13 @@ class ActiveSet:
             considerar que un agente "se movió" y debe permanecer activo.
     """
 
-    def __init__(self, M: int, sleep_threshold: float = 5e-3, seed: int | None = None, wake_fraction: float = 0.01) -> None:
+    def __init__(
+        self,
+        M: int,
+        sleep_threshold: float = 5e-3,
+        seed: int | None = None,
+        wake_fraction: float = 0.01,
+    ) -> None:
         self._M = M
         self._threshold = sleep_threshold
         self._active = np.ones(M, dtype=bool)  # inicialmente todos activos
@@ -1209,7 +1215,7 @@ class MassiveSimEngine:
         return {
             "mean_opinion": w_mean,
             "std_opinion": w_std,
-            # Note: unified polarization metric uses np.std (unweighted). 
+            # Note: unified polarization metric uses np.std (unweighted).
             # Replacing weighted average of absolute values for consistency.
             "polarization": calculate_polarization(x_f[:, 0], "bipolar"),
             "mean_cooperation": (

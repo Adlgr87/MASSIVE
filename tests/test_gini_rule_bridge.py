@@ -76,8 +76,13 @@ class TestGiniInSimulation:
     def test_simular_accepts_gini_config(self):
         """simular should accept gini_coefficient in config."""
         cfg = {**DEFAULT_CONFIG, "gini_coefficient": 0.5, "pasos": 10, "verbose": False}
-        estado_ini = {"opinion": 0.5, "propaganda": 0.3, "confianza": 0.7,
-                       "opinion_grupo_a": 0.8, "opinion_grupo_b": 0.2}
+        estado_ini = {
+            "opinion": 0.5,
+            "propaganda": 0.3,
+            "confianza": 0.7,
+            "opinion_grupo_a": 0.8,
+            "opinion_grupo_b": 0.2,
+        }
         historial = simular(estado_ini, escenario="campana", pasos=10, config=cfg, verbose=False)
         assert len(historial) > 0
 
@@ -89,18 +94,25 @@ class TestGiniInSimulation:
         then checks that higher Gini leads to more extreme opinions.
         """
 
-        estado_ini = {"opinion": 0.3, "propaganda": 0.6, "confianza": 0.7,
-                       "opinion_grupo_a": 0.85, "opinion_grupo_b": 0.15}
+        estado_ini = {
+            "opinion": 0.3,
+            "propaganda": 0.6,
+            "confianza": 0.7,
+            "opinion_grupo_a": 0.85,
+            "opinion_grupo_b": 0.15,
+        }
 
         # Run with high Gini — the polarization rule has fuerza=0.25 (high)
         # so Gini amplification should be clearly visible
-        cfg_high = {**DEFAULT_CONFIG,
-                     "gini_coefficient": 0.8,
-                     "proveedor": "heuristic",
-                     "semilla": 42,
-                     "pasos": 50,
-                     "fuerza_polarizacion": 0.25,
-                     "verbose": False}
+        cfg_high = {
+            **DEFAULT_CONFIG,
+            "gini_coefficient": 0.8,
+            "proveedor": "heuristic",
+            "semilla": 42,
+            "pasos": 50,
+            "fuerza_polarizacion": 0.25,
+            "verbose": False,
+        }
         hist = simular(estado_ini, escenario="campana", pasos=50, config=cfg_high, verbose=False)
 
         # Verify the polarization rule was actually selected at least once
@@ -125,8 +137,6 @@ class TestGiniInLLMPrompt:
         cfg = {**DEFAULT_CONFIG, "gini_coefficient": 0.65, "rango": "bipolar"}
         historial = [estado] * 3
 
-        prompt = _construir_prompt(
-            estado, "campana", historial, cfg
-        )
+        prompt = _construir_prompt(estado, "campana", historial, cfg)
         assert "Gini" in prompt
         assert "0.650" in prompt

@@ -66,9 +66,9 @@ def generate_lambda_training_data(n_trajectories: int = 10_000, seed: int = 42) 
     Returns:
         Dict with 'X' (features) and 'y' (target lambda corrections).
     """
-    try:
-        import torch
-    except ImportError:
+    import importlib.util
+
+    if importlib.util.find_spec("torch") is None:
         raise ImportError("PyTorch is required for training: pip install torch>=2.2.0")
 
     from energy_engine import SocialEnergyEngine, random_network
@@ -103,7 +103,7 @@ def generate_lambda_training_data(n_trajectories: int = 10_000, seed: int = 42) 
         # Collect polarization time series
         pol_history = []
         op_history = []
-        for t in range(steps):
+        for _ in range(steps):
             opinions = eng.step(opinions, adj, attractors, repellers, eta=0.01)
             pol = float(np.std(opinions) / 1.0)  # half_range = 1.0 for bipolar
             pol_history.append(pol)
@@ -115,18 +115,18 @@ def generate_lambda_training_data(n_trajectories: int = 10_000, seed: int = 42) 
             pol_t = pol_arr[t]
             delta_t1 = pol_arr[t] - pol_arr[t - 1]
             delta_t5 = pol_arr[t] - pol_arr[t - 5] if t >= 5 else 0.0
-            volatility = float(np.std([pol_arr[t - j] - pol_arr[t - j - 1] for j in range(1, 4)]) if t >= 3 else 0.0)
+            volatility = float(
+                np.std([pol_arr[t - j] - pol_arr[t - j - 1] for j in range(1, 4)])
+                if t >= 3
+                else 0.0
+            )
 
             # Target: the lambda that minimizes polarization divergence
             # We use the true lambda as the target, but apply a correction
             # that pushes toward stability: if polarization is accelerating,
             # we want lower lambda (let landscape dominate and pull toward consensus)
             pol_accelerating = delta_t1 > 0.01 and (delta_t5 > delta_t1)
-            if pol_accelerating:
-                # Need to REDUCE lambda to let landscape pull agents back
-                target_lambda = max(0.0, true_lambda - 0.2)
-            else:
-                target_lambda = true_lambda
+            target_lambda = max(0.0, true_lambda - 0.2) if pol_accelerating else true_lambda
 
             features = [pol_t, delta_t1, delta_t5, gini, volatility]
             X_list.append(features)
@@ -181,7 +181,7 @@ def train_lambda_corrector(
     n_train = int(0.8 * n)
     n_val = int(0.1 * n)
     train_idx = idx[:n_train]
-    val_idx = idx[n_train:n_train + n_val]
+    val_idx = idx[n_train : n_train + n_val]
 
     X_train, y_train = X[train_idx], y[train_idx]
     X_val, y_val = X[val_idx], y[val_idx]
@@ -203,7 +203,7 @@ def train_lambda_corrector(
         n_batches = 0
         perm = np.random.default_rng(42 + epoch).permutation(len(X_train))
         for batch_start in range(0, len(X_train), BATCH_SIZE):
-            batch_idx = perm[batch_start:batch_start + BATCH_SIZE]
+            batch_idx = perm[batch_start : batch_start + BATCH_SIZE]
             X_batch = X_train[batch_idx]
             y_batch = y_train[batch_idx]
 
@@ -213,7 +213,9 @@ def train_lambda_corrector(
             pred = softplus(readout(h))  # softplus → [0, ∞), bounded by target range
             loss = criterion(pred, y_batch)
             loss.backward()
-            torch.nn.utils.clip_grad_norm_(list(cell.parameters()) + list(readout.parameters()), 1.0)
+            torch.nn.utils.clip_grad_norm_(
+                list(cell.parameters()) + list(readout.parameters()), 1.0
+            )
             optimizer.step()
             epoch_loss += loss.item()
             n_batches += 1
@@ -245,7 +247,9 @@ def train_lambda_corrector(
             patience_counter += 1
 
         if epoch % 10 == 0 or epoch == epochs - 1:
-            log.info(f"  Epoch {epoch}/{epochs}: train_loss={train_loss:.6f}, val_loss={val_loss_val:.6f}")
+            log.info(
+                f"  Epoch {epoch}/{epochs}: train_loss={train_loss:.6f}, val_loss={val_loss_val:.6f}"
+            )
 
         if patience_counter >= patience:
             log.info(f"  Early stopping at epoch {epoch} (patience {patience})")
@@ -268,9 +272,7 @@ def train_lambda_corrector(
         "architecture": "CfCCell(ODE) + Linear readout + Softplus",
     }
     (CALIBRATED_DIR / "cfc_lambda_config.json").write_text(json.dumps(config, indent=2))
-    (CALIBRATED_DIR / "cfc_lambda_training_log.json").write_text(
-        json.dumps(training_log, indent=2)
-    )
+    (CALIBRATED_DIR / "cfc_lambda_training_log.json").write_text(json.dumps(training_log, indent=2))
 
     log.info(f"[CfC Lambda] Training complete. Best val loss: {best_val_loss:.6f}")
     log.info(f"[CfC Lambda] Model saved to: {model_path}")
@@ -295,6 +297,7 @@ def main():
     log.info("=== Step 3: Integration verification ===")
     # Verify the model can be loaded by the router pattern
     from cfc_router import CfCRouter
+
     CfCRouter._instance = None
     router = CfCRouter.get()
     log.info(f"CfCRouter status: {router.status}")

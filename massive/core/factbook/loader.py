@@ -534,7 +534,9 @@ class FactbookDataLoader:
                     },
                 },
                 "government": {
-                    "country_name": {"conventional_long_form": "United Kingdom of Great Britain and Northern Ireland"},
+                    "country_name": {
+                        "conventional_long_form": "United Kingdom of Great Britain and Northern Ireland"
+                    },
                     "government_type": "parliamentary constitutional monarchy",
                 },
             },
@@ -1076,7 +1078,9 @@ class FactbookDataLoader:
             },
         }
 
-        log.info("[FactbookDataLoader] Datos de muestra cargados para %d países", len(self.countries))
+        log.info(
+            "[FactbookDataLoader] Datos de muestra cargados para %d países", len(self.countries)
+        )
 
     def get_country_data(self, country_identifier: str) -> dict[str, Any] | None:
         """

@@ -25,13 +25,15 @@ class LandscapeCache:
     def _init_db(self) -> None:
         try:
             conn = sqlite3.connect(self.db_path, check_same_thread=False)
-            conn.execute("""
+            conn.execute(
+                """
                 CREATE TABLE IF NOT EXISTS landscapes (
                     key TEXT PRIMARY KEY,
                     config TEXT NOT NULL,
                     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                 )
-            """)
+            """
+            )
             conn.commit()
             conn.close()
         except Exception as e:

@@ -51,13 +51,19 @@ class TestEWSTemperatureTrigger:
         # Run with EWS flag and without
         ops = np.full(N, 0.9)  # agents near boundary
         rng_copy = engine.rng
-        result_no_ews = engine.step(ops.copy(), adj, attractors, repellers, eta=0.01, ews_flags=None)
+        result_no_ews = engine.step(
+            ops.copy(), adj, attractors, repellers, eta=0.01, ews_flags=None
+        )
 
         # Reset RNG state for fair comparison
         engine.rng = rng_copy
         result_ews = engine.step(
-            ops.copy(), adj, attractors, repellers, eta=0.01,
-            ews_flags={"high_variance": True, "high_autocorr": False, "high_skewness": False}
+            ops.copy(),
+            adj,
+            attractors,
+            repellers,
+            eta=0.01,
+            ews_flags={"high_variance": True, "high_autocorr": False, "high_skewness": False},
         )
 
         # With higher temperature, there's more noise → opinions should be more
@@ -79,13 +85,21 @@ class TestEWSTemperatureTrigger:
         results_ews = []
         results_no = []
         for seed in range(20):
-            e = SocialEnergyEngine(range_type="bipolar", temperature=0.05, lambda_social=0.5, seed=seed)
+            e = SocialEnergyEngine(
+                range_type="bipolar", temperature=0.05, lambda_social=0.5, seed=seed
+            )
             r_no = e.step(ops.copy(), adj, attractors, repellers, eta=0.01, ews_flags=None)
 
-            e2 = SocialEnergyEngine(range_type="bipolar", temperature=0.05, lambda_social=0.5, seed=seed)
+            e2 = SocialEnergyEngine(
+                range_type="bipolar", temperature=0.05, lambda_social=0.5, seed=seed
+            )
             r_ews = e2.step(
-                ops.copy(), adj, attractors, repellers, eta=0.01,
-                ews_flags={"high_variance": True, "high_autocorr": True, "high_skewness": True}
+                ops.copy(),
+                adj,
+                attractors,
+                repellers,
+                eta=0.01,
+                ews_flags={"high_variance": True, "high_autocorr": True, "high_skewness": True},
             )
             results_no.append(np.std(r_no))
             results_ews.append(np.std(r_ews))
@@ -107,8 +121,12 @@ class TestEWSTemperatureTrigger:
         n_steps = 50
 
         for trial in range(20):
-            e_no = SocialEnergyEngine(range_type="bipolar", temperature=0.05, lambda_social=0.0, seed=trial)
-            e_ews = SocialEnergyEngine(range_type="bipolar", temperature=0.05, lambda_social=0.0, seed=trial)
+            e_no = SocialEnergyEngine(
+                range_type="bipolar", temperature=0.05, lambda_social=0.0, seed=trial
+            )
+            e_ews = SocialEnergyEngine(
+                range_type="bipolar", temperature=0.05, lambda_social=0.0, seed=trial
+            )
 
             ops_no = ops_extreme.copy()
             ops_ews = ops_extreme.copy()
@@ -117,13 +135,20 @@ class TestEWSTemperatureTrigger:
                 # No EWS: landscape pulls toward attractors, but low social influence
                 ops_no = e_no.step(ops_no, adj, attractors, repellers, eta=0.01, ews_flags=None)
                 # With EWS: higher temperature adds noise, helping escape boundaries
-                ops_ews = e_ews.step(ops_ews, adj, attractors, repellers, eta=0.01,
-                                      ews_flags={"high_variance": True, "high_autocorr": True, "high_skewness": True})
+                ops_ews = e_ews.step(
+                    ops_ews,
+                    adj,
+                    attractors,
+                    repellers,
+                    eta=0.01,
+                    ews_flags={"high_variance": True, "high_autocorr": True, "high_skewness": True},
+                )
 
                 dist_no_ews_total += np.sum(np.abs(ops_no - 0.95))
                 dist_ews_total += np.sum(np.abs(ops_ews - 0.95))
 
         # EWS (higher temp) should produce more movement away from boundaries
         # (more noise = more agents escape the extreme)
-        assert dist_ews_total >= dist_no_ews_total * 1.05, \
-            f"EWS should increase movement from boundary (ews={dist_ews_total:.1f}, no_ews={dist_no_ews_total:.1f})"
+        assert (
+            dist_ews_total >= dist_no_ews_total * 1.05
+        ), f"EWS should increase movement from boundary (ews={dist_ews_total:.1f}, no_ews={dist_no_ews_total:.1f})"

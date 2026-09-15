@@ -7,20 +7,42 @@ Verifies:
 - Graceful fallback when model is unavailable
 """
 
+from pathlib import Path
+
 import pytest
 
 from cfc_router import CfCRouter
 from energy_engine import SocialEnergyEngine, _ews_fallback_multiplier
 
+# ── Skip-condition: trained landscape-modulator weights ─────────────────────
+# The trained model artifact ``models/cfc_calibrated/cfc_landscape.pt`` is a
+# large binary file that is **git-ignored** (see .gitignore: ``*.pt``). It is
+# therefore absent in fresh checkouts and CI. Tests that require the trained
+# weights are skipped here with a clear reason; transparent fallback behavior
+# (e.g. rule-based multipliers, None returns) is covered by tests that do NOT
+# carry this marker and run unconditionally.
+_LANDSCAPE_WEIGHTS = Path("models/cfc_calibrated/cfc_landscape.pt")
+skip_no_landscape_weights = pytest.mark.skipif(
+    not _LANDSCAPE_WEIGHTS.exists(),
+    reason=(
+        f"Trained CfC landscape-modulator weights not found ({_LANDSCAPE_WEIGHTS}). "
+        "The *.pt artifacts are git-ignored; regenerate via cfc_trainer.py. "
+        "Fallback behavior is still covered by unmarked tests."
+    ),
+)
+
 
 class TestCfCLandscapeModulator:
     """Tests for the CfCLandscapeModulator class and integration."""
 
+    @skip_no_landscape_weights
     def test_model_file_exists(self):
         """The trained landscape model artifact should exist on disk."""
         from pathlib import Path
+
         assert Path("models/cfc_calibrated/cfc_landscape.pt").exists()
 
+    @skip_no_landscape_weights
     def test_model_loads_in_router(self):
         """The router should load the landscape model successfully."""
         CfCRouter._instance = None
@@ -28,36 +50,45 @@ class TestCfCLandscapeModulator:
         assert router.status["landscape_corrector"] is True
         assert router._landscape_corrector is not None
 
+    @skip_no_landscape_weights
     def test_propose_landscape_returns_valid_params(self):
         """propose_landscape should return a dict with 5 keys + 'cfc' source."""
         CfCRouter._instance = None
         router = CfCRouter.get()
-        params, source = router.propose_landscape({
-            "polarization": 0.5,
-            "delta_p1": 0.02,
-            "delta_p5": 0.01,
-            "skewness": 0.3,
-            "gini": 0.4,
-        })
+        params, source = router.propose_landscape(
+            {
+                "polarization": 0.5,
+                "delta_p1": 0.02,
+                "delta_p5": 0.01,
+                "skewness": 0.3,
+                "gini": 0.4,
+            }
+        )
         assert source == "cfc"
         assert params is not None
         assert set(params.keys()) == {
-            "sigma_p", "attractor_strength", "repeller_strength",
-            "attractor_position", "repeller_position"
+            "sigma_p",
+            "attractor_strength",
+            "repeller_strength",
+            "attractor_position",
+            "repeller_position",
         }
 
+    @skip_no_landscape_weights
     def test_landscape_output_ranges(self):
         """Model output values should be within physically valid ranges."""
         CfCRouter._instance = None
         router = CfCRouter.get()
         for pol in [0.0, 0.25, 0.5, 0.75, 1.0]:
-            params, _ = router.propose_landscape({
-                "polarization": pol,
-                "delta_p1": 0.02,
-                "delta_p5": 0.01,
-                "skewness": 0.3,
-                "gini": 0.35,
-            })
+            params, _ = router.propose_landscape(
+                {
+                    "polarization": pol,
+                    "delta_p1": 0.02,
+                    "delta_p5": 0.01,
+                    "skewness": 0.3,
+                    "gini": 0.35,
+                }
+            )
             assert params is not None
             # Strengths and sigma must be positive
             assert params["sigma_p"] > 0
@@ -67,27 +98,37 @@ class TestCfCLandscapeModulator:
             assert -1.0 <= params["attractor_position"] <= 1.0
             assert -1.0 <= params["repeller_position"] <= 1.0
 
+    @skip_no_landscape_weights
     def test_engine_loads_landscape_model(self):
         """SocialEnergyEngine should load the landscape model."""
         engine = SocialEnergyEngine(
-            range_type="bipolar", temperature=0.05, lambda_social=0.5,
-            gini_coefficient=0.35, seed=42,
+            range_type="bipolar",
+            temperature=0.05,
+            lambda_social=0.5,
+            gini_coefficient=0.35,
+            seed=42,
         )
         assert engine._landscape_model is not None
 
+    @skip_no_landscape_weights
     def test_engine_propose_landscape(self):
         """Engine should be able to propose landscape parameters."""
         engine = SocialEnergyEngine(
-            range_type="bipolar", temperature=0.05, lambda_social=0.5,
-            gini_coefficient=0.35, seed=42,
+            range_type="bipolar",
+            temperature=0.05,
+            lambda_social=0.5,
+            gini_coefficient=0.35,
+            seed=42,
         )
-        result = engine.propose_landscape({
-            "polarization": 0.4,
-            "delta_p1": 0.01,
-            "delta_p5": 0.005,
-            "skewness": 0.2,
-            "gini": 0.35,
-        })
+        result = engine.propose_landscape(
+            {
+                "polarization": 0.4,
+                "delta_p1": 0.01,
+                "delta_p5": 0.005,
+                "skewness": 0.2,
+                "gini": 0.35,
+            }
+        )
         assert result is not None
         new_attractors, new_repellers = result
         assert len(new_attractors) == 1
@@ -100,16 +141,25 @@ class TestCfCLandscapeModulator:
     def test_engine_fallback_without_model(self):
         """Engine should fall back to None when landscape model unavailable."""
         engine = SocialEnergyEngine(
-            range_type="bipolar", temperature=0.05, lambda_social=0.5,
-            gini_coefficient=0.35, seed=42,
+            range_type="bipolar",
+            temperature=0.05,
+            lambda_social=0.5,
+            gini_coefficient=0.35,
+            seed=42,
         )
         engine._landscape_model = None
-        result = engine.propose_landscape({
-            "polarization": 0.4, "delta_p1": 0.01, "delta_p5": 0.005,
-            "skewness": 0.2, "gini": 0.35,
-        })
+        result = engine.propose_landscape(
+            {
+                "polarization": 0.4,
+                "delta_p1": 0.01,
+                "delta_p5": 0.005,
+                "skewness": 0.2,
+                "gini": 0.35,
+            }
+        )
         assert result is None
 
+    @skip_no_landscape_weights
     def test_router_status_includes_landscape(self):
         """Router status should include landscape_corrector."""
         CfCRouter._instance = None

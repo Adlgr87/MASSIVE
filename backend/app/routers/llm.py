@@ -16,6 +16,7 @@ from __future__ import annotations
 
 import logging
 import os
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile
 
@@ -51,6 +52,7 @@ def _public_error(exc: Exception) -> HTTPException:
     """Never leak stack traces / internal paths to clients."""
     log.exception("API error: %s", exc)
     return HTTPException(status_code=500, detail="Internal server error")
+
 
 router = APIRouter(
     prefix="/llm",
@@ -180,7 +182,7 @@ async def v1_llm_wizard(payload: LLMWizardRequest) -> LLMWizardResponse:
 )
 async def v1_llm_extract(
     request: Request,
-    file: UploadFile = File(...),  # B008: avoid function call in default
+    file: Annotated[UploadFile, File()],
 ) -> LLMExtractResponse:
     """Upload a file (pdf/json/csv/xlsx) and return extracted MASSIVE config."""
     import contextlib
@@ -209,6 +211,7 @@ async def v1_llm_extract(
             tmp_path = tmp.name
 
         from uil_adapter import create_uil_adapter
+
         adapter = create_uil_adapter(
             llm_provider=os.getenv("PROVIDER", "groq"),
             llm_api_key=os.getenv("GROQ_API_KEY", os.getenv("OPENAI_API_KEY", "")),

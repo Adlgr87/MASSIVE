@@ -4,9 +4,28 @@ Verifies that the full pipeline (energy engine + EWS + Gini + CFC correction)
 reduces the Brexit prediction error by at least 25%.
 """
 
+from pathlib import Path
+
 import pytest
 
 from brexit_calibration import BREXIT_ACTUAL_LEAVE_PCT, run_brexit_calibration
+
+# ── Skip-condition: trained Lambda-corrector weights ─────────────────────
+# ``test_both_models_loaded`` asserts that both the residual *and* lambda
+# correctors are present in the router status. The residual weights
+# (``cfc_residual.pt``) are tracked in git, but the lambda weights
+# (``cfc_lambda_corrector.pt``) are git-ignored — absent in fresh checkouts.
+# When the lambda artifact is missing the assertion cannot hold, so the test
+# is skipped rather than failed. The remaining Brexit tests exercise the full
+# pipeline with transparent fallback and run unconditionally.
+_LAMBDA_WEIGHTS = Path("models/cfc_calibrated/cfc_lambda_corrector.pt")
+skip_no_lambda_weights = pytest.mark.skipif(
+    not _LAMBDA_WEIGHTS.exists(),
+    reason=(
+        f"Trained CfC lambda-corrector weights not found ({_LAMBDA_WEIGHTS}). "
+        "The *.pt artifacts are git-ignored; regenerate via cfc_trainer.py."
+    ),
+)
 
 
 class TestBrexitCalibration:
@@ -39,6 +58,7 @@ class TestBrexitCalibration:
         improvement = result["improvement"]["relative_improvement_pct"]
         assert improvement >= 25.0, f"Only {improvement:.1f}% improvement (need >= 25%)"
 
+    @skip_no_lambda_weights
     def test_both_models_loaded(self):
         """Both residual and lambda correctors should be loaded."""
         result = run_brexit_calibration(n_agents=20, steps=20, seed=42)

@@ -16,6 +16,7 @@ import contextlib
 import logging
 import os
 import tempfile
+from typing import Annotated
 
 from fastapi import Depends, FastAPI, File, Header, HTTPException, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
@@ -148,8 +149,8 @@ def _public_error(exc: Exception) -> HTTPException:
 @app.post("/api/extract")
 async def api_extract(
     request: Request,
-    file: UploadFile = File(...),  # noqa: B008
-    api_key: str | None = Depends(get_api_key),
+    file: Annotated[UploadFile, File()],
+    api_key: Annotated[str | None, Depends(get_api_key)],
 ):
     """Upload a file (pdf/json/csv/xlsx) and return extracted MASSIVE config."""
     _rate_limit(request)
@@ -196,7 +197,7 @@ async def api_extract(
 async def api_wizard(
     request: Request,
     payload: dict,
-    api_key: str | None = Depends(get_api_key),
+    api_key: Annotated[str | None, Depends(get_api_key)],
 ):
     """Accepts JSON {"description": "..."} and returns a generated config."""
     _rate_limit(request)
@@ -217,7 +218,7 @@ async def api_wizard(
 async def api_simulate(
     request: Request,
     payload: dict,
-    api_key: str | None = Depends(get_api_key),
+    api_key: Annotated[str | None, Depends(get_api_key)],
 ):
     """
     Run full_pipeline from a natural-language description only.
@@ -265,7 +266,7 @@ async def api_simulate(
 async def api_architect(
     request: Request,
     payload: dict,
-    api_key: str | None = Depends(get_api_key),
+    api_key: Annotated[str | None, Depends(get_api_key)],
 ):
     """Social architect inverse-strategy endpoint.
 
@@ -322,7 +323,7 @@ async def api_architect(
 async def api_forecast(
     request: Request,
     payload: dict,
-    api_key: str | None = Depends(get_api_key),
+    api_key: Annotated[str | None, Depends(get_api_key)],
 ):
     """Forecast endpoint with confidence intervals.
 
@@ -406,7 +407,7 @@ async def api_forecast(
 async def api_energy(
     request: Request,
     payload: dict,
-    api_key: str | None = Depends(get_api_key),
+    api_key: Annotated[str | None, Depends(get_api_key)],
 ):
     """Energy landscape analysis endpoint.
 

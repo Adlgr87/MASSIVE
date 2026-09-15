@@ -1,4 +1,5 @@
-"""
+"""micro_schemas.py — Modelos de datos para MASSIVE Micro.
+
 ⚠️ DEPRECATION NOTICE
 ====================
 This file is part of a legacy schema system.
@@ -7,10 +8,8 @@ Canonical location: massive/core/schemas.py
 This file: Microsimulation schemas (deprecated, moved to massive/core/)
 
 Migration: Update all imports from schemas.py to massive.core.schemas
-"""
-"""
-micro_schemas.py — Modelos de datos para MASSIVE Micro
-Simulación inversa de dinámica de grupos pequeños
+
+Simulación inversa de dinámica de grupos pequeños.
 """
 
 from typing import Literal

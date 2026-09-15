@@ -154,9 +154,9 @@ ESQUEMA OBLIGATORIO:
 def call_llm(
     user_goal: str,
     llm_client=None,
-    provider: str = None,
-    api_key: str = None,
-    model: str = None,
+    provider: str | None = None,
+    api_key: str | None = None,
+    model: str | None = None,
     use_langchain: bool = False,
 ) -> dict | None:
     provider = (provider or os.getenv("LLM_PROVIDER", "groq")).lower()

@@ -1,4 +1,11 @@
-import plotly.graph_objects as go
+import pytest
+
+# plotly is an optional dependency for visualization tests only; skip the
+# entire module when the package is not installed rather than producing a
+# collection error.
+pytest.importorskip("plotly")
+
+import plotly.graph_objects as go  # noqa: E402
 
 from visualizations import generate_social_network_viz
 

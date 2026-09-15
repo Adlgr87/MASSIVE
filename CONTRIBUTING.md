@@ -45,7 +45,47 @@ To contribute a new PVU case:
 
 > ⚠️ **Anti-leakage reminder:** Pre-register your analysis plan **before** running the benchmark on real data (use `docs/validation/preregistration_template_EN.md`).
 
-## 5. Pull Request Process
+## 5. Verification before push (`make verify`)
+
+**Every push and pull request must pass `make verify`.**  This is the
+Project-Level Quality Gate defined in the audit-remediation workflow
+(see [AUDIT_REMEDIATION_WORKFLOW.md](AUDIT_REMEDIATION_WORKFLOW.md), Wave 0).
+
+```bash
+make verify
+```
+
+The harness runs, in order:
+1. `ruff check .`
+2. `black --check .`
+3. `mypy-slice` (`scripts/typecheck_slice.py`)
+4. `pytest` with coverage
+5. TypeScript type regeneration + `git diff` check
+6. `mkdocs build --strict`
+7. **G-1 guardrails** — the 17 green findings that must never break:
+   bare-except grep, AST validity, TODO triage, `pip-audit`, TS-types sync,
+   mkdocs strict, and a simulator smoke test.
+
+To snapshot the current metrics without failing (useful for CI baselines):
+
+```bash
+make verify-baseline        # writes reports/audit_baseline.json
+```
+
+> ⚠️ **Nota:** En la línea base del commit `473b04a6` `make verify` está *rojo*
+> por diseño.  Las olas siguientes (W1–W6) lo convierten a verde de forma
+> incremental.  Un target individual dentro de `make verify` no debe marcarse
+> como "pasajero" (`|| true`, `continue-on-error`) — si falla, CI falla.
+
+### Pre-push hook (recomendado)
+
+```bash
+# .git/hooks/pre-push
+#!/bin/sh
+make verify
+```
+
+## 6. Pull Request Process
 - Ensure any install or build dependencies are removed before the end of the layer when doing a build.
 - Update the `README.md` and `README_ES.md` with details of changes to the interface, this includes new environment variables, exposed ports, useful file locations and container parameters.
 - Provide a clear PR description outlining the mathematical logic if adding a new rule.

@@ -1,0 +1,67 @@
+name: Feature request
+description: Proponer una mejora o nueva funcionalidad
+title: "[feature] "
+labels: ["enhancement", "severity:medium"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ¿Qué problema resuelve? ¿Qué alternativas consideró? Verifique que no exista
+        ya una propuesta en [el tracker de hallazgos](../docs/AUDIT_FINDINGS_TRACKER.md).
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema
+      description: "Problema actual que limita su flujo de trabajo."
+      placeholder: "No puedo ... cuando ..."
+    validations:
+      required: true
+  - type: textarea
+    id: solution
+    attributes:
+      label: Solución propuesta
+      description: "Describe la solución ideal o la alternativa que consideraste."
+      placeholder: "Me gustaría que ... permita ..."
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativas consideradas
+      description: "¿Qué más intentó antes de proponer esto?"
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área
+      options:
+        - area:engines
+        - area:backend
+        - area:frontend
+        - area:docs
+        - area:ci
+        - area:security
+        - area:packaging
+        - area:perf
+      default: area:backend
+    validations:
+      required: true
+  - type: dropdown
+    id: effort
+    attributes:
+      label: Esfuerzo estimado
+      options:
+        - XS
+        - S
+        - M
+        - L
+        - XL
+      default: S
+    validations:
+      required: true
+  - type: checkboxes
+    id: checklist
+    attributes:
+      label: Lista de verificación
+      options:
+        - label: "La solicitud sigue el formato de esta plantilla"
+          required: true

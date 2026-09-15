@@ -1,0 +1,40 @@
+name: Documentation issue
+description: Corregir o mejorar documentación existente
+title: "[docs] "
+labels: ["documentation", "area:docs", "severity:medium"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Para documentación nueva o cambios estructurales, abra un *pull request*.
+        Use esta plantilla para **correcciones puntuales**: rutas rotas, cifras
+        desactualizadas, ejemplos que no funcionan, o incoherencias de contenido.
+  - type: input
+    id: doc-path
+    attributes:
+      label: Archivo / sección
+      description: "Ruta al archivo .md o sección de MkDocs afectada."
+      placeholder: "README.md §3.2 / docs/api.md"
+    validations:
+      required: true
+  - type: textarea
+    id: issue
+    attributes:
+      label: Problema de documentación
+      description: "¿Qué dice el documento y qué debería decir?"
+      placeholder: "README dice 'X' pero el código hace 'Y'..."
+    validations:
+      required: true
+  - type: textarea
+    id: fix
+    attributes:
+      label: Corrección propuesta
+      description: "Texto sugerido o referencia a la fuente de verdad."
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Lista de verificación
+      options:
+        - label: "Verifiqué que el camino está actualizado en el nav de mkdocs.yml"
+        - label: "Las referencias cruzadas internas apuntan a rutas válidas"
+        - label: "Si afecta a cifras, indico la fuente de datos exacta"

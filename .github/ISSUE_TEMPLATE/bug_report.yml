@@ -1,0 +1,85 @@
+name: Bug report
+description: Report a defect or unexpected behavior
+title: "[bug] "
+labels: ["bug", "severity:high"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting! Before filing, check whether the issue is already in
+        the [known findings tracker](../docs/AUDIT_FINDINGS_TRACKER.md).
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: What happened vs. what you expected. Include reproduction steps.
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproducción
+      description: |
+        Pasos mínimos para reproducir el error. Incluya el comando exacto.
+      placeholder: "python -c \"from simulator import simular; ...\""
+      render: shell
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Entorno
+      description: "Versión de Python, SO, commit SHA, extras instalados."
+      value: "`python --version` / `git rev-parse --short HEAD` / `pip list`"
+      render: shell
+    validations:
+      required: true
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severidad
+      description: Impacto funcional estimado.
+      options:
+        - severity:critical
+        - severity:high
+        - severity:medium
+      default: severity:high
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área
+      description: Componente afectado.
+      options:
+        - area:engines
+        - area:backend
+        - area:frontend
+        - area:docs
+        - area:ci
+        - area:security
+        - area:packaging
+        - area:perf
+      default: area:backend
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidencia
+      description: Salida del comando, traceback, o captura de pantalla.
+      render: shell
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Lista de verificación
+      options:
+        - label: "Reproduje el error en un clone limpio"
+          required: true
+        - label: "Busqué en el tracker de hallazgos antes de crear el issue"
+  - type: input
+    id: root-cause
+    attributes:
+      label: Causa raíz (si la conozco)
+      description: "Opcional. Si no la conozco, déjelo en blanco."

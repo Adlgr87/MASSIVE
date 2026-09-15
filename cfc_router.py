@@ -281,10 +281,10 @@ class CfCRouter:
     ) -> tuple[float, str]:
         """
         Propose a lambda_social correction based on polarization/Gini context.
-        
+
         Args:
             features: Dict containing polarization, delta_p1, delta_p5, gini, volatility.
-        
+
         Returns:
             (lambda_value, source) where source is "cfc" or "passthrough".
         """
@@ -333,6 +333,7 @@ class CfCRouter:
 
         try:
             import torch
+
             u_vec = [
                 float(features.get("polarization", 0.0)),
                 float(features.get("delta_p1", 0.0)),
@@ -406,7 +407,11 @@ class CfCRouter:
             if actual_arr.ndim == 0 or actual_arr.size == 1:
                 actual_series = np.full(n, float(actual_arr.ravel()[-1]))
             else:
-                actual_series = actual_arr[:n] if actual_arr.size >= n else np.pad(actual_arr, (0, n - actual_arr.size))
+                actual_series = (
+                    actual_arr[:n]
+                    if actual_arr.size >= n
+                    else np.pad(actual_arr, (0, n - actual_arr.size))
+                )
             residuals = actual_series - sim_series
         else:
             residuals = np.full(n, 0.0426)  # training mean (calibration_log §5)

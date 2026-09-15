@@ -30,14 +30,13 @@ torch>=2.2.0
 torchdiffeq>=0.2.3
 dask>=2024.0.0
 
-# UI (Streamlit legacy UIL demo flow — optional in Docker)
-streamlit>=1.36.0
+# HTTP client / system monitoring
+httpx>=0.27.0
+psutil>=5.9.0
 
 # Domain extras
 nashpy>=0.0.43
 pgmpy>=1.1.0
-tweepy>=4.16.0
-praw>=7.8.1
 
 # Docs
 mkdocs>=1.5.3

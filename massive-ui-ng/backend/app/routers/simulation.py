@@ -22,7 +22,7 @@ import json
 import logging
 import threading
 import time
-from typing import Any
+from typing import Annotated, Any
 
 import numpy as np
 from fastapi import APIRouter, Depends, HTTPException, Request
@@ -358,7 +358,7 @@ def _execute(req: SimulateRequest, store: RunStore) -> SimulateResponse:
 
 @router.post("/api/simulate", response_model=SimulateResponse)
 def api_simulate(
-    req: SimulateRequest, store: RunStore = Depends(get_run_store)  # noqa: B008
+    req: SimulateRequest, store: Annotated[RunStore, Depends(get_run_store)]
 ) -> SimulateResponse:
     """Run a simulation on the chosen engine and translate the results."""
     return _execute(req, store)
@@ -366,7 +366,7 @@ def api_simulate(
 
 @router.post("/api/simulate/stream")
 def api_simulate_stream(
-    req: SimulateRequest, store: RunStore = Depends(get_run_store)  # noqa: B008
+    req: SimulateRequest, store: Annotated[RunStore, Depends(get_run_store)]
 ) -> StreamingResponse:
     """SSE variant: progress events while the engine runs, then the full result.
 
@@ -418,7 +418,7 @@ def api_simulate_stream(
 
 @router.post("/api/explain", response_model=ExplainResponse)
 def api_explain(
-    req: ExplainRequest, store: RunStore = Depends(get_run_store)  # noqa: B008
+    req: ExplainRequest, store: Annotated[RunStore, Depends(get_run_store)]
 ) -> ExplainResponse:
     """Re-narrate a stored run for a different audience/language.
 
@@ -496,7 +496,7 @@ def api_explain(
 
 
 @router.get("/api/runs", response_model=list[RunListItem])
-def api_runs(store: RunStore = Depends(get_run_store)) -> list[RunListItem]:  # noqa: B008
+def api_runs(store: Annotated[RunStore, Depends(get_run_store)]) -> list[RunListItem]:
     """List stored runs (most recent first)."""
     items: list[RunListItem] = []
     for entry in store.list():
@@ -523,9 +523,9 @@ def api_runs(store: RunStore = Depends(get_run_store)) -> list[RunListItem]:  # 
 def api_run_detail(
     run_id: str,
     request: Request,
+    store: Annotated[RunStore, Depends(get_run_store)],
     language: str = "es",
     audience: str = "general",
-    store: RunStore = Depends(get_run_store),  # noqa: B008,
 ) -> SimulateResponse:
     """Return the full stored payload of one run, narrated on demand."""
     payload = store.get(run_id)
@@ -558,7 +558,7 @@ def api_run_detail(
 
 
 @router.delete("/api/runs/{run_id}")
-def api_run_delete(run_id: str, store: RunStore = Depends(get_run_store)) -> dict:  # noqa: B008
+def api_run_delete(run_id: str, store: Annotated[RunStore, Depends(get_run_store)]) -> dict:
     """Delete a stored run."""
     if not store.delete(run_id):
         raise HTTPException(status_code=404, detail="run not found")

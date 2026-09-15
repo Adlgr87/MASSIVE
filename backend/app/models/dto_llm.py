@@ -25,6 +25,7 @@ LLMMotor = Literal[
     "factbook_validation",
 ]
 
+
 class LLMLlmHint(BaseModel):
     """Optional LLM provider/model hint supplied by the client.."""
 
@@ -32,6 +33,7 @@ class LLMLlmHint(BaseModel):
 
     provider: Literal["groq", "openai", "openrouter"] = "groq"
     model: str | None = None
+
 
 class LLMRunRequest(BaseModel):
     """Request payload for ``POST /v1/llm/run_simulation``.."""
@@ -51,6 +53,7 @@ class LLMRunRequest(BaseModel):
         default=None, description="Extra engine-specific config keys"
     )
 
+
 class LLMSummary(BaseModel):
     """Normalized summary emitted by the orchestrator.."""
 
@@ -61,6 +64,7 @@ class LLMSummary(BaseModel):
     regla_dominante: str | None = None
     factbook_country: str | None = None
 
+
 class LLMTimelinePoint(BaseModel):
     """A single tick from a simulation timeline (abridged history).."""
 
@@ -70,6 +74,7 @@ class LLMTimelinePoint(BaseModel):
     mean_opinion: float | None = None
     polarization: float | None = None
     active_agents: int | None = None
+
 
 class LLMResults(BaseModel):
     """Engine-agnostic envelope for raw result artifacts.."""
@@ -82,6 +87,7 @@ class LLMResults(BaseModel):
     # Abridged timeline (first/last N ticks) for large histories.
     timeline: list[LLMTimelinePoint] | None = None
     final_state: dict[str, Any] | None = None
+
 
 class LLMRunResponse(BaseModel):
     """Response payload for ``POST /v1/llm/run_simulation``.."""
@@ -97,6 +103,7 @@ class LLMRunResponse(BaseModel):
     assumptions: list[str]
     factbook_params: dict[str, Any] | None = None
 
+
 class LLMAmbiguityResponse(BaseModel):
     """422 response body returned when intent requires user clarification.."""
 
@@ -106,13 +113,17 @@ class LLMAmbiguityResponse(BaseModel):
     requested_fields: list[str]
     motor: str | None = None
 
+
 class LLMWizardRequest(BaseModel):
     """Request body for the wizard endpoint (NL → config).."""
 
     model_config = {"extra": "forbid"}
 
-    description: str = Field(..., min_length=1, max_length=2000, description="Natural-language scenario description")
+    description: str = Field(
+        ..., min_length=1, max_length=2000, description="Natural-language scenario description"
+    )
     llm: LLMLlmHint | None = None
+
 
 class LLMWizardResponse(BaseModel):
     """Response body for the wizard endpoint.."""
@@ -120,6 +131,7 @@ class LLMWizardResponse(BaseModel):
     model_config = {"extra": "forbid"}
 
     config: dict[str, Any]
+
 
 class LLMExtractResponse(BaseModel):
     """Response body for the extract endpoint.."""

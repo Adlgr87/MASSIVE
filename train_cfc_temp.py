@@ -62,9 +62,9 @@ def generate_temperature_training_data(n_trajectories: int = 10_000, seed: int =
     Returns:
         Dict with 'X' (features) and 'y' (target temperature multipliers).
     """
-    try:
-        import torch
-    except ImportError:
+    import importlib.util
+
+    if importlib.util.find_spec("torch") is None:
         raise ImportError("PyTorch is required for training: pip install torch>=2.2.0")
 
     from energy_engine import SocialEnergyEngine, random_network
@@ -98,7 +98,7 @@ def generate_temperature_training_data(n_trajectories: int = 10_000, seed: int =
 
         pol_history = []
         op_history = []
-        for t in range(steps):
+        for _ in range(steps):
             opinions = eng.step(opinions, adj, attractors, repellers, eta=0.01)
             pol = float(np.std(opinions) / 1.0)
             pol_history.append(pol)
@@ -110,27 +110,31 @@ def generate_temperature_training_data(n_trajectories: int = 10_000, seed: int =
             pol_t = pol_arr[t]
             delta_t1 = pol_arr[t] - pol_arr[t - 1]
             delta_t5 = pol_arr[t] - pol_arr[t - 5] if t >= 5 else 0.0
-            
+
             # Skewness of opinions at time t
             current_ops = op_history[t]
             # Standard skewness: E[(X-mu)^3] / sigma^3
             mu = np.mean(current_ops)
             sigma = np.std(current_ops)
-            skewness = float(np.mean((current_ops - mu)**3) / (sigma**3 + 1e-6))
+            skewness = float(np.mean((current_ops - mu) ** 3) / (sigma**3 + 1e-6))
 
             # Target Logic (Physical Intuition)
             # default multiplier = 1.0
             multiplier = 1.0
-            
+
             # 1. High polarization velocity + high skewness -> boost to escape echo chambers
             if delta_t1 > 0.01 and abs(skewness) > 0.5:
                 multiplier += 0.4
-            
+
             # 2. Low volatility -> decrease (less noise needed)
-            volatility = float(np.std([pol_arr[t-j] - pol_arr[t-j-1] for j in range(1, 4)]) if t >= 3 else 0.0)
+            volatility = float(
+                np.std([pol_arr[t - j] - pol_arr[t - j - 1] for j in range(1, 4)])
+                if t >= 3
+                else 0.0
+            )
             if volatility < 0.001:
                 multiplier -= 0.3
-                
+
             # 3. High Gini + high polarization -> boost to break inequality-amplified echo chambers
             if gini > 0.5 and pol_t > 0.4:
                 multiplier += 0.3
@@ -190,7 +194,7 @@ def train_temperature_modulator(
     n_train = int(0.8 * n)
     n_val = int(0.1 * n)
     train_idx = idx[:n_train]
-    val_idx = idx[n_train:n_train + n_val]
+    val_idx = idx[n_train : n_train + n_val]
 
     X_train, y_train = X[train_idx], y[train_idx]
     X_val, y_val = X[val_idx], y[val_idx]
@@ -212,23 +216,25 @@ def train_temperature_modulator(
         n_batches = 0
         perm = np.random.default_rng(42 + epoch).permutation(len(X_train))
         for batch_start in range(0, len(X_train), BATCH_SIZE):
-            batch_idx = perm[batch_start:batch_start + BATCH_SIZE]
+            batch_idx = perm[batch_start : batch_start + BATCH_SIZE]
             X_batch = X_train[batch_idx]
             y_batch = y_train[batch_idx]
 
             optimizer.zero_grad()
             h = torch.zeros(len(X_batch), hidden_size)
             h = cell(h, X_batch, dt=dt)
-            
+
             # Raw output through softplus
             raw_out = softplus(readout(h))
             # Affine transform: temp = 0.5 + 1.5 * softplus / (1 + softplus)
             # This maps [0, inf) to [0.5, 2.0)
             pred = 0.5 + 1.5 * raw_out / (1.0 + raw_out)
-            
+
             loss = criterion(pred, y_batch)
             loss.backward()
-            torch.nn.utils.clip_grad_norm_(list(cell.parameters()) + list(readout.parameters()), 1.0)
+            torch.nn.utils.clip_grad_norm_(
+                list(cell.parameters()) + list(readout.parameters()), 1.0
+            )
             optimizer.step()
             epoch_loss += loss.item()
             n_batches += 1
@@ -263,7 +269,9 @@ def train_temperature_modulator(
             patience_counter += 1
 
         if epoch % 10 == 0 or epoch == epochs - 1:
-            log.info(f"  Epoch {epoch}/{epochs}: train_loss={train_loss:.6f}, val_loss={val_loss_val:.6f}")
+            log.info(
+                f"  Epoch {epoch}/{epochs}: train_loss={train_loss:.6f}, val_loss={val_loss_val:.6f}"
+            )
 
         if patience_counter >= patience:
             log.info(f"  Early stopping at epoch {epoch}")
@@ -308,6 +316,7 @@ def main():
 
     log.info("=== Step 3: Integration verification ===")
     import torch
+
     try:
         state = torch.load(model_path)
         log.info(f"Successfully loaded model from {model_path}")

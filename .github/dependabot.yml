@@ -1,0 +1,101 @@
+version: 2
+updates:
+  # Python — runtime + dev dependencies (pyproject.toml + requirements.txt + lockfiles)
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    groups:
+      production-deps:
+        patterns:
+          - "numpy"
+          - "scipy"
+          - "pandas"
+          - "networkx"
+          - "pydantic"
+          - "pyyaml"
+          - "python-dotenv"
+          - "requests"
+          - "requests"
+          - "fastapi"
+          - "uvicorn*"
+          - "python-multipart*"
+          - "plotly"
+      test-tools:
+        patterns:
+          - "pytest"
+          - "pytest-cov"
+          - "coverage"
+          - "httpx"
+          - "psutil"
+    ignore:
+      - dependency-name: "torch"
+        # torch is a deliberate hard dependency per D5-008 decision; pin manually
+        update-types: ["version-update"]
+    labels:
+      - "dependencies"
+      - "area:packaging"
+      - "severity:medium"
+
+  # Frontend root — package.json (React / Vite)
+  - package-ecosystem: "npm"
+    directory: "/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    groups:
+      react-vite:
+        patterns:
+          - "@vitejs/*"
+          - "react"
+          - "react-dom"
+          - "typescript"
+          - "@types/*"
+      tooling:
+        patterns:
+          - "tailwindcss"
+          - "autoprefixer"
+          - "postcss"
+    labels:
+      - "dependencies"
+      - "area:frontend"
+      - "severity:medium"
+
+  # massive-ui-ng frontend — second package.json
+  - package-ecosystem: "npm"
+    directory: "/massive-ui-ng/frontend"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "area:frontend"
+      - "severity:medium"
+
+  # GitHub Actions workflows
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    open-pull-requests-limit: 10
+    labels:
+      - "dependencies"
+      - "area:ci"
+      - "severity:low"
+
+  # Rust toolchain (Cargo.lock)
+  - package-ecosystem: "cargo"
+    directory: "/rust_core"
+    schedule:
+      interval: "monthly"
+      day: "first-monday"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "area:engines"
+      - "severity:medium"
