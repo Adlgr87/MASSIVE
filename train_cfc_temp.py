@@ -169,6 +169,7 @@ def train_temperature_modulator(
     """
     import torch
     import torch.nn as nn
+
     from cfc_engine import CfCCell
 
     X = torch.tensor(dataset["X"], dtype=torch.float32)

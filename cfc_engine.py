@@ -17,7 +17,6 @@ Modelos:
 Autor: MASSIVE Research
 """
 
-import numpy as np
 
 # Graceful fallback for torch (matching energy_engine.py pattern)
 try:

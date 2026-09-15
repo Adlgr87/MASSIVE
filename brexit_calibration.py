@@ -11,14 +11,12 @@ Produces: /tmp/brexit_calibration_report.md
 
 import json
 import time
-import numpy as np
 from pathlib import Path
 
-from energy_engine import SocialEnergyEngine, random_network
-from energy_schemas import EnergyConfig
-from programmatic_architect import ProgrammaticArchitect
-from cfc_router import CfCRouter
+import numpy as np
 
+from cfc_router import CfCRouter
+from energy_engine import SocialEnergyEngine, random_network
 
 # ── Brexit 2016 Ground Truth ───────────────────────────────────────────────────
 # Leave = +1, Remain = -1 (bipolar encoding)
@@ -177,7 +175,7 @@ def run_brexit_calibration(
 def main():
     """Run Brexit calibration and write report."""
     print("=== Brexit 2016 End-to-End Calibration ===")
-    print(f"T0 polling: 41.0% Leave")
+    print("T0 polling: 41.0% Leave")
     print(f"Actual result: {BREXIT_ACTUAL_LEAVE_PCT}% Leave")
     print()
 

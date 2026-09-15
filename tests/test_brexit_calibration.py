@@ -4,10 +4,9 @@ Verifies that the full pipeline (energy engine + EWS + Gini + CFC correction)
 reduces the Brexit prediction error by at least 25%.
 """
 
-import numpy as np
 import pytest
 
-from brexit_calibration import run_brexit_calibration, BREXIT_ACTUAL_LEAVE_PCT
+from brexit_calibration import BREXIT_ACTUAL_LEAVE_PCT, run_brexit_calibration
 
 
 class TestBrexitCalibration:

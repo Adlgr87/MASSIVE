@@ -162,6 +162,7 @@ def train_landscape_corrector(
     """
     import torch
     import torch.nn as nn
+
     from cfc_engine import CfCCell
 
     X = torch.tensor(dataset["X"], dtype=torch.float32)
@@ -303,6 +304,7 @@ def main():
     log.info("=== Step 3: Prediction smoke test ===")
     import torch
     import torch.nn as nn
+
     from cfc_engine import CfCCell
     
     checkpoint = torch.load(model_path)

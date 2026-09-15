@@ -44,7 +44,6 @@ import requests
 from scipy import stats
 from scipy.integrate import solve_ivp
 from scipy.special import erf
-from metrics.unified_metrics import calculate_polarization, calculate_partisanship
 
 from benchmarks.butterfly_diagnostic import run_butterfly_diagnostic_core
 from empirical_calibration import (
@@ -57,6 +56,7 @@ from massive.core.schemas import GamePayoff
 from massive.core.utility_logic import calculate_strategic_force
 from massive_core.rust_core import langevin_opinion_update_inplace
 from massive_engine import MassiveEngine
+from metrics.unified_metrics import calculate_partisanship
 from multilayer_engine import MultilayerEngine
 
 try:

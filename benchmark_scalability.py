@@ -326,10 +326,10 @@ def run_energy_engine(
     eta = 0.01
     row_sums = np.asarray(adj.sum(axis=1)).ravel()
     row_sums = np.where(row_sums == 0, 1.0, row_sums)
-    att_pos = np.array([a["position"] for a in attractors], dtype=np.float64)
-    att_str = np.array([a["strength"] for a in attractors], dtype=np.float64)
-    rep_pos = np.array([r["position"] for r in repellers], dtype=np.float64)
-    rep_str = np.array([r["strength"] for r in repellers], dtype=np.float64)
+    _att_pos = np.array([a["position"] for a in attractors], dtype=np.float64)
+    _att_str = np.array([a["strength"] for a in attractors], dtype=np.float64)
+    _rep_pos = np.array([r["position"] for r in repellers], dtype=np.float64)
+    _rep_str = np.array([r["strength"] for r in repellers], dtype=np.float64)
 
     monitor = ResourceMonitor(interval=0.3)
     tracemalloc.start()

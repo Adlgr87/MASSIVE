@@ -8,11 +8,10 @@ import numpy as np
 import pytest
 
 from metrics.unified_metrics import (
-    calculate_polarization,
-    calculate_partisanship,
     calculate_cooperation,
+    calculate_partisanship,
+    calculate_polarization,
 )
-
 
 # ── Shared test cases ──────────────────────────────────────────────────────────
 

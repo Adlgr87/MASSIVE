@@ -20,9 +20,9 @@ Integración con CIA World Factbook:
 import logging
 from typing import Any
 
-from metrics.unified_metrics import calculate_polarization
-
 import numpy as np
+
+from metrics.unified_metrics import calculate_polarization
 
 log = logging.getLogger("massive")
 
@@ -174,6 +174,7 @@ class SocialEnergyEngine:
             return None
         try:
             from pathlib import Path
+
             from cfc_engine import CfCTempModulator
 
             path = Path("models/cfc_calibrated/cfc_temperature.pt")
@@ -202,6 +203,7 @@ class SocialEnergyEngine:
             return None
         try:
             from pathlib import Path
+
             from cfc_engine import CfCLambdaCorrector
             path = Path("models/cfc_calibrated/cfc_lambda_corrector.pt")
             if not path.exists():
@@ -243,6 +245,7 @@ class SocialEnergyEngine:
             return None
         try:
             from pathlib import Path
+
             from cfc_engine import CfCLandscapeModulator
 
             path = Path("models/cfc_calibrated/cfc_landscape.pt")

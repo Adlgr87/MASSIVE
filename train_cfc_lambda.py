@@ -72,7 +72,6 @@ def generate_lambda_training_data(n_trajectories: int = 10_000, seed: int = 42) 
         raise ImportError("PyTorch is required for training: pip install torch>=2.2.0")
 
     from energy_engine import SocialEnergyEngine, random_network
-    from cfc_engine import CfCCell
 
     rng = np.random.default_rng(seed)
     N_agents = 50
@@ -160,7 +159,8 @@ def train_lambda_corrector(
     """
     import torch
     import torch.nn as nn
-    from cfc_engine import CfCCell, CfCLambdaCorrector
+
+    from cfc_engine import CfCLambdaCorrector
 
     X = torch.tensor(dataset["X"], dtype=torch.float32)
     y = torch.tensor(dataset["y"], dtype=torch.float32).unsqueeze(1)

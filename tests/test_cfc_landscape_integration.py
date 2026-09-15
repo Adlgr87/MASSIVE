@@ -7,13 +7,10 @@ Verifies:
 - Graceful fallback when model is unavailable
 """
 
-import numpy as np
 import pytest
-import torch
 
 from cfc_router import CfCRouter
-from energy_engine import SocialEnergyEngine, random_network, _ews_fallback_multiplier
-from cfc_engine import CfCLandscapeModulator
+from energy_engine import SocialEnergyEngine, _ews_fallback_multiplier
 
 
 class TestCfCLandscapeModulator:

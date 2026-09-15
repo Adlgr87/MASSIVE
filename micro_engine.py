@@ -22,6 +22,7 @@ import logging
 from typing import Any
 
 import numpy as np
+
 from metrics.unified_metrics import calculate_polarization
 
 log = logging.getLogger("massive")

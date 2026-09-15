@@ -8,11 +8,11 @@ truth for polarization and related reactive quantities.
 """
 
 from .unified_metrics import (
-    calculate_polarization,
-    calculate_polarization_index,
-    calculate_partisanship,
     calculate_cooperation,
     calculate_mean_opinion,
+    calculate_partisanship,
+    calculate_polarization,
+    calculate_polarization_index,
     calculate_std_opinion,
     polarization_gradient,
     polarization_velocity,

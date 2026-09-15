@@ -4,12 +4,12 @@ import numpy as np
 import pytest
 
 from metrics.unified_metrics import (
-    calculate_polarization,
-    calculate_mean_opinion,
-    calculate_std_opinion,
     calculate_cooperation,
-    polarization_velocity,
+    calculate_mean_opinion,
+    calculate_polarization,
+    calculate_std_opinion,
     polarization_gradient,
+    polarization_velocity,
 )
 
 

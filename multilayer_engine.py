@@ -28,11 +28,11 @@ Autor: MASSIVE Research
 import networkx as nx
 import numpy as np
 import pandas as pd
-from metrics.unified_metrics import calculate_polarization
 from scipy import sparse
 
 from llm_credentials import resolve_provider_api_key
 from massive.core.state_compression import compress_agent_states, decompress_agent_states
+from metrics.unified_metrics import calculate_polarization
 
 # ── Coeficientes de modulación theta (calibrados empíricamente) ───────────
 # Escalas de sensibilidad por atributo y dimensión de comportamiento.

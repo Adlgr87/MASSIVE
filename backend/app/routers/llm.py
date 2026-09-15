@@ -180,7 +180,7 @@ async def v1_llm_wizard(payload: LLMWizardRequest) -> LLMWizardResponse:
 )
 async def v1_llm_extract(
     request: Request,
-    file: UploadFile = File(...),
+    file: UploadFile = File(...),  # B008: avoid function call in default
 ) -> LLMExtractResponse:
     """Upload a file (pdf/json/csv/xlsx) and return extracted MASSIVE config."""
     import contextlib

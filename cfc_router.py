@@ -96,13 +96,13 @@ class CfCRouter:
             return
 
         from cfc_engine import (
-            CfCResidualCorrector,
+            NUM_REGIMES,
             CfCArchitectPolicy,
-            CfCRegimeSelector,
-            CfCTauMatrix,
             CfCLambdaCorrector,
             CfCLandscapeModulator,
-            NUM_REGIMES,
+            CfCRegimeSelector,
+            CfCResidualCorrector,
+            CfCTauMatrix,
         )
 
         # Check both models/ root and models/cfc_calibrated/ for trained weights.

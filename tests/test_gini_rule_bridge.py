@@ -6,10 +6,9 @@ Verifies that:
 3. Higher Gini leads to stronger polarization amplification
 """
 
-import numpy as np
 import pytest
 
-from simulator import simular, DEFAULT_CONFIG, regla_polarizacion
+from simulator import DEFAULT_CONFIG, regla_polarizacion, simular
 
 
 class TestGiniRuleBridge:
@@ -89,7 +88,6 @@ class TestGiniInSimulation:
         (by setting proveedor='heuristic' and configuring for high fuerza),
         then checks that higher Gini leads to more extreme opinions.
         """
-        from simulator import resumen_historial, NOMBRES_REGLAS
 
         estado_ini = {"opinion": 0.3, "propaganda": 0.6, "confianza": 0.7,
                        "opinion_grupo_a": 0.85, "opinion_grupo_b": 0.15}
