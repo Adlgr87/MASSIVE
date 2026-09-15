@@ -19,7 +19,6 @@ SLOs (defined in PRODUCTION_ARCHITECTURE_SPEC.md §5.3):
 
 from __future__ import annotations
 
-import math
 import threading
 import time
 from collections import defaultdict
@@ -32,6 +31,29 @@ _DEFAULT_BUCKETS = (0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.
 
 def _escape_label(value: str) -> str:
     return value.replace("\\", "\\\\").replace('"', '\\"').replace("\n", "\\n")
+
+
+
+def _bucket_key(name: str, key: tuple, bound: float) -> str:
+    """Build a Prometheus bucket key without escaped quotes in f-strings."""
+    if not key:
+        return f"{name}_bucket{{le={bound!r}}}"
+    parts = []
+    for k, v in key:
+        parts.append(f"{k}={_escape_label(v)!r}")
+    label_part = ",".join(parts)
+    return f"{name}_bucket{{{label_part},le={bound!r}}}"
+
+
+def _inf_key(name: str, key: tuple) -> str:
+    """Build a +Inf bucket key."""
+    if not key:
+        return f"{name}_bucket{{le='+Inf'}}"
+    parts = []
+    for k, v in key:
+        parts.append(f"{k}={_escape_label(v)!r}")
+    label_part = ",".join(parts)
+    return f"{name}_bucket{{{label_part},le='+Inf'}}"
 
 
 class Histogram:
@@ -53,9 +75,9 @@ class Histogram:
         with self._lock:
             self._sum[key] += value
             self._total_count[key] += 1
-            for i, bound in enumerate(self.buckets):
+            for _i, bound in enumerate(self.buckets):
                 if value <= bound:
-                    bucket_key = f"{self.name}_bucket{{{','.join(f'{k}=\"{_escape_label(v)}\"' for k, v in key) if key else ''},le=\"{bound}\"}}"
+                    bucket_key = _bucket_key(self.name, key, bound)
                     self._counts[bucket_key][()] += 1
 
     def render(self, lines: list[str]) -> None:
@@ -63,18 +85,17 @@ class Histogram:
             total_count = dict(self._total_count)
             sum_vals = dict(self._sum)
 
-        inf_count = sum(total_count.values())
 
         # Render each bucket
         for bound in self.buckets:
             bucket_name = f"{self.name}_bucket"
-            for key, count in total_count.items():
+            for key, _count in total_count.items():
                 # Count observations <= this bound
                 cum_count = 0
-                for b_idx, b_bound in enumerate(self.buckets):
+                for _b_idx, b_bound in enumerate(self.buckets):
                     if b_bound <= bound:
                         # Find this bucket's count
-                        bk = f"{self.name}_bucket{{{','.join(f'{k}=\"{_escape_label(v)}\"' for k, v in key) if key else ''},le=\"{b_bound}\"}}"
+                        bk = _bucket_key(self.name, key, b_bound)
                         cum_count += self._counts.get(bk, {}).get((), 0)
                 if key:
                     label_str = ",".join(f'{k}="{_escape_label(v)}"' for k, v in key)
@@ -86,9 +107,9 @@ class Histogram:
         for key in total_count:
             if key:
                 label_str = ",".join(f'{k}="{_escape_label(v)}"' for k, v in key)
-                lines.append(f"{bucket_name}{{{label_str},le=\"+Inf\"}} {total_count[key]}")
+                lines.append(f"{bucket_name}{{{label_str},le='+Inf'}} {total_count[key]}")
             else:
-                lines.append(f"{bucket_name}{{le=\"+Inf\"}} {total_count.get((), 0)}")
+                lines.append(f"{bucket_name}{{le='+Inf'}} {total_count.get((), 0)}")
 
         # Sum and Count
         for key in total_count:

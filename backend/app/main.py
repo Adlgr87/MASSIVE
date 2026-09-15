@@ -30,6 +30,7 @@ import os
 import sys
 import time
 import uuid
+from contextlib import asynccontextmanager
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request
@@ -53,7 +54,6 @@ except Exception:  # pragma: no cover - fallback if config unavailable
 _app_settings = get_app_settings()
 
 
-from contextlib import asynccontextmanager
 
 
 @asynccontextmanager
