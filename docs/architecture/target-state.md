@@ -50,7 +50,7 @@ flowchart TB
 
 | # | Decisión | Opciones | Recomendación |
 |---|----------|----------|---------------|
-| D1 | Destino del kit `massive-ui-ng/` | (a) fusionar de verdad en `backend/`+`frontend/`, (b) mantenerlo como referencia en subdir con CI propio, (c) extraerlo a repo aparte | (b) a corto plazo; (a) solo con plan de migración y contract tests |
+| D1 | Destino del kit `MASSIVE-UI/` | (a) fusionar de verdad en `backend/`+`frontend/`, (b) mantenerlo como referencia en subdir con CI propio, (c) extraerlo a repo aparte | (b) a corto plazo; (a) solo con plan de migración y contract tests |
 | D2 | `api.py` legacy | (a) congelarlo y depreciarlo con header `Deprecation`, (b) migrar sus 3 endpoints `/api/*` usados por el frontend al canónico | (b) en Hito 2+; hasta entonces (a) |
 | D3 | Streamlit | (a) eliminar rastro (supervisord/nginx/README), (b) reinstalar streamlit + restaurar app | (a): el árbol no tiene UI Streamlit desde hace tiempo |
 | D4 | Purga de historial por token Zapier | (a) solo rotar token, (b) rotar + filtrar historial (destructivo, reescribe SHAs) | (a) rotar es suficiente si el token se invalida; (b) solo si hay exigencia de compliance |

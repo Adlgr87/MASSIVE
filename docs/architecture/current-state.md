@@ -12,7 +12,7 @@ Plataforma híbrida de simulación de dinámicas sociales (opinión, polarizaci�
 forecast, optimización inversa de intervenciones) con:
 
 - Núcleo científico Python (numpy/scipy/networkx) + aceleración Rust **opcional** (`massive_rust_core` vía pyo3/maturin).
-- Tres "backends" HTTP (ver §3) y **tres UIs** (React `frontend/`, kit `massive-ui-ng/frontend/`, Streamlit documentado pero **inexistente** en el árbol).
+- Tres "backends" HTTP (ver §3) y **tres UIs** (React `frontend/`, kit `MASSIVE-UI/frontend/`, Streamlit documentado pero **inexistente** en el árbol).
 - Integraciones LLM (Groq/OpenAI/OpenRouter/Ollama), CIA World Factbook, conectores sociales (Twitter/Reddit), procesamiento de documentos (PDF/CSV/JSON/XLSX).
 
 ## 2. Mapa de componentes (verificado)
@@ -22,7 +22,7 @@ flowchart LR
     subgraph Entradas
         CLI["massive-cli (pyproject script)"]
         FE["frontend/ React+Vite (:3000 dev)"]
-        UING["massive-ui-ng/ (kit: backend + frontend React)"]
+        UING["MASSIVE-UI/ (kit: backend + frontend React)"]
         AG["Agentes LLM (X-API-Key)"]
     end
 
@@ -95,7 +95,7 @@ flowchart LR
 |---|---|---|
 | `api.py` | API legacy monolítica | `/api/*` (la usa `frontend/` vía axios) |
 | `backend/app/` | **Canónico** (PR #84 lo dejó como backend principal; routers `/v1`) | `/v1/*`, DTOs pydantic `extra=forbid` |
-| `massive-ui-ng/backend/` | Kit UI-NG "distribuible" con `create_app()`, auth multi-key, SSE, SQLite, Prometheus | `/api/*` — **no conectado** al frontend servido |
+| `MASSIVE-UI/backend/` | Kit MASSIVE "distribuible" con `create_app()`, auth multi-key, SSE, SQLite, Prometheus | `/api/*` — **no conectado** al frontend servido |
 | `backend/app/services/llm_orchestrator.py` | Segundo orquestador LLM (contrato `classified_motor/…`) — **huérfano**: nadie lo importa | divergente |
 
 El contrato LLM canónico (`configs/llm_contract/massive_llm_contract.json` v1.1.0) documenta
@@ -103,7 +103,7 @@ El contrato LLM canónico (`configs/llm_contract/massive_llm_contract.json` v1.1
 assumptions, factbook_params` — coincide con `backend/app/routers/llm.py` +
 `services/llm_orchestrator.py`. Los tests `tests/test_llm_endpoint.py` y
 `tests/test_llm_orchestrator_coverage.py` fueron reescritos en PR #84 contra el contrato del
-kit UI-NG (importan `create_app` de `backend.app.main`, que ya no existe) → **rotos a nivel import**.
+kit MASSIVE (importan `create_app` de `backend.app.main`, que ya no existe) → **rotos a nivel import**.
 
 ## 3. Contenedores y procesos
 
@@ -118,7 +118,7 @@ kit UI-NG (importan `create_app` de `backend.app.main`, que ya no existe) → **
 
 ## 4. Flujos de datos y persistencia
 
-- Estado de simulación: en memoria; sin base de datos en backends raíz (el kit UI-NG sí trae `RunStore` SQLite, no conectado).
+- Estado de simulación: en memoria; sin base de datos en backends raíz (el kit MASSIVE sí trae `RunStore` SQLite, no conectado).
 - Archivos: `reports/` (salidas de validación/benchmarks), `datasets/` (casos PVU), `models/cfc_calibrated/` (binarios .pt), `data/factbook/` (raw ignorado por git).
 - Cachés: `cache_manager.py`, `landscapes_cache.db` (ignorado).
 - Secretos: solo env vars (`.env*` ignorados por git, `*.env` también en `.dockerignore`).
@@ -163,7 +163,7 @@ Tests que fallan y causa raíz:
 - `massive_core/config/` (settings tipadas pydantic + defaults YAML) — usado por ambos backends raíz.
 - `.env.example` (documentado, sin valores reales) y `.env.local.example`.
 - Inconsistencia verificada: `api.py:24` valida `MASSIVE_ENV == "dev"` mientras `backend/app/security.py:50` valida `== "development"` (valor documentado en `.env.example`). Con `MASSIVE_ENV=development` y sin `MASSIVE_API_KEY`, el backend canónico abre fallback dev pero el legacy devuelve 503.
-- Ambos comparan la API key con `!=` (no constant-time); el kit UI-NG sí usa `compare_digest`.
+- Ambos comparan la API key con `!=` (no constant-time); el kit MASSIVE sí usa `compare_digest`.
 
 ## 8. Dependencias externas
 
@@ -178,7 +178,7 @@ Tests que fallan y causa raíz:
 
 - `0` (archivo vacío en raíz), `Resolved test artifact`, `.github/test-zapier-dir.txt` — basura del incidente del token Zapier (PR #81).
 - `README.backup.md`, `site/` (build MkDocs **commiteado** al repo).
-- ~~`backend/app/services/llm_orchestrator.py`~~ + 15 módulos UI-NG huérfanos — **eliminados 2026-08-20** (PR #85, verificados sin importadores; persisten en `massive-ui-ng/backend/`).
+- ~~`backend/app/services/llm_orchestrator.py`~~ + 15 módulos MASSIVE huérfanos — **eliminados 2026-08-20** (PR #85, verificados sin importadores; persisten en `MASSIVE-UI/backend/`).
 - `frontend/src/MASSIVE_UIL_demo.jsx` — demo no referenciado por el build (a confirmar en FASE 2).
 - `MASSIVE_PRODUCTION_SIGNOFF.md` documenta un `Makefile` que **no existe** y entry-points (`massive = "simulator:main"`) que no coinciden con pyproject (`massive-cli`).
 

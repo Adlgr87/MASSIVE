@@ -241,7 +241,7 @@ metric — the ~27 % *RMSE* reduction (the primary scientific metric) is detaile
 
 | Signal | Status |
 |---|---|
-| Test suite | **662+ tests, ~21 s** — `pytest tests/` (excludes test_optimization.py, test_visualizations.py due to missing deps) |
+| Test suite | **679 tests, ~32 s** — `pytest tests/`  |
 | Coverage | 68 % branch (scope: engines + services + backend) — `make test-cov` |
 | Static quality | ruff + black + mypy (gradual slice) green in CI |
 | CI | 13 CI workflows per PR: lint, types, core/scientific/api/full suites, frontend build+lint, Docker compose health, TS-type sync, secret scan, semgrep, PVU benchmark |

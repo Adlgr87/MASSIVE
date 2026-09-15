@@ -3,7 +3,7 @@
 > **Ingeniero de Observabilidad / Seguridad** — Documento de fase 5 del Master Orchestrator.
 >
 > Este documento formaliza la arquitectura de observabilidad y seguridad para el
-> backend UI-NG de MASSIVE (`backend/app/`). Está basado en el código real encontrado
+> backend MASSIVE de MASSIVE (`backend/app/`). Está basado en el código real encontrado
 > en el repositorio y describe el estado actual, brechas identificadas y
 > recomendaciones de implementación para producción.
 
@@ -45,7 +45,7 @@ def health_check() -> dict:
         store_ok = False
     return {
         "status": "healthy" if store_ok else "degraded",
-        "service": "MASSIVE UI-NG API",
+        "service": "MASSIVE MASSIVE API",
         "version": "2.0.0",
         "env": settings.env,
         "store": "ok" if store_ok else "error",
@@ -55,7 +55,7 @@ def health_check() -> dict:
 **Características:**
 - Verifica conectividad del store de runs (SQLite).
 - Devuelve `status: "degraded"` si el store falla.
-- Usado por Docker `HEALTHCHECK` (Dockerfile.ui-ng línea 35, docker-compose.yml línea 26).
+- Usado por Docker `HEALTHCHECK` (Dockerfile.MASSIVE línea 35, docker-compose.yml línea 26).
 
 **Recomendación de producción — Separar liveness y readiness:**
 
@@ -88,7 +88,7 @@ def readiness_check() -> dict:
     return {
         "status": "ready" if all_ok else "not_ready",
         "checks": checks,
-        "service": "MASSIVE UI-NG API",
+        "service": "MASSIVE MASSIVE API",
         "version": "2.0.0",
     }
 ```
@@ -150,16 +150,16 @@ def readiness_check() -> dict:
 ```yaml
 # prometheus.yml — scrape config
 scrape_configs:
-  - job_name: "massive-ui-ng"
+  - job_name: "MASSIVE-UI"
     static_configs:
-      - targets: ["massive-ui-ng:8000"]
+      - targets: ["MASSIVE-UI:8000"]
     metrics_path: /metrics
     scrape_interval: 15s
 ```
 
 ### 2.3 Endpoints de salud en Docker
 
-**Dockerfile.ui-ng (línea 35):**
+**Dockerfile.MASSIVE (línea 35):**
 ```dockerfile
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s     CMD curl -sf http://127.0.0.1:8000/health || exit 1
 ```
@@ -189,7 +189,7 @@ logging.basicConfig(
 
 - Formato plano, sin estructura JSON.
 - No hay `request_id`, `simulation_id`, `engine_type`, `country_code`, `llm_provider`, `user_id`.
-- El logger `massive_core/config/logging_setup.py` (`configure_logging`) existe pero **no se usa en `main.py`** del UI-NG backend. El backend UI-NG inicializa logging de forma independiente.
+- El logger `massive_core/config/logging_setup.py` (`configure_logging`) existe pero **no se usa en `main.py`** del MASSIVE backend. El backend MASSIVE inicializa logging de forma independiente.
 
 ### 3.2 Campos de contexto requeridos (Phase 5)
 
@@ -412,12 +412,12 @@ def _client_ip(request: Request, trust_proxy: bool) -> str:
 - `FileRateLimiter` — para multi-worker (JSON con fcntl advisory lock).
 - `build_rate_limiter(backend="memory"|"file", path=...)`.
 
-**Brecha:** `backend/app/rate_limit.py` (UI-NG) no usa el rate limiter de `massive_core`. Dos implementaciones divergentes.
+**Brecha:** `backend/app/rate_limit.py` (MASSIVE) no usa el rate limiter de `massive_core`. Dos implementaciones divergentes.
 
 **Recomendación:**
 - Unificar en `massive_core/config/rate_limit.py`.
 - Para producción multi-worker: usar Redis (`RedisRateLimiter`).
-- Documentar que el rate limiter in-process funciona para single-worker (como el Dockerfile.ui-ng que usa `--workers 1`).
+- Documentar que el rate limiter in-process funciona para single-worker (como el Dockerfile.MASSIVE que usa `--workers 1`).
 
 ### 4.4 TrustedHost & Security Headers
 
@@ -502,7 +502,7 @@ def _public_error(exc: Exception) -> HTTPException:
 |-----|-------------------|---------|-----------|
 | **SL1 — Latencia API p95** | `histogram_quantile(0.95, http_request_duration_seconds_bucket)` | 30d | p95 <= 2000ms (simulaciones), <= 500ms (conversación) |
 | **SL2 — Tasa de errores 5xx** | `rate(http_responses_total{status_code=~"5.."}[5m])` | 30d | < 1% |
-| **SL3 — Disponibilidad** | `up{job="massive-ui-ng"}` | 30d | >= 99.5% |
+| **SL3 — Disponibilidad** | `up{job="MASSIVE-UI"}` | 30d | >= 99.5% |
 | **SL4 — Latencia LLM p95** | `histogram_quantile(0.95, llm_request_duration_seconds_bucket{provider!="ollama"})` | 30d | p95 <= 5000ms |
 | **SL5 — Rate limit hits** | `rate(rate_limit_hits_total[5m])` | 1h | < 0.5% de requests |
 
@@ -520,7 +520,7 @@ def _public_error(exc: Exception) -> HTTPException:
 - **Ventana:** 30 dias.
 
 #### SL3 — Disponibilidad
-- **SLI:** `avg_over_time(up{job="massive-ui-ng"}[5m])`
+- **SLI:** `avg_over_time(up{job="MASSIVE-UI"}[5m])`
 - **SLO:** >= 99.5% en 30 dias.
 - **MTTR implicito:** < 10 minutos (Docker restart: unless-stopped).
 
@@ -548,7 +548,7 @@ groups:
         expr: sum(rate(http_responses_total{status_code=~"5.."}[5m])) / sum(rate(http_responses_total[5m]))
 
       - record: massive:availability_5m
-        expr: avg_over_time(up{job="massive-ui-ng"}[5m])
+        expr: avg_over_time(up{job="MASSIVE-UI"}[5m])
 
       - record: massive:llm_latency_p95_5m
         expr: histogram_quantile(0.95, sum(rate(llm_request_duration_seconds_bucket{provider!="ollama"}[5m])) by (le))
@@ -560,7 +560,7 @@ groups:
       - record: massive:slo_api_latency_burn_rate
         expr: |
           1 - (
-            count(http_request_duration_seconds_bucket{le="2.0",job="massive-ui-ng"}) > 0
+            count(http_request_duration_seconds_bucket{le="2.0",job="MASSIVE-UI"}) > 0
           ) / count(time() - timestamp(http_request_duration_seconds_bucket))
 
       - record: massive:slo_error_budget_remaining
@@ -576,14 +576,14 @@ groups:
     rules:
       # --- Disponibilidad ---
       - alert: MassiveDown
-        expr: up{job="massive-ui-ng"} == 0
+        expr: up{job="MASSIVE-UI"} == 0
         for: 2m
         labels:
           severity: critical
           team: devops
         annotations:
-          summary: "MASSIVE UI-NG service is down"
-          description: "The massive-ui-ng target has been down for more than 2 minutes."
+          summary: "MASSIVE MASSIVE service is down"
+          description: "The MASSIVE-UI target has been down for more than 2 minutes."
 
       # --- Latencia API ---
       - alert: APIHighLatencyP95
@@ -649,7 +649,7 @@ groups:
 
       # --- Run store ---
       - alert: RunStoreError
-        expr: count(up{job="massive-ui-ng"} == 1) > 0
+        expr: count(up{job="MASSIVE-UI"} == 1) > 0
           and on() (massive:run_store_healthy == 0)
         for: 1m
         labels:
@@ -662,10 +662,10 @@ groups:
 
 ### 5.5 Dashboard propuesto (Grafana)
 
-#### Dashboard: "MASSIVE UI-NG - Overview"
+#### Dashboard: "MASSIVE MASSIVE - Overview"
 
 **Paneles:**
-1. **Service status** — `up{job="massive-ui-ng"}` (singlestat)
+1. **Service status** — `up{job="MASSIVE-UI"}` (singlestat)
 2. **API p95 latency (5m)** — `massive:api_latency_p95_5m` (gauge, threshold 2s)
 3. **Error rate (5m)** — `massive:error_rate_5m * 100` (gauge, threshold 1%)
 4. **Availability (30d)** — `massive:availability_5m * 100` (gauge, threshold 99.5%)
@@ -722,20 +722,20 @@ class AuditLog(BaseModel):
 
 | Variable | Componente | Default | Descripción |
 |----------|-----------|---------|-------------|
-| `MASSIVE_API_KEYS` | UI-NG `security.py` | *(vacío -> dev mode)* | Keys API (comma-separated, constant-time compare) |
+| `MASSIVE_API_KEYS` | MASSIVE `security.py` | *(vacío -> dev mode)* | Keys API (comma-separated, constant-time compare) |
 | `MASSIVE_API_KEY` | `api.py` (legacy UIL) | `default-secret-key` | Single key legacy (INSEGURO - deprecar) |
-| `MASSIVE_CORS_ORIGINS` | UI-NG `settings.py` | `localhost:5173,3000` | Orígenes CORS permitidos |
-| `MASSIVE_ALLOWED_HOSTS` | UI-NG `settings.py` | `*` | Hosts confiables (TrustedHost) |
-| `MASSIVE_TRUST_PROXY` | UI-NG `settings.py` | `false` | Confiar en `X-Forwarded-For` |
-| `MASSIVE_RATE_LIMIT_ENABLED` | UI-NG `settings.py` | `true` | Toggle rate limiter |
-| `MASSIVE_RATE_LIMIT_PER_MIN` | UI-NG `settings.py` | `120` | Límite general por IP/min |
-| `MASSIVE_RATE_LIMIT_SIMULATE_PER_MIN` | UI-NG `settings.py` | `12` | Límite para `/api/simulate*` |
+| `MASSIVE_CORS_ORIGINS` | MASSIVE `settings.py` | `localhost:5173,3000` | Orígenes CORS permitidos |
+| `MASSIVE_ALLOWED_HOSTS` | MASSIVE `settings.py` | `*` | Hosts confiables (TrustedHost) |
+| `MASSIVE_TRUST_PROXY` | MASSIVE `settings.py` | `false` | Confiar en `X-Forwarded-For` |
+| `MASSIVE_RATE_LIMIT_ENABLED` | MASSIVE `settings.py` | `true` | Toggle rate limiter |
+| `MASSIVE_RATE_LIMIT_PER_MIN` | MASSIVE `settings.py` | `120` | Límite general por IP/min |
+| `MASSIVE_RATE_LIMIT_SIMULATE_PER_MIN` | MASSIVE `settings.py` | `12` | Límite para `/api/simulate*` |
 | `MASSIVE_RATE_LIMIT_BACKEND` | `api.py`, `massive_core` | `memory` | `memory` o `file` (multi-worker) |
 | `MASSIVE_RATE_LIMIT_PATH` | `massive_core/config/rate_limit.py` | `/tmp/massive_rate_limit.json` | Path file backend |
-| `MASSIVE_LOG_LEVEL` | UI-NG `main.py` | `INFO` | Nivel de logging |
-| `MASSIVE_LOG_FORMAT` | UI-NG (propuesto) | `text` | `json` o `text` |
+| `MASSIVE_LOG_LEVEL` | MASSIVE `main.py` | `INFO` | Nivel de logging |
+| `MASSIVE_LOG_FORMAT` | MASSIVE (propuesto) | `text` | `json` o `text` |
 | `MASSIVE_LOG_FILE` | `logging_setup.py` | *(unset)* | Archivo log rotativo |
-| `MASSIVE_ENV` | UI-NG `settings.py` | `development` | `development`/`staging`/`production` |
+| `MASSIVE_ENV` | MASSIVE `settings.py` | `development` | `development`/`staging`/`production` |
 | `MASSIVE_MAX_UPLOAD_MB` | `api.py` | `10` | Tamaño máximo upload |
 | `MASSIVE_ANALYTICS_SNIPPET` | (legacy) | *(empty)* | Snippet analytics (deprecado) |
 | `PROVIDER` | `llm_chat.py`, `interpreter_layer.py` | `groq` | Proveedor LLM default |
@@ -745,22 +745,22 @@ class AuditLog(BaseModel):
 | `OLLAMA_HOST` | `llm_chat.py` | `http://localhost:11434` | Host Ollama local |
 | `OLLAMA_MODEL` | `llm_chat.py` | `llama3.2` | Modelo Ollama |
 | `MASSIVE_LLM_MODEL` | `llm_chat.py` | *(auto)* | Override modelo LLM |
-| `MASSIVE_LLM_TIMEOUT` | UI-NG `settings.py` | `45.0` | Timeout LLM (segundos) |
-| `MASSIVE_LLM_MAX_TOKENS` | UI-NG `settings.py` | `1400` | Máx tokens generación |
-| `MASSIVE_DATA_DIR` | UI-NG `settings.py` | `data/ui_ng/` | Directorio datos (SQLite) |
-| `MASSIVE_SERVE_FRONTEND` | UI-NG `settings.py` | `true` | Servir frontend Angular/Vite |
-| `MASSIVE_RUN_STORE_CAPACITY` | UI-NG `settings.py` | `500` | Capacidad LRU runs en memoria |
+| `MASSIVE_LLM_TIMEOUT` | MASSIVE `settings.py` | `45.0` | Timeout LLM (segundos) |
+| `MASSIVE_LLM_MAX_TOKENS` | MASSIVE `settings.py` | `1400` | Máx tokens generación |
+| `MASSIVE_DATA_DIR` | MASSIVE `settings.py` | `data/ui_ng/` | Directorio datos (SQLite) |
+| `MASSIVE_SERVE_FRONTEND` | MASSIVE `settings.py` | `true` | Servir frontend Angular/Vite |
+| `MASSIVE_RUN_STORE_CAPACITY` | MASSIVE `settings.py` | `500` | Capacidad LRU runs en memoria |
 
 ### 7.2 Herencia y migración de config
 
 **Problema detectado:** Existen **dos** configuraciones de settings paralelas:
 
-1. **`backend/app/settings.py`** — `UISettings` — usado por UI-NG backend (`main.py`)
+1. **`backend/app/settings.py`** — `UISettings` — usado por MASSIVE backend (`main.py`)
 2. **`massive_core/config/settings.py`** — `AppSettings` — usado por `api.py` (legacy) y `logging_setup.py`
 
 Esto crea ambigüedad sobre qué configuración es "canonical". El `API_KEY_HEADER` y `CORS` se duplican.
 
-**Recomendación:** Consolidar en `UISettings` (UI-NG es la API principal) y deprecar `api.py` o migrarlo a usar `UISettings`.
+**Recomendación:** Consolidar en `UISettings` (MASSIVE es la API principal) y deprecar `api.py` o migrarlo a usar `UISettings`.
 
 ---
 
@@ -871,7 +871,7 @@ Internet -> [Ingress/TLS] -> [WAF]
 | TrustedHost | `backend/app/main.py` | 106-107 |
 | Settings | `backend/app/settings.py` | 1-92 |
 | LLM provider resolution | `backend/app/llm_chat.py` | 42-66 |
-| Docker healthcheck | `massive-ui-ng/infra/Dockerfile.ui-ng` | 35-36 |
+| Docker healthcheck | `MASSIVE-UI/infra/Dockerfile.MASSIVE` | 35-36 |
 
 ---
 

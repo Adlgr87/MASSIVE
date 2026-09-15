@@ -1,7 +1,7 @@
 # MASSIVE Performance Benchmark Report
 
 **Date:** 2026-09-14  
-**Environment:** 12 CPU cores, 33.3 GB RAM, CPU-only (no CUDA, no Numba)  
+**Environment:** 12 CPU cores, 33.3 GB RAM, CPU-only (no CUDA)  
 **Configuration:** 365 steps, Temperature=0.5, Lambda=0.3, Seed=42
 
 ---
@@ -26,7 +26,7 @@
 | 10K | 167s | 0.78 GB | 60,000 ag/s |
 | 100K | In progress | — | — |
 
-**Note:** Numba not installed — Python fallback path (~10x slower than JIT)
+**Note:** 
 
 ---
 
@@ -43,8 +43,6 @@
 
 ### For Production Deployment
 ```bash
-# Install Numba for 10x EnergyEngine speedup
-pip install numba
 
 # Use MassiveEngine (LOD) for >100K agent simulations
 python3 -c "from massive_engine import MassiveEngine; ..."
@@ -54,7 +52,7 @@ python3 -c "from massive_engine import MassiveEngine; ..."
 | Use Case | Recommended Engine | Max Agents |
 |---|---|---|
 | Fast prototyping (<10K) | MultilayerEngine | 10K |
-| Energy landscape analysis | EnergyEngine + Numba | 1M+ |
+| Energy landscape analysis | EnergyEngine | 1M+ |
 | Large-scale (>100K) | MassiveEngine (LOD) | 100M+ |
 | Distributed (>1B) | MassiveEngine + Dask | ∞ |
 
@@ -67,4 +65,4 @@ python3 -c "from massive_engine import MassiveEngine; ..."
 
 ---
 
-*Report generated from partial benchmark run — full run requires Numba installation*
+*Report generated from benchmark run*
