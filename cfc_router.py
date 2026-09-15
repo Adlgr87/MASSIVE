@@ -37,7 +37,7 @@ from typing import Optional
 
 import numpy as np
 
-log = logging.getLogger("massive")
+log = logging.getLogger(__name__)
 
 # Umbral de confianza mínimo para aceptar la predicción CfC.
 # Si la probabilidad máxima < CONFIDENCE_THRESHOLD → fallback LLM.
@@ -72,6 +72,8 @@ class CfCRouter:
         self._tau = None  # CfCTauMatrix
         self._arch = None  # CfCArchitectPolicy
         self._residual = None  # CfCResidualCorrector
+        self._lambda_corrector = None  # CfCLambdaCorrector
+        self._landscape_corrector = None  # CfCLandscapeModulator
         self._torch_available = False
         self._load()
 

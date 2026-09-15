@@ -71,11 +71,14 @@ except ImportError:
     )
 
 try:
-    from extended_models import regla_bayesiana, regla_nash, regla_sir
+    from massive.core.extended_models import regla_bayesiana, regla_nash, regla_sir
 
     EXTENDED_MODELS_AVAILABLE = True
 except ImportError:
     EXTENDED_MODELS_AVAILABLE = False
+    log.warning(
+        "[simulator] extended_models no disponible — reglas Bayes/Nash/SIR desactivadas."
+    )
 
 # CfC INTEGRATION — fast path neuronal para selector de régimen
 try:
@@ -83,7 +86,7 @@ try:
 
     _cfc = CfCRouter.get()
     CFC_AVAILABLE = _cfc.status["regime_selector"]
-except ImportError:
+except Exception:
     CFC_AVAILABLE, _cfc = False, None
 
 # EMPIRICAL INTEGRATION — importar base empírica si está disponible
@@ -107,7 +110,7 @@ logging.basicConfig(
         logging.StreamHandler(),
     ],
 )
-log = logging.getLogger("massive")
+log = logging.getLogger(__name__)
 
 
 # ------------------------------------------------------------
