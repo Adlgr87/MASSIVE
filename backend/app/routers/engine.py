@@ -17,7 +17,6 @@ router = APIRouter(
     tags=["engine"],
 )
 
-
 @router.post(
     "/energy",
     name="energy",
@@ -51,7 +50,6 @@ async def v1_energy(request: Request, payload: dict[str, Any]) -> dict[str, Any]
         seed=int(payload.get("seed", 42)),
         config_overrides=payload.get("config_overrides"),
     )
-
 
 @router.post(
     "/architect",

@@ -18,7 +18,6 @@ router = APIRouter(
     tags=["benchmarks"],
 )
 
-
 @router.post("", dependencies=[Depends(get_api_key), Depends(rate_limit_dependency)])
 async def v1_benchmarks(request: Request, payload: dict[str, Any]) -> dict[str, Any]:
     """Run the PVU-BS benchmark suite.

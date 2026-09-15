@@ -15,17 +15,11 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
-# ---------------------------------------------------------------------------
-# Enumerations
-# ---------------------------------------------------------------------------
-
-
 class SimMode(StrEnum):
     """Operating mode of a simulation snapshot."""
 
     live = "live"
     replay = "replay"
-
 
 class SimEventKind(StrEnum):
     """Lifecycle events emitted by the simulation engine."""
@@ -35,27 +29,8 @@ class SimEventKind(StrEnum):
     reset = "reset"
     error = "error"
 
-
-# ---------------------------------------------------------------------------
-# Building blocks
-# ---------------------------------------------------------------------------
-
-
 class SimAgentLite(BaseModel):
-    """Lightweight agent representation suitable for real-time streaming.
-
-    Keeps the payload small: only identity, position, and opinion.
-    Use ``metadata`` for optional domain-specific attributes.
-
-    Args:
-        id: Unique agent identifier.
-        layer: Network layer the agent belongs to (e.g. ``"social"``, ``"info"``).
-        x: Spatial x-coordinate.
-        y: Spatial y-coordinate.
-        z: Spatial z-coordinate (default 0 for 2-D layouts).
-        opinion: Opinion value; unipolar ``[0, 1]`` or bipolar ``[-1, 1]``.
-        metadata: Optional free-form dict for domain-specific attributes.
-    """
+    """Lightweight agent representation suitable for real-time streaming.."""
 
     model_config = {"extra": "forbid"}
 
@@ -67,20 +42,8 @@ class SimAgentLite(BaseModel):
     opinion: float = Field(..., ge=-1.0, le=1.0)
     metadata: dict[str, Any] | None = None
 
-
 class SimAggregateMetrics(BaseModel):
-    """Aggregate population-level metrics for one simulation tick.
-
-    Args:
-        mean_opinion: Population mean opinion.
-        std_opinion: Standard deviation of opinions across all agents.
-        polarization: Polarization index (higher → more split).
-        dominant_rule: Name of the influence rule with highest activation.
-        consensus_rate: Fraction of agent pairs whose opinions differ < 0.1.
-        fragmentation_index: Structural fragmentation of the opinion network.
-        active_agents: Number of agents that updated their opinion this tick.
-        schema_version: Optional DTO schema version for forward-compatibility.
-    """
+    """Aggregate population-level metrics for one simulation tick.."""
 
     model_config = {"extra": "forbid"}
 
@@ -93,22 +56,8 @@ class SimAggregateMetrics(BaseModel):
     active_agents: int
     schema_version: str | None = None
 
-
-# ---------------------------------------------------------------------------
-# Payload
-# ---------------------------------------------------------------------------
-
-
 class SimulationSnapshotPayload(BaseModel):
-    """State snapshot for a single tick, embedded inside ``SimSnapshotMessage``.
-
-    Args:
-        tick: Simulation tick index (0-based).
-        metrics: Aggregate metrics at this tick.
-        agents: Optional per-agent data (omit for bandwidth-constrained streams).
-        mode: Whether the snapshot comes from a live run or a replay.
-        schema_version: Optional DTO schema version.
-    """
+    """State snapshot for a single tick, embedded inside ``SimSnapshotMessage``.."""
 
     model_config = {"extra": "forbid"}
 
@@ -118,22 +67,8 @@ class SimulationSnapshotPayload(BaseModel):
     mode: SimMode = SimMode.live
     schema_version: str | None = None
 
-
-# ---------------------------------------------------------------------------
-# WebSocket messages
-# ---------------------------------------------------------------------------
-
-
 class SimSnapshotMessage(BaseModel):
-    """WebSocket message carrying a full state snapshot.
-
-    Args:
-        type: Discriminator field, always ``"snapshot"``.
-        sim_id: Unique simulation run identifier.
-        timestamp: Server-side UTC timestamp of the snapshot.
-        payload: The snapshot payload.
-        schema_version: Optional DTO schema version.
-    """
+    """WebSocket message carrying a full state snapshot.."""
 
     model_config = {"extra": "forbid"}
 
@@ -143,17 +78,8 @@ class SimSnapshotMessage(BaseModel):
     payload: SimulationSnapshotPayload
     schema_version: str | None = None
 
-
 class SimEventMessage(BaseModel):
-    """WebSocket message signalling a simulation lifecycle event.
-
-    Args:
-        type: Discriminator field, always ``"event"``.
-        sim_id: Unique simulation run identifier.
-        event: The lifecycle event kind.
-        detail: Optional human-readable detail (e.g. error message).
-        schema_version: Optional DTO schema version.
-    """
+    """WebSocket message signalling a simulation lifecycle event.."""
 
     model_config = {"extra": "forbid"}
 

@@ -20,7 +20,6 @@ router = APIRouter(
     tags=["forecast"],
 )
 
-
 @router.post("", dependencies=[Depends(get_api_key), Depends(rate_limit_dependency)])
 async def v1_forecast(request: Request, payload: dict[str, Any]) -> ForecastResponse:
     """Run the MASSIVE temporal forecast engine.

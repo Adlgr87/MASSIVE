@@ -13,10 +13,6 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
-# ---------------------------------------------------------------------------
-# Request
-# ---------------------------------------------------------------------------
-
 # Motor families aligned to the contract `supported_flows`.
 LLMMotor = Literal[
     "energy_engine",
@@ -29,31 +25,16 @@ LLMMotor = Literal[
     "factbook_validation",
 ]
 
-
 class LLMLlmHint(BaseModel):
-    """Optional LLM provider/model hint supplied by the client."""
+    """Optional LLM provider/model hint supplied by the client.."""
 
     model_config = {"extra": "forbid"}
 
     provider: Literal["groq", "openai", "openrouter"] = "groq"
     model: str | None = None
 
-
 class LLMRunRequest(BaseModel):
-    """Request payload for ``POST /v1/llm/run_simulation``.
-
-    Args:
-        intent: Natural-language intent describing the desired simulation.
-        motor: Optional engine-family override. If omitted, the backend
-            classifies intent via the MASSIVE-LLM contract rules.
-        country: Optional country name/CIA code for Factbook augmentation.
-        partial_config: Optional structured overrides merged atop the
-            LLM-translated config.
-        llm: Optional provider/model hint.
-        simulation_steps: Optional step-count override.
-        seed: Optional RNG seed (default 42).
-        config_overrides: Optional extra engine-specific configuration keys.
-    """
+    """Request payload for ``POST /v1/llm/run_simulation``.."""
 
     model_config = {"extra": "forbid"}
 
@@ -70,14 +51,8 @@ class LLMRunRequest(BaseModel):
         default=None, description="Extra engine-specific config keys"
     )
 
-
-# ---------------------------------------------------------------------------
-# Response pieces
-# ---------------------------------------------------------------------------
-
-
 class LLMSummary(BaseModel):
-    """Normalized summary emitted by the orchestrator."""
+    """Normalized summary emitted by the orchestrator.."""
 
     model_config = {"extra": "forbid"}
 
@@ -86,9 +61,8 @@ class LLMSummary(BaseModel):
     regla_dominante: str | None = None
     factbook_country: str | None = None
 
-
 class LLMTimelinePoint(BaseModel):
-    """A single tick from a simulation timeline (abridged history)."""
+    """A single tick from a simulation timeline (abridged history).."""
 
     model_config = {"extra": "forbid"}
 
@@ -97,13 +71,8 @@ class LLMTimelinePoint(BaseModel):
     polarization: float | None = None
     active_agents: int | None = None
 
-
 class LLMResults(BaseModel):
-    """Engine-agnostic envelope for raw result artifacts.
-
-    The inner ``payload`` is intentionally ``Dict[str, Any]`` because each
-    engine (scalar / energy / architect / forecast) exposes a different shape.
-    """
+    """Engine-agnostic envelope for raw result artifacts.."""
 
     model_config = {"extra": "forbid"}
 
@@ -114,20 +83,8 @@ class LLMResults(BaseModel):
     timeline: list[LLMTimelinePoint] | None = None
     final_state: dict[str, Any] | None = None
 
-
 class LLMRunResponse(BaseModel):
-    """Response payload for ``POST /v1/llm/run_simulation``.
-
-    Args:
-        sim_id: Unique run identifier.
-        motor: Engine that was dispatched.
-        config: Final resolved configuration.
-        summary: Normalized numerical indicators + narrative hints.
-        narrative: LLM-generated prose summary (``summary.narrative`` mirror).
-        results: Engine-specific result artifacts.
-        assumptions: Defaults applied / ambiguities resolved.
-        factbook_params: Country params injected (when Factbook was used).
-    """
+    """Response payload for ``POST /v1/llm/run_simulation``.."""
 
     model_config = {"extra": "forbid"}
 
@@ -140,9 +97,8 @@ class LLMRunResponse(BaseModel):
     assumptions: list[str]
     factbook_params: dict[str, Any] | None = None
 
-
 class LLMAmbiguityResponse(BaseModel):
-    """422 response body returned when intent requires user clarification."""
+    """422 response body returned when intent requires user clarification.."""
 
     model_config = {"extra": "forbid"}
 
@@ -150,26 +106,23 @@ class LLMAmbiguityResponse(BaseModel):
     requested_fields: list[str]
     motor: str | None = None
 
-
 class LLMWizardRequest(BaseModel):
-    """Request body for the wizard endpoint (NL → config)."""
+    """Request body for the wizard endpoint (NL → config).."""
 
     model_config = {"extra": "forbid"}
 
     description: str = Field(..., min_length=1, max_length=2000, description="Natural-language scenario description")
     llm: LLMLlmHint | None = None
 
-
 class LLMWizardResponse(BaseModel):
-    """Response body for the wizard endpoint."""
+    """Response body for the wizard endpoint.."""
 
     model_config = {"extra": "forbid"}
 
     config: dict[str, Any]
 
-
 class LLMExtractResponse(BaseModel):
-    """Response body for the extract endpoint."""
+    """Response body for the extract endpoint.."""
 
     model_config = {"extra": "forbid"}
 
