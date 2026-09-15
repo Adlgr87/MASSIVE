@@ -16,12 +16,18 @@ venv/
 
 # Dependencies (huge)
 frontend/node_modules/
+massive-ui-ng/frontend/node_modules/
+
+# Frontend build output (symlink in some configs — built inside container)
+frontend/dist
 
 # Data and models (large binary files)
+# NOTE: models/ is NOT excluded — CfC weights (models/cfc_calibrated/*.pt)
+# must be present in the image. Only specific large sub-paths are excluded below.
 data/
 datasets/
 results/
-models/
+experiments/
 
 # Env files (mounted at runtime, not baked in)
 .env
@@ -42,7 +48,10 @@ reports/validation/llm_run/
 .vscode/
 .kilocode/
 
-# Archive files
+# Docs, CI, build outputs (not needed in runtime image)
+docs/
+.github/
+site/
 archive/
 
 # Test data and outputs
@@ -50,4 +59,4 @@ tests/test_data/
 
 # Environment / credential files
 *.env
-*.env.*\.backup
+*.env.*.backup

@@ -1,6 +1,9 @@
-# ⚠️ LEGACY - Use docker-compose.single.yml (canonical per README)
-# This file is maintained for backward compatibility only
-# Streamlit port 8501 has been removed
+# =============================================================================
+# docker-compose.yml — CANONICAL multi-service deployment
+# Uses the multi-stage `Dockerfile` (builder-py + builder-fe + runtime).
+# Runs supervisord as non-root: uvicorn (FastAPI :8000) + nginx (:80, SPA +
+# reverse proxy). See README.md "Prefer Docker?" section for usage.
+# =============================================================================
 
 services:
   massive:

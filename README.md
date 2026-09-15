@@ -85,13 +85,16 @@ curl -fsS localhost:8000/health
 curl -fsS localhost:80/docs
 ```
 
-The multi-stage `Dockerfile` (Python builder → Vite frontend build → slim
-runtime) runs **supervisord** as a **non-root user**: `uvicorn` (FastAPI,
-`:8000`) + **nginx** (`:80`, serving the React SPA + proxying `/api/`,
-`/v1/`, `/docs`, `/health`, `/ready`, `/version`, `/metrics`). `setcap` grants
-nginx the `CAP_NET_BIND_SERVICE` capability so it can bind `:80` inside the
-non-root container; security headers (CSP, HSTS, X-Frame-Options `DENY`,
-`nosniff`) are injected at the edge.
+The **canonical** Docker path uses `docker-compose.yml` + the multi-stage
+`Dockerfile` (`builder-py` → `builder-fe` → `runtime`). It runs **supervisord**
+as a **non-root user**: `uvicorn` (FastAPI, `:8000`) + **nginx** (`:80`, serving
+the React SPA + proxying `/api/`, `/v1/`, `/docs`, `/health`, `/ready`,
+`/version`, `/metrics`). `setcap` grants nginx the `CAP_NET_BIND_SERVICE`
+capability so it can bind `:80` inside the non-root container; security headers
+(CSP, HSTS, X-Frame-Options `DENY`, `nosniff`) are injected at the edge.
+
+> ℹ️ A legacy single-service variant (`Dockerfile.optimized` +
+> `docker-compose.single.yml`) is archived under [`docs/examples/`](docs/examples/).
 
 > Minimum: Python 3.11, 500 MB RAM. Rust/CUDA/torch/LLM keys are all optional —
 > every optional layer has a deterministic fallback.

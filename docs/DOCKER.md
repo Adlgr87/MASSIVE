@@ -29,11 +29,13 @@ docker compose up -d --build
 
 ## Services
 
-The container runs a single process via **uvicorn** (FastAPI backend serving the MASSIVE frontend):
+The canonical container runs **supervisord** as a non-root user (`appuser`),
+managing two processes via `supervisord.conf`:
 
-| Service       | Port | Description                                    |
-| ------------- | ---- | ---------------------------------------------- |
-| MASSIVE MASSIVE | 8000 | MASSIVE frontend + REST API (single-service)     |
+| Service | Port | Description |
+|---------|------|-------------|
+| nginx | 80 | SPA reverse proxy + static assets |
+| uvicorn (FastAPI) | 8000 | REST API (`/v1/*`, `/health`, `/ready`, `/metrics`) |
 
 ## Commands
 
@@ -90,24 +92,11 @@ The Dockerfile is based on `python:3.11-slim` and includes:
 - Health check endpoint on `/health`
 - Multi-stage build: wheels built once, frontend built separately, runtime image slim.
 
-### Single-Service Variant (API + UI on :8000)
+### Archived: Single-Service Variant (API + UI on :8000)
 
-For deployments that want a single container with the API serving the built
-frontend, use the optimised Dockerfile and `docker-compose.single.yml`:
-
-```bash
-# Build frontend first
-cd frontend && npm ci && npm run build
-
-# Start single-service (API+UI on port 8000)
-docker compose -f docker-compose.single.yml up -d --build
-```
-
-This variant uses `Dockerfile.optimized` which:
-- Builds Python wheels once in a builder stage (no runtime network).
-- Serves the FastAPI app directly via uvicorn on :8000.
-- Mounts `frontend/dist` as a volume so no nginx/rebuild needed for frontend changes.
-- Healthcheck targets `/health`.
+> ⚠️ **Deprecated.** The single-service variant (`Dockerfile.optimized` +
+> `docker-compose.single.yml`) is archived under `docs/examples/`. Use the
+> canonical `docker-compose.yml` + `Dockerfile` for all new deployments.
 
 ### Docker Best Practices Applied
 

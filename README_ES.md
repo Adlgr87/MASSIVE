@@ -76,9 +76,18 @@ print(result["landscape"])
 
 ```bash
 cp .env.example .env
-docker compose -f docker-compose.single.yml up -d --build   # API + UI en :8000
+docker compose up -d --build   # nginx :80 (SPA + API gateway) · :8000 (API directa)
 curl -fsS localhost:8000/health
 ```
+
+La ruta **canónica** de Docker usa `docker-compose.yml` + el multi-stage
+`Dockerfile` (`builder-py` → `builder-fe` → `runtime`), con **supervisord** como
+**usuario no-root**: `uvicorn` (FastAPI, `:8000`) + **nginx** (`:80`, sirve la
+SPA de React y proxy `/api/`, `/v1/`, `/docs`, `/health`, `/ready`, `/version`,
+`/metrics`).
+
+> ℹ️ Una variante legada de servicio único (`Dockerfile.optimized` +
+> `docker-compose.single.yml`) está archivada en [`docs/examples/`](docs/examples/).
 
 > Mínimo: Python 3.11, 500 MB RAM. Rust/CUDA/torch/claves LLM son opcionales —
 > cada capa opcional tiene un fallback determinista.

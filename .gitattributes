@@ -1,2 +1,13 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# ─── Binary Artifacts ─────────────────────────────────────────────────
+# Prevent textual diffs / CRLF corruption on large binary model artifacts
+# and data files. Declare as binary so git stores them as-is.
+*.pt binary
+*.pth binary
+*.npz binary
+*.png binary
+*.jpg binary
+*.db binary
+*.sqlite binary
