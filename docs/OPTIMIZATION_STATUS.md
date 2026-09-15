@@ -16,7 +16,7 @@ Tracks `workflow_MASSIVE_optimization.md` against `main`.
 | Fix | Status | Notes |
 |-----|--------|-------|
 | 2.1 Type hints (public surface) | **Done (slice)** | Services, rng, forecast; `mypy.ini` gradual |
-| 2.2 `len()` in loops | **Done (core hot paths)** | energy JIT, app animation, perturbation_theory |
+| 2.2 `len()` in loops | **Done (core hot paths)** | energy engine, app animation, perturbation_theory |
 | 2.3 Google docstrings | **Done (public services + rng)** | Service layer documented |
 | 2.4 TODO triage | **Done (tool)** | `scripts/todo_triage.py` |
 
