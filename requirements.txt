@@ -24,7 +24,6 @@ langchain-openai>=1.2.0
 langchain-groq>=1.1.0
 
 # Scientific / ML
-numba>=0.65.0
 statsmodels>=0.14.0
 scikit-learn>=1.4.0
 torch>=2.2.0

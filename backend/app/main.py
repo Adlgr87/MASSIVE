@@ -53,44 +53,11 @@ except Exception:  # pragma: no cover - fallback if config unavailable
 _app_settings = get_app_settings()
 
 
-# --- Startup: JIT warm-up -------------------------------------------------
-# MassiveSimEngine lazily compiles its Numba kernels on the first .run()
-# call, causing a multi-second latency spike on the first /v1/simulate
-# or /v1/engine/* request (Devil's Advocate Finding 14). Warm up the
-# critical kernels at container start so the first request is fast.
-def _warm_jit_sync() -> None:
-    try:
-        from multilayer_engine import (
-            _multilayer_langevin_step_core,
-            multi_potential_gradient,
-        )
-
-        import numpy as np
-
-        x_tiny = np.zeros((2, 5), dtype=np.float64)
-        multi_potential_gradient(x_tiny)
-        layers = np.zeros((3, 2, 2), dtype=np.float64)
-        _w = np.ones(3, dtype=np.float64)
-        _th = np.ones((2, 5), dtype=np.float64)
-        _multilayer_langevin_step_core(
-            x_tiny.copy(), layers, _w, _th, 0.1, 0.01, -1.0, 1.0,
-        )
-        log.info("JIT warm-up complete (multilayer + massive kernels)")
-    except Exception as exc:  # pragma: no cover - best-effort
-        log.debug("JIT warm-up skipped: %s", exc)
-
-
 from contextlib import asynccontextmanager
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):  # noqa: ANN001
-    # Run JIT warm-up in a background asyncio thread so the event loop
-    # isn't blocked (avoids multiprocessing pickling issues under TestClient).
-    import asyncio
-
-    loop = asyncio.get_event_loop()
-    await loop.run_in_executor(None, _warm_jit_sync)
     yield
 
 

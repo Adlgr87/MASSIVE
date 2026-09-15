@@ -122,6 +122,8 @@ async def v1_llm_run_simulation(
             seed=payload.seed,
             config_overrides=payload.config_overrides,
         )
+    except HTTPException:
+        raise
     except ValueError as exc:
         log.warning("LLM run_simulation validation error: %s", exc)
         raise HTTPException(status_code=400, detail=str(exc)) from exc

@@ -67,12 +67,19 @@ async def v1_forecast(request: Request, payload: dict[str, Any]) -> ForecastResp
     data = result.model_dump() if hasattr(result, "model_dump") else dict(result)
 
     p_event = float(data.get("p_event", 0.0))
+    # Use engine-reported confidence bounds if available, otherwise use ±5%
+    confidence_lower = data.get("confidence_lower")
+    confidence_upper = data.get("confidence_upper")
+    if confidence_lower is not None and confidence_upper is not None:
+        cl, cu = float(confidence_lower), float(confidence_upper)
+    else:
+        cl, cu = max(0.0, p_event - 0.05), min(1.0, p_event + 0.05)
     point = ForecastPoint(
         tick=data.get("steps_to_event") or 0,
         mean_opinion=p_event,
         polarization=0.0,
-        confidence_lower=max(0.0, p_event - 0.05),
-        confidence_upper=min(1.0, p_event + 0.05),
+        confidence_lower=cl,
+        confidence_upper=cu,
     )
     feas = Feasibility(
         score=p_event,

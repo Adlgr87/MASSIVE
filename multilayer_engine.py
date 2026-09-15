@@ -34,24 +34,6 @@ from scipy import sparse
 from llm_credentials import resolve_provider_api_key
 from massive.core.state_compression import compress_agent_states, decompress_agent_states
 
-try:
-    from numba import njit
-
-    NUMBA_AVAILABLE = True
-except ImportError:
-    NUMBA_AVAILABLE = False
-
-    def njit(*args, **kwargs):
-        """No-op decorator when Numba is not installed."""
-
-        def decorator(fn):
-            return fn
-
-        if args and callable(args[0]):
-            return args[0]
-        return decorator
-
-
 # ── Coeficientes de modulación theta (calibrados empíricamente) ───────────
 # Escalas de sensibilidad por atributo y dimensión de comportamiento.
 # Valores derivados de literatura de psicología social y sociología:
@@ -281,7 +263,6 @@ def compute_theta(attributes_df: pd.DataFrame, K: int = 5) -> np.ndarray:
 # ============================================================
 
 
-@njit(cache=True)
 def _bimodal_grad(opinion: float) -> float:
     """Gradiente del doble pozo U = (x²-0.49)² → attrae hacia ±0.7.
 
@@ -290,7 +271,6 @@ def _bimodal_grad(opinion: float) -> float:
     return 4.0 * opinion * (opinion * opinion - 0.49)
 
 
-@njit(cache=True)
 def multi_potential_gradient(x: np.ndarray) -> np.ndarray:
     """
     Gradiente del potencial social multidimensional U(x).
@@ -339,7 +319,6 @@ def multi_potential_gradient(x: np.ndarray) -> np.ndarray:
 # ============================================================
 
 
-@njit(cache=True)
 def _multilayer_langevin_step_core(
     x_vec: np.ndarray,
     layers_flat: np.ndarray,

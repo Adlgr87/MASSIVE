@@ -292,8 +292,8 @@ def _generate_hierarchical_sparse(N: int, seed: int = 42) -> sparse.csr_matrix:
     return A.tocsr()
 
 
-def _gradient_legacy(x: float, attractors: list, repellers: list, sigma2: float) -> float:
-    """Pure-python landscape gradient (fallback when numba unavailable)."""
+def _landscape_gradient(x: float, attractors: list, repellers: list, sigma2: float) -> float:
+    """Pure-python landscape gradient."""
     grad = 0.0
     for att in attractors:
         diff = x - att["position"]
@@ -310,8 +310,8 @@ def _gradient_legacy(x: float, attractors: list, repellers: list, sigma2: float)
 def run_energy_engine(
     n_agents: int, steps: int, temperature: float, lambda_social: float, seed: int, timeout: float
 ) -> EngineRunResult:
-    """EnergyEngine (Langevin 1D) — fastest 1D engine with numba JIT."""
-    from energy_engine import _SIGMA, NUMBA_AVAILABLE, _step_jit
+    """EnergyEngine (Langevin 1D)."""
+    from energy_engine import _SIGMA
 
     rng = np.random.default_rng(seed)
     opinions = rng.uniform(-1.0, 1.0, n_agents).astype(np.float64)
@@ -339,29 +339,13 @@ def run_energy_engine(
         for _ in range(steps):
             noise = np.sqrt(2.0 * eta * temperature) * rng.standard_normal(n_agents)
             neighbor_mean = (adj @ opinions) / row_sums
-            if NUMBA_AVAILABLE:
-                opinions = _step_jit(
-                    opinions,
-                    neighbor_mean,
-                    noise,
-                    att_pos,
-                    att_str,
-                    rep_pos,
-                    rep_str,
-                    lambda_social,
-                    eta,
-                    sigma2,
-                    -1.0,
-                    1.0,
-                )
-            else:
-                new_op = np.empty(n_agents)
-                for i in range(n_agents):
-                    grad_u = _gradient_legacy(opinions[i], attractors, repellers, sigma2)
-                    social = lambda_social * (neighbor_mean[i] - opinions[i])
-                    landscape = (1.0 - lambda_social) * (-grad_u)
-                    val = opinions[i] + eta * landscape + eta * social + noise[i]
-                    new_op[i] = max(-1.0, min(1.0, val))
+            new_op = np.empty(n_agents)
+            for i in range(n_agents):
+                grad_u = _landscape_gradient(opinions[i], attractors, repellers, sigma2)
+                social = lambda_social * (neighbor_mean[i] - opinions[i])
+                landscape = (1.0 - lambda_social) * (-grad_u)
+                val = opinions[i] + eta * landscape + eta * social + noise[i]
+                new_op[i] = max(-1.0, min(1.0, val))
                 opinions = new_op
             del noise
     except MemoryError:

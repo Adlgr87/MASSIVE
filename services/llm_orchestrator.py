@@ -160,7 +160,7 @@ def _detect_country(intent: str) -> str | None:
     import functools
     import re
 
-    @functools.lru_cache(maxsize=1)
+    @functools.lru_cache(maxsize=64)
     def _aliases() -> dict[str, str]:
         contract = _load_contract()
         countries = contract.get("supported_countries", [])
