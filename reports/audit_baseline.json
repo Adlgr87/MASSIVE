@@ -1,0 +1,14 @@
+{
+  "black_files": 0,
+  "commit_sha": "d483ea074551d511147bea783df8967cd7b0c1a9",
+  "coverage_pct": 68.0,
+  "generated_at": "2026-09-16T00:02:16Z",
+  "loc": 50046,
+  "mypy_errors": 1,
+  "root_entries": 101,
+  "ruff_issues": 0,
+  "tests_errors": 0,
+  "tests_failed": 0,
+  "tests_passed": 0,
+  "tests_total": 0
+}
