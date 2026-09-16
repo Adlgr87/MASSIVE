@@ -27,9 +27,15 @@ _PROVIDER_KEY_VARS = ("GROQ_API_KEY", "OPENAI_API_KEY", "OPENROUTER_API_KEY")
 
 @pytest.fixture
 def client(monkeypatch: pytest.MonkeyPatch) -> TestClient:
+    """Authenticated TestClient (dev fallback enabled via two-factor opt-in)."""
     for var in _PROVIDER_KEY_VARS:
         monkeypatch.delenv(var, raising=False)
+    monkeypatch.setenv("MASSIVE_ENV", "development")
+    monkeypatch.setenv("MASSIVE_DEV_FALLBACK", "1")
     return TestClient(app)
+
+
+_AUTH = {"X-API-Key": "dev-secret-key"}
 
 
 def test_request_id_generated(client: TestClient):
@@ -79,7 +85,7 @@ def test_health_is_liveness_only(client: TestClient):
 
 
 def test_metrics_endpoint_prometheus_text(client: TestClient):
-    resp = client.get("/metrics")
+    resp = client.get("/metrics", headers=_AUTH)
     assert resp.status_code == 200
     assert "text/plain" in resp.headers["content-type"]
     body = resp.text
@@ -88,10 +94,16 @@ def test_metrics_endpoint_prometheus_text(client: TestClient):
     assert "massive_uptime_seconds" in body
 
 
+def test_metrics_requires_auth(client: TestClient):
+    """/metrics must reject unauthenticated requests (401)."""
+    resp = client.get("/metrics")
+    assert resp.status_code == 401
+
+
 def test_metrics_records_requests_by_group(client: TestClient):
     client.get("/health")
-    client.get("/metrics")
-    resp = client.get("/metrics")
+    client.get("/metrics", headers=_AUTH)
+    resp = client.get("/metrics", headers=_AUTH)
     body = resp.text
     # The three infra calls above must be counted
     assert 'group="infra"' in body

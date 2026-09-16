@@ -558,7 +558,8 @@ def targeted_llm_bias(
         )
         resp.raise_for_status()
         return resp.json()["choices"][0]["message"]["content"].strip()
-    except Exception:
+    except Exception as exc:
+        log.warning("LLM narrative fallback for %s: %s", grupo_label, exc, exc_info=True)
         return (
             f"[Fallback] Narrativa para {grupo_label}: "
             f"El diálogo y la cooperación construyen comunidades más resilientes."

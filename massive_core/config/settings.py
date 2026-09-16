@@ -36,8 +36,6 @@ class LLMProviderSettings(BaseModel):
         default_factory=lambda: os.getenv("OLLAMA_HOST", "http://localhost:11434")
     )
 
-    model_config = {"env_prefix": "massive_llm_"}
-
 
 def get_llm_base_url(provider: str = "ollama") -> str:
     """Return the base URL for *provider* from settings or environment.

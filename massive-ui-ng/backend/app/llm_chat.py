@@ -16,6 +16,8 @@ from typing import Any
 
 import requests
 
+from massive_core.config.settings import get_llm_base_url
+
 log = logging.getLogger("massive.ui_ng.llm_chat")
 
 # Provider base URLs (OpenAI-compatible chat completions).
@@ -56,7 +58,7 @@ def resolve_provider() -> dict[str, Any]:
         api_key = os.getenv("OPENAI_API_KEY", "")
 
     if provider == "ollama":
-        host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+        host = get_llm_base_url("ollama")
         base_url = host.rstrip("/") + "/v1"
         model = os.getenv("OLLAMA_MODEL", "llama3.2")
     else:

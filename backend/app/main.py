@@ -33,17 +33,18 @@ import uuid
 from contextlib import asynccontextmanager
 from typing import Any
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
 
 from backend.app.metrics import registry as metrics_registry
 from backend.app.routers import benchmark, engine, forecast, llm, sim
+from backend.app.security import get_api_key
 from backend.app.settings import get_app_settings
 
 # --- logging setup -------------------------------------------------------
 try:
-    from massive_core.config import configure_logging, get_logger
+    from massive_core.config import configure_logging, get_logger, is_dev_env
 
     configure_logging()
     log = get_logger(__name__)
@@ -53,6 +54,10 @@ except Exception as exc:  # pragma: no cover - fallback if config unavailable
 
 _app_settings = get_app_settings()
 
+# --- Environment detection (fail-closed in production) ------------------
+# is_dev_env(None) == False → MASSIVE_ENV unset resolves to fail-closed.
+_is_dev = is_dev_env(os.getenv("MASSIVE_ENV"))
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):  # noqa: ANN001
@@ -60,6 +65,8 @@ async def lifespan(app: FastAPI):  # noqa: ANN001
 
 
 # --- FastAPI app ---------------------------------------------------------
+# Disable auto-generated docs (/docs, /redoc, /openapi.json) in production
+# to avoid exposing the API contract surface to unauthenticated consumers.
 app = FastAPI(
     title="MASSIVE UIL API",
     version="1.0.0",
@@ -69,6 +76,9 @@ app = FastAPI(
         "forecasting, and intervention analysis."
     ),
     lifespan=lifespan,
+    docs_url="/docs" if _is_dev else None,
+    redoc_url="/redoc" if _is_dev else None,
+    openapi_url="/openapi.json" if _is_dev else None,
 )
 
 # --- CORS (no wildcard when credentials are enabled) --------------------
@@ -208,6 +218,42 @@ async def request_context(request: Request, call_next):
     return response
 
 
+# --- Host header validation (host-header injection defence) ---------------
+# In production, only requests whose Host header matches MASSIVE_ALLOWED_HOSTS
+# are processed.  When MASSIVE_ALLOWED_HOSTS is unset the middleware is a
+# no-op (open mode) so local dev / CI never fails on Host validation alone.
+# In development, localhost / 127.0.0.1 / testserver are always allowed.
+_ALLOWED_HOSTS_DEV = {"", "localhost", "127.0.0.1", "0.0.0.0", "testserver"}
+_ALLOWED_HOSTS_ENV = os.getenv("MASSIVE_ALLOWED_HOSTS", "")
+_explicit_allowed_hosts: set[str] = {h.strip() for h in _ALLOWED_HOSTS_ENV.split(",") if h.strip()}
+# Wildcard is only honoured in dev; production treats it as fail-closed.
+if "*" in _explicit_allowed_hosts and not _is_dev:
+    _explicit_allowed_hosts = set()
+
+
+@app.middleware("http")
+async def validate_host_header(request: Request, call_next):
+    """Reject requests with disallowed Host headers.
+
+    Defends against host-header injection (cache poisoning, password-reset
+    poisoning, SSRF bypass).  When ``MASSIVE_ALLOWED_HOSTS`` is explicitly set,
+    only matching hosts are accepted (wildcard allowed in dev only).  When
+    unset, all hosts are accepted (open mode for local dev / CI).
+    """
+    if not _explicit_allowed_hosts and _is_dev:
+        return await call_next(request)
+    if not _explicit_allowed_hosts:
+        # No allow-list configured and not dev → open mode (no validation).
+        return await call_next(request)
+    host = request.headers.get("host", "").split(":")[0]
+    if host not in _explicit_allowed_hosts:
+        return JSONResponse(
+            status_code=400,
+            content={"detail": "Invalid Host header"},
+        )
+    return await call_next(request)
+
+
 # --- Include versioned routers -------------------------------------------
 # Routers are mounted under `/v1/*` (canonical, per ADR-001). An alias at
 # `/api/v1/*` is also registered so the existing UI-NG frontend
@@ -235,7 +281,7 @@ async def root() -> dict[str, Any]:
         "status": "ok",
         "service": "MASSIVE UIL API",
         "version": "1.0.0",
-        "docs": "/docs",
+        "docs": "/docs" if _is_dev else None,
         "api_prefix": "/v1",
     }
 
@@ -250,9 +296,13 @@ async def health_check() -> dict[str, Any]:
     }
 
 
-@app.get("/metrics")
+@app.get("/metrics", dependencies=[Depends(get_api_key)])
 async def metrics() -> Response:
-    """Prometheus text-format metrics (read-only counters, no secrets)."""
+    """Prometheus text-format metrics (read-only counters, no secrets).
+
+    Auth-gated: requires a valid ``X-API-Key`` to prevent leaking operational
+    metrics to unauthenticated consumers.
+    """
     return Response(
         content=metrics_registry.render(),
         media_type="text/plain; version=0.0.4; charset=utf-8",
@@ -302,7 +352,8 @@ async def readiness_check() -> dict[str, Any]:
         api_key = os.getenv("GROQ_API_KEY", os.getenv("OPENAI_API_KEY", ""))
         create_uil_adapter(llm_provider=provider, llm_api_key=api_key)
         checks["checks"]["uil_adapter"] = "available"
-    except Exception:
+    except Exception as exc:
+        log.warning("UIL adapter unavailable: %s", exc, exc_info=True)
         checks["checks"]["uil_adapter"] = "unavailable"
 
     if not has_llm_key:
@@ -323,7 +374,12 @@ async def version_info() -> dict[str, Any]:
 
 @app.get("/openapi/v1.json")
 async def openapi_v1_spec() -> dict[str, Any]:
-    """Export the canonical OpenAPI v1 spec (excluding /docs, /metrics, etc.)."""
+    """Export the canonical OpenAPI v1 spec (excluding /docs, /metrics, etc.).
+
+    Disabled in production to avoid exposing the API contract surface.
+    """
+    if not _is_dev:
+        raise HTTPException(status_code=404, detail="Not Found")
     schema = app.openapi()
     v1_paths = {
         path: methods for path, methods in schema["paths"].items() if path.startswith("/v1")

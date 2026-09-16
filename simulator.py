@@ -100,8 +100,8 @@ except ImportError:
 # ------------------------------------------------------------
 # LOGGING
 # ------------------------------------------------------------
-# Logging is configured centrally by massive_core.config.logging_setup.configure_logging().
-# Library code must NOT call logging.basicConfig or create files in CWD on import.
+# Logging is configured centrally by massive_core.config.logging_setup.
+# Library code must NOT configure handlers or create files in CWD on import.
 # All modules use getLogger(__name__); the application entrypoint owns handler setup.
 
 

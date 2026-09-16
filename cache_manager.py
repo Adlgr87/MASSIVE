@@ -63,7 +63,7 @@ def _get_metrics_registry():
 
         return registry
     except Exception:
-        return None
+        return None  # MetricsRegistry not available in standalone usage
 
 
 # Contadores de módulo (usados cuando el MetricsRegistry global no está disponible)
@@ -114,6 +114,7 @@ class LandscapeCache:
         )
         self._memory: OrderedDict[str, dict] = OrderedDict()
         self._lock = threading.Lock()
+        self._conn: sqlite3.Connection | None = None
         self._init_db()
 
     # ------------------------------------------------------------------
@@ -121,10 +122,14 @@ class LandscapeCache:
     # ------------------------------------------------------------------
 
     def _init_db(self) -> None:
-        """Crea la tabla landscapes con columna created_at para TTL."""
+        """Crea la tabla landscapes con columna created_at para TTL.
+
+        Mantiene una conexión persistente para soportar bases de datos
+        en memoria (``:memory:``) donde cada conexión es un DB distinto.
+        """
         try:
-            conn = sqlite3.connect(self.db_path, check_same_thread=False)
-            conn.execute(
+            self._conn = sqlite3.connect(self.db_path, check_same_thread=False)
+            self._conn.execute(
                 """
                 CREATE TABLE IF NOT EXISTS landscapes (
                     key TEXT PRIMARY KEY,
@@ -133,8 +138,7 @@ class LandscapeCache:
                 )
                 """
             )
-            conn.commit()
-            conn.close()
+            self._conn.commit()
         except Exception as exc:
             log.warning(
                 "[Cache] No se pudo inicializar SQLite: %s. Caché solo en memoria.",
@@ -142,13 +146,14 @@ class LandscapeCache:
                 exc_info=True,
             )
             _inc_counter("cache_errors")
+            self._conn = None
 
     # ------------------------------------------------------------------
     # Generación de claves versionadas
     # ------------------------------------------------------------------
 
     @staticmethod
-    def _runtime_fingerprint() -> str:
+    def _runtime_fp() -> str:
         """Construye un fingerprint de los parámetros de ejecución.
 
         Incorpora:
@@ -172,7 +177,7 @@ class LandscapeCache:
                 json.dumps(MASSIVE_RUNTIME_PARAMS, sort_keys=True, default=str)
             )
         except Exception:
-            pass
+            pass  # MASSIVE_RUNTIME_PARAMS not available — optional empirical config
 
         # Override vía variable de entorno (permite invalidación manual)
         env_params = os.getenv("MASSIVE_RUNTIME_PARAMS")
@@ -189,7 +194,7 @@ class LandscapeCache:
             if any(status.values()):
                 parts.append(json.dumps(status, sort_keys=True))
         except Exception:
-            pass
+            pass  # CfC router not available — fingerprint without CfC component
 
         material = "|".join(parts)
         return hashlib.sha256(material.encode("utf-8")).hexdigest()[:16]
@@ -202,11 +207,11 @@ class LandscapeCache:
         * CACHE_SCHEMA_VERSION.
         * Fingerprint de MASSIVE_RUNTIME_PARAMS y pesos CfC.
 
-        Usa SHA-256 (no MD5).  Se usan 16 hex chars (64 bits de entropía)
-        para minimizar colisiones.
+        Usa SHA-256 (hash criptográfico de 256 bits).  Se usan 16 hex chars
+        (64 bits de entropía) para minimizar colisiones.
         """
         normalized = goal.lower().strip()
-        fp = self._runtime_fingerprint()
+        fp = self._runtime_fp()
         raw = f"{CACHE_SCHEMA_VERSION}:{fp}:{normalized}"
         return hashlib.sha256(raw.encode("utf-8")).hexdigest()[:16]
 
@@ -246,13 +251,14 @@ class LandscapeCache:
 
             # --- Capa SQLite ---
             try:
-                conn = sqlite3.connect(self.db_path, check_same_thread=False)
-                cur = conn.execute(
+                if self._conn is None:
+                    _inc_counter("cache_misses")
+                    return None
+                cur = self._conn.execute(
                     "SELECT config, created_at FROM landscapes WHERE key = ?",
                     (k,),
                 )
                 row = cur.fetchone()
-                conn.close()
                 if row:
                     cfg = json.loads(row[0])
                     created_at = datetime.fromisoformat(row[1])
@@ -296,16 +302,16 @@ class LandscapeCache:
 
             # --- SQLite ---
             try:
-                conn = sqlite3.connect(self.db_path, check_same_thread=False)
-                conn.execute(
+                if self._conn is None:
+                    return
+                self._conn.execute(
                     """
                     INSERT OR REPLACE INTO landscapes (key, config, created_at)
                     VALUES (?, ?, ?)
                     """,
                     (k, json.dumps(config, ensure_ascii=False), now.isoformat()),
                 )
-                conn.commit()
-                conn.close()
+                self._conn.commit()
             except Exception as exc:
                 log.warning(
                     "[Cache] Error escribiendo '%s' a SQLite: %s",
@@ -325,11 +331,10 @@ class LandscapeCache:
         with self._lock:
             self._memory.clear()
             try:
-                conn = sqlite3.connect(self.db_path, check_same_thread=False)
-                conn.execute("BEGIN")
-                conn.execute("DELETE FROM landscapes")
-                conn.commit()
-                conn.close()
+                if self._conn is not None:
+                    self._conn.execute("BEGIN")
+                    self._conn.execute("DELETE FROM landscapes")
+                    self._conn.commit()
             except Exception as exc:
                 log.warning(
                     "[Cache] Error limpiando SQLite: %s",

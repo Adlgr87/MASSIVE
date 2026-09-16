@@ -64,50 +64,82 @@ def _auth_probe(app, path: str, api_key: str | None) -> int:
 _LEGACY_PATH = "/api/v1/forecast"
 _CANONICAL_PATH = "/v1/simulate"
 
+# (MASSIVE_ENV, MASSIVE_DEV_FALLBACK, expected_status_without_key)
+# Dev fallback now requires BOTH MASSIVE_ENV=development AND MASSIVE_DEV_FALLBACK.
 _ENV_CASES = [
-    # (MASSIVE_ENV, expected_status_without_key)
-    (None, 401),  # unset -> dev fallback active -> key required (wrong/absent key -> 401)
-    ("development", 401),
-    ("dev", 401),  # legacy alias
-    ("staging", 503),  # fail-closed: no key configured
-    ("production", 503),
+    # Fail-closed: no key configured and dev fallback not explicitly opted in.
+    (None, None, 503),  # unset env → fail-closed
+    ("development", None, 503),  # dev env but no MASSIVE_DEV_FALLBACK → fail-closed
+    ("dev", None, 503),  # legacy alias, no MASSIVE_DEV_FALLBACK → fail-closed
+    ("staging", None, 503),  # fail-closed
+    ("production", None, 503),  # fail-closed
+    # Opt-in dev fallback: MASSIVE_ENV=development + MASSIVE_DEV_FALLBACK set.
+    ("development", "1", 401),  # dev fallback active → key required → 401
+    ("dev", "1", 401),  # legacy alias + opt-in → 401
+    # MASSIVE_DEV_FALLBACK ignored outside development.
+    ("staging", "1", 503),
+    ("production", "1", 503),
 ]
+
+
+def _set_env(monkeypatch, env_value, dev_fallback):
+    if env_value is None:
+        monkeypatch.delenv("MASSIVE_ENV", raising=False)
+    else:
+        monkeypatch.setenv("MASSIVE_ENV", env_value)
+    if dev_fallback is None:
+        monkeypatch.delenv("MASSIVE_DEV_FALLBACK", raising=False)
+    else:
+        monkeypatch.setenv("MASSIVE_DEV_FALLBACK", dev_fallback)
 
 
 def test_legacy_env_semantics(monkeypatch):
     import api as api_mod
 
-    for env_value, expected in _ENV_CASES:
+    for env_value, dev_fb, expected in _ENV_CASES:
         monkeypatch.delenv("MASSIVE_API_KEY", raising=False)
-        if env_value is None:
-            monkeypatch.delenv("MASSIVE_ENV", raising=False)
-        else:
-            monkeypatch.setenv("MASSIVE_ENV", env_value)
-        # Recreate the app so module-level env is irrelevant (auth reads env per-request).
+        _set_env(monkeypatch, env_value, dev_fb)
         status = _auth_probe(api_mod.app, _LEGACY_PATH, None)
-        assert status == expected, f"legacy MASSIVE_ENV={env_value!r}: {status} != {expected}"
+        assert status == expected, (
+            f"legacy MASSIVE_ENV={env_value!r} MASSIVE_DEV_FALLBACK={dev_fb!r}: "
+            f"{status} != {expected}"
+        )
 
 
 def test_canonical_env_semantics(monkeypatch):
     canonical_app = _canonical_app()
-    for env_value, expected in _ENV_CASES:
+    for env_value, dev_fb, expected in _ENV_CASES:
         monkeypatch.delenv("MASSIVE_API_KEY", raising=False)
-        if env_value is None:
-            monkeypatch.delenv("MASSIVE_ENV", raising=False)
-        else:
-            monkeypatch.setenv("MASSIVE_ENV", env_value)
+        _set_env(monkeypatch, env_value, dev_fb)
         status = _auth_probe(canonical_app, _CANONICAL_PATH, None)
-        assert status == expected, f"canonical MASSIVE_ENV={env_value!r}: {status} != {expected}"
+        assert status == expected, (
+            f"canonical MASSIVE_ENV={env_value!r} MASSIVE_DEV_FALLBACK={dev_fb!r}: "
+            f"{status} != {expected}"
+        )
 
 
 def test_both_backends_accept_dev_fallback_key(monkeypatch):
+    """Dev fallback requires BOTH MASSIVE_ENV=development AND MASSIVE_DEV_FALLBACK."""
     import api as api_mod
 
     canonical_app = _canonical_app()
     monkeypatch.delenv("MASSIVE_API_KEY", raising=False)
-    monkeypatch.delenv("MASSIVE_ENV", raising=False)
+    monkeypatch.setenv("MASSIVE_ENV", "development")
+    monkeypatch.setenv("MASSIVE_DEV_FALLBACK", "1")
     assert _auth_probe(api_mod.app, _LEGACY_PATH, "dev-secret-key") != 401
     assert _auth_probe(canonical_app, _CANONICAL_PATH, "dev-secret-key") != 401
+
+
+def test_both_backends_reject_dev_fallback_without_opt_in(monkeypatch):
+    """Without MASSIVE_DEV_FALLBACK, dev-secret-key must NOT authenticate."""
+    import api as api_mod
+
+    canonical_app = _canonical_app()
+    monkeypatch.delenv("MASSIVE_API_KEY", raising=False)
+    monkeypatch.setenv("MASSIVE_ENV", "development")
+    monkeypatch.delenv("MASSIVE_DEV_FALLBACK", raising=False)
+    assert _auth_probe(api_mod.app, _LEGACY_PATH, "dev-secret-key") == 503
+    assert _auth_probe(canonical_app, _CANONICAL_PATH, "dev-secret-key") == 503
 
 
 def test_both_backends_reject_wrong_key_when_configured(monkeypatch):
@@ -121,6 +153,18 @@ def test_both_backends_reject_wrong_key_when_configured(monkeypatch):
         # Correct key passes auth (may fail validation with 422 — never 401/503).
         status = _auth_probe(app, path, "testkey111")
         assert status not in (401, 503)
+
+
+def test_is_dev_env_none_is_false():
+    """is_dev_env(None) must be False (fail-closed when MASSIVE_ENV unset)."""
+    from massive_core.config import is_dev_env
+
+    assert is_dev_env(None) is False
+    assert is_dev_env("") is False
+    assert is_dev_env("staging") is False
+    assert is_dev_env("production") is False
+    assert is_dev_env("development") is True
+    assert is_dev_env("dev") is True
 
 
 def test_constant_time_comparison_helper():

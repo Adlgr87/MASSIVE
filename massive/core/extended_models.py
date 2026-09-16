@@ -435,7 +435,8 @@ def regla_sir(estado: dict, params: dict, cfg: dict) -> dict:
             max_step=dt / 5,
         )
         S_new, I_new, R_new = sol.y[:, -1]
-    except Exception:
+    except Exception as exc:
+        log.warning("SIR ODE solve failed, using fallback state: %s", exc, exc_info=True)
         S_new, I_new, R_new = S0, I0, R0
 
     S_new = float(np.clip(S_new, 0.0, 1.0))

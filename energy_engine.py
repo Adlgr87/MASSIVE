@@ -242,9 +242,9 @@ class SocialEnergyEngine:
                 with _torch.no_grad():
                     val = float(self._lambda_model(feat).item())
                 return max(0.0, min(1.0, val))
-            except Exception:
-                pass
-        return self.lambda_social
+            except Exception as exc:
+                log.debug("CfC lambda model inference failed: %s", exc, exc_info=True)
+            return self.lambda_social
 
     def _load_landscape_model(self):
         """Load the trained CfC landscape modulator, or None if unavailable."""
@@ -307,7 +307,8 @@ class SocialEnergyEngine:
                 {"position": float(vals[4]), "strength": float(vals[2])},
             ]
             return attractors, repellers
-        except Exception:
+        except Exception as exc:
+            log.warning("CfC landscape model inference failed: %s", exc, exc_info=True)
             return None
 
     def step(
@@ -362,7 +363,8 @@ class SocialEnergyEngine:
                     with _torch.no_grad():
                         learned_mult = float(self._temp_model(u_tensor).item())
                     effective_temp *= min(max(learned_mult, 0.5), 2.0)
-                except Exception:
+                except Exception as exc:
+                    log.debug("CfC temp model inference failed: %s", exc, exc_info=True)
                     effective_temp *= _ews_fallback_multiplier(ews_flags)
             else:
                 effective_temp *= _ews_fallback_multiplier(ews_flags)
@@ -397,10 +399,10 @@ class SocialEnergyEngine:
         # calls with numpy broadcasting for the hot path (2k agents × 50 steps).
         def _vectorized_grad(arr: np.ndarray) -> np.ndarray:
             grad = np.zeros(n)
-            for pos, strength in zip(att_positions, att_strengths):
+            for pos, strength in zip(att_positions, att_strengths, strict=True):
                 diff = arr - pos
                 grad += strength * diff / sigma2 * np.exp(-(diff**2) / (2.0 * sigma2))
-            for pos, strength in zip(rep_positions, rep_strengths):
+            for pos, strength in zip(rep_positions, rep_strengths, strict=True):
                 diff = arr - pos
                 grad -= strength * diff / sigma2 * np.exp(-(diff**2) / (2.0 * sigma2))
             return grad

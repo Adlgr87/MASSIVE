@@ -7,8 +7,10 @@ Design notes
 ------------
 * **Fail-closed in production.** When ``MASSIVE_ENV=production`` and no
   ``MASSIVE_API_KEY`` is configured the API refuses all traffic (HTTP 503).
-* **Dev fallback.** When ``MASSIVE_ENV=development`` (or unset) a fallback
-  key ``dev-secret-key`` is accepted so local development is frictionless.
+* **Dev fallback (two-factor).** When ``MASSIVE_ENV=development`` AND
+  ``MASSIVE_DEV_FALLBACK`` is set, a fallback key ``dev-secret-key`` is
+  accepted so local development is frictionless. Unset ``MASSIVE_ENV``
+  resolves to fail-closed — never development.
 * **Rate limiter.** Re-uses ``massive_core.config.build_rate_limiter``
   which supports both ``memory`` (single worker) and ``file`` (multi-worker)
   backends via the ``MASSIVE_RATE_LIMIT_BACKEND`` env var.
@@ -26,7 +28,7 @@ from massive_core.config import (
     DEV_FALLBACK_API_KEY,
     api_key_matches,
     build_rate_limiter,
-    is_dev_env,
+    is_dev_fallback_allowed,
 )
 
 log = logging.getLogger(__name__)
@@ -53,9 +55,12 @@ async def get_api_key(
     """
     expected = os.getenv("MASSIVE_API_KEY")
     if not expected:
-        if is_dev_env(os.getenv("MASSIVE_ENV")):
+        if is_dev_fallback_allowed():
             expected = DEV_FALLBACK_API_KEY
-            log.warning("MASSIVE_API_KEY not set — using dev fallback (development mode only)")
+            log.warning(
+                "MASSIVE_API_KEY not set — using dev fallback "
+                "(development + MASSIVE_DEV_FALLBACK, dev only)"
+            )
         else:
             raise HTTPException(
                 status_code=503,

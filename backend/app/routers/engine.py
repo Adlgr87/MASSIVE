@@ -57,7 +57,7 @@ async def v1_energy(
     except Exception as _exc:
         import logging
 
-        logging.getLogger("massive.backend.routers.engine").exception("v1/engine/energy error")
+        logging.getLogger(__name__).exception("v1/engine/energy error")
         raise HTTPException(status_code=500, detail="Internal engine error") from _exc
 
 
@@ -98,7 +98,7 @@ async def v1_architect(
     except Exception as _exc:
         import logging
 
-        logging.getLogger("massive.backend.routers.engine").exception("v1/engine/architect error")
+        logging.getLogger(__name__).exception("v1/engine/architect error")
         raise HTTPException(status_code=500, detail="Internal engine error") from _exc
 
     history = historial if isinstance(historial, list) else []
