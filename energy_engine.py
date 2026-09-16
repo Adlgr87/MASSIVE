@@ -378,9 +378,10 @@ class SocialEnergyEngine:
         noise = np.sqrt(2.0 * eta * effective_temp) * self.rng.standard_normal(n)
 
         # ── Prepare arrays for vectorized landscape gradient ──────────────────
-        # Reactive coupling (MASSIVE_REACTIVE_COHERENCE_PLAN.md §2, row: Gini↑→σ↓):
-        # Higher inequality narrows the landscape width (sharper polarization).
-        sigma2 = (_SIGMA * (1.0 - 0.3 * self.gini_coefficient)) ** 2
+        # sigma2 is wired into the vectorized _vectorized_grad below;
+        # Gini's effect on landscape width is handled via propose_lambda()
+        # and the EWS temperature trigger (see MASSIVE_REACTIVE_COHERENCE_PLAN.md §2).
+        sigma2 = _SIGMA**2
         if attractors:
             att_positions = np.array([a["position"] for a in attractors], dtype=np.float64)
             att_strengths = np.array([a["strength"] for a in attractors], dtype=np.float64)

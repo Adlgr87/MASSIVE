@@ -257,7 +257,9 @@ Examples:
         if existing == content:
             print(f"✓  {out_path.relative_to(ROOT)} is up to date")
             return 0
-        print(f"✗  {out_path.relative_to(ROOT)} is out of sync — run 'python scripts/gen_ts_types.py'")
+        print(
+            f"✗  {out_path.relative_to(ROOT)} is out of sync — run 'python scripts/gen_ts_types.py'"
+        )
         return 1
 
     # ── --dry-run: report without writing ──────────────────────────────────

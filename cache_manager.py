@@ -36,7 +36,7 @@ import os
 import sqlite3
 import threading
 from collections import OrderedDict
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 log = logging.getLogger(__name__)
 
@@ -103,15 +103,11 @@ class LandscapeCache:
     """
 
     def __init__(self, db_path: str | None = None, ttl_seconds: int | None = None):
-        self.db_path = db_path or os.getenv(
-            "CACHE_DB_PATH", "landscapes_cache.db"
-        )
+        self.db_path = db_path or os.getenv("CACHE_DB_PATH", "landscapes_cache.db")
         self.ttl_seconds = ttl_seconds or int(
             os.getenv("MASSIVE_CACHE_TTL_SECONDS", str(DEFAULT_CACHE_TTL_SECONDS))
         )
-        self._max_mem_size = int(
-            os.getenv("MASSIVE_CACHE_MEM_SIZE", str(DEFAULT_MEM_CACHE_SIZE))
-        )
+        self._max_mem_size = int(os.getenv("MASSIVE_CACHE_MEM_SIZE", str(DEFAULT_MEM_CACHE_SIZE)))
         self._memory: OrderedDict[str, dict] = OrderedDict()
         self._lock = threading.Lock()
         self._conn: sqlite3.Connection | None = None
@@ -173,9 +169,7 @@ class LandscapeCache:
         try:
             from massive.core.empirical_config import MASSIVE_RUNTIME_PARAMS
 
-            parts.append(
-                json.dumps(MASSIVE_RUNTIME_PARAMS, sort_keys=True, default=str)
-            )
+            parts.append(json.dumps(MASSIVE_RUNTIME_PARAMS, sort_keys=True, default=str))
         except Exception:
             pass  # MASSIVE_RUNTIME_PARAMS not available — optional empirical config
 
@@ -230,7 +224,7 @@ class LandscapeCache:
             expirado.
         """
         k = self._key(goal)
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
 
         with self._lock:
             # --- Capa de memoria ---
@@ -291,7 +285,7 @@ class LandscapeCache:
     def set(self, goal: str, config: dict) -> None:
         """Almacena un paisaje en memoria y en SQLite (UPSERT)."""
         k = self._key(goal)
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
         entry = {"config": config, "created_at_ts": now}
 
         with self._lock:

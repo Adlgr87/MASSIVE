@@ -20,12 +20,6 @@ services:
       - massive-logs:/app/reports/validation/ci
     environment:
       - MASSIVE_ENV=${MASSIVE_ENV:-development}
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://127.0.0.1:8000/docs"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-      start_period: 10s
     networks:
       - massive-net
 

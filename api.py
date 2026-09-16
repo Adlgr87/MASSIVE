@@ -38,7 +38,9 @@ async def get_api_key(api_key: str | None = Header(None, alias="X-API-Key")):
     if not valid_key:
         if is_dev_fallback_allowed():
             valid_key = DEV_FALLBACK_API_KEY
-            log.warning("MASSIVE_API_KEY not set — using dev fallback (development + MASSIVE_DEV_FALLBACK)")
+            log.warning(
+                "MASSIVE_API_KEY not set — using dev fallback (development + MASSIVE_DEV_FALLBACK)"
+            )
         else:
             raise HTTPException(status_code=503, detail="API key not configured")
     if not api_key_matches(api_key, valid_key):
@@ -376,7 +378,9 @@ async def api_forecast(
             )
         except Exception:
             # DTO validation is best-effort; never leak internals.
-            log.warning("ForecastPoint/Feasibility DTO validation failed, using raw dict", exc_info=True)
+            log.warning(
+                "ForecastPoint/Feasibility DTO validation failed, using raw dict", exc_info=True
+            )
             point = {
                 "tick": data.get("steps_to_event") or 0,
                 "mean_opinion": float(data.get("p_event", 0.0)),

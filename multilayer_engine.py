@@ -25,6 +25,8 @@ Columnas de x_i (K=5):
 Autor: MASSIVE Research
 """
 
+import logging
+
 import networkx as nx
 import numpy as np
 import pandas as pd
@@ -33,6 +35,8 @@ from scipy import sparse
 from llm_credentials import resolve_provider_api_key
 from massive.core.state_compression import compress_agent_states, decompress_agent_states
 from metrics.unified_metrics import calculate_polarization
+
+log = logging.getLogger(__name__)
 
 # ── Coeficientes de modulación theta (calibrados empíricamente) ───────────
 # Escalas de sensibilidad por atributo y dimensión de comportamiento.
