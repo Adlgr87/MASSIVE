@@ -195,7 +195,7 @@ experiments/
 ## Cómo Reproducir
 
 ```bash
-cd /home/adlg/Escritorio/Proyectos/MASSIVE
+cd .
 export PYTHONHASHSEED=42
 export MASSIVE_LLM_PROVIDER=heuristico
 

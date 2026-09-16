@@ -1,7 +1,7 @@
 # MASSIVE — REPORTE MAESTRO DE BENCHMARK Y CALIBRACIÓN
 
 **Fecha:** 2026-06-29  
-**Repo:** /home/adlg/Escritorio/Proyectos/MASSIVE  
+**Repo:** .  
 **Entorno:** Python 3.14.6, Fedora 44, 12 cores AMD, 33GB RAM, sin GPU  
 **Modo:** Offline (provider=heurístico, PYTHONHASHSEED=42)
 

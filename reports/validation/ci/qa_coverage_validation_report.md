@@ -1,5 +1,5 @@
 # QA Coverage & Scientific Validation Report (Phase 3)
-Generated: 2026-08-16 (run from `/home/adlg/Escritorio/Proyectos/MASSIVE` with `.venv`)
+Generated: 2026-08-16 (run from `.` with `.venv`)
 
 ## 1. Test suite — execution
 

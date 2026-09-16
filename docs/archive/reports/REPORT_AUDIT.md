@@ -1,5 +1,7 @@
 # Auditoría Código vs Documentación
 
+> ⚠️ HISTÓRICO — describe el commit 2b70984 del 14 de septiembre de 2026. No refleja main actual.
+
 > **Proyecto:** MASSIVE  
 > **Fecha:** 2026-09-14  
 > **Auditor:** Agnes (AI Code Quality Engineer)  

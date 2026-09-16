@@ -75,6 +75,66 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 **These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
 
 ---
+
+<!-- This file consolidates AGENTS.md (referenced as the canonical agent memory). -->
+
+## MASSIVE Agent Memory (from AGENTS.md)
+
+### Project layout (key paths)
+- `api.py` — FastAPI entrypoint; endpoints at `/api/*` (extract, wizard, simulate-uil) + `/health`, `/ready`, `/version`.
+- `services/` — thin service layer over core engines. Exports `run_scalar_simulation`, `run_multilayer_simulation`, `forecast_service`, `factbook_service`, `llm_service` (see `__init__.py`).
+- `backend/app/models/` — pydantic v2 DTOs (`extra="forbid"`). Namespace re-export at `backend.app.models.__init__`.
+  - `dto_architect.py`        → InterventionRecord, InterventionLogEntry, ArchitectEventMessage
+  - `dto_forecast.py`         → ForecastPoint, Feasibility, ForecastResponse
+  - `dto_simulation.py`       → SimAgentLite, SimAggregate, SimSnapshotMessage, SimEventMessage, SimMode, SimEventKind, SimulationSnapshotPayload
+  - `dto_snapshot.py`         → SnapshotRecord, TimelineTick, TimelineResponse
+- Core engines (root-level modules, importable directly):
+  - `social_architect.py` → `buscar_estrategia_inversa(...)` (inverse-strategy architect), returns `(estrategia, narrativa, intentos, historial)`.
+  - `forecast/engine.py` → `forecast(simulation_state, temporal_config, mode="analytical|monte_carlo", n_runs=...)` → `ForecastResult`.
+  - `energy_runner.py` → `run_energy_simulation(user_goal, n_agents=50, steps=100, connectivity=0.3, range_type="bipolar", seed=42, config_overrides=None, ...)`. `energy_engine.py` has `SocialEnergyEngine`.
+  - `simulator.py` → `simular`, `DEFAULT_CONFIG`, `resumen_historial`.
+
+### Conventions
+- Existing API endpoints use raw `dict` payloads (not pydantic input DTOs) + `_rate_limit(request)`, `Depends(get_api_key)`, and `_public_error(exc)` to avoid leaking internals.
+- New `/api/v1/*` endpoints should follow the same pattern.
+- DTOs are used for *output validation* (e.g. forecast point validated via `ForecastPoint`/`Feasibility`).
+
+### Gotchas
+- The names `architect_inverse`, `generate_forecast`, `energy_landscape`, `simulate_engine` do **not** exist in the codebase. Use the real functions listed above.
+- `services/forecast_service.py` has `baseline_forecast`/`walk_forward_evaluate` (baseline only) — the full forecast engine lives in `forecast/engine.py`.
+
+### Production Architecture Spec
+`docs/architecture/PRODUCTION_ARCHITECTURE_SPEC.md` defines the official production architecture (logical layers, v1 API contract, CLI/UI clients, `.env.example` policy, error + logging standards, v0.1–v0.3 roadmap). Key gap to close in Phase 1: `backend/app/main.py` does **not** exist yet — migrate endpoints from `api.py` → `/v1/*` and add CLI entry-points to `pyproject.toml [project.scripts]`.
+
+### Docker (Phase 4 — multi-stage + nginx)
+- `Dockerfile`: 3-stage build (builder-py → builder-fe → runtime).
+- `docs/architecture/PRODUCTION_ARCHITECTURE_SPEC.md` §5: nginx serves `/` from `/usr/share/nginx/html`, proxies `/api/`, `/docs`, `/health`, `/ready`, `/version` → api_backend, `/ui/` → ui component_backend.
+- `docker-compose.yml`: maps `80:80` (nginx), `8000:8000` (direct API), `8501:8501` (ui component).
+
+### DevOps
+- `install.sh`: commands `install`, `install-dev`, `run`, `docker`, `clean`, `lint`, `test`, `benchmark`, `docs`.
+- `run` → `uvicorn backend.app.main:app --host 0.0.0.0 --port 8000` (fallback to `api:app` if main unavailable).
+- Build: `pip install -r requirements.txt` · Run: `uvicorn backend.app.main:app` · Test: `pytest tests/`
+
+### Simulation Scientist Notes (Brexit 2016)
+**Engine APIs:** `run_scientific_simulation(...)` → `ScientificSimulationResult`; `SocialEnergyEngine(...)` from `energy_engine`; `MultilayerEngine(...)` from `multilayer_engine`.
+
+**Bipolar Opinion Encoding:** Leave = +1, Remain = -1. `opinion = 2 * leave_pct - 1`; `leave_pct = (opinion + 1) / 2`. UK 2016: T0 ~41% Leave, actual 51.89%.
+
+**Output Files:** Scientific report → `reports/simulation_analysis_report.md`; Residuals CSV → `reports/cfc_training/residual_timeseries.csv`.
+
+### CfC calibration (2026-08-17)
+- Trained CfC residual-correction network. Output artifacts in `models/cfc_calibrated/`. Report: `reports/cfc_training_report.md`. Calibration doc: `docs/research/calibration_log.md`.
+- Integration: extend `CfCRouter` with `correct_residual(...)` — loads `cfc_residual.pt`, adds r̂(t) to engine output ŷ(t).
+
+### Key file references
+- Production architecture spec: `docs/architecture/PRODUCTION_ARCHITECTURE_SPEC.md`
+- System map: `docs/architecture/MASSIVE_SYSTEM_MAP.md`
+- Calibration log: `docs/research/calibration_log.md`
+- W4 audit workflow: `docs/archive/AUDIT_REMEDIATION_WORKFLOW.md`
+
+---
+
 ## RECOVERY RECORD — MASSIVE Recovery Plan (autogenerado)
 
 - Backup branch created (local): backup/pre-recovery-20260527

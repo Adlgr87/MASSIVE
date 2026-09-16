@@ -20,7 +20,7 @@ fases restantes (7-8).
 
 ### Step 1: Verificar entorno
 ```bash
-cd /home/adlg/Escritorio/Proyectos/MASSIVE
+cd .
 python3 --version          # Debe ser 3.14.x
 python3 -c "import torch; print(torch.__version__)"  # 2.13.0
 python3 -c "import numpy; print(numpy.__version__)"   # 2.5.2
@@ -178,7 +178,7 @@ agentes_secuenciales:
 # Quick health check script
 cat > /tmp/verify_massive.sh << 'EOF'
 #!/bin/bash
-cd /home/adlg/Escritorio/Proyectos/MASSIVE
+cd .
 echo "=== MASSIVE Health Check ==="
 python3 -c "
 from cfc_router import CfCRouter

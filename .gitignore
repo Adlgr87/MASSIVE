@@ -74,3 +74,13 @@ credentials/
 keys/
 *.pem
 *.key
+
+# Build artifacts
+build/
+dist/
+target/
+*.egg-info/
+*.egg
+__pycache__/
+*.pyc
+*.pyo

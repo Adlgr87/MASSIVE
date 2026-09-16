@@ -1,6 +1,6 @@
 # LLM Run-Simulation Endpoint — Validación Final
 
-**Generated:** 2026-08-16 (run from `/home/adlg/Escritorio/Proyectos/MASSIVE` with `.venv`)
+**Generated:** 2026-08-16 (run from `.` with `.venv`)
 **Endpoint:** `POST /v1/llm/run_simulation`
 **Spec reference:** `configs/llm_contract/massive_llm_contract.json`
 **Entrypoint de backend:** `backend/app/main.py` (FastAPI UI-NG) — enrutador `backend/app/routers/llm.py`, servicio `backend/app/services/llm_orchestrator.py`.

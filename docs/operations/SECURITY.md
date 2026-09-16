@@ -19,11 +19,11 @@ privately before public disclosure.
 
 Security-relevant components are documented in the threat model:
 
-- **Threat model**: [`docs/security/threat-model.md`](docs/security/threat-model.md)
-- **Secrets & configuration**: [`docs/security/secrets-and-configuration.md`](docs/security/secrets-and-configuration.md)
+- **Threat model**: [`../security/threat-model.md`](../security/threat-model.md)
+- **Secrets & configuration**: [`../security/secrets-and-configuration.md`](../security/secrets-and-configuration.md)
 
 ## Hardcoded test credentials
 
 The repository contains intentionally weak development credentials (see
-`docs/security/secrets-and-configuration.md`).  These are restricted to local
+`../security/secrets-and-configuration.md`).  These are restricted to local
 development and must never be used in production or deployed environments.

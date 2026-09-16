@@ -17,9 +17,9 @@ import logging
 import sys
 from collections.abc import Sequence
 
-log = logging.getLogger(__name__)
+from massive import __version__ as __VERSION__
 
-__VERSION__ = "1.0.0"
+log = logging.getLogger(__name__)
 
 
 def _configure_logging(verbose: bool = False) -> None:

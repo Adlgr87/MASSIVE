@@ -1,7 +1,7 @@
 # FASE 0 — AUDITORÍA ESTRUCTURAL DEL REPOSITORIO MASSIVE
 
 **Fecha:** 2026-06-29  
-**Repo:** /home/adlg/Escritorio/Proyectos/MASSIVE  
+**Repo:** .  
 **Commit analizado:** HEAD del branch principal  
 **Auditor:** Agente automatizado (GLM-5.2)
 

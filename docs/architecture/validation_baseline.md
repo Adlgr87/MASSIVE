@@ -25,7 +25,7 @@ python -m pytest "MASSIVE actualizado/tests/"
 Ejecutado desde la raíz del workspace:
 
 ```bash
-/home/adlg/Escritorio/Proyectos/MASSIVE
+.
 ```
 
 ---
