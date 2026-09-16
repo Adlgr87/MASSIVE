@@ -59,7 +59,7 @@ from massive_engine import MassiveEngine
 from metrics.unified_metrics import calculate_partisanship
 from multilayer_engine import MultilayerEngine
 
-log = logging.getLogger("massive")
+log = logging.getLogger(__name__)
 
 try:
     from persim import wasserstein as wasserstein_dist
@@ -68,7 +68,7 @@ try:
     TDA_AVAILABLE = True
 except ImportError:
     TDA_AVAILABLE = False
-    logging.getLogger("massive").warning(
+    log.warning(
         "[TDA] ripser/persim no instalados — detección topológica desactivada."
     )
 
@@ -110,7 +110,6 @@ logging.basicConfig(
         logging.StreamHandler(),
     ],
 )
-log = logging.getLogger(__name__)
 
 
 # ------------------------------------------------------------
