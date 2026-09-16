@@ -1,7 +1,7 @@
 # AGENTS.md — MASSIVE UI-NG (Next-Gen UI)
 
 ## Project location
-- Local: `/home/adlg/Escritorio/Proyectos/MASSIVE_UI/massive-ui-ng-package`
+- Local: `._UI/massive-ui-ng-package`
 - Git repo root: **same dir** (independent repo, `main` branch)
 - GitHub remote configured in `.git/config`:
   - `origin -> https://github.com/Adlgr87/MASSIVE_UI.git`
@@ -10,8 +10,8 @@
     UI-NG depends on `massive_core` from the MASSIVE repo on PYTHONPATH.
 
 ## Cross-repo dependency
-- `massive_core` — located at `/home/adlg/Escritorio/Proyectos/MASSIVE/massive_core`
-- Must be importable: set `MASSIVE_ROOT=/home/adlg/Escritorio/Proyectos/MASSIVE` OR add it to `PYTHONPATH`.
+- `massive_core` — located at `./massive_core`
+- Must be importable: set `MASSIVE_ROOT=.` OR add it to `PYTHONPATH`.
 - `backend/app/main.py` inserts MASSIVE_ROOT into sys.path at runtime, but pytest
   collection happens *before* main.py runs, so the root `conftest.py` must do it.
 
@@ -24,8 +24,8 @@
 
 ## Run tests
 ```
-cd /home/adlg/Escritorio/Proyectos/MASSIVE_UI/massive-ui-ng-package
-MASSIVE_ROOT=/home/adlg/Escritorio/Proyectos/MASSIVE python -m pytest tests/ -q
+cd ._UI/massive-ui-ng-package
+MASSIVE_ROOT=. python -m pytest tests/ -q
 ```
 
 ## Git workflow note

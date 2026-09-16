@@ -1,10 +1,10 @@
 [build-system]
-requires = ["maturin>=1.7,<2.0", "setuptools>=68"]
-build-backend = "maturin"
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "massive"
-version = "0.1.0"
+version = "1.0.0"
 description = "MASSIVE simulation toolkit with optional Rust acceleration"
 requires-python = ">=3.10"
 readme = "README.md"
@@ -60,16 +60,37 @@ Documentation = "https://adlgr87.github.io/MASSIVE/"
 Repository = "https://github.com/Adlgr87/MASSIVE"
 Issues = "https://github.com/Adlgr87/MASSIVE/issues"
 
-[tool.maturin]
-module-name = "massive_rust_core"
-features = ["pyo3/extension-module"]
+# The Rust extension (massive_rust_core) is built separately via maturin
+# in the dedicated CI job (rust.yml) — see W3-T02. It is intentionally NOT
+# part of this setuptools wheel so `pip install -e .` works without a Rust
+# toolchain.
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["massive*", "backend*", "services*", "benchmarks*", "micro_massive*", "forecast*", "massive_core*"]
+include = [
+  "massive*", "backend*", "services*", "benchmarks*", "micro_massive*",
+  "forecast*", "massive_core*", "metrics*", "adapters*", "monitoring*",
+]
+
+# The 31 legacy root-level .py modules (excl. conftest.py) are distributed
+# as top-level py-modules so the wheel imports them without a package dir.
+[tool.setuptools]
+py-modules = [
+  "api", "benchmark_scalability", "brexit_calibration", "cache_manager",
+  "cfc_engine", "cfc_router", "cfc_trainer", "document_intelligence",
+  "empirical_calibration", "empirical_config", "energy_engine",
+  "energy_runner", "energy_schemas", "interpreter_layer",
+  "langchain_workflows", "llm_credentials", "massive_engine",
+  "micro_engine", "micro_schemas", "multilayer_engine",
+  "programmatic_architect", "schemas", "simulator",
+  "social_architect", "social_connectors", "state_compression",
+  "train_cfc_lambda", "train_cfc_landscape", "train_cfc_temp",
+  "uil_adapter", "visualizations",
+]
 
 [tool.setuptools.package-data]
 massive_core = ["config/defaults.yaml"]
+metrics = ["py.typed"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

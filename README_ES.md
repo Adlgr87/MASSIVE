@@ -87,7 +87,7 @@ SPA de React y proxy `/api/`, `/v1/`, `/docs`, `/health`, `/ready`, `/version`,
 `/metrics`).
 
 > ℹ️ Una variante legada de servicio único (`Dockerfile.optimized` +
-> `docker-compose.single.yml`) está archivada en [`docs/examples/`](docs/examples/).
+> `docker-compose.single.yml`) está archivada en [`examples/`](examples/).
 
 > Mínimo: Python 3.11, 500 MB RAM. Rust/CUDA/torch/claves LLM son opcionales —
 > cada capa opcional tiene un fallback determinista.
@@ -175,7 +175,7 @@ Invariantes clave:
 (`MASSIVE_RATE_LIMIT_PER_MIN`) · límite de body 10 MB (`MASSIVE_MAX_BODY_MB`) ·
 CORS sin wildcards · allowlist de extensiones en uploads ·
 correlación `X-Request-ID` en cada respuesta · access log estructurado con duración.
-Referencia completa de variables: `.env.example` y [`docs/security/secrets-and-configuration.md`](docs/security/secrets-and-configuration.md).
+Referencia completa de variables: `.env.example` y [`security/secrets-and-configuration.md`](security/secrets-and-configuration.md).
 
 ---
 
@@ -213,7 +213,7 @@ Medidos en el rig de benchmarks del repo (31 GB RAM — ejecuta `benchmark_scala
 
 Micro-benchmarks de referencia (sandbox 2 vCPU, vía capa de servicios, mín de 3):
 escalar 50 pasos **0.029 s** · multilayer 100×50 **0.008 s** · massive LOD 10K×50 **0.023 s** ·
-energy 50×100 **0.012 s** — método en [`docs/performance/baseline.md`](docs/performance/baseline.md).
+energy 50×100 **0.012 s** — método en [`performance/baseline.md`](performance/baseline.md).
 
 **Validación científica**: el protocolo PVU-MASSIVE corre casos reales offline
 (`python -m benchmarks.runner --cases datasets/pvu_cases --offline`), con plantilla de
@@ -230,7 +230,7 @@ el error de dirección en el caso Brexit (54.5 % → 53.2 % Leave; 10/10 semilla
 | Cobertura | 68 % branch (alcance: motores + servicios + backend) — `make test-cov` |
 | Calidad estática | ruff + black + mypy (slice gradual) verdes en CI |
 | CI | 16 checks por PR: lint, tipos, suites core/scientific/api/full, build+lint frontend, salud de Docker compose, sincronía de tipos TS, secret scan, semgrep, benchmark PVU |
-| Seguridad | auth fail-closed, rate & body limits, comparaciones constant-time, sin secretos en el árbol (un token histórico documentado + rotación pendiente, ver `docs/security/threat-model.md`) |
+| Seguridad | auth fail-closed, rate & body limits, comparaciones constant-time, sin secretos en el árbol (un token histórico documentado + rotación pendiente, ver `security/threat-model.md`) |
 | Observabilidad | `/metrics` Prometheus, `X-Request-ID`, access logs estructurados, readiness con modo degradado |
 | Runbooks | dev local · operaciones · incidentes — `docs/runbooks/` |
 
@@ -269,21 +269,21 @@ MASSIVE/
 | Tema | Enlace |
 |---|---|
 | Sitio MkDocs (referencia API, validación, ciencia) | `python -m mkdocs serve -a localhost:8001` → http://localhost:8001 |
-| Arquitectura — estado actual (mapa verificado) | [`docs/architecture/current-state.md`](docs/architecture/current-state.md) |
-| Arquitectura — estado objetivo y decisiones abiertas | [`docs/architecture/target-state.md`](docs/architecture/target-state.md) |
-| Auditoría de production-readiness y matriz de riesgos | [`docs/production-readiness-audit.md`](docs/production-readiness-audit.md) |
-| Runbooks (dev · ops · incidentes) | [`docs/runbooks/`](docs/runbooks/local-development.md) |
-| Seguridad (modelo de amenazas, secretos) | [`docs/security/threat-model.md`](docs/security/threat-model.md) |
-| Estrategia de testing y cobertura | [`docs/testing/test-strategy.md`](docs/testing/test-strategy.md) |
-| Baseline de rendimiento | [`docs/performance/baseline.md`](docs/performance/baseline.md) |
-| Checklist de release | [`docs/release-checklist.md`](docs/release-checklist.md) |
-| README en inglés | [`README.md`](README.md) |
+| Arquitectura — estado actual (mapa verificado) | [`architecture/current-state.md`](architecture/current-state.md) |
+| Arquitectura — estado objetivo y decisiones abiertas | [`architecture/target-state.md`](architecture/target-state.md) |
+| Auditoría de production-readiness y matriz de riesgos | [`production-readiness-audit.md`](production-readiness-audit.md) |
+| Runbooks (dev · ops · incidentes) | [`docs/runbooks/`](runbooks/local-development.md) |
+| Seguridad (modelo de amenazas, secretos) | [`security/threat-model.md`](security/threat-model.md) |
+| Estrategia de testing y cobertura | [`testing/test-strategy.md`](testing/test-strategy.md) |
+| Baseline de rendimiento | [`performance/baseline.md`](performance/baseline.md) |
+| Checklist de release | [`release-checklist.md`](release-checklist.md) |
+| README en inglés | README.md(README.md) |
 
 ---
 
 ## 🤝 Contribuir
 
-Los PRs son bienvenidos — ver [`CONTRIBUTING.md`](CONTRIBUTING.md). En resumen:
+Los PRs son bienvenidos — ver CONTRIBUTING.md(CONTRIBUTING.md). En resumen:
 
 ```bash
 make install && make test && make lint    # los tres verdes antes de abrir un PR

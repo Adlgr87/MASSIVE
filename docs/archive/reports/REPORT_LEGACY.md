@@ -1,5 +1,7 @@
 # Reporte de Código Obsoleto y Duplicado
 
+> ⚠️ HISTÓRICO — describe el commit 2b70984 del 14 de septiembre de 2026. No refleja main actual.
+
 **Fecha:** 2026-07-17  
 **Projecto:** /home/adlg/Escritorio/Proyectos/MASSIVE  
 **Agente:** Legacy Code Architect (DSH subagent)

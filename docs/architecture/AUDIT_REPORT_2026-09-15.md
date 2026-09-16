@@ -77,9 +77,9 @@ $ python -c "import simulator"
 [TDA] ripser/persim no instalados — detección topológica desactivada.
 Traceback (most recent call last):
   File "<string>", line 1, in <module>
-  File "/home/user/MASSIVE/simulator.py", line 85, in <module>
+  File "~/MASSIVE/simulator.py", line 85, in <module>
     CFC_AVAILABLE = _cfc.status["regime_selector"]
-  File "/home/user/MASSIVE/cfc_router.py", line 452, in status
+  File "~/MASSIVE/cfc_router.py", line 452, in status
     "lambda_corrector": self._lambda_corrector is not None,
 AttributeError: 'CfCRouter' object has no attribute '_lambda_corrector'
 ```
@@ -406,11 +406,11 @@ F401  train_cfc_{lambda,landscape,temp}.py:~66  `torch` importado solo para探�
 **Evidencia.**
 ```
 $ black --check .
-would reformat /home/user/MASSIVE/tests/test_gini_rule_bridge.py
-would reformat /home/user/MASSIVE/simulator.py
-would reformat /home/user/MASSIVE/train_cfc_lambda.py
-would reformat /home/user/MASSIVE/train_cfc_landscape.py
-would reformat /home/user/MASSIVE/train_cfc_temp.py
+would reformat ~/MASSIVE/tests/test_gini_rule_bridge.py
+would reformat ~/MASSIVE/simulator.py
+would reformat ~/MASSIVE/train_cfc_lambda.py
+would reformat ~/MASSIVE/train_cfc_landscape.py
+would reformat ~/MASSIVE/train_cfc_temp.py
 Oh no! 💥 💔 💥
 30 files would be reformatted, 215 files would be left unchanged.
 exit=1
@@ -2912,25 +2912,25 @@ Casos de alto impacto (excluyendo falsos positivos de nombres genéricos como `_
 
 **Evidencia.**
 ```
-AGENTS.md:97    Output artifacts: `/home/adlg/MASSIVE/models/cfc_calibrated/{cfc_residual.pt, config.json, …}`
-                Calibration doc: `/home/adlg/MASSIVE/calibration_log.md`
-AGENTS.md:103   The scalability benchmark script is at `/home/adlg/MASSIVE/benchmark_scalability.py`:
-AGENTS.md:122   cd /home/adlg/MASSIVE && python3 benchmark_scalability.py
-AGENTS.md:142   Script: `/home/adlg/MASSIVE/benchmark_scalability.py` (reusable, self-contained)
-MASSIVE_REACTIVE_COHERENCE_PLAN.md:172  cd /home/adlg/Escritorio/Proyectos/MASSIVE
-PLAN_INTEGRACION_UI_NG.md:16,304,368    # Desde /home/adlg/MASSIVE
-REPORT_AUDIT.md:6      > **Ruta base:** `/home/adlg/Escritorio/Proyectos/MASSIVE`
-REPORT_LEGACY.md:4     **Projecto:** /home/adlg/Escritorio/Proyectos/MASSIVE
-REPORT_STRUCTURE.md:4  > Fecha: 2025-09-14 | Path: `/home/adlg/Escritorio/Proyectos/MASSIVE`
-RESTART_CHECKLIST.md:23,181   cd /home/adlg/Escritorio/Proyectos/MASSIVE
-docs/FACTBOOK_QUICKSTART.md:53          cd /home/adlg/MASSIVE/data/factbook
-docs/architecture/validation_baseline.md:28  /home/adlg/Escritorio/Proyectos/MASSIVE
+AGENTS.md:97    Output artifacts: `~/models/cfc_calibrated/{cfc_residual.pt, config.json, …}`
+                Calibration doc: `~/calibration_log.md`
+AGENTS.md:103   The scalability benchmark script is at `~/benchmark_scalability.py`:
+AGENTS.md:122   cd ~ && python3 benchmark_scalability.py
+AGENTS.md:142   Script: `~/benchmark_scalability.py` (reusable, self-contained)
+MASSIVE_REACTIVE_COHERENCE_PLAN.md:172  cd .
+PLAN_INTEGRACION_UI_NG.md:16,304,368    # Desde ~
+REPORT_AUDIT.md:6      > **Ruta base:** `.`
+REPORT_LEGACY.md:4     **Projecto:** .
+REPORT_STRUCTURE.md:4  > Fecha: 2025-09-14 | Path: `.`
+RESTART_CHECKLIST.md:23,181   cd .
+docs/FACTBOOK_QUICKSTART.md:53          cd ~/data/factbook
+docs/architecture/validation_baseline.md:28  .
 → 16 ocurrencias · 2 rutas base distintas · 9 archivos
 ```
 
-**Impacto.** (a) Los comandos copiados no funcionan para nadie más; (b) `AGENTS.md` es el archivo que leen los agentes de IA — un agente que siga esas instrucciones buscará rutas inexistentes; (c) filtra el nombre de usuario del sistema y la estructura de directorios del autor (menor, pero es información innecesariamente pública); (d) dos rutas base distintas (`/home/adlg/MASSIVE` y `/home/adlg/Escritorio/Proyectos/MASSIVE`) indican que los documentos se escribieron en épocas/ubicaciones diferentes y nunca se normalizaron.
+**Impacto.** (a) Los comandos copiados no funcionan para nadie más; (b) `AGENTS.md` es el archivo que leen los agentes de IA — un agente que siga esas instrucciones buscará rutas inexistentes; (c) filtra el nombre de usuario del sistema y la estructura de directorios del autor (menor, pero es información innecesariamente pública); (d) dos rutas base distintas (`~ y `.`) indican que los documentos se escribieron en épocas/ubicaciones diferentes y nunca se normalizaron.
 
-**Acción sugerida.** Reemplazar por rutas relativas al repo (`cd MASSIVE`, `./benchmark_scalability.py`) o por `$REPO_ROOT` con una línea de setup. Añadir un check de CI que rechace `/home/` y `/Users/` en archivos trackeados.
+**Acción sugerida.** Reemplazar por rutas relativas al repo (`cd MASSIVE`, `./benchmark_scalability.py`) o por `$REPO_ROOT` con una línea de setup. Añadir un check de CI que rechace `~ y `~ en archivos trackeados.
 
 **Esfuerzo:** S
 
@@ -2947,7 +2947,7 @@ docs/architecture/validation_baseline.md:28  /home/adlg/Escritorio/Proyectos/MAS
 ```
 Repo creado (gh api repos/Adlgr87/MASSIVE): 2026-04-01T04:33:13Z
 
-REPORT_STRUCTURE.md:4     > Fecha: 2025-09-14 | Path: /home/adlg/Escritorio/Proyectos/MASSIVE
+REPORT_STRUCTURE.md:4     > Fecha: 2025-09-14 | Path: .
 REPORT_BUGS.md:3          **Fecha:** 2025-07-09
 REPORT_OPTIMIZATION.md:3  **Fecha:** 2025-07-24
   ← las tres son 7-9 meses ANTERIORES a la creación del repo
@@ -3250,7 +3250,7 @@ El "Repository layout" del README (README.md:257-291) omite:
 
 **Evidencia.**
 ```
-AGENTS.md            → instrucciones operativas para agentes (rutas absolutas /home/adlg, D6-005)
+AGENTS.md            → instrucciones operativas para agentes (rutas absolutas ~ D6-005)
 CLAUDE.md            → "Behavioral guidelines to reduce common LLM coding mistakes" (10 secciones genéricas)
 .github/Agent_Copilot2      → definición de un agente "repo-surgeon" (malformado, D6-016)
 .github/agents/my-agent.agent.md → definición de "MASSIVE-Data-Architect" (malformado, D6-017)
@@ -3347,7 +3347,7 @@ El contenido en sí es de calidad: define el esquema JSON de salida, el contexto
 **Evidencia.**
 ```
 $ python -m mkdocs build --strict 2>&1 | grep -E "ERROR|WARNING|Aborted"
-INFO    -  Building documentation to directory: /home/user/MASSIVE/site
+INFO    -  Building documentation to directory: ~/MASSIVE/site
 (vacío — 0 ERROR, 0 WARNING)
 exit=0
 Verificación adicional propia: NAV entries pointing to MISSING files: []
@@ -5005,7 +5005,7 @@ Ordenada por **prioridad de ejecución**: severidad y efecto de desbloqueo, con 
 | 30 | D5-022 | `.dockerignore`: `models/` excluido de la imagen de producción | S |
 | 31 | D6-003 | Mover 13 `.md` de root a `docs/` | S |
 | 32 | D6-009 | Añadir los 35 docs huérfanos al nav de MkDocs | S |
-| 33 | D6-005 | Eliminar las 16 rutas `/home/adlg/` | S |
+| 33 | D6-005 | Eliminar las 16 rutas `~ | S |
 | 34 | D6-002 | Sincronizar cifras README ↔ README_ES | S |
 | 35 | D6-006/7/8 | Fechas imposibles, reporte Numba obsoleto, system map fantasma | S/M |
 | 36 | D4-002 | Corregir 68 %→59.6 % y subir `fail_under` de 30 a 55 | S |
@@ -5171,7 +5171,7 @@ El síntoma más revelador: **el repo tiene la herramienta correcta y no la usa*
 
 **Acción sistémica.** Clasificar la documentación en tres tiers con tratamiento distinto:
 1. **Derivada** (system map, árbol de layout, tabla de calidad, recuento de endpoints, lista de módulos) → **generada por script** con gate de CI que exige diff vacío. Exactamente el patrón de `validate_ts_types.yml`.
-2. **Viva** (README, runbooks, docs de arquitectura actuales) → con link-checker en CI (`mkdocs-linkcheck`) y un check de "rutas absolutas personales" (`grep -r '/home/'`).
+2. **Viva** (README, runbooks, docs de arquitectura actuales) → con link-checker en CI (`mkdocs-linkcheck`) y un check de "rutas absolutas personales" (`grep -r '~
 3. **Histórica** (REPORT_*.md, planes cerrados, development_history) → movidos a `docs/archive/` con banner obligatorio `> ⚠️ HISTÓRICO — describe el commit {sha} del {fecha}` y excluidos de los checks.
 
 ---
@@ -5299,7 +5299,7 @@ Estado de aplicación    data/ui_ng/runs.db (40 KB SQLite)  trackeado, sin regla
 Resultados de ejecución 30+ reports/*.json + 12 report.md  trackeados, con regla .gitignore que los prohíbe
 Resultados de experiments  4 × .json + 1 × .csv            trackeados
 Logs de side-effect     massive_run.log · landscapes_cache.db   creados al IMPORTAR (D1-008), gitignored ✓
-Rutas personales        /home/adlg/MASSIVE y /home/adlg/Escritorio/Proyectos/MASSIVE   16 ocurrencias en 9 docs
+Rutas personales        ~ y .   16 ocurrencias en 9 docs
 Fechas personales       2025-07-09 · 2025-07-24 · 2025-09-14   anteriores a la creación del repo
 Secretos históricos     .codebuff/ con token Zapier        commiteado, luego purgado (bien gestionado, D5-018)
 Caches de build         208 × .pyc en disco                gitignored ✓
@@ -5307,11 +5307,11 @@ Caches de build         208 × .pyc en disco                gitignored ✓
 
 **Diagnóstico de causa raíz.** No hay separación entre **el repositorio** (código + documentación + datos de referencia) y **el espacio de trabajo** (resultados, logs, bases de datos, caches, modelos entrenados). El `.gitignore` intenta establecerla (tiene 8 secciones bien organizadas) pero llega tarde: los archivos ya estaban trackeados, y las reglas de gitignore no des-trackean (D5-020). Y tiene un typo en la regla más relevante para el flujo de trabajo con IA (D5-019).
 
-El sub-patrón de las **rutas y fechas personales** tiene una causa distinta y más interesante: los documentos los genera un agente de IA trabajando en la máquina del autor, y el output del agente (que incluye su CWD y la fecha del sistema) se commitea sin edición. `REPORT_STRUCTURE.md:4` con `Fecha: 2025-09-14 | Path: /home/adlg/Escritorio/Proyectos/MASSIVE` tiene la forma exacta de un encabezado de reporte generado por agente.
+El sub-patrón de las **rutas y fechas personales** tiene una causa distinta y más interesante: los documentos los genera un agente de IA trabajando en la máquina del autor, y el output del agente (que incluye su CWD y la fecha del sistema) se commitea sin edición. `REPORT_STRUCTURE.md:4` con `Fecha: 2025-09-14 | Path: .` tiene la forma exacta de un encabezado de reporte generado por agente.
 
 **Consecuencia.** Repo más pesado de lo necesario, diffs ruidosos en binarios, merges conflictivos en SQLite, y documentación que delata que fue generada y no curada. El riesgo mayor es el de D5-021: si la app se usa con datos reales, `data/ui_ng/runs.db` puede capturar contenido de usuarios y acabar en un commit.
 
-**Acción sistémica.** (1) Clasificación explícita en `CONTRIBUTING.md`: qué pertenece al repo (código, docs, datos de referencia inmutables, pesos de modelo vía LFS) y qué no (resultados, logs, DBs, caches). (2) `git rm --cached` de `data/ui_ng/runs.db` + regla de ignore. (3) Decidir sobre los `.pt` y los `reports/` (D5-020) — o son evidencia científica versionada (y entonces se quitan las reglas de ignore contradictorias) o son artefactos (y entonces van a CI artifacts / LFS). (4) Check de CI que rechace `/home/`, `/Users/`, `C:\` en archivos trackeados. (5) Los reportes generados por agentes deben pasar por una plantilla que no incluya CWD ni fecha del sistema, o por una pasada de curaduría antes del commit.
+**Acción sistémica.** (1) Clasificación explícita en `CONTRIBUTING.md`: qué pertenece al repo (código, docs, datos de referencia inmutables, pesos de modelo vía LFS) y qué no (resultados, logs, DBs, caches). (2) `git rm --cached` de `data/ui_ng/runs.db` + regla de ignore. (3) Decidir sobre los `.pt` y los `reports/` (D5-020) — o son evidencia científica versionada (y entonces se quitan las reglas de ignore contradictorias) o son artefactos (y entonces van a CI artifacts / LFS). (4) Check de CI que rechace rutas absolutas como `~` o `C:\` en archivos trackeados. (5) Los reportes generados por agentes deben pasar por una plantilla que no incluya CWD ni fecha del sistema, o por una pasada de curaduría antes del commit.
 
 ---
 

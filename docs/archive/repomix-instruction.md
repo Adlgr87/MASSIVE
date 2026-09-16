@@ -4,8 +4,9 @@ This Repomix bundle is intended to help AI assistants inspect MASSIVE quickly an
 
 ## Read order
 
-1. Start with `CLAUDE.md`; its MASSIVE-specific protocols are mandatory for code changes.
+1. Start with `CLAUDE.md` (consolidated AGENTS.md agent memory); its MASSIVE-specific protocols are mandatory for code changes.
 2. Read `README.md` or `README_ES.md` for the product overview and repository map.
+3. The original AGENTS.md has been merged into CLAUDE.md; see CLAUDE.md §MASSIVE Agent Memory.
 3. For runtime behavior, prioritize `simulator.py`, `massive_engine.py`, `energy_engine.py`, and `massive_core/`.
 4. For compatibility checks, inspect the relevant files under `tests/` before proposing changes.
 

@@ -20,7 +20,6 @@ plugins:
 nav:
   - Home: index.md
   - API Reference: api.md
-  - Spanish Version: README_ES.md
   - Production Readiness:
       - Audit & Risk Matrix: production-readiness-audit.md
       - Audit Findings Tracker: AUDIT_FINDINGS_TRACKER.md

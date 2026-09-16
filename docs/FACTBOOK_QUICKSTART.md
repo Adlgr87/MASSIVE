@@ -50,7 +50,7 @@ massive/
 ### Step 1: Download Full Dataset
 
 ```bash
-cd /home/adlg/MASSIVE/data/factbook
+cd ~/data/factbook
 
 # Opción 1: Desde repositorio comunitario (recomendado)
 curl -L -o factbook.json "https://raw.githubusercontent.com/wmccaffrey/cia_world_factbook/master/factbook.json"

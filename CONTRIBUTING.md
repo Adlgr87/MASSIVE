@@ -3,12 +3,19 @@
 First off, thank you for considering contributing to MASSIVE! It's people like you that make MASSIVE such a great tool for understanding and simulating social dynamics.
 
 ## 1. How you can help
+
+> 📜 **Política de la raíz:** Ningún archivo `.md` de planning, reportes o planes
+> debe vivir en la raíz del repositorio. Los documentos de planificación, reportes
+> de auditoría y planes arquitectónicos van en `docs/` (ver
+> `archive/AUDIT_REMEDIATION_WORKFLOW.md` §W4-T02). La raíz conserva sólo:
+> `README.md`, `README_ES.md`, `CHANGELOG.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`,
+> `CLAUDE.md` y `repommix-instruction.md`.
 We welcome contributions in various forms:
 - **Mathematical Models:** Submitting new deterministic or stochastic rules for social cascades.
 - **LLM Integrations:** Testing and providing support for new Large Language Model APIs via OpenRouter, Anthropic, etc.
 - **Visuals:** Creating new algorithms for `visualizations.py` to support 3D interactions.
 - **Bug Reporting & Docs:** Reporting issues and fixing typos or i18n bugs.
-- **PVU Validation Cases:** Adding new real-world PVU cases to `datasets/pvu_cases/` following the schema in [docs/validation/PVU_MASSIVE_EN.md](docs/validation/PVU_MASSIVE_EN.md).
+- **PVU Validation Cases:** Adding new real-world PVU cases to `datasets/pvu_cases/` following the schema in [validation/PVU_MASSIVE_EN.md](validation/PVU_MASSIVE_EN.md).
 
 ## 2. Setting up your environment
 1. Fork the repo and clone it locally.
@@ -49,7 +56,7 @@ To contribute a new PVU case:
 
 **Every push and pull request must pass `make verify`.**  This is the
 Project-Level Quality Gate defined in the audit-remediation workflow
-(see [AUDIT_REMEDIATION_WORKFLOW.md](AUDIT_REMEDIATION_WORKFLOW.md), Wave 0).
+(see [AUDIT_REMEDIATION_WORKFLOW.md](archive/AUDIT_REMEDIATION_WORKFLOW.md), Wave 0).
 
 ```bash
 make verify

@@ -169,7 +169,7 @@ Three new CfC (liquid NN) training pipelines are specified:
 
 **Training command:**
 ```bash
-cd /home/adlg/Escritorio/Proyectos/MASSIVE
+cd .
 python3 train_cfc_lambda.py
 ```
 

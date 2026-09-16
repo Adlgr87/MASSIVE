@@ -13,7 +13,7 @@
 ### 1.1 Agregar remote de UI-NG
 
 ```bash
-# Desde /home/adlg/MASSIVE
+# Desde ~
 git remote add ui-ng https://github.com/Adlgr87/massive-ui-ng.git
 ```
 
@@ -301,7 +301,7 @@ npm run build
 ### Checkpoint A: Tests unitarios
 
 ```bash
-# Desde /home/adlg/MASSIVE
+# Desde ~
 python -m pytest tests/test_dto_models.py -v
 python -m pytest tests/test_api_security.py -v
 python -m pytest tests/test_forecast.py -v
@@ -365,7 +365,7 @@ EOF
 
 ```bash
 # Fase 1: Subtree
-cd /home/adlg/MASSIVE
+cd ~
 git remote add ui-ng https://github.com/Adlgr87/massive-ui-ng.git 2>/dev/null || git remote set-url ui-ng https://github.com/Adlgr87/massive-ui-ng.git
 git fetch ui-ng --tags
 git subtree add --prefix=massive-ui-ng/ ui-ng main --squash --message="chore: integrate massive-ui-ng via subtree"
