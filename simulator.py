@@ -68,9 +68,7 @@ try:
     TDA_AVAILABLE = True
 except ImportError:
     TDA_AVAILABLE = False
-    log.warning(
-        "[TDA] ripser/persim no instalados — detección topológica desactivada."
-    )
+    log.warning("[TDA] ripser/persim no instalados — detección topológica desactivada.")
 
 try:
     from massive.core.extended_models import regla_bayesiana, regla_nash, regla_sir
