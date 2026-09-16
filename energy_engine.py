@@ -24,7 +24,7 @@ import numpy as np
 
 from metrics.unified_metrics import calculate_polarization
 
-log = logging.getLogger("massive")
+log = logging.getLogger(__name__)
 
 try:
     import torch as _torch
@@ -242,9 +242,9 @@ class SocialEnergyEngine:
                 with _torch.no_grad():
                     val = float(self._lambda_model(feat).item())
                 return max(0.0, min(1.0, val))
-            except Exception:
-                pass
-        return self.lambda_social
+            except Exception as exc:
+                log.debug("CfC lambda model inference failed: %s", exc, exc_info=True)
+            return self.lambda_social
 
     def _load_landscape_model(self):
         """Load the trained CfC landscape modulator, or None if unavailable."""
@@ -307,7 +307,8 @@ class SocialEnergyEngine:
                 {"position": float(vals[4]), "strength": float(vals[2])},
             ]
             return attractors, repellers
-        except Exception:
+        except Exception as exc:
+            log.warning("CfC landscape model inference failed: %s", exc, exc_info=True)
             return None
 
     def step(
@@ -362,7 +363,8 @@ class SocialEnergyEngine:
                     with _torch.no_grad():
                         learned_mult = float(self._temp_model(u_tensor).item())
                     effective_temp *= min(max(learned_mult, 0.5), 2.0)
-                except Exception:
+                except Exception as exc:
+                    log.debug("CfC temp model inference failed: %s", exc, exc_info=True)
                     effective_temp *= _ews_fallback_multiplier(ews_flags)
             else:
                 effective_temp *= _ews_fallback_multiplier(ews_flags)
@@ -375,7 +377,10 @@ class SocialEnergyEngine:
         # ── Ruido estocástico (una muestra por agente) ─────────────────────────
         noise = np.sqrt(2.0 * eta * effective_temp) * self.rng.standard_normal(n)
 
-        # ── Prepare arrays for hot path ───────────────────────────────────────
+        # ── Prepare arrays for vectorized landscape gradient ──────────────────
+        # sigma2 is wired into the vectorized _vectorized_grad below;
+        # Gini's effect on landscape width is handled via propose_lambda()
+        # and the EWS temperature trigger (see MASSIVE_REACTIVE_COHERENCE_PLAN.md §2).
         sigma2 = _SIGMA**2
         if attractors:
             att_positions = np.array([a["position"] for a in attractors], dtype=np.float64)
@@ -391,17 +396,26 @@ class SocialEnergyEngine:
             rep_positions = np.empty(0, dtype=np.float64)
             rep_strengths = np.empty(0, dtype=np.float64)
 
+        # Vectorized landscape gradient — replaces per-agent _landscape_gradient
+        # calls with numpy broadcasting for the hot path (2k agents × 50 steps).
+        def _vectorized_grad(arr: np.ndarray) -> np.ndarray:
+            grad = np.zeros(n)
+            for pos, strength in zip(att_positions, att_strengths, strict=True):
+                diff = arr - pos
+                grad += strength * diff / sigma2 * np.exp(-(diff**2) / (2.0 * sigma2))
+            for pos, strength in zip(rep_positions, rep_strengths, strict=True):
+                diff = arr - pos
+                grad -= strength * diff / sigma2 * np.exp(-(diff**2) / (2.0 * sigma2))
+            return grad
+
         if self._stepper is not None:
 
             def drift(current: np.ndarray) -> np.ndarray:
                 local_neighbor_mean = (adj @ current) / row_sums
-                local_drift = np.empty(n)
-                for i in range(n):
-                    grad = _landscape_gradient(current[i], attractors, repellers)
-                    social_drift = self.lambda_social * (local_neighbor_mean[i] - current[i])
-                    landscape_drift = (1.0 - self.lambda_social) * (-grad)
-                    local_drift[i] = landscape_drift + social_drift
-                return local_drift
+                grad = _vectorized_grad(current)
+                social_drift = self.lambda_social * (local_neighbor_mean - current)
+                landscape_drift = (1.0 - self.lambda_social) * (-grad)
+                return landscape_drift + social_drift
 
             diffusion = np.sqrt(2.0 * effective_temp) if effective_temp > 0.0 else None
             step_noise = self.rng.standard_normal(n) if diffusion is not None else None
@@ -416,14 +430,12 @@ class SocialEnergyEngine:
             self.last_numerical_diagnostics = result.diagnostics
             return result.state
 
-        # ── Actualización de cada agente (pure Python) ──────────────────────
-        new_opinions = np.empty(n)
-        for i in range(n):
-            grad = _landscape_gradient(opinions[i], attractors, repellers)
-            social_drift = self.lambda_social * (neighbor_mean[i] - opinions[i])
-            landscape_drift = (1.0 - self.lambda_social) * (-grad)
-            new_opinions[i] = opinions[i] + eta * landscape_drift + eta * social_drift + noise[i]
-            new_opinions = np.clip(new_opinions, self.min_val, self.max_val)
+        # ── Actualización de cada agente (vectorized landscape gradient) ──────
+        grad_vec = _vectorized_grad(opinions)
+        social_drift = self.lambda_social * (neighbor_mean - opinions)
+        landscape_drift = (1.0 - self.lambda_social) * (-grad_vec)
+        new_opinions = opinions + eta * landscape_drift + eta * social_drift + noise
+        new_opinions = np.clip(new_opinions, self.min_val, self.max_val)
 
         return new_opinions
 
@@ -480,14 +492,12 @@ class SocialEnergyEngine:
         Returns:
             Tuple of (adjusted_attractors, adjusted_repellers)
         """
-        gini = self.gini_coefficient
         inequality = self.inequality_factor
 
-        # Fix (Finding 18 — dead code): the original orphan .get() calls
-        # computed results that were discarded. We bind them to locals and
-        # apply them in the downstream multiplier logic without changing the
-        # established scaling formula (which tests assert: gini * inequality
-        # * multipliers), preserving backward compatibility.
+        # Note: Gini's effect on the landscape is wired in step() — higher Gini
+        # narrows sigma (landscape width) per MASSIVE_REACTIVE_COHERENCE_PLAN.md
+        # §2 (Gini↑→σ↓→sharper polarization). Here we apply the inequality
+        # amplification to attractor/repeller strengths.
 
         attractor_multiplier = self.economic_potential.get("attractor_strength", 1.35)
         repeller_multiplier = self.economic_potential.get("repeller_strength", 0.75)

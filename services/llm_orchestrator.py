@@ -30,7 +30,7 @@ from typing import Any, cast
 from services.factbook_service import country_params as _factbook_params
 from services.llm_service import resolve_llm_credentials, wizard_config
 
-log = logging.getLogger("massive.services.llm_orchestrator")
+log = logging.getLogger(__name__)
 
 # Default step counts per contract "assumption_defaults".
 _DEFAULT_STEPS = {
@@ -476,13 +476,13 @@ def _dispatch(
             temporal_cfg = TemporalConfig(**defaults)
         else:
             temporal_cfg = TemporalConfig(step_duration_days=7, time_horizon_days=90)
-        result = forecast(
+        forecast_result = forecast(
             sim_state,
             temporal_config=temporal_cfg,
             mode=config.get("mode", "analytical"),
             n_runs=int(config.get("n_runs", 200)),
         )
-        return result.model_dump() if hasattr(result, "model_dump") else dict(result)
+        return forecast_result.model_dump()
 
     if motor == "benchmark_offline":
         from benchmarks import runner as bench_runner
@@ -757,7 +757,8 @@ def _sanitize_for_json(obj: Any) -> Any:
         import numpy as np
 
         _NP_TYPES: tuple[type, ...] = (np.generic,)
-    except Exception:  # pragma: no cover - numpy may be absent
+    except Exception as exc:  # pragma: no cover - numpy may be absent
+        log.debug("numpy import failed, _NP_TYPES=(): %s", exc, exc_info=True)
         _NP_TYPES = ()
 
     if isinstance(obj, dict):
@@ -773,8 +774,8 @@ def _sanitize_for_json(obj: Any) -> Any:
 
         if isinstance(obj, np.ndarray):
             return [_sanitize_for_json(v) for v in obj.tolist()]
-    except Exception:
-        pass
+    except Exception as exc:
+        log.debug("_sanitize_for_json ndarray fallback: %s", exc, exc_info=True)
     return obj
 
 

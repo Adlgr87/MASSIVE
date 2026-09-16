@@ -22,7 +22,7 @@ from typing import Any
 
 from massive.core.factbook.mappings import COUNTRY_CODES
 
-log = logging.getLogger("massive.factbook.loader")
+log = logging.getLogger(__name__)
 
 
 @dataclass

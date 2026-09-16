@@ -65,7 +65,7 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s | %(message)s",
     handlers=[logging.FileHandler(str(LOG_PATH), mode="w"), logging.StreamHandler(sys.stdout)],
 )
-log = logging.getLogger("MASSIVE-Benchmark")
+log = logging.getLogger(__name__)
 
 # ─── GPU detection ─────────────────────────────────────────────────────────
 GPU_AVAILABLE = False
@@ -123,8 +123,8 @@ class ResourceMonitor:
                 if rss > self._peak_rss:
                     self._peak_rss = rss
                 self._cpu_samples.append(self._proc.cpu_percent(interval=self.interval))
-            except Exception:
-                pass
+            except Exception as exc:
+                log.debug("ResourceMonitor sampling error: %s", exc, exc_info=True)
 
     def stop(self):
         self._running = False
@@ -134,8 +134,8 @@ class ResourceMonitor:
             rss = self._proc.memory_info().rss
             if rss > self._peak_rss:
                 self._peak_rss = rss
-        except Exception:
-            pass
+        except Exception as exc:
+            log.debug("ResourceMonitor stop sampling error: %s", exc, exc_info=True)
 
     @property
     def peak_rss(self) -> float:

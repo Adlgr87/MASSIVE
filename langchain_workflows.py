@@ -8,11 +8,11 @@ from __future__ import annotations
 
 import json
 import logging
-import os
 
 from llm_credentials import resolve_provider_api_key
+from massive_core.config.settings import get_llm_base_url
 
-log = logging.getLogger("massive")
+log = logging.getLogger(__name__)
 
 # ── Importaciones opcionales ──────────────────────────────────────────────────
 try:
@@ -144,7 +144,7 @@ def build_llm(
         if not LANGCHAIN_OPENAI_AVAILABLE:
             log.warning("[LangChain] langchain-openai no instalado (required for Ollama).")
             return None
-        ollama_host = os.getenv("OLLAMA_HOST", "http://localhost:11434")
+        ollama_host = get_llm_base_url("ollama")
         return ChatOpenAI(
             # Ollama's local API does not require authentication;
             # langchain-openai requires a non-empty string, so we pass a placeholder.

@@ -295,7 +295,8 @@ class SparseStabilityAnalyzer:
         if sparse and k is not None and k < jacobian.shape[0]:
             try:
                 eigenvalues = eigsh(jacobian, k=k, which="LR", return_eigenvectors=False)
-            except Exception:
+            except Exception as exc:
+                logger.debug("Sparse eigsh failed, falling back to dense: %s", exc, exc_info=True)
                 eigenvalues = np.linalg.eigvals(jacobian)
         else:
             eigenvalues = np.linalg.eigvals(jacobian)

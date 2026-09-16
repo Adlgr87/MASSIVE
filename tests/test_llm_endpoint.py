@@ -37,9 +37,16 @@ _PROVIDER_KEY_VARS = ("GROQ_API_KEY", "OPENAI_API_KEY", "OPENROUTER_API_KEY")
 
 @pytest.fixture
 def client(monkeypatch: pytest.MonkeyPatch) -> TestClient:
-    """Authenticated client; provider keys cleared for hermetic (no-LLM) runs."""
+    """Authenticated client; provider keys cleared for hermetic (no-LLM) runs.
+
+    Dev fallback is enabled via the two-factor opt-in
+    (MASSIVE_ENV=development + MASSIVE_DEV_FALLBACK) so that the dev-secret-key
+    is accepted without a configured MASSIVE_API_KEY.
+    """
     for var in _PROVIDER_KEY_VARS:
         monkeypatch.delenv(var, raising=False)
+    monkeypatch.setenv("MASSIVE_ENV", "development")
+    monkeypatch.setenv("MASSIVE_DEV_FALLBACK", "1")
     return TestClient(app)
 
 

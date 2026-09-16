@@ -27,6 +27,15 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+
+def _rel(path: Path) -> str:
+    """Return *path* relative to ROOT, or the absolute path if outside the repo."""
+    try:
+        return str(path.relative_to(ROOT))
+    except ValueError:
+        return str(path)
+
+
 from backend.app.models import (  # noqa: E402
     ArchitectEventMessage,
     Feasibility,
@@ -184,15 +193,41 @@ def _enum_to_ts(enum_cls: Any) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(
-        description="Generate TypeScript types from Pydantic models.",
+        description="Generate TypeScript types from Pydantic models in backend/app/models.",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""\
+Examples:
+  python scripts/gen_ts_types.py              # Regenerate the default output file
+  python scripts/gen_ts_types.py --dry-run    # Generate without writing to disk
+  python scripts/gen_ts_types.py --stdout     # Print generated content to stdout
+  python scripts/gen_ts_types.py --out PATH   # Write to a custom path
+  python scripts/gen_ts_types.py --check      # CI: exit 1 if file is out of sync
+""",
+    )
+    parser.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Generate content but do not write to disk (file is left unchanged).",
+    )
+    parser.add_argument(
+        "--stdout",
+        action="store_true",
+        help="Print generated content to stdout instead of writing to file.",
+    )
+    parser.add_argument(
+        "--out",
+        type=Path,
+        default=None,
+        help=f"Output file path (default: {_OUT.relative_to(ROOT)})",
     )
     parser.add_argument(
         "--check",
         action="store_true",
-        help="Exit non-zero if the generated file differs from the committed one "
-        "(does not write to disk).",
+        help="Exit 1 if the committed file is out of sync with generated content (does not write to disk).",
     )
     args = parser.parse_args()
+
+    out_path = args.out if args.out else _OUT
 
     # Collect all $defs from all model schemas (for cross-model $ref resolution).
     all_defs: dict[str, Any] = {}
@@ -219,18 +254,33 @@ def main() -> int:
 
     content = "\n".join(sections)
 
+    # ── --stdout: print to stdout ──────────────────────────────────────────
+    if args.stdout:
+        sys.stdout.write(content)
+        sys.stdout.write("\n")
+        return 0
+
+    # ── --check: compare with existing file, do not write ──────────────────
     if args.check:
-        _OUT.parent.mkdir(parents=True, exist_ok=True)
-        existing = _OUT.read_text(encoding="utf-8") if _OUT.exists() else None
+        existing = out_path.read_text(encoding="utf-8") if out_path.exists() else None
         if existing == content:
-            print(f"✓  {_OUT.relative_to(ROOT)} is up to date")
+            print(f"✓  {_rel(out_path)} is up to date")
             return 0
-        print(f"✗  {_OUT.relative_to(ROOT)} is out of sync — run 'python scripts/gen_ts_types.py'")
+        print(f"✗  {_rel(out_path)} is out of sync — run 'python scripts/gen_ts_types.py'")
         return 1
 
-    _OUT.parent.mkdir(parents=True, exist_ok=True)
-    _OUT.write_text(content, encoding="utf-8")
-    print(f"✓  Generated {_OUT.relative_to(ROOT)}")
+    # ── --dry-run: report without writing ──────────────────────────────────
+    if args.dry_run:
+        print(
+            f"✓  Dry run — would generate {_rel(out_path)} "
+            f"({len(content)} bytes, {len(sections)} lines)"
+        )
+        return 0
+
+    # ── Default: write to file ─────────────────────────────────────────────
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    out_path.write_text(content, encoding="utf-8")
+    print(f"✓  Generated {_rel(out_path)}")
     return 0
 
 

@@ -7,12 +7,17 @@ namespace (``ForecastPoint``, ``Feasibility``, ``ForecastResponse``).
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Body, Depends, HTTPException, Request
 from pydantic import ValidationError
 
-from backend.app.models import Feasibility, ForecastPoint, ForecastResponse
+from backend.app.models import (
+    Feasibility,
+    ForecastPoint,
+    ForecastRequest,
+    ForecastResponse,
+)
 from backend.app.security import get_api_key, rate_limit_dependency
 
 router = APIRouter(
@@ -21,27 +26,29 @@ router = APIRouter(
 )
 
 
-@router.post("", dependencies=[Depends(get_api_key), Depends(rate_limit_dependency)])
-async def v1_forecast(request: Request, payload: dict[str, Any]) -> ForecastResponse:
+@router.post(
+    "",
+    dependencies=[Depends(get_api_key), Depends(rate_limit_dependency)],
+)
+async def v1_forecast(
+    request: Request,
+    payload: Annotated[ForecastRequest, Body()],
+) -> ForecastResponse:
     """Run the MASSIVE temporal forecast engine.
 
     Payload fields:
         simulation_state: dict  – snapshot with optional ``ews`` metrics (required).
         temporal_config: dict  – TemporalConfig overrides (optional).
         mode: "analytical" | "monte_carlo" (optional, default ``analytical``).
-        n_runs: int             – MC iterations (optional, default ``200``).
+        n_runs: int             – MC iterations (1–10 000, default ``200``).
 
     Returns:
         ``ForecastResponse`` validated against the DTO schema.
     """
     from forecast.temporal_config import TemporalConfig
 
-    if not isinstance(payload, dict):
-        raise HTTPException(status_code=400, detail="JSON body required")
-    sim_state = payload.get("simulation_state")
-    if not isinstance(sim_state, dict):
-        raise HTTPException(status_code=400, detail="'simulation_state' (dict) is required")
-    temporal_cfg = payload.get("temporal_config") or {}
+    sim_state = payload.simulation_state
+    temporal_cfg = payload.temporal_config or {}
     try:
         temporal_config = TemporalConfig(**(temporal_cfg if isinstance(temporal_cfg, dict) else {}))
     except ValidationError as exc:
@@ -61,15 +68,15 @@ async def v1_forecast(request: Request, payload: dict[str, Any]) -> ForecastResp
         _run_forecast,
         sim_state,
         temporal_config=temporal_config,
-        mode=payload.get("mode", "analytical"),
-        n_runs=int(payload.get("n_runs", 200)),
+        mode=payload.mode,
+        n_runs=payload.n_runs,
     )
     data = result.model_dump() if hasattr(result, "model_dump") else dict(result)
 
     p_event = float(data.get("p_event", 0.0))
     # Use engine-reported confidence bounds if available, otherwise use ±5%
-    confidence_lower = data.get("confidence_lower")
-    confidence_upper = data.get("confidence_upper")
+    confidence_lower = data.get("p_ci_low", data.get("confidence_lower"))
+    confidence_upper = data.get("p_ci_high", data.get("confidence_upper"))
     if confidence_lower is not None and confidence_upper is not None:
         cl, cu = float(confidence_lower), float(confidence_upper)
     else:
@@ -87,7 +94,7 @@ async def v1_forecast(request: Request, payload: dict[str, Any]) -> ForecastResp
         rationale=data.get("mode"),
     )
     return ForecastResponse(
-        sim_id=payload.get("sim_id", "unknown"),
+        sim_id=payload.sim_id or "unknown",
         horizon_ticks=data.get("steps_to_event") or 0,
         points=[point],
         feasibility=feas,

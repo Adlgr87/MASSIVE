@@ -45,8 +45,9 @@ from document_intelligence import (
     MASSIVEExtractedConfig,
 )
 from llm_credentials import resolve_provider_api_key
+from massive_core.config.settings import get_llm_base_url
 
-log = logging.getLogger("massive.interpreter_layer")
+log = logging.getLogger(__name__)
 
 # ── Detección de LangChain (opcional) ────────────────────────────────────────
 
@@ -219,7 +220,7 @@ class InterpreterLayer:
             "model": "mistralai/mistral-7b-instruct",
             "base_url": "https://openrouter.ai/api/v1",
         },
-        "ollama": {"model": "llama3", "base_url": "http://localhost:11434/v1"},
+        "ollama": {"model": "llama3", "base_url": f"{get_llm_base_url('ollama')}/v1"},
     }
 
     def __init__(

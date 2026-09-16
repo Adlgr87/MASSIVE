@@ -8,7 +8,7 @@ from typing import Any
 
 import numpy as np
 
-log = logging.getLogger("massive.intervention_optimizer")
+log = logging.getLogger(__name__)
 
 
 def _evaluate_candidate(

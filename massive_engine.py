@@ -48,7 +48,7 @@ from scipy import sparse
 from massive_core.rust_core import active_mask_step
 from metrics.unified_metrics import calculate_polarization
 
-log = logging.getLogger("massive")
+log = logging.getLogger(__name__)
 
 # ── GPU detection ──────────────────────────────────────────────────────────────
 # Intentamos CuPy → PyTorch → NumPy (fallback).

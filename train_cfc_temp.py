@@ -43,7 +43,7 @@ from pathlib import Path
 
 import numpy as np
 
-log = logging.getLogger("massive")
+log = logging.getLogger(__name__)
 
 MODELS_DIR = Path("models")
 MODELS_DIR.mkdir(exist_ok=True)

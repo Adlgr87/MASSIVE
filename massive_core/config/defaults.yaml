@@ -23,3 +23,7 @@ logging:
   file: null
   max_bytes: 10485760
   backup_count: 5
+
+# LLM provider base URLs — env-overridable (OLLAMA_HOST for local Ollama).
+llm:
+  ollama_base_url: http://localhost:11434

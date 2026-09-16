@@ -25,7 +25,7 @@ import numpy as np
 
 from metrics.unified_metrics import calculate_polarization
 
-log = logging.getLogger("massive")
+log = logging.getLogger(__name__)
 
 # ── Dependencies (all optional) ──────────────────────────────────────────────
 try:

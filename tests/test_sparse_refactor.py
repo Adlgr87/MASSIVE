@@ -7,7 +7,6 @@ import logging
 import numpy as np
 import pytest
 
-logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------

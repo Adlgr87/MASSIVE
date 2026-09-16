@@ -26,7 +26,7 @@ except ImportError as e:
     logging.warning(f"UIL modules not fully available: {e}")
 
 
-log = logging.getLogger("massive.uil_adapter")
+log = logging.getLogger(__name__)
 
 
 class UILAdapter:

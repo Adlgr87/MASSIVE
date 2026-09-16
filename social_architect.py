@@ -16,7 +16,7 @@ from forecast import TemporalConfig, forecast
 from massive.core.intervention_optimizer import optimize_interventions
 from simulator import DEFAULT_CONFIG, resumen_historial, run_with_schedule
 
-log = logging.getLogger("massive")
+log = logging.getLogger(__name__)
 
 # CfC INTEGRATION — primer intento sin llamada LLM si el modelo está disponible
 try:

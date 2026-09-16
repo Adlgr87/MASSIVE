@@ -64,10 +64,10 @@ COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 # App sources (chown to appuser)
 COPY . /app
 RUN pip install --no-deps -e /app \
-    && chown -R appuser:appuser /app /usr/share/nginx/html
+    && chown -R appuser:appuser /app /usr/share/nginx/html /var/log/nginx
 
-# Grant nginx (running as root via supervisord) the right to bind :80 so the
-# non-root `appuser` container entrypoint does not silently lose port 80.
+# Grant nginx (running as appuser via supervisord) the right to bind :80
+# without requiring root.
 RUN setcap 'cap_net_bind_service=+ep' /usr/sbin/nginx
 
 USER appuser

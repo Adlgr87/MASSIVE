@@ -24,7 +24,7 @@ def configure_logging(
         log_file: Optional path for a rotating file handler. Falls back to
             ``MASSIVE_LOG_FILE`` env or ``AppSettings.logging.file``.
     """
-    root = logging.getLogger()
+    root = logging.root
     if root.handlers and not force:
         if level:
             root.setLevel(level.upper())
@@ -56,12 +56,16 @@ def configure_logging(
         handlers=handlers,
         force=True if force or resolved_file else force,
     )
-    # Quiet noisy third-party loggers by default
+    # Quiet noisy third-party loggers by default (these are not our __name__ modules)
     for name in ("urllib3", "httpx", "matplotlib", "asyncio"):
-        logging.getLogger(name).setLevel(logging.WARNING)
+        logging.getLogger(name).setLevel(logging.WARNING)  # third-party, not __name__
 
 
-def get_logger(name: str) -> logging.Logger:
-    """Return a named logger, ensuring base configuration exists."""
+def get_logger(__name__: str) -> logging.Logger:
+    """Return a named logger, ensuring base configuration exists.
+
+    Args:
+        __name__: Typically __name__ of the calling module.
+    """
     configure_logging()
-    return logging.getLogger(name)
+    return logging.getLogger(__name__)

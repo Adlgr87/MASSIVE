@@ -52,7 +52,7 @@ jobs:
       - name: Run mypy
         run: |
           PYTHONHASHSEED=42 mypy --config-file mypy.ini \
-            massive/ backend/ services/ massive_core/ 2>&1 || true
+            massive/ backend/ services/ massive_core/ 2>&1
 
   lint-frontend:
     name: Frontend Lint

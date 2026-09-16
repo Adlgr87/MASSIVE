@@ -84,8 +84,9 @@ try:
 
     _cfc = CfCRouter.get()
     CFC_AVAILABLE = _cfc.status["regime_selector"]
-except Exception:
+except Exception as exc:
     CFC_AVAILABLE, _cfc = False, None
+    log.warning("CfC router no disponible: %s", exc, exc_info=True)
 
 # EMPIRICAL INTEGRATION — importar base empírica si está disponible
 try:
@@ -99,15 +100,9 @@ except ImportError:
 # ------------------------------------------------------------
 # LOGGING
 # ------------------------------------------------------------
-LOG_PATH = Path("massive_run.log")
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(message)s",
-    handlers=[
-        logging.FileHandler(LOG_PATH, encoding="utf-8"),
-        logging.StreamHandler(),
-    ],
-)
+# Logging is configured centrally by massive_core.config.logging_setup.
+# Library code must NOT configure handlers or create files in CWD on import.
+# All modules use getLogger(__name__); the application entrypoint owns handler setup.
 
 
 # ------------------------------------------------------------
@@ -2057,7 +2052,12 @@ def get_graph_metrics(G: nx.Graph, modo: str = "macro", top_n: int = 5) -> str:
     try:
         between_cent = nx.betweenness_centrality(G, normalized=True)
         top_between = sorted(between_cent.items(), key=lambda x: x[1], reverse=True)[:top_n]
-    except Exception:
+    except Exception as exc:
+        log.warning(
+            "betweenness_centrality failed (fallback to degree): %s",
+            exc,
+            exc_info=True,
+        )
         top_between = top_degree  # fallback si el grafo es trivial
 
     label_influencia = "Nodos más influyentes (grado)"
