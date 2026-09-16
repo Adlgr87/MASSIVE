@@ -56,3 +56,17 @@ def pytest_load_initial_conftests(early_config, parser, args):
         pass
     args.insert(0, "-p")
     args.insert(1, "no:libtmux")
+
+
+def pytest_terminal_summary(terminalreporter, exitstatus, config):
+    """Emit a deterministic final-line summary.
+
+    pytest 9.x suppresses the default terminal summary line ("X passed, Y
+    skipped …") when ``-q`` is combined with non-TTY (piped) output, leaving
+    the docs-link as ``tail -1`` instead.  CI scripts that pipe ``| tail -1``
+    expect a pass/fail indicator, so we emit a concise one-line summary as the
+    very last line of output.
+    """
+    stats = getattr(terminalreporter, "stats", {})
+    failures = len(stats.get("failed", [])) + len(stats.get("error", []))
+    terminalreporter.write_line(f"{failures} failed")
