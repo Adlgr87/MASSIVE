@@ -297,7 +297,7 @@ MASSIVE/
 
 | Topic | Link |
 |---|---|
-| MkDocs site (API reference, validation, science) | `python -m mkdocs serve` → http://localhost:8000 |
+| MkDocs site (API reference, validation, science) | `python -m mkdocs serve -a localhost:8001` → http://localhost:8001 |
 | API Reference | [`docs/api.md`](docs/api.md) |
 | Architecture — current state (verified map) | [`docs/architecture/current-state.md`](docs/architecture/current-state.md) |
 | Architecture — target state & open decisions | [`docs/architecture/target-state.md`](docs/architecture/target-state.md) |

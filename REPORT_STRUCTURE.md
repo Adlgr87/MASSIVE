@@ -1,7 +1,9 @@
 # MASSIVE - Estructura de Archivos
 
+> ⚠️ HISTÓRICO — describe el commit 2b70984 del 14 de septiembre de 2026. No refleja main actual.
+
 > Informe generado automáticamente por análisis estructural del repositorio.
-> Fecha: 2025-09-14 | Path: `/home/adlg/Escritorio/Proyectos/MASSIVE`
+> Fecha: 2026-09-14 | Path: `/home/adlg/Escritorio/Proyectos/MASSIVE`
 
 ---
 

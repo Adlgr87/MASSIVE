@@ -268,7 +268,7 @@ MASSIVE/
 
 | Tema | Enlace |
 |---|---|
-| Sitio MkDocs (referencia API, validación, ciencia) | `python -m mkdocs serve` → http://localhost:8000 |
+| Sitio MkDocs (referencia API, validación, ciencia) | `python -m mkdocs serve -a localhost:8001` → http://localhost:8001 |
 | Arquitectura — estado actual (mapa verificado) | [`docs/architecture/current-state.md`](docs/architecture/current-state.md) |
 | Arquitectura — estado objetivo y decisiones abiertas | [`docs/architecture/target-state.md`](docs/architecture/target-state.md) |
 | Auditoría de production-readiness y matriz de riesgos | [`docs/production-readiness-audit.md`](docs/production-readiness-audit.md) |

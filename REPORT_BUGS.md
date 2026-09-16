@@ -1,6 +1,8 @@
 # Reporte de Errores y Bugs — MASSIVE
 
-**Fecha:** 2025-07-09  
+> ⚠️ HISTÓRICO — describe el commit 2b70984 del 14 de septiembre de 2026. No refleja main actual.
+
+**Fecha:** 2026-09-14  
 **Estado tests:** ✅ 668 passed, 0 failed (32.2s)  
 **Advertencia:** `StarletteDeprecationWarning` → httpx/starlette.testclient  
 **Importaciones principales:** ✅ `backend.app.main:app` carga correctamente (20 endpoints)
