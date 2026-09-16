@@ -27,6 +27,15 @@ ROOT = Path(__file__).resolve().parent.parent
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
+
+def _rel(path: Path) -> str:
+    """Return *path* relative to ROOT, or the absolute path if outside the repo."""
+    try:
+        return str(path.relative_to(ROOT))
+    except ValueError:
+        return str(path)
+
+
 from backend.app.models import (  # noqa: E402
     ArchitectEventMessage,
     Feasibility,
@@ -255,17 +264,15 @@ Examples:
     if args.check:
         existing = out_path.read_text(encoding="utf-8") if out_path.exists() else None
         if existing == content:
-            print(f"✓  {out_path.relative_to(ROOT)} is up to date")
+            print(f"✓  {_rel(out_path)} is up to date")
             return 0
-        print(
-            f"✗  {out_path.relative_to(ROOT)} is out of sync — run 'python scripts/gen_ts_types.py'"
-        )
+        print(f"✗  {_rel(out_path)} is out of sync — run 'python scripts/gen_ts_types.py'")
         return 1
 
     # ── --dry-run: report without writing ──────────────────────────────────
     if args.dry_run:
         print(
-            f"✓  Dry run — would generate {out_path.relative_to(ROOT)} "
+            f"✓  Dry run — would generate {_rel(out_path)} "
             f"({len(content)} bytes, {len(sections)} lines)"
         )
         return 0
@@ -273,7 +280,7 @@ Examples:
     # ── Default: write to file ─────────────────────────────────────────────
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(content, encoding="utf-8")
-    print(f"✓  Generated {out_path.relative_to(ROOT)}")
+    print(f"✓  Generated {_rel(out_path)}")
     return 0
 
 
