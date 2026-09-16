@@ -31,7 +31,7 @@ from backend.app.models import (
 from backend.app.security import get_api_key, rate_limit_dependency
 from services.llm_orchestrator import classify_motor
 
-log = logging.getLogger("massive.backend.routers.llm")
+log = logging.getLogger(__name__)
 
 # Upload limits + helpers (shared by /extract endpoints)
 _ALLOWED_EXT = {".pdf", ".json", ".csv", ".xlsx", ".docx"}

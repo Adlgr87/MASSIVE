@@ -34,7 +34,7 @@ from massive.core.factbook.mappings import (
     scale_to_max,
 )
 
-log = logging.getLogger("massive.factbook")
+log = logging.getLogger(__name__)
 
 
 @dataclass

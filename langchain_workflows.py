@@ -12,7 +12,7 @@ import os
 
 from llm_credentials import resolve_provider_api_key
 
-log = logging.getLogger("massive")
+log = logging.getLogger(__name__)
 
 # ── Importaciones opcionales ──────────────────────────────────────────────────
 try:

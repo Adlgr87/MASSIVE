@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import os
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
@@ -19,6 +20,37 @@ class LoggingSettings(BaseModel):
     file: str | None = None  # optional rotating log path (or MASSIVE_LOG_FILE)
     max_bytes: int = Field(10_485_760, ge=1024)  # 10 MiB
     backup_count: int = Field(5, ge=0)
+
+
+class LLMProviderSettings(BaseModel):
+    """Base URLs for LLM providers — single source of truth.
+
+    Every consumer must read from these settings (which honour environment
+    variables) rather than hard-coding URLs in library code.
+    """
+
+    groq_base_url: str = "https://api.groq.com/openai/v1"
+    openai_base_url: str = "https://api.openai.com/v1"
+    openrouter_base_url: str = "https://openrouter.ai/api/v1"
+    ollama_base_url: str = Field(
+        default_factory=lambda: os.getenv("OLLAMA_HOST", "http://localhost:11434")
+    )
+
+    model_config = {"env_prefix": "massive_llm_"}
+
+
+def get_llm_base_url(provider: str = "ollama") -> str:
+    """Return the base URL for *provider* from settings or environment.
+
+    Args:
+        provider: One of ``"groq"``, ``"openai"``, ``"openrouter"``, ``"ollama"``.
+
+    Returns:
+        The resolved base URL string.
+    """
+    settings = get_app_settings()
+    key = f"{provider.lower()}_base_url"
+    return getattr(settings.llm, key, "")
 
 
 class SimulationDefaults(BaseModel):
@@ -47,6 +79,7 @@ class AppSettings(BaseModel):
             default_steps=50, default_seed=42, train_ratio=0.7
         )
     )
+    llm: LLMProviderSettings = Field(default_factory=LLMProviderSettings)
     logging: LoggingSettings = Field(
         default_factory=lambda: LoggingSettings(
             level="INFO",

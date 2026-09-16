@@ -65,7 +65,7 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s | %(message)s",
     handlers=[logging.FileHandler(str(LOG_PATH), mode="w"), logging.StreamHandler(sys.stdout)],
 )
-log = logging.getLogger("MASSIVE-Benchmark")
+log = logging.getLogger(__name__)
 
 # ─── GPU detection ─────────────────────────────────────────────────────────
 GPU_AVAILABLE = False

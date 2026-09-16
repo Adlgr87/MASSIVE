@@ -27,7 +27,7 @@ from scipy import stats
 
 from massive.core.factbook.context import FactbookContext, get_factbook_context
 
-log = logging.getLogger("massive.factbook.validator")
+log = logging.getLogger(__name__)
 
 
 @dataclass

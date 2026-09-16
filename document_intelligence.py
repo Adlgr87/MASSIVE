@@ -34,7 +34,7 @@ from typing import Any
 
 from pydantic import BaseModel, Field, field_validator
 
-log = logging.getLogger("massive.document_intelligence")
+log = logging.getLogger(__name__)
 
 # ── Detección de dependencias opcionales ─────────────────────────────────────
 

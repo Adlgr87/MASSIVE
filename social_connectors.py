@@ -11,7 +11,7 @@ import re
 
 import numpy as np
 
-log = logging.getLogger("massive")
+log = logging.getLogger(__name__)
 
 # ── Importaciones opcionales ──────────────────────────────────────────────────
 try:

@@ -11,7 +11,7 @@ import logging
 import numpy as np
 from scipy.integrate import solve_ivp
 
-log = logging.getLogger("massive")
+log = logging.getLogger(__name__)
 
 # ── Importaciones opcionales (graceful degradation) ──────────────────────────
 try:

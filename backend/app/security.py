@@ -29,7 +29,7 @@ from massive_core.config import (
     is_dev_env,
 )
 
-log = logging.getLogger("massive.backend.security")
+log = logging.getLogger(__name__)
 
 # --- Auth ----------------------------------------------------------------
 

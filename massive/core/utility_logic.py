@@ -21,7 +21,7 @@ from typing import Any
 
 from massive.core.schemas import GamePayoff
 
-log = logging.getLogger("massive.utility_logic")
+log = logging.getLogger(__name__)
 
 
 def calculate_strategic_force(

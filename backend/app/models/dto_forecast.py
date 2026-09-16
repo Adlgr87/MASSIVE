@@ -7,6 +7,8 @@ silent schema drift.
 
 from __future__ import annotations
 
+from typing import Any, Literal
+
 from pydantic import BaseModel, Field
 
 
@@ -62,3 +64,42 @@ class ForecastResponse(BaseModel):
     horizon_ticks: int
     points: list[ForecastPoint]
     feasibility: Feasibility
+
+
+class ForecastRequest(BaseModel):
+    """Request body for ``POST /v1/forecast``.
+
+    Payload fields:
+        simulation_state: dict  – snapshot with optional ``ews`` metrics (required).
+        temporal_config: dict  – TemporalConfig overrides (optional).
+        mode: "analytical" | "monte_carlo" (optional, default ``analytical``).
+        n_runs: int             – MC iterations (default ``200``, capped at 10 000).
+        sim_id: str             – simulation run identifier (optional).
+
+    The ``n_runs`` bound (1..10_000) prevents unbounded Monte Carlo DoS.
+    """
+
+    model_config = {"extra": "forbid"}
+
+    simulation_state: dict[str, Any] = Field(
+        ...,
+        description="Snapshot with optional EWS metrics (required).",
+    )
+    temporal_config: dict[str, Any] | None = Field(
+        default=None,
+        description="TemporalConfig overrides (optional).",
+    )
+    mode: Literal["analytical", "monte_carlo"] = Field(
+        default="analytical",
+        description="Forecast execution mode.",
+    )
+    n_runs: int = Field(
+        default=200,
+        ge=1,
+        le=10_000,
+        description="Monte Carlo iterations (1-10 000).",
+    )
+    sim_id: str | None = Field(
+        default=None,
+        description="Simulation run identifier.",
+    )

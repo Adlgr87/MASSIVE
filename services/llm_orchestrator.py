@@ -30,7 +30,7 @@ from typing import Any, cast
 from services.factbook_service import country_params as _factbook_params
 from services.llm_service import resolve_llm_credentials, wizard_config
 
-log = logging.getLogger("massive.services.llm_orchestrator")
+log = logging.getLogger(__name__)
 
 # Default step counts per contract "assumption_defaults".
 _DEFAULT_STEPS = {

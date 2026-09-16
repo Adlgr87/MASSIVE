@@ -46,10 +46,10 @@ try:
     from massive_core.config import configure_logging, get_logger
 
     configure_logging()
-    log = get_logger("massive.backend.main")
-except Exception:  # pragma: no cover - fallback if config unavailable
-    logging.basicConfig(level=logging.INFO)
-    log = logging.getLogger("massive.backend.main")
+    log = get_logger(__name__)
+except Exception as exc:  # pragma: no cover - fallback if config unavailable
+    log = logging.getLogger(__name__)
+    log.warning("Logging config unavailable, using defaults: %s", exc, exc_info=True)
 
 _app_settings = get_app_settings()
 

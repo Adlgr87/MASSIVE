@@ -12,9 +12,12 @@ from backend.app.models.dto_architect import (
     InterventionLogEntry,
     InterventionRecord,
 )
+from backend.app.models.dto_benchmark import BenchmarkRequest
+from backend.app.models.dto_engine import ArchitectRequest, EngineEnergyRequest
 from backend.app.models.dto_forecast import (
     Feasibility,
     ForecastPoint,
+    ForecastRequest,
     ForecastResponse,
 )
 from backend.app.models.dto_llm import (
@@ -29,6 +32,7 @@ from backend.app.models.dto_llm import (
     LLMWizardRequest,
     LLMWizardResponse,
 )
+from backend.app.models.dto_simulate import SimRequest
 from backend.app.models.dto_simulation import (
     SimAgentLite,
     SimAggregateMetrics,
@@ -76,4 +80,10 @@ __all__ = [
     "LLMExtractResponse",
     "LLMWizardRequest",
     "LLMWizardResponse",
+    # request DTOs (extra=forbid, bounded)
+    "SimRequest",
+    "ForecastRequest",
+    "EngineEnergyRequest",
+    "ArchitectRequest",
+    "BenchmarkRequest",
 ]

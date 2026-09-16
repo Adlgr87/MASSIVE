@@ -17,7 +17,7 @@ import logging
 import sys
 from collections.abc import Sequence
 
-log = logging.getLogger("massive.cli")
+log = logging.getLogger(__name__)
 
 __VERSION__ = "1.0.0"
 

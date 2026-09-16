@@ -22,7 +22,7 @@ from fastapi import Depends, FastAPI, File, Header, HTTPException, Request, Uplo
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import APIKeyHeader
 
-log = logging.getLogger("massive.api")
+log = logging.getLogger(__name__)
 
 app = FastAPI(title="MASSIVE UIL API", version="1.0.0")
 
@@ -52,7 +52,8 @@ try:
 
     configure_logging()
     _app_settings = get_app_settings()
-except Exception:  # pragma: no cover - fallback if config package unavailable
+except Exception as exc:  # pragma: no cover - fallback if config package unavailable
+    log.warning("Config package unavailable, using defaults: %s", exc, exc_info=True)
     _app_settings = None
 
 # ── CORS (no wildcard when credentials are enabled) ───────────────────
@@ -95,7 +96,8 @@ try:
             getattr(_app_settings, "rate_limit_path", None) if _app_settings else None,
         ),
     )
-except Exception:  # pragma: no cover
+except Exception as exc:  # pragma: no cover
+    log.warning("Rate limiter config unavailable, using in-memory: %s", exc, exc_info=True)
     from massive_core.config.rate_limit import InMemoryRateLimiter
 
     _rate_limiter = InMemoryRateLimiter()
@@ -374,6 +376,7 @@ async def api_forecast(
             )
         except Exception:
             # DTO validation is best-effort; never leak internals.
+            log.warning("ForecastPoint/Feasibility DTO validation failed, using raw dict", exc_info=True)
             point = {
                 "tick": data.get("steps_to_event") or 0,
                 "mean_opinion": float(data.get("p_event", 0.0)),
@@ -481,7 +484,8 @@ async def readiness_check():
     try:
         get_adapter()
         checks["checks"]["uil_adapter"] = "available"
-    except Exception:
+    except Exception as exc:
+        log.warning("UIL adapter unavailable: %s", exc, exc_info=True)
         checks["checks"]["uil_adapter"] = "unavailable"
 
     if not has_llm_key:

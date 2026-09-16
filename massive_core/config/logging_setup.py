@@ -24,7 +24,7 @@ def configure_logging(
         log_file: Optional path for a rotating file handler. Falls back to
             ``MASSIVE_LOG_FILE`` env or ``AppSettings.logging.file``.
     """
-    root = logging.getLogger()
+    root = logging.root
     if root.handlers and not force:
         if level:
             root.setLevel(level.upper())
