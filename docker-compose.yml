@@ -16,7 +16,6 @@ services:
       - "80:80"       # Frontend + API gateway (nginx)
       - "8000:8000"   # API (direct, optional)
     volumes:
-      - ./.env.local:/app/.env.local:ro
       - ./.env:/app/.env:ro
       - massive-logs:/app/reports/validation/ci
     environment:

@@ -7,7 +7,6 @@ pydantic>=2.0
 pyyaml>=6.0
 python-dotenv>=1.0.1
 requests>=2.31
-pytest>=8.0.0
 
 # API / API server (UI-NG frontend lives in massive-ui-ng/ and is served as static files)
 fastapi>=0.110
@@ -27,7 +26,6 @@ langchain-groq>=1.1.0
 statsmodels>=0.14.0
 scikit-learn>=1.4.0
 torch>=2.2.0
-torchdiffeq>=0.2.3
 dask>=2024.0.0
 
 # HTTP client / system monitoring
@@ -37,8 +35,3 @@ psutil>=5.9.0
 # Domain extras
 nashpy>=0.0.43
 pgmpy>=1.1.0
-
-# Docs
-mkdocs>=1.5.3
-mkdocs-material>=9.5.0
-mkdocstrings[python]>=0.24.0

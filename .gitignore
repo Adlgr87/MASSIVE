@@ -48,11 +48,10 @@ node_modules/
 frontend/dist/
 site/
 
-# Sensitive and lock files
+# Sensitive files (lockfiles tracked)
 .context_cache.json
 .env
 .env.*
-uv.lock
 
 # ─── Model Checkpoints (Git LFS recommended) ─────────────────────────
 models/**/*.pt
@@ -70,7 +69,6 @@ reports/**/*.json
 **/.env
 **/.env.*
 !**/.env.example
-!**/.env.local.example
 secrets/
 credentials/
 keys/
