@@ -177,10 +177,10 @@ jobs:
       - name: Run Docker smoke test
         run: |
           mkdir -p .env-test
-          echo "MASSIVE_API_KEY=ci-test-key" > .env-test/.env
-          touch .env-test/.env.local
+          TEST_KEY="$(python -c 'import secrets; print(secrets.token_hex(32))')"
+          echo "MASSIVE_API_KEY=$TEST_KEY" > .env-test/.env
           docker run --rm \
-            -e MASSIVE_API_KEY=ci-test-key \
+            -e MASSIVE_API_KEY="$TEST_KEY" \
             -e MASSIVE_ENV=development \
             ghcr.io/${{ github.repository_owner }}/massive:latest \
             curl -f http://127.0.0.1:8000/health

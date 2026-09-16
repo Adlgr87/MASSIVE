@@ -15,12 +15,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Install core deps
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install "numpy>=1.26" "scipy>=1.12" "pandas>=2.2" "networkx>=3.0" \
-            "pydantic>=2.0" "pyyaml>=6.0" "python-dotenv>=1.0.1" "pytest>=8.0" \
-            "plotly>=5.18" "requests>=2.31"
+          pip install -r requirements.txt
+          pip install pytest
       - name: Core tests
         run: |
           PYTHONHASHSEED=42 python -m pytest tests/test_simulator.py tests/test_massive_engine.py \
@@ -35,10 +34,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Install scientific deps
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
+          pip install pytest
       - name: Scientific tests
         run: |
           PYTHONHASHSEED=42 python -m pytest tests/test_scientific_integration.py \
@@ -53,10 +53,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Install API deps
+      - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install fastapi "uvicorn[standard]" python-multipart pydantic pytest httpx numpy scipy
+          pip install -r requirements.txt
+          pip install pytest
       - name: API smoke import
         run: |
           python -c "from api import app; print(app.title)"
@@ -71,11 +72,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.11"
-      - name: Install full requirements + coverage
+      - name: Install dependencies + coverage
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-          pip install "pytest-cov>=5.0"
+          pip install pytest "pytest-cov>=5.0"
       - name: Full pytest with coverage gate (fail-under 30%)
         run: |
           PYTHONHASHSEED=42 python -m pytest tests/ -q --tb=line \

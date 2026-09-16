@@ -8,12 +8,13 @@ Run it whenever you change a DTO model::
 
 Output: ``frontend/src/types/api.generated.ts``
 
-The CI workflow ``validate_ts_types.yml`` runs this script and fails if the
-committed file is out of sync with the current model definitions.
+The CI workflow ``validate_ts_types.yml`` runs this script with ``--check`` and
+fails if the committed file is out of sync with the current model definitions.
 """
 
 from __future__ import annotations
 
+import argparse
 import sys
 from pathlib import Path
 from typing import Any
@@ -182,6 +183,17 @@ def _enum_to_ts(enum_cls: Any) -> str:
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(
+        description="Generate TypeScript types from Pydantic models.",
+    )
+    parser.add_argument(
+        "--check",
+        action="store_true",
+        help="Exit non-zero if the generated file differs from the committed one "
+        "(does not write to disk).",
+    )
+    args = parser.parse_args()
+
     # Collect all $defs from all model schemas (for cross-model $ref resolution).
     all_defs: dict[str, Any] = {}
     for model_cls in _MODELS:
@@ -206,6 +218,16 @@ def main() -> int:
         sections.append("")
 
     content = "\n".join(sections)
+
+    if args.check:
+        _OUT.parent.mkdir(parents=True, exist_ok=True)
+        existing = _OUT.read_text(encoding="utf-8") if _OUT.exists() else None
+        if existing == content:
+            print(f"✓  {_OUT.relative_to(ROOT)} is up to date")
+            return 0
+        print(f"✗  {_OUT.relative_to(ROOT)} is out of sync — run 'python scripts/gen_ts_types.py'")
+        return 1
+
     _OUT.parent.mkdir(parents=True, exist_ok=True)
     _OUT.write_text(content, encoding="utf-8")
     print(f"✓  Generated {_OUT.relative_to(ROOT)}")

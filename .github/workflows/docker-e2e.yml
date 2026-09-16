@@ -15,10 +15,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Create minimal env files
+      - name: Create minimal env file
         run: |
-          touch .env .env.local
-          echo "MASSIVE_API_KEY=ci-test-key" >> .env
+          echo "MASSIVE_API_KEY=$(python -c 'import secrets; print(secrets.token_hex(32))')" > .env
           echo "MASSIVE_CORS_ORIGINS=http://localhost:3000" >> .env
 
       - name: Build image
