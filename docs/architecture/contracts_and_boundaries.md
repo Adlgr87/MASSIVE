@@ -246,7 +246,7 @@ Tratar `schemas.py` como punto de contrato interno, no como simple utilitario.
 ### Owners conceptuales
 - `tests/`
 - `benchmarks/`
-- scripts de validación descritos en `CLAUDE.md`
+- scripts de validación de `scripts/`
 
 ### Contratos observables
 No solo validan outputs; también fijan:

@@ -2,7 +2,7 @@
 cache_manager.py — Gestor de caché para MASSIVE Architect.
 
 Arquitectura: Memoria RAM (ultra-rápido, LRU-evictable) + SQLite (persistente
-cross-session).  Compatible con UI-NG (servida por backend FastAPI), Docker, y
+cross-session).  Compatible con el backend FastAPI, Docker, y
 entornos serverless con volumen montado.
 
 Garantías reales
@@ -13,7 +13,7 @@ Garantías reales
   materiales la clave cambia completamente — nunca se sirve contenido obsoleto.
 * **Thread-safety**: todas las operaciones (memoria y SQLite) están
   serializadas por un ``threading.Lock`` único.  El objeto es seguro para uso
-  concurrente del backend FastAPI que sirve la UI-NG (check_same_thread=False).
+  concurrente del backend FastAPI (check_same_thread=False).
 * **TTL configurable**: el TTL se lee de ``MASSIVE_CACHE_TTL_SECONDS`` (default
   3600 s) y se aplica **en la lectura** usando la columna ``created_at``.
   Entradas expiradas se tratan como *miss* y se eliminan de la caché.
@@ -94,7 +94,7 @@ class LandscapeCache:
     Prioriza velocidad (dict en memoria con política LRU) y persistencia
     (SQLite con TTL aplicado en lectura).
 
-    Thread-safe para uso concurrente del backend FastAPI que sirve la UI-NG
+    Thread-safe para uso concurrente del backend FastAPI
     (check_same_thread=False).
 
     Attributes:

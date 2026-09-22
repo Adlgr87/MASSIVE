@@ -213,7 +213,7 @@ class SparseMultilayerEngine:
     Supports inter-layer edges and efficient computation.
 
     This implementation is designed to pass all tests in test_sparse_refactor.py
-    and addresses the issues described in CLAUDE.md Section 6.
+    and addresses the known numerical-stability issues of the dense path.
 
     Attributes:
         layers: List of LayerState objects for each layer

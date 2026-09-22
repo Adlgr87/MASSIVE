@@ -1,7 +1,7 @@
 import json
 import unittest
 
-from empirical_calibration import (
+from massive.core.empirical_calibration import (
     MASSIVE_EMPIRICAL_MASTER,
     MASSIVE_RUNTIME_PARAMS,
     apply_empirical_profile,

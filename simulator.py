@@ -27,7 +27,6 @@ RANGOS DE OPINIÓN:
 PROVEEDORES LLM:
   heurístico | ollama | groq | openai | openrouter
 
-Autor: MASSIVE Research
 """
 
 import copy
@@ -46,12 +45,12 @@ from scipy.integrate import solve_ivp
 from scipy.special import erf
 
 from benchmarks.butterfly_diagnostic import run_butterfly_diagnostic_core
-from empirical_calibration import (
+from massive.core.empirical_calibration import (
     ENGINE_METADATA_KEYS,
     MASSIVE_RUNTIME_PARAMS,
     build_empirical_engine_config,
 )
-from llm_credentials import resolve_provider_api_key
+from massive.core.llm_credentials import resolve_provider_api_key
 from massive.core.schemas import GamePayoff
 from massive.core.utility_logic import calculate_strategic_force
 from massive_core.rust_core import langevin_opinion_update_inplace
@@ -90,7 +89,10 @@ except Exception as exc:
 
 # EMPIRICAL INTEGRATION — importar base empírica si está disponible
 try:
-    from empirical_config import EMPIRICAL_BASE_LOADED, MASSIVE_RUNTIME_PARAMS  # noqa: F401
+    from massive.core.empirical_config import (  # noqa: F401
+        EMPIRICAL_BASE_LOADED,
+        MASSIVE_RUNTIME_PARAMS,
+    )
 
     EMPIRICAL_AVAILABLE = True
 except ImportError:
@@ -1926,6 +1928,10 @@ def resumen_historial(historial: list[dict], config: dict | None = None) -> dict
     neutro = _neutro(cfg)
     opiniones = np.array([h["opinion"] for h in historial])
     reglas = [h["_regla_nombre"] for h in historial if "_regla_nombre" in h]
+    # Range label ("[-1, 1] — Bipolar") must be translated to the metric's
+    # canonical range_type ("bipolar"/"unipolar"); passing the label directly
+    # silently fell back to unipolar and doubled the metric for bipolar runs.
+    range_type = "bipolar" if _es_bipolar(cfg) else "unipolar"
     return {
         "opinion_inicial": float(opiniones[0]),
         "opinion_final": float(opiniones[-1]),
@@ -1935,7 +1941,7 @@ def resumen_historial(historial: list[dict], config: dict | None = None) -> dict
         "minimo": float(opiniones.min()),
         "maximo": float(opiniones.max()),
         "polarizacion_media": calculate_partisanship(
-            opiniones, neutral=neutro, range_type=cfg.get("rango", "bipolar")
+            opiniones, neutral=neutro, range_type=range_type
         ),
         "pasos": len(historial) - 1,
         "regla_dominante": Counter(reglas).most_common(1)[0][0] if reglas else "—",

@@ -5,7 +5,7 @@ This module defines the canonical contracts (data classes and protocols) for the
 simulation framework. These contracts ensure type safety, consistency, and interoperability
 between different components of the system.
 
-Following CLAUDE.md Section 3: Canonical state and configuration contracts.
+Canonical state and configuration contracts.
 
 Classes:
     SimulationState: Canonical simulation state representation
@@ -34,7 +34,6 @@ class SimulationState:
     all MASSIVE engines. It encapsulates the opinion, cooperation, hierarchy,
     income, and information access dimensions for all agents.
 
-    Following CLAUDE.md §3.1: "Definir SimulationState canónico"
 
     Attributes:
         opinion: Agent opinions (N x D_opinion)
@@ -219,7 +218,6 @@ class SimulationConfig:
     This class defines the standard configuration for a MASSIVE simulation.
     It includes all parameters needed to initialize and run a simulation.
 
-    Following CLAUDE.md §3.1: "Definir SimulationConfig canónico"
 
     Attributes:
         N: Number of agents
@@ -251,7 +249,6 @@ class SimulationConfig:
 
     def __post_init__(self):
         """Validate simulation configuration after initialization."""
-        # Following CLAUDE.md §3.3: "Validación de parámetros"
 
         # N must be positive
         if self.N < 1:
@@ -389,7 +386,6 @@ class EngineProtocol(Protocol):
     Protocol for all MASSIVE engines.
 
     This protocol defines the interface that all MASSIVE engines must implement.
-    Following CLAUDE.md §3.1: "Definir interfaces canónicas"
     """
 
     def reset(self, state: SimulationState | None = None) -> None:
@@ -443,7 +439,6 @@ def legacy_dict_to_simulation_state(legacy_dict: dict[str, Any]) -> SimulationSt
     massive_sim_engine.py and other legacy modules) to the canonical
     SimulationState format.
 
-    Following CLAUDE.md §3.2: "Crear adaptadores Legacy → Contratos"
 
     Args:
         legacy_dict: Dictionary with legacy keys (e.g., 'opinion', 'cooperacion')

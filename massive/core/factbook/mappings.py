@@ -3,7 +3,6 @@ Factbook to MASSIVE Parameter Mappings
 
 Defines the mapping between CIA World Factbook fields and MASSIVE simulation parameters.
 
-Author: MASSIVE Research
 """
 
 from typing import Any

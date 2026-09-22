@@ -17,9 +17,7 @@ import logging
 import sys
 from collections.abc import Sequence
 
-<<<<<<< HEAD
 from massive import __version__ as __VERSION__
-log = logging.getLogger(__name__)
 
 log = logging.getLogger(__name__)
 

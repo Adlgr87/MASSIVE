@@ -10,7 +10,7 @@ from typing import Literal
 import numpy as np
 from pydantic import BaseModel, Field
 
-from empirical_config import MASSIVE_EMPIRICAL_MASTER
+from massive.core.empirical_config import MASSIVE_EMPIRICAL_MASTER
 from simulator import DEFAULT_CONFIG
 
 from .temporal_config import TemporalConfig

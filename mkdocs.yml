@@ -20,12 +20,17 @@ plugins:
 nav:
   - Home: index.md
   - API Reference: api.md
+  - Factbook Integration: factbook.md
+  - LLM Interface:
+      - Interface spec: MASSIVE_LLM_INTERFACE.md
+      - Prompt templates: LLM_PROMPTS.md
   - Production Readiness:
       - Audit & Risk Matrix: production-readiness-audit.md
-      - Audit Findings Tracker: AUDIT_FINDINGS_TRACKER.md
       - Release Checklist: release-checklist.md
       - Architecture (current): architecture/current-state.md
       - Architecture (target): architecture/target-state.md
+      - Production Architecture Spec: architecture/PRODUCTION_ARCHITECTURE_SPEC.md
+      - Safety Protocol: architecture/safety_protocol.md
       - Runbooks:
           - Local Development: runbooks/local-development.md
           - Operations: runbooks/operations.md
@@ -33,13 +38,12 @@ nav:
       - Security:
           - Threat Model: security/threat-model.md
           - Secrets & Configuration: security/secrets-and-configuration.md
-      - Testing Strategy: testing/test-strategy.md
-      - Performance Baseline: performance/baseline.md
-  - Factbook Integration:
-      - Summary: FACTBOOK_SUMMARY.md
-      - Quickstart: FACTBOOK_QUICKSTART.md
-      - Integration Plan: FACTBOOK_INTEGRATION_PLAN.md
-      - Integration Complete: FACTBOOK_INTEGRATION_COMPLETE.md
+      - Observability & Security: OBSERVABILITY_AND_SECURITY.md
+      - Backup & Restore: backup_restore.md
+      - Disaster Recovery: disaster_recovery_plan.md
+      - Docker: DOCKER.md
+      - Environment Variables: ENV_VARS.md
+      - NAMING_CONVENTIONS.md: NAMING_CONVENTIONS.md
   - Validation (PVU-BS):
       - Overview: validation/README.md
       - Protocol (EN): validation/PVU_MASSIVE_EN.md
@@ -48,3 +52,9 @@ nav:
       - Pre-registro (ES): validation/preregistration_template_ES.md
       - Report template (EN): validation/validation_report_template_EN.md
       - Plantilla de reporte (ES): validation/validation_report_template_ES.md
+      - Benchmark Card: cards/BENCHMARK.md
+      - Reproducibility Card: cards/REPRODUCIBILITY.md
+  - Testing:
+      - Test Strategy: testing/test-strategy.md
+      - Performance Baseline: performance/baseline.md
+      - Performance Report: performance_report.md

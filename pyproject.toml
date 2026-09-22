@@ -72,19 +72,17 @@ include = [
   "forecast*", "massive_core*", "metrics*", "adapters*", "monitoring*",
 ]
 
-# The 31 legacy root-level .py modules (excl. conftest.py) are distributed
+# The legacy root-level .py modules are distributed
 # as top-level py-modules so the wheel imports them without a package dir.
 [tool.setuptools]
 py-modules = [
   "api", "benchmark_scalability", "brexit_calibration", "cache_manager",
   "cfc_engine", "cfc_router", "cfc_trainer", "document_intelligence",
-  "empirical_calibration", "empirical_config", "energy_engine",
-  "energy_runner", "energy_schemas", "interpreter_layer",
-  "langchain_workflows", "llm_credentials", "massive_engine",
+  "energy_engine", "energy_runner", "energy_schemas", "interpreter_layer",
+  "langchain_workflows", "massive_engine",
   "micro_engine", "micro_schemas", "multilayer_engine",
-  "programmatic_architect", "schemas", "simulator",
-  "social_architect", "social_connectors", "state_compression",
-  "train_cfc_lambda", "train_cfc_landscape", "train_cfc_temp",
+  "programmatic_architect", "simulator",
+  "social_architect", "social_connectors",
   "uil_adapter", "visualizations",
 ]
 
@@ -124,7 +122,7 @@ target-version = "py311"
 exclude = [
   ".venv", "venv", "node_modules", "build", "dist",
   "__pycache__", ".mypy_cache", ".pytest_cache",
-  "frontend/node_modules", "massive-ui-ng/frontend/node_modules",
+  "frontend/node_modules",
 ]
 
 [tool.ruff.lint]
@@ -144,7 +142,6 @@ exclude = '''
     \.venv|venv|node_modules|build|dist
     |__pycache__|\.mypy_cache|\.pytest_cache
     |frontend/node_modules
-    |massive-ui-ng/frontend/node_modules
 )/
 '''
 
@@ -161,7 +158,6 @@ show_error_codes = true
 namespace_packages = true
 explicit_package_bases = true
 exclude = [
-    "massive-ui-ng/",
     "frontend/",
     "frontend/node_modules/",
     "node_modules/",

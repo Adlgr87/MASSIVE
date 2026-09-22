@@ -4,7 +4,7 @@
 
 *                           @Adlgr87
 
-# Core numerical engines (cf. AGENTS.md — agente Foundation)
+# Core numerical engines
 massive_engine.py           @Adlgr87
 micro_engine.py            @Adlgr87
 energy_engine.py           @Adlgr87
@@ -27,9 +27,8 @@ services/                  @Adlgr87
 # Forecast
 forecast/                  @Adlgr87
 
-# Frontend — two frontends under review (W5-T01 decision tracked in CANONICAL_SOURCES.md)
+# Frontend
 frontend/                  @Adlgr87
-massive-ui-ng/frontend/    @Adlgr87
 
 # CI/CD configuration
 .github/                   @Adlgr87
