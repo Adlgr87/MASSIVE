@@ -9,6 +9,7 @@ Todos los valores están normalizados al rango bipolar [-1.0, 1.0].
 
 import datetime
 import math
+from typing import Any
 
 # ------------------------------------------------------------
 # FLAG DE CARGA
@@ -49,7 +50,7 @@ _MEDIA_VIDA_DIGITAL_VALUE = _normalize_attention_half_life(_ATTENTION_HALF_LIFE_
 # DICCIONARIO MAESTRO EMPÍRICO DE MASSIVE
 # Valores normalizados al rango [-1.0, 1.0]
 # ============================================================
-MASSIVE_EMPIRICAL_MASTER = {
+MASSIVE_EMPIRICAL_MASTER: dict[str, Any] = {
     "meta": {
         "version": "1.1.0",
         "total_params": 43,

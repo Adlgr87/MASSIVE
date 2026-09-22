@@ -168,7 +168,7 @@ class SimulationState:
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "SimulationState":
         """Create SimulationState from dictionary."""
-        kwargs = {}
+        kwargs: dict[str, Any] = {}
 
         if "opinion" in data:
             kwargs["opinion"] = np.array(data["opinion"])
@@ -316,7 +316,7 @@ class SimulationConfig:
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "SimulationConfig":
         """Create SimulationConfig from dictionary."""
-        kwargs = {}
+        kwargs: dict[str, Any] = {}
 
         for key in ["N", "K", "dt", "steps", "M", "temperature", "seed"]:
             if key in data:
@@ -455,7 +455,7 @@ def legacy_dict_to_simulation_state(legacy_dict: dict[str, Any]) -> SimulationSt
         "acceso_info": "info_access",
     }
 
-    kwargs = {}
+    kwargs: dict[str, Any] = {}
     for legacy_key, canonical_key in legacy_to_canonical.items():
         if legacy_key in legacy_dict:
             value = legacy_dict[legacy_key]
@@ -548,7 +548,7 @@ def legacy_config_to_simulation_config(legacy_config: dict[str, Any]) -> Simulat
         "seed": "seed",
     }
 
-    kwargs = {}
+    kwargs: dict[str, Any] = {}
     for legacy_key, canonical_key in legacy_to_canonical.items():
         if legacy_key in legacy_config:
             # Convert layer_weights to tuple
@@ -574,7 +574,7 @@ def simulation_config_to_legacy_dict(config: SimulationConfig) -> dict[str, Any]
     Returns:
         Dictionary with legacy keys
     """
-    legacy = {
+    legacy: dict[str, Any] = {
         "N": config.N,
         "K": config.K,
         "dt": config.dt,

@@ -36,7 +36,7 @@ def _cmd_simulate(args: argparse.Namespace) -> int:
     from services.simulation_service import run_scalar_simulation
 
     result = run_scalar_simulation(
-        estado_inicial=json.loads(args.estado) if args.estado else None,
+        estado_inicial=json.loads(args.estado) if args.estado else {},
         escenario=args.escenario,
         pasos=args.pasos,
         verbose=args.verbose if args.verbose else False,
@@ -65,7 +65,7 @@ def _cmd_scientific(args: argparse.Namespace) -> int:
     from massive_core.scientific_runner import run_scientific_simulation
 
     result = run_scientific_simulation(
-        estado_inicial=json.loads(args.estado) if args.estado else None,
+        estado_inicial=json.loads(args.estado) if args.estado else {},
         escenario=args.escenario,
         pasos=args.pasos,
         scientific_config={
@@ -120,7 +120,8 @@ def _cmd_serve(args: argparse.Namespace) -> int:
     )
     server = uvicorn.Server(config)
     log.info("Starting MASSIVE API server on %s:%d (%s)", args.host, args.port, app_target)
-    return server.run()  # type: ignore[func-returns-value]
+    server.run()
+    return 0
 
 
 def _build_parser() -> argparse.ArgumentParser:

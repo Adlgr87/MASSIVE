@@ -346,7 +346,7 @@ async def readiness_check() -> dict[str, Any]:
 
     # -- Optional: UIL adapter (informational) ----------------------------
     try:
-        from uil_adapter import create_uil_adapter  # type: ignore[import-not-found]
+        from uil_adapter import create_uil_adapter
 
         provider = os.getenv("PROVIDER", "groq")
         api_key = os.getenv("GROQ_API_KEY", os.getenv("OPENAI_API_KEY", ""))

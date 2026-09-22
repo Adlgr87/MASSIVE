@@ -12,12 +12,12 @@ The energy landscape governs the "physics" of opinion flow. By modulating it:
 
 ## Data Generation Strategy
 Generate synthetic trajectories using the Energy Engine. For each state, we
-define the "ideal" landscape parameters that would drive the system toward 
+define the "ideal" landscape parameters that would drive the system toward
 stable, realistic dynamics based on the described physical intuitions.
 
 ## Architecture
     CfCCell(input_dim=5, hidden_size=32) → Linear(5) → Constraints
-    
+
 Input features (5):
     [polarization_t,          # current polarization index
      delta_pol_t1,            # polarization velocity (1-step)

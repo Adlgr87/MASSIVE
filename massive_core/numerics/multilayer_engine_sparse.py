@@ -91,7 +91,7 @@ class LayerState:
                 if hasattr(self.graph_adjacency, "toarray")
                 else self.graph_adjacency.tolist()
             ),
-            "agent_types": self.agent_types.tolist(),
+            "agent_types": self.agent_types.tolist() if self.agent_types is not None else None,
             "layer_id": self.layer_id,
             "metadata": self.metadata,
         }

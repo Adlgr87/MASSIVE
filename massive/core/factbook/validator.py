@@ -663,7 +663,7 @@ class FactbookValidator:
         Returns:
             Dictionary with comparison metrics and statistical tests
         """
-        results = {}
+        results: dict = {}
 
         # Normalize simulation opinions to [0, 1]
         if len(sim_opinions) == 0:

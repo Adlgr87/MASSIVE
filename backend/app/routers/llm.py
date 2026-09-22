@@ -161,7 +161,9 @@ async def v1_llm_wizard(payload: LLMWizardRequest) -> LLMWizardResponse:
     from services.llm_service import wizard_config
 
     provider = payload.llm.provider if payload.llm else os.getenv("PROVIDER", "groq")
-    api_key = payload.llm.api_key if payload.llm else None
+    # API keys are resolved from the environment inside the service layer —
+    # they are never accepted in request bodies (LLMLlmHint has no api_key field).
+    api_key = None
 
     try:
         config = wizard_config(
