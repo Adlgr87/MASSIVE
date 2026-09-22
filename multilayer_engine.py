@@ -22,7 +22,6 @@ Columnas de x_i (K=5):
   3: income       — y_i, nivel de ingreso normalizado [0, 1]
   4: info_access  — φ_i, acceso a información [0, 1]
 
-Autor: MASSIVE Research
 """
 
 import logging
@@ -32,20 +31,22 @@ import numpy as np
 import pandas as pd
 from scipy import sparse
 
-from llm_credentials import resolve_provider_api_key
+from massive.core.llm_credentials import resolve_provider_api_key
 from massive.core.state_compression import compress_agent_states, decompress_agent_states
 from metrics.unified_metrics import calculate_polarization
 
 log = logging.getLogger(__name__)
 
 # ── Coeficientes de modulación theta (calibrados empíricamente) ───────────
-# Escalas de sensibilidad por atributo y dimensión de comportamiento.
-# Valores derivados de literatura de psicología social y sociología:
+# Escalas de VOLATILIDAD (término estocástico) por atributo y dimensión de
+# comportamiento. Valores derivados de literatura de psicología social y
+# sociología:
 #   - Religión/opinión (0.5): Altemeyer (1988), efectos de autoritarismo religioso
 #   - Educación/cooperación (0.3): Putnam (2000), capital social y educación
 #   - Edad/jerarquía (0.4): Alwin & Krosnick (1991), estabilidad actitudinal
 #   - Juventud/ingreso (0.2): volatilidad laboral diferencial por cohorte
 #   - Educación/info (0.4): van Dijk (2005), brecha digital y capital educativo
+# Estos coeficientes NO fijan niveles medios (drift), solo la amplitud del ruido.
 _THETA_RELIGION_OPINION: float = 0.5
 _THETA_EDUCATION_COOP: float = 0.3
 _THETA_AGE_HIERARCHY: float = 0.4
@@ -231,8 +232,12 @@ def compute_theta(attributes_df: pd.DataFrame, K: int = 5) -> np.ndarray:
     """
     Calcula la matriz theta de modulación (N, K) a partir de los atributos.
 
-    Cada θ_{i,k} escala el ruido y la sensibilidad del agente i en la
-    dimensión de comportamiento k, según sus características sociodemográficas.
+    Cada θ_{i,k} escala el **término estocástico** (volatilidad) del agente i
+    en la dimensión de comportamiento k, según sus características
+    sociodemográficas. NOTA: theta NO modifica el drift ni los niveles de
+    equilibrio del potencial (p. ej. la cooperación objetivo sigue siendo
+    0.8·align con independencia de la educación) — solo cuánto fluctúa cada
+    agente alrededor de ellos.
 
     Args:
         attributes_df: DataFrame con columnas age_group, religion, education, gender.
@@ -248,15 +253,15 @@ def compute_theta(attributes_df: pd.DataFrame, K: int = 5) -> np.ndarray:
     edu = attributes_df["education"].to_numpy(dtype=np.float64)
     age = attributes_df["age_group"].to_numpy(dtype=np.float64)
 
-    # Opinión: los más religiosos son más sensibles a señales morales
+    # Opinión: los más religiosos fluctúan más en la dimensión moral
     theta[:, COL_OPINION] *= 1.0 + _THETA_RELIGION_OPINION * rel
-    # Cooperación: educación aumenta la disposición a cooperar
+    # Cooperación: los más educados fluctúan más en cooperación
     theta[:, COL_COOP] *= 1.0 + _THETA_EDUCATION_COOP * edu
-    # Jerarquía: los de mayor edad tienden a reconocer más la autoridad
+    # Jerarquía: los de mayor edad fluctúan más en reconocimiento de autoridad
     theta[:, COL_HIER] *= 1.0 + _THETA_AGE_HIERARCHY * (age / 2.0)
     # Ingreso: jóvenes más volátiles en ingreso
     theta[:, COL_INCOME] *= 1.0 + _THETA_YOUTH_INCOME * (1.0 - age / 2.0)
-    # Acceso a información: educación amplifica el acceso digital
+    # Acceso a información: los más educados fluctúan más en acceso digital
     theta[:, COL_INFO] *= 1.0 + _THETA_EDUCATION_INFO * edu
 
     return theta

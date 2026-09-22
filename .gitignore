@@ -1,7 +1,7 @@
 # Backup files
 .env.backup
 
-# AionRS session data
+# Local agent-tool session data
 .aionrs/
 
 # Python cache
@@ -34,10 +34,10 @@ data/factbook/*_test.json
 # SOTA roadmap artifacts (regenerated on each run)
 reports/sota_v0_seed*/
 
-# HEADROOM/Repomix
+# Repomix output bundles
 repomix-output*.xml
 
-# Codebuff (may contain secrets)
+# AI coding-tool state (may contain secrets)
 .codebuff/
 
 # Build artifacts

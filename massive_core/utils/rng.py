@@ -2,7 +2,7 @@
 RNG utilities for MASSIVE.
 
 Provides local, seedable generators for reproducible stochastic dynamics.
-See also CLAUDE.md §8 (reproducibility).
+See also docs/validation/ for the reproducibility protocol.
 """
 
 from __future__ import annotations

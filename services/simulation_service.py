@@ -92,6 +92,7 @@ def run_massive_sim(
     seed: int = 42,
     quantize: bool = True,
     event_driven: bool = True,
+    social_pressure: float = 0.5,
 ) -> dict[str, Any]:
     """Run ``MassiveSimEngine`` (LOD / event-driven path).
 
@@ -102,6 +103,8 @@ def run_massive_sim(
         seed: RNG seed.
         quantize: Enable uint8 state storage.
         event_driven: Enable sparse active-set updates.
+        social_pressure: Mean social pressure in [0, 1] (Factbook-derived,
+            1 − diversity). 0.5 is neutral and leaves coupling unchanged.
 
     Returns:
         Result dict from ``MassiveSimEngine.run`` plus memory report.
@@ -114,6 +117,7 @@ def run_massive_sim(
         seed=seed,
         quantize=quantize,
         event_driven=event_driven,
+        social_pressure=social_pressure,
     )
     result = engine.run(steps=steps, store_history=False)
     result["memory_report"] = engine.memory_report

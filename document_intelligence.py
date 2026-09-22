@@ -20,7 +20,6 @@ Uso rápido::
     params = di.extract_massive_params(ctx)
     # params.config_dict  → listo para simular()
 
-Autor: MASSIVE Research
 """
 
 from __future__ import annotations
@@ -557,7 +556,7 @@ class DocumentIntelligence:
         filename: str,
     ) -> DocumentContext:
         """
-        Parsea contenido en memoria (útil para uploads de la UI-NG / API).
+        Parsea contenido en memoria (útil para uploads vía API).
 
         Escribe a un archivo temporal, parsea y limpia.
         """

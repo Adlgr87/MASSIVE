@@ -3,7 +3,6 @@ Factbook to MASSIVE Parameter Mappings
 
 Defines the mapping between CIA World Factbook fields and MASSIVE simulation parameters.
 
-Author: MASSIVE Research
 """
 
 from typing import Any
@@ -445,7 +444,7 @@ def diversity_index(distribution: dict[str, float]) -> float:
 
 def scale_to_max(value: float, max_value: float) -> int:
     """Scale a value to a maximum cap."""
-    return min(int(value), max_value)
+    return int(min(int(value), max_value))
 
 
 def create_5d_demographic_matrix(age_percentages: list[float]) -> np.ndarray:

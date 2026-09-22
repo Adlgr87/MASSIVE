@@ -101,7 +101,7 @@ Debe revertirse o replantearse un slice si:
 
 ## Regla específica para agentes y automatización
 
-Cualquier agente o colaborador automatizado debe operar bajo esta secuencia:
+Cualquier colaborador (humano o automatizado) debe operar bajo esta secuencia:
 
 ```text
 1. Reconocer → verify: dependencias y superficie afectada entendidas

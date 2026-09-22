@@ -5,7 +5,7 @@ precedence, country detection, offline (no-LLM) dispatch, and seed
 reproducibility. Hermetic: provider keys cleared — no network calls.
 
 Regression note (2026-08-20): the previous revision targeted a divergent
-``classified_motor`` contract from a UI-NG draft (never wired into the
+``classified_motor`` contract (never wired into the
 ``/v1`` router). This version targets ``services/llm_orchestrator.py``
 directly, which implements contract v1.1.0.
 """

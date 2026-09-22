@@ -9,7 +9,6 @@ Provides methods to:
 - Generate validation reports
 - Identify discrepancies between simulation and reality
 
-Author: MASSIVE Research
 """
 
 from __future__ import annotations
@@ -254,7 +253,6 @@ class FactbookValidator:
         # Save report
         report.save()
 
-    Author: MASSIVE Research
     """
 
     def __init__(self, context: FactbookContext | None = None):
@@ -665,7 +663,7 @@ class FactbookValidator:
         Returns:
             Dictionary with comparison metrics and statistical tests
         """
-        results = {}
+        results: dict = {}
 
         # Normalize simulation opinions to [0, 1]
         if len(sim_opinions) == 0:

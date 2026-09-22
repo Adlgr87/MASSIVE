@@ -247,7 +247,7 @@ metric — the ~27 % *RMSE* reduction (the primary scientific metric) is detaile
 | Test suite | **679 tests, ~32 s** — `pytest tests/`  |
 | Coverage | 68 % branch (scope: engines + services + backend) — `make test-cov` |
 | Static quality | ruff + black + mypy (gradual slice) green in CI |
-| CI | 13 CI workflows per PR: lint, types, core/scientific/api/full suites, frontend build+lint, Docker compose health, TS-type sync, secret scan, semgrep, PVU benchmark |
+| CI | 11 CI workflows per PR: lint, types, core/scientific/api/full suites, frontend build+lint, Docker compose health, TS-type sync, secret scan, PVU benchmark |
 | Security | fail-closed auth, rate & body limits (`MASSIVE_MAX_BODY_MB`, streaming upload guard), constant-time compares, `n_agents` cap (prevents 8 TB OOM), `max_intentos` clamp (prevents LLM DoS), CSP/HSTS/X-Frame-Options at nginx edge, no secrets in tree |
 | Observability | `/metrics` Prometheus (counters + histograms + SLO gauges), W3C TraceContext `traceparent`, `X-Request-ID`, structured access logs, degraded-mode readiness |
 | Backup | `scripts/backup_factbook.sh`, `scripts/backup_models.sh`, `scripts/backup_simulations.sh`, `scripts/verify_backup.sh` |
@@ -281,7 +281,6 @@ MASSIVE/
 ├── forecast/             # Temporal risk forecasting
 ├── rust_core/            # Optional pyo3 kernels (massive_rust_core)
 ├── frontend/             # React 18 + Vite + TS SPA (typed DTOs generated from Python)
-├── massive-ui-ng/        # Separate Next-gen UI kit (not in CI root — see ARCH-02)
 ├── configs/llm_contract/ # Machine-readable MASSIVE↔LLM contract (v1.1.0)
 ├── datasets/pvu_cases/   # Offline validation cases (pre-registered)
 ├── benchmarks/           # PVU-BS runner + scientific benchmarks
@@ -299,6 +298,7 @@ MASSIVE/
 |---|---|
 | MkDocs site (API reference, validation, science) | `python -m mkdocs serve -a localhost:8001` → http://localhost:8001 |
 | API Reference | [`docs/api.md`](docs/api.md) |
+| Factbook integration (country-calibrated runs) | [`docs/factbook.md`](docs/factbook.md) |
 | Architecture — current state (verified map) | [`docs/architecture/current-state.md`](docs/architecture/current-state.md) |
 | Architecture — target state & open decisions | [`docs/architecture/target-state.md`](docs/architecture/target-state.md) |
 | Production-readiness audit & risk matrix | [`docs/production-readiness-audit.md`](docs/production-readiness-audit.md) |
@@ -335,6 +335,6 @@ Apache License 2.0 — see [`LICENSE`](LICENSE).
 
 <div align="center">
 
-*MASSIVE was previously developed as **MASSIVE** (archived in git history). Renamed 2026-06-29.*
+*MASSIVE — Mathematical Architecture for Scalable Social Interaction & Virtual Engine.*
 
 </div>

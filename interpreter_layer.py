@@ -28,7 +28,6 @@ Con archivos::
     ctx = layer.di.parse_file("informe_encuesta.pdf")
     cfg = layer.from_document(ctx)
 
-Autor: MASSIVE Research
 """
 
 from __future__ import annotations
@@ -44,7 +43,7 @@ from document_intelligence import (
     DocumentIntelligence,
     MASSIVEExtractedConfig,
 )
-from llm_credentials import resolve_provider_api_key
+from massive.core.llm_credentials import resolve_provider_api_key
 from massive_core.config.settings import get_llm_base_url
 
 log = logging.getLogger(__name__)

@@ -375,6 +375,10 @@ def _dispatch(
         n_agents = int(config.get("n_agents", 10_000))
         seed_val = int(seed if seed is not None else 42)
         m_clusters = config.get("m_clusters")
+        # Factbook-augmented runs carry social_pressure_weights (1 − diversidad);
+        # average them into the scalar that modulates conformist coupling.
+        spw = config.get("social_pressure_weights") or {}
+        social_pressure = float(sum(spw.values()) / len(spw)) if spw else 0.5
         result = run_massive_sim(
             n_agents=n_agents,
             m_clusters=m_clusters,
@@ -382,6 +386,7 @@ def _dispatch(
             seed=seed_val,
             quantize=config.get("quantize", True),
             event_driven=config.get("event_driven", True),
+            social_pressure=social_pressure,
         )
         # Build a timeline-compatible history for _extract_timeline.
         opinion_hist = result.get("opinion_history")

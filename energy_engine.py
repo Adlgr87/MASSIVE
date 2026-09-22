@@ -37,6 +37,31 @@ except ImportError:
 # Ancho gaussiano por defecto para pozos/picos del paisaje
 _SIGMA = 0.3
 
+# Gini de referencia: el ancho efectivo del paisaje se modula alrededor de
+# este valor para que la configuración por defecto no cambie resultados
+# históricos (σ = _SIGMA cuando gini = _GINI_SIGMA_ANCHOR).
+_GINI_SIGMA_ANCHOR = 0.35
+# Sensibilidad del ancho al Gini: Gini↑ → σ↓ → paisaje más "afilado"
+# (pozos/repulsores más estrechos → polarización más marcada).
+_GINI_SIGMA_SENSITIVITY = 0.5
+
+
+def effective_sigma(gini: float) -> float:
+    """Ancho efectivo σ del paisaje para un coeficiente de Gini dado.
+
+    Correlación documentada (Gini↑ → σ↓ → paisaje más "afilado"), anclada en
+    ``_GINI_SIGMA_ANCHOR`` para que la configuración por defecto preserve los
+    resultados históricos.
+
+    Args:
+        gini: Coeficiente de Gini en [0, 1].
+
+    Returns:
+        σ efectivo > 0.
+    """
+    g = float(np.clip(gini, 0.0, 1.0))
+    return _SIGMA * (1.0 + _GINI_SIGMA_SENSITIVITY * (_GINI_SIGMA_ANCHOR - g))
+
 
 def _ews_fallback_multiplier(flags: dict) -> float:
     """Rule-based temperature multiplier for EWS flags (fallback when no LNN model)."""
@@ -274,15 +299,21 @@ class SocialEnergyEngine:
             log.warning(f"[EnergyEngine] Could not load landscape model: {exc}")
             return None
 
-    def propose_landscape(self, features: dict) -> tuple[list, list]:
+    def propose_landscape(
+        self,
+        features: dict,
+        base_attractors: list | None = None,
+        base_repellers: list | None = None,
+    ) -> tuple[list, list]:
         """Propose new attractor/repeller parameters using the trained LNN.
 
         Returns:
-            (new_attractors, new_repellers) lists of dicts with 'position' and 'strength'.
-            Falls back to original values if the model is unavailable.
+            (new_attractors, new_repellers) lists of dicts with 'position' and
+            'strength'. Falls back to the caller-supplied base landscape
+            (or empty lists) when the model is unavailable — never None.
         """
         if self._landscape_model is None or not self._torch_available:
-            return None
+            return list(base_attractors or []), list(base_repellers or [])
 
         try:
             feat = _torch.tensor(
@@ -374,14 +405,9 @@ class SocialEnergyEngine:
         row_sums = np.where(row_sums == 0, 1.0, row_sums)
         neighbor_mean = (adj @ opinions) / row_sums
 
-        # ── Ruido estocástico (una muestra por agente) ─────────────────────────
-        noise = np.sqrt(2.0 * eta * effective_temp) * self.rng.standard_normal(n)
-
         # ── Prepare arrays for vectorized landscape gradient ──────────────────
-        # sigma2 is wired into the vectorized _vectorized_grad below;
-        # Gini's effect on landscape width is handled via propose_lambda()
-        # and the EWS temperature trigger (see MASSIVE_REACTIVE_COHERENCE_PLAN.md §2).
-        sigma2 = _SIGMA**2
+        # Ancho efectivo del paisaje modulado por el Gini (Gini↑ → σ↓).
+        sigma2 = effective_sigma(self.gini_coefficient) ** 2
         if attractors:
             att_positions = np.array([a["position"] for a in attractors], dtype=np.float64)
             att_strengths = np.array([a["strength"] for a in attractors], dtype=np.float64)
@@ -434,6 +460,13 @@ class SocialEnergyEngine:
         grad_vec = _vectorized_grad(opinions)
         social_drift = self.lambda_social * (neighbor_mean - opinions)
         landscape_drift = (1.0 - self.lambda_social) * (-grad_vec)
+        # Ruido estocástico (una muestra por agente) — solo en la rama legacy,
+        # el stepper muestrea el suyo arriba.
+        noise = (
+            np.sqrt(2.0 * eta * effective_temp) * self.rng.standard_normal(n)
+            if effective_temp > 0.0
+            else 0.0
+        )
         new_opinions = opinions + eta * landscape_drift + eta * social_drift + noise
         new_opinions = np.clip(new_opinions, self.min_val, self.max_val)
 
@@ -494,13 +527,16 @@ class SocialEnergyEngine:
         """
         inequality = self.inequality_factor
 
-        # Note: Gini's effect on the landscape is wired in step() — higher Gini
-        # narrows sigma (landscape width) per MASSIVE_REACTIVE_COHERENCE_PLAN.md
-        # §2 (Gini↑→σ↓→sharper polarization). Here we apply the inequality
-        # amplification to attractor/repeller strengths.
-
-        attractor_multiplier = self.economic_potential.get("attractor_strength", 1.35)
-        repeller_multiplier = self.economic_potential.get("repeller_strength", 0.75)
+        # Multipliers default to the same Gini-derived formula as
+        # massive.core.factbook.mappings.create_wealth_potential, so the
+        # engine and the Factbook mapping layer stay consistent:
+        #   attractor = 1 + 2·gini, repeller = 0.5 + 0.5·gini
+        attractor_multiplier = self.economic_potential.get(
+            "attractor_strength", 1.0 + 2.0 * self.gini_coefficient
+        )
+        repeller_multiplier = self.economic_potential.get(
+            "repeller_strength", 0.5 + 0.5 * self.gini_coefficient
+        )
 
         # Adjust attractors: higher inequality = stronger attractors
         adjusted_attractors = []
@@ -549,7 +585,7 @@ class SocialEnergyEngine:
         gini = self.gini_coefficient
 
         # Calculate income-based scaling
-        income_scale = np.log1p(mean_income) / 15.0
+        income_scale = np.log1p(mean_income) / 10.0  # misma escala que create_wealth_potential
 
         # Create attractors (economic opportunities)
         # In more unequal societies, opportunities are more concentrated

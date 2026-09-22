@@ -139,7 +139,7 @@ class TestCfCLandscapeModulator:
         assert "strength" in new_repellers[0]
 
     def test_engine_fallback_without_model(self):
-        """Engine should fall back to None when landscape model unavailable."""
+        """Engine should fall back to the base landscape when model unavailable."""
         engine = SocialEnergyEngine(
             range_type="bipolar",
             temperature=0.05,
@@ -148,6 +148,8 @@ class TestCfCLandscapeModulator:
             seed=42,
         )
         engine._landscape_model = None
+        base_att = [{"position": -0.5, "strength": 1.0}]
+        base_rep = [{"position": 0.0, "strength": 0.5}]
         result = engine.propose_landscape(
             {
                 "polarization": 0.4,
@@ -155,9 +157,15 @@ class TestCfCLandscapeModulator:
                 "delta_p5": 0.005,
                 "skewness": 0.2,
                 "gini": 0.35,
-            }
+            },
+            base_attractors=base_att,
+            base_repellers=base_rep,
         )
-        assert result is None
+        # Contract: always a valid (attractors, repellers) tuple — never None.
+        assert result is not None
+        new_attractors, new_repellers = result
+        assert new_attractors == base_att
+        assert new_repellers == base_rep
 
     @skip_no_landscape_weights
     def test_router_status_includes_landscape(self):

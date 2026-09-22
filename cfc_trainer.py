@@ -16,7 +16,6 @@ Uso rápido::
 Los modelos entrenados se guardan en models/ y son cargados automáticamente
 por CfCRouter al iniciar MASSIVE.
 
-Autor: MASSIVE Research
 """
 
 import logging

@@ -10,7 +10,6 @@ This module provides country-specific context that can be used to:
 4. Optimize interventions with real economic constraints
 5. Validate simulation results against real-world metrics
 
-Author: MASSIVE Research
 """
 
 from __future__ import annotations
@@ -142,14 +141,14 @@ class CountryData:
         # Cost scale factor for interventions
         self.massive_params["cost_scale_factor"] = np.log1p(self.gdp_per_capita) / 10.0
 
-        # Fiscal constraint
-        if self.budget_surplus_deficit != 0:
-            self.massive_params["fiscal_constraint"] = max(
-                0,
-                min(1, 1 - (self.budget_surplus_deficit / abs(self.budget_surplus_deficit)) * 0.1),
-            )
-        else:
-            self.massive_params["fiscal_constraint"] = 0.5
+        # Fiscal feasibility in [0, 1] — monotonic in the budget balance
+        # relative to revenues: deficit → below 0.5 (less room for
+        # interventions), balanced → 0.5, surplus → above 0.5. This value
+        # feeds the intervention optimizer's budget (higher = more capacity).
+        surplus_ratio = self.budget_surplus_deficit / max(abs(self.budget_revenues), 1e-9)
+        self.massive_params["fiscal_constraint"] = float(
+            np.clip(0.5 + 2.0 * surplus_ratio, 0.0, 1.0)
+        )
 
         # Sector multipliers
         total_sector = self.agriculture_share + self.industry_share + self.services_share
@@ -199,7 +198,6 @@ class FactbookContext:
         n_agents = params["n_agents"]
         demographic_matrix = params["demographic_matrix"]
 
-    Author: MASSIVE Research
     """
 
     def __init__(self, data_path: str | None = None):

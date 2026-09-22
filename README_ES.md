@@ -254,7 +254,6 @@ MASSIVE/
 ├── cfc_*.py              # Corrector residual CfC (liquid NN): engine, router, trainer
 ├── rust_core/            # Kernels pyo3 opcionales (massive_rust_core)
 ├── frontend/             # SPA React 18 + Vite + TS (DTOs tipados generados desde Python)
-├── massive-ui-ng/        # Kit UI next-gen (traductor LLM; ver su README)
 ├── configs/llm_contract/ # Contrato MASSIVE↔LLM legible por máquina (v1.1.0)
 ├── datasets/pvu_cases/   # Casos de validación offline (pre-registrados)
 ├── benchmarks/           # Runner PVU-BS + benchmarks científicos
@@ -270,6 +269,7 @@ MASSIVE/
 |---|---|
 | Sitio MkDocs (referencia API, validación, ciencia) | `python -m mkdocs serve -a localhost:8001` → http://localhost:8001 |
 | Arquitectura — estado actual (mapa verificado) | [`architecture/current-state.md`](architecture/current-state.md) |
+| Integración Factbook (simulaciones calibradas por país) | [`docs/factbook.md`](docs/factbook.md) |
 | Arquitectura — estado objetivo y decisiones abiertas | [`architecture/target-state.md`](architecture/target-state.md) |
 | Auditoría de production-readiness y matriz de riesgos | [`production-readiness-audit.md`](production-readiness-audit.md) |
 | Runbooks (dev · ops · incidentes) | [`docs/runbooks/`](runbooks/local-development.md) |

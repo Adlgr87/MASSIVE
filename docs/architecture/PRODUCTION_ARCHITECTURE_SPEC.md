@@ -19,7 +19,7 @@ El repositorio `Adlgr87/MASSIVE` exhibe una **estructura dual y evolutiva**:
 | **UI-NG Frontend** | `frontend/` | React 18 + Vite + TypeScript + Tailwind. Cliente oficial futuro. Genera tipos TS desde DTOs via `scripts/gen_ts_types.py`. | En construcción (skeleton) |
 | **Adapter científico opt-in** | `massive_core/` | Fachada estable sobre módulos legacy. Re-exporta `simular`, `run_scientific_simulation`, contratos (`SimulationState`, `SimulationConfig`), `RateLimiter`, `ScientificRuntimeConfig`, logging centralizado. | Activo, es la "puerta de entrada" recomendada para nuevos consumidores |
 | **Simulación multi-agente** | `micro_massive/` | Motor de grupos pequeños (3-15 agentes). Personalidades Forer + matriz de influencia + teoría de juegos evolutiva. | Autónomo, con CLI propia (`MicroOrchestrator`) |
-| **Motores legacy** | raíz (`simulator.py`, `energy_engine.py`, `multilayer_engine.py`, `massive_engine.py`, `social_architect.py`, `forecast/`) | Núcleo de física/social. Mantener compatibilidad con CLAUDE.md §4. | Legacy — inmantean los existentes |
+| **Motores legacy** | raíz (`simulator.py`, `energy_engine.py`, `multilayer_engine.py`, `massive_engine.py`, `social_architect.py`, `forecast/`) | Núcleo de física/social. Mantener compatibilidad con la API pública (`simular`, `simular_multiples`). | Legacy — inmantean los existentes |
 
 ### 1.2 Punto de tensión crítico
 
@@ -85,7 +85,7 @@ Esto significa que la "Fase 1 del Master Orchestrator" debe **definir** esta sup
 
 ### 2.3 Invariants
 
-- **CLAUDE.md §4:** `simular` y `simular_multiples` deben mantener compatibilidad. Nuevas funcionalidades viven en módulos nuevos.
+- **Compatibilidad:** `simular` y `simular_multiples` deben mantener compatibilidad. Nuevas funcionalidades viven en módulos nuevos.
 - **AGENTS.md:** DTOs usan `extra="forbid"`; payloads de entrada son `dict` con `_rate_limit`, `_public_error`.
 - **Reproducibilidad:** Semillas pasadas explícitamente via `seed=` — no son globales env vars.
 
@@ -475,7 +475,7 @@ Content-Type: application/json
 ### 6.3 ADR-003: Semillas no globales
 
 - **Status:** Aceptada
-- **Contexto:** CLAUDE.md §7 y AGENTS.md exigen reproducibilidad explícita.
+- **Contexto:** la política de reproducibilidad del proyecto exige semillas explícitas.
 - **Decisión:** Siempre usar `seed=` como argumento de función o en `config["seed"]`. Nunca leer `os.environ["SEED"]`.
 - **Consecuencia:** CI usa `PYTHONHASHSEED=42` como complemento, no como mecanismo de reproducibility.
 

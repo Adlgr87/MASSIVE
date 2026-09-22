@@ -6,7 +6,7 @@ y que sus valores satisfagan las propiedades esperadas.
 
 import unittest
 
-from empirical_config import (
+from massive.core.empirical_config import (
     EMPIRICAL_BASE_LOADED,
     MASSIVE_EMPIRICAL_MASTER,
     MASSIVE_RUNTIME_PARAMS,

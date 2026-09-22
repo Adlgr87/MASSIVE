@@ -154,7 +154,7 @@ def calculate_social_pressure(
         # Use custom group distributions if provided
         if ethnic_groups or religious_groups or language_groups:
             diversity_factor = 0.0
-            count = 0
+            count = 0.0
 
             if ethnic_groups:
                 diversity_factor += _calculate_diversity_index(ethnic_groups) * 0.4

@@ -264,19 +264,24 @@ def estimate_intervention_cost(
     """
     Estimate the cost of interventions based on Factbook economic data.
 
+    Cost depends on the intervention footprint (phases x agents) and the
+    national cost scale (GDP-derived). Fiscal feasibility does NOT inflate
+    cost — it gates feasibility and the optimizer's budget density
+    (see ``optimize_interventions`` and ``get_intervention_feasibility``).
+
     Args:
         interventions: Matrix of interventions (n_phases, n_agents)
         cost_scale_factor: Economic scale factor from Factbook GDP data
-        fiscal_constraint: Fiscal feasibility from Factbook budget data
+        fiscal_constraint: Fiscal feasibility in [0, 1] (unused for cost;
+            kept for signature compatibility with existing callers)
 
     Returns:
         Estimated cost of interventions
     """
+    del fiscal_constraint
     n_phases, n_agents = interventions.shape
     base_cost = n_phases * n_agents
-    cost = base_cost * cost_scale_factor
-    cost *= (1.0 + fiscal_constraint) * 0.5
-    return float(cost)
+    return float(base_cost * cost_scale_factor)
 
 
 def get_intervention_feasibility(

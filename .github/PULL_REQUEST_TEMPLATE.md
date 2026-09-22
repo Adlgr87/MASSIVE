@@ -30,7 +30,7 @@ Describe brevemente qué se ha modificado y por qué.
 - [ ] Se han añadido pruebas para nueva funcionalidad
 - [ ] No se han roto APIs públicas legacy
 - [ ] La documentación se ha actualizado
-- [ ] Se ha seguido el protocolo de `CLAUDE.md`
+- [ ] Se ha seguido el protocolo de seguridad de `docs/architecture/safety_protocol.md`
 
 ## Notas de integración
 
