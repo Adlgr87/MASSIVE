@@ -292,26 +292,12 @@ def _generate_hierarchical_sparse(N: int, seed: int = 42) -> sparse.csr_matrix:
     return A.tocsr()
 
 
-def _landscape_gradient(x: float, attractors: list, repellers: list, sigma2: float) -> float:
-    """Pure-python landscape gradient."""
-    grad = 0.0
-    for att in attractors:
-        diff = x - att["position"]
-        g = np.exp(-diff * diff / (2.0 * sigma2))
-        grad += att["strength"] * diff / sigma2 * g
-    for rep in repellers:
-        diff = x - rep["position"]
-        g = np.exp(-diff * diff / (2.0 * sigma2))
-        grad -= rep["strength"] * diff / sigma2 * g
-    return grad
-
-
 # ─── Engine runners ──────────────────────────────────────────────────────────
 def run_energy_engine(
     n_agents: int, steps: int, temperature: float, lambda_social: float, seed: int, timeout: float
 ) -> EngineRunResult:
     """EnergyEngine (Langevin 1D)."""
-    from energy_engine import _SIGMA
+    from energy_engine import _SIGMA, _landscape_gradient
 
     rng = np.random.default_rng(seed)
     opinions = rng.uniform(-1.0, 1.0, n_agents).astype(np.float64)
@@ -322,15 +308,10 @@ def run_energy_engine(
     repellers = [{"position": 0.0, "strength": 0.15}]
     avg_deg = 3.0 if n_agents > 1 else 0.0
     adj = _build_sparse_adjacency(n_agents, avg_deg, seed)
-    sigma2 = _SIGMA**2
+    sigma = _SIGMA
     eta = 0.01
     row_sums = np.asarray(adj.sum(axis=1)).ravel()
     row_sums = np.where(row_sums == 0, 1.0, row_sums)
-    _att_pos = np.array([a["position"] for a in attractors], dtype=np.float64)
-    _att_str = np.array([a["strength"] for a in attractors], dtype=np.float64)
-    _rep_pos = np.array([r["position"] for r in repellers], dtype=np.float64)
-    _rep_str = np.array([r["strength"] for r in repellers], dtype=np.float64)
-
     monitor = ResourceMonitor(interval=0.3)
     tracemalloc.start()
     monitor.start()
@@ -341,12 +322,16 @@ def run_energy_engine(
             neighbor_mean = (adj @ opinions) / row_sums
             new_op = np.empty(n_agents)
             for i in range(n_agents):
-                grad_u = _landscape_gradient(opinions[i], attractors, repellers, sigma2)
+                grad_u = _landscape_gradient(opinions[i], attractors, repellers, sigma)
                 social = lambda_social * (neighbor_mean[i] - opinions[i])
                 landscape = (1.0 - lambda_social) * (-grad_u)
                 val = opinions[i] + eta * landscape + eta * social + noise[i]
                 new_op[i] = max(-1.0, min(1.0, val))
-                opinions = new_op
+            # Must land OUTSIDE the agent loop: rebinding `opinions` per agent
+            # made every later agent in the sweep read a half-filled
+            # `np.empty` buffer (uninitialised memory), so the benchmark was
+            # timing a corrupted dynamic.
+            opinions = new_op
             del noise
     except MemoryError:
         tracemalloc.stop()

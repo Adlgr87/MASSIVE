@@ -151,13 +151,12 @@ def _path_group(path: str) -> str:
 
 
 # NOTE: a `deprecation_warning` middleware used to live here, tagging legacy
-# `/api/*` (non-`/v1`) routes with an `X-API-Warn` header. Every router in
-# this app is mounted under `/v1` or `/api/v1` only, so no such route exists:
-# the middleware ran on every single request and its condition could never
-# match a real endpoint. Removed rather than kept as decoration — dead
-# middleware still costs a coroutine hop per request and misleads readers into
-# thinking a deprecated surface is being served here. The legacy surface is
-# `api.py`, which is a separate ASGI app.
+# `/api/*` routes with an `X-API-Warn` header. Every router is mounted under
+# `/v1` only, so no such route exists: the middleware ran on every single
+# request and its condition could never match. Removed rather than kept as
+# decoration — dead middleware still costs a coroutine hop per request and
+# misleads readers into thinking a deprecated surface is served here. The
+# legacy `api.py` app and the `/api/v1` alias have both since been removed.
 
 
 @app.middleware("http")
@@ -287,22 +286,18 @@ async def validate_host_header(request: Request, call_next):
 
 
 # --- Include versioned routers -------------------------------------------
-# Routers are mounted under `/v1/*` (canonical, per ADR-001). An alias at
-# `/api/v1/*` is also registered so the existing frontend
-# (`frontend/src/services/api.ts` baseURL `/api`) and the nginx `/api/` proxy
-# keep functioning without a frontend/nginx rewrite. See AGENTS.md §Routing.
+# Routers are mounted under `/v1/*` (canonical, per ADR-001).
+#
+# A compatibility alias at `/api/v1/*` used to be registered alongside it,
+# justified by the frontend using a `/api` baseURL. That justification no
+# longer holds: `frontend/src/services/api.ts` sets baseURL `/v1`, no test
+# referenced the alias, and keeping it doubled the authenticated public
+# surface for no consumer. Removed — callers must use `/v1/*`.
 app.include_router(sim.router, prefix="/v1")
 app.include_router(forecast.router, prefix="/v1")
 app.include_router(engine.router, prefix="/v1")
 app.include_router(benchmark.router, prefix="/v1")
 app.include_router(llm.router, prefix="/v1")
-# Compatibility alias: /api/v1/* → same router stack (no double-handling;
-# FastAPI mounts by route signature, not path text, so re-inclusion is safe).
-app.include_router(sim.router, prefix="/api/v1")
-app.include_router(forecast.router, prefix="/api/v1")
-app.include_router(engine.router, prefix="/api/v1")
-app.include_router(benchmark.router, prefix="/api/v1")
-app.include_router(llm.router, prefix="/api/v1")
 
 
 # --- Infra endpoints -----------------------------------------------------

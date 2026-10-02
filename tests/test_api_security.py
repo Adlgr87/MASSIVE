@@ -1,42 +1,60 @@
-"""API security surface tests (no live server required for most checks)."""
+"""API security surface tests (no live server required for most checks).
+
+These used to assert the same properties twice, once against the legacy
+``api.py`` monolith and once against the canonical ``backend.app``. The legacy
+module was removed (every one of its endpoints had a canonical equivalent and
+the React client never called it), so the canonical app is now the single
+surface under test.
+"""
 
 from __future__ import annotations
 
-import inspect
-
 import pytest
 
-import api as api_mod
+pytest.importorskip("networkx", reason="canonical app needs the full stack")
 
 
 def test_cors_does_not_use_wildcard_with_credentials():
-    assert "*" not in api_mod._cors_origins
+    import backend.app.main as main
+
+    assert "*" not in main._cors_origins
 
 
-def test_file_path_rejected_in_simulate_handler_source():
-    src = inspect.getsource(api_mod.api_simulate)
-    assert "file_path is not allowed" in src
+def test_rate_limit_is_configured():
+    from backend.app.security import _RATE_LIMIT_PER_MIN, rate_limit_dependency
+
+    assert callable(rate_limit_dependency)
+    assert _RATE_LIMIT_PER_MIN >= 1
 
 
-def test_rate_limit_helper_exists():
-    assert callable(api_mod._rate_limit)
-    assert api_mod._RATE_LIMIT >= 1
+def test_app_exposes_health_and_llm_routes():
+    from backend.app.main import app
 
-
-def test_app_has_health_routes():
-    paths = {getattr(r, "path", None) for r in api_mod.app.routes}
+    paths = set(app.openapi()["paths"])
     assert "/health" in paths
-    assert "/api/wizard" in paths
+    assert "/v1/llm/wizard" in paths
+
+
+def test_canonical_surface_never_accepts_a_file_path_field():
+    """The removed ``api.py`` took an untyped dict body and had to blocklist
+    ``file_path`` by hand to stop callers reading arbitrary local files. The
+    canonical routers are typed, so the field must not appear at all — this
+    guards against someone reintroducing an untyped escape hatch."""
+    import pathlib
+
+    import backend.app.routers as routers_pkg
+
+    for py in pathlib.Path(routers_pkg.__file__).parent.glob("*.py"):
+        assert "file_path" not in py.read_text(encoding="utf-8"), py
 
 
 # ---------------------------------------------------------------------------
-# Auth parity between legacy api.py and canonical backend.app (SEC-02/SEC-03).
-# Both backends must share identical environment + key-matching semantics.
+# Auth semantics of the canonical backend (SEC-02/SEC-03).
 #
 # The canonical app pulls the full engine stack (networkx, pandas, ...) via
 # services.simulation_service; the lightweight CI "api" job only installs
 # numpy/scipy. Import it lazily so this module stays collectable there and
-# the parity tests run wherever the full stack is available.
+# these tests run wherever the full stack is available.
 # ---------------------------------------------------------------------------
 
 from fastapi.testclient import TestClient  # noqa: E402
@@ -61,7 +79,6 @@ def _auth_probe(app, path: str, api_key: str | None) -> int:
     return _probe_status(app, path, headers)
 
 
-_LEGACY_PATH = "/api/v1/forecast"
 _CANONICAL_PATH = "/v1/simulate"
 
 # (MASSIVE_ENV, MASSIVE_DEV_FALLBACK, expected_status_without_key)
@@ -93,19 +110,6 @@ def _set_env(monkeypatch, env_value, dev_fallback):
         monkeypatch.setenv("MASSIVE_DEV_FALLBACK", dev_fallback)
 
 
-def test_legacy_env_semantics(monkeypatch):
-    import api as api_mod
-
-    for env_value, dev_fb, expected in _ENV_CASES:
-        monkeypatch.delenv("MASSIVE_API_KEY", raising=False)
-        _set_env(monkeypatch, env_value, dev_fb)
-        status = _auth_probe(api_mod.app, _LEGACY_PATH, None)
-        assert status == expected, (
-            f"legacy MASSIVE_ENV={env_value!r} MASSIVE_DEV_FALLBACK={dev_fb!r}: "
-            f"{status} != {expected}"
-        )
-
-
 def test_canonical_env_semantics(monkeypatch):
     canonical_app = _canonical_app()
     for env_value, dev_fb, expected in _ENV_CASES:
@@ -118,36 +122,28 @@ def test_canonical_env_semantics(monkeypatch):
         )
 
 
-def test_both_backends_accept_dev_fallback_key(monkeypatch):
+def test_dev_fallback_key_accepted_only_with_opt_in(monkeypatch):
     """Dev fallback requires BOTH MASSIVE_ENV=development AND MASSIVE_DEV_FALLBACK."""
-    import api as api_mod
-
     canonical_app = _canonical_app()
     monkeypatch.delenv("MASSIVE_API_KEY", raising=False)
     monkeypatch.setenv("MASSIVE_ENV", "development")
     monkeypatch.setenv("MASSIVE_DEV_FALLBACK", "1")
-    assert _auth_probe(api_mod.app, _LEGACY_PATH, "dev-secret-key") != 401
     assert _auth_probe(canonical_app, _CANONICAL_PATH, "dev-secret-key") != 401
 
 
-def test_both_backends_reject_dev_fallback_without_opt_in(monkeypatch):
+def test_reject_dev_fallback_without_opt_in(monkeypatch):
     """Without MASSIVE_DEV_FALLBACK, dev-secret-key must NOT authenticate."""
-    import api as api_mod
-
     canonical_app = _canonical_app()
     monkeypatch.delenv("MASSIVE_API_KEY", raising=False)
     monkeypatch.setenv("MASSIVE_ENV", "development")
     monkeypatch.delenv("MASSIVE_DEV_FALLBACK", raising=False)
-    assert _auth_probe(api_mod.app, _LEGACY_PATH, "dev-secret-key") == 503
     assert _auth_probe(canonical_app, _CANONICAL_PATH, "dev-secret-key") == 503
 
 
-def test_both_backends_reject_wrong_key_when_configured(monkeypatch):
-    import api as api_mod
-
+def test_reject_wrong_key_when_configured(monkeypatch):
     canonical_app = _canonical_app()
     monkeypatch.setenv("MASSIVE_API_KEY", "testkey111")
-    for app, path in ((api_mod.app, _LEGACY_PATH), (canonical_app, _CANONICAL_PATH)):
+    for app, path in ((canonical_app, _CANONICAL_PATH),):
         assert _auth_probe(app, path, "wrong-key") == 401
         assert _auth_probe(app, path, None) == 401
         # Correct key passes auth (may fail validation with 422 — never 401/503).
@@ -262,28 +258,23 @@ class TestHostHeaderFailsClosed:
 
 
 class TestUploadLimitsAreUnified:
-    def test_both_surfaces_accept_and_reject_the_same_extensions(self):
-        """Behavioural check: the two `_safe_suffix` gates must agree.
+    def test_router_gate_matches_the_shared_allow_list(self):
+        """Behavioural check on the upload gate.
 
         Asserting on a module-level constant would not catch the real defect
-        (the surfaces disagreeing on a given filename), and the legacy module
-        no longer needs to re-export the allow-list now that it delegates.
+        (the gate disagreeing with the shared allow-list on a given filename),
+        so drive it through `_safe_suffix` instead.
         """
-        pytest.importorskip("networkx", reason="canonical app needs the full stack")
         import backend.app.routers.llm as router_mod
         from massive_core.config.uploads import ALLOWED_UPLOAD_EXTENSIONS
 
         for ext in ALLOWED_UPLOAD_EXTENSIONS:
-            name = f"upload{ext}"
-            assert api_mod._safe_suffix(name) == ext
-            assert router_mod._safe_suffix(name) == ext
+            assert router_mod._safe_suffix(f"upload{ext}") == ext
 
         for bad in (".exe", ".sh", ".zip"):
-            name = f"payload{bad}"
-            for surface in (api_mod, router_mod):
-                with pytest.raises(Exception) as excinfo:
-                    surface._safe_suffix(name)
-                assert getattr(excinfo.value, "status_code", None) == 400
+            with pytest.raises(Exception) as excinfo:
+                router_mod._safe_suffix(f"payload{bad}")
+            assert getattr(excinfo.value, "status_code", None) == 400
 
     def test_max_upload_mb_is_honoured(self, monkeypatch):
         from massive_core.config.uploads import max_upload_bytes

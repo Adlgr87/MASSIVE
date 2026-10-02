@@ -33,6 +33,9 @@ from scipy import sparse
 
 from massive.core.llm_credentials import resolve_provider_api_key
 from massive.core.state_compression import compress_agent_states, decompress_agent_states
+from massive_core.kernels import (
+    multi_potential_gradient as _shared_multi_potential_gradient,
+)
 from metrics.unified_metrics import calculate_polarization
 
 log = logging.getLogger(__name__)
@@ -287,40 +290,20 @@ def multi_potential_gradient(x: np.ndarray) -> np.ndarray:
     U(x) = U_opinion(x[:,0]) + U_coop(x[:,1], x[:,0])
            + U_hierarchy(x[:,2]) + U_income(x[:,3]) + U_info(x[:,4])
 
+    Esta era una tercera copia de la misma ley física, escrita como bucle
+    Python sobre los N agentes. Delega en el kernel vectorizado compartido
+    (`massive_core.kernels`), que es la única definición ejecutable: así un
+    cambio en la física se hace en un sitio y no en tres. La equivalencia se
+    verificó bit a bit sobre 300 casos aleatorios antes de sustituirla, y
+    `tests/test_gradient_single_source.py` la mantiene.
+
     Args:
         x: Estado actual de forma (N, K).
 
     Returns:
         Gradiente ∇U de forma (N, K).
     """
-    N = x.shape[0]
-    grad = np.zeros_like(x)
-
-    for i in range(N):
-        op = x[i, COL_OPINION]
-        coop = x[i, COL_COOP]
-        hier = x[i, COL_HIER]
-        inc = x[i, COL_INCOME]
-        info = x[i, COL_INFO]
-
-        # Opinión: doble pozo → polarización emergente en ±0.7
-        grad[i, COL_OPINION] = _bimodal_grad(op)
-
-        # Cooperación: depende de la opinión del agente (alineación social)
-        # Alto acuerdo de opinión → cooperación se estabiliza en 0.8
-        align = 0.5 * (op + 1.0)  # mapea [-1,1] → [0,1]
-        grad[i, COL_COOP] = 2.0 * (coop - 0.8 * align)
-
-        # Jerarquía: atracción hacia 0 (rebelde) o 1 (conformista)
-        grad[i, COL_HIER] = -2.0 * hier * (1.0 - hier) * (2.0 * hier - 1.0)
-
-        # Ingreso: gradiente suave hacia centro (0.5), con fricción por jerarquía
-        grad[i, COL_INCOME] = 0.5 * (inc - 0.5) * (1.0 + hier)
-
-        # Acceso info: decaimiento lento hacia 0.5 modulado por cooperación
-        grad[i, COL_INFO] = 0.3 * (info - 0.5 - 0.2 * coop)
-
-    return grad
+    return _shared_multi_potential_gradient(x)
 
 
 # ============================================================

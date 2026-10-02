@@ -6,6 +6,16 @@ All notable changes to **MASSIVE** are documented here. This project follows
 ## [Unreleased] — production-readiness hardening (2026-08-20)
 
 ### Removed
+- **Legacy `api.py` monolith (506 LOC, 10 endpoints) and the `/api/v1/*`
+  compatibility alias.** Every legacy endpoint had a canonical equivalent
+  (`/api/extract` -> `/v1/llm/extract`, `/api/v1/energy` -> `/v1/engine/energy`,
+  ...), the React client has used baseURL `/v1` for some time, and no test
+  referenced the alias. The alias' own code comment justified it by a frontend
+  `/api` baseURL that no longer exists. Keeping both doubled the authenticated
+  public surface: the OpenAPI route count drops from 24 to 15. The nginx
+  `location /api/` block and the Vite `/api` proxy entry are removed with it.
+  **Breaking for any out-of-tree caller still using `/api/*`.**
+- **Orphaned `frontend/src/hooks/useApi.ts`** (no importers).
 - **Optional Rust acceleration layer (`rust_core/` crate + `massive_rust_core`
   extension).** Audit evidence showed it had never executed once: the build
   backend is setuptools rather than maturin, so `pip install -e .` never
@@ -17,6 +27,30 @@ All notable changes to **MASSIVE** are documented here. This project follows
   dual-path dispatch removed; behaviour is bit-for-bit identical (verified on
   600 randomized cases). Also drops the Dependabot `cargo` ecosystem and the
   docs that advertised an acceleration that did not exist.
+
+### Fixed
+- **`benchmark_scalability.py` was benchmarking a reimplementation, not the
+  engine.** It carried its own copy of `_landscape_gradient`, so published
+  numbers did not reflect shipped code; it now calls `energy_engine`'s. While
+  wiring that up, two further defects surfaced in the same loop: `opinions =
+  new_op` sat *inside* the per-agent loop, so every agent after the first read
+  a half-filled `np.empty` buffer (uninitialised memory) — the benchmark was
+  timing a corrupted dynamic — and four precomputed `_att_*`/`_rep_*` arrays
+  were never used.
+
+### Changed
+- **The social potential gradient now has one executable definition.** It was
+  written out three times; `multilayer_engine.multi_potential_gradient` was a
+  Python loop over agents duplicating the vectorized kernel. It delegates to
+  `massive_core.kernels` (verified identical bit-for-bit on 300 random cases),
+  and `tests/test_gradient_single_source.py` fails if a fourth copy appears.
+- **Coverage gate `fail_under` 30 -> 60.** Real coverage is 71.5% with the full
+  optional stack and 61.8% without torch/CfC weights; the gate sits below the
+  minimum across environments so the leanest CI job stays green.
+- **Semgrep SAST added to `lint.yml`** (`p/security-audit` + `p/python`,
+  `--error`), verified locally first: 0 findings. The security docs had
+  claimed SAST coverage no workflow actually provided.
+- README test/coverage figures corrected (claimed 679 tests; actual 775).
 
 ### Added
 - **Professional README rewrite** (EN + ES, verified 2026-08-20): accurate

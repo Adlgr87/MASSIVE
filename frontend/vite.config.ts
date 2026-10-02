@@ -23,13 +23,9 @@ export default defineConfig({
     // server answers "Blocked request" behind a proxy.
     allowedHosts: ['localhost', '127.0.0.1', '.e2b.app', '.github.dev', '.gitpod.io'],
     proxy: {
-      // Forward the migrated v1 API to the backend. The deprecated /api/*
-      // aliases are retained for dev-time backward compatibility.
+      // Forward the canonical v1 API to the backend. The deprecated /api/*
+      // alias was removed from the backend, so there is nothing to proxy.
       '/v1': {
-        target: 'http://localhost:8000',
-        changeOrigin: true,
-      },
-      '/api': {
         target: 'http://localhost:8000',
         changeOrigin: true,
       },

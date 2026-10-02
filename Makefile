@@ -5,7 +5,7 @@ PYTHON ?= python3
 VENV ?= .venv
 BIN := $(VENV)/bin
 
-.PHONY: help install test test-cov lint format typecheck api api-legacy \
+.PHONY: help install test test-cov lint format typecheck api \
         verify verify-baseline verify-build cli-verify frontend-install \
         frontend-dev frontend-build benchmark clean
 
@@ -47,8 +47,6 @@ verify-baseline: ## Snapshot audit baseline -> reports/audit_baseline.json
 api: ## Start canonical /v1 API on :8000
 	$(BIN)/uvicorn backend.app.main:app --host 0.0.0.0 --port 8000
 
-api-legacy: ## Start legacy /api API on :8000 (used by frontend/)
-	$(BIN)/uvicorn api:app --host 0.0.0.0 --port 8000
 
 frontend-install: ## Install frontend deps
 	cd frontend && npm ci

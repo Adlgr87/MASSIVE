@@ -102,7 +102,12 @@ omit = [
 ]
 
 [tool.coverage.report]
-fail_under = 30
+# Measured 71.5% with the full optional stack installed and 61.8% in a lean
+# environment without torch/CfC weights (many tests skipif out there). The
+# gate has to sit below the *minimum* across environments, not the best case,
+# or CI goes red on the leanest job. 60 is a real ratchet over the previous
+# value of 30, which no longer constrained anything.
+fail_under = 60
 show_missing = true
 skip_covered = false
 exclude_lines = [

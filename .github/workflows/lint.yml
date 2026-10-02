@@ -54,6 +54,27 @@ jobs:
           PYTHONHASHSEED=42 mypy --config-file mypy.ini \
             massive/ backend/ services/ massive_core/ 2>&1
 
+  sast:
+    name: SAST (Semgrep)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install semgrep
+        run: pip install semgrep
+
+      # The security docs claimed SAST coverage that no workflow actually
+      # provided. `p/security-audit` and `p/python` are the registry rulesets
+      # for injection, unsafe deserialization, hardcoded secrets and friends.
+      # --error makes a finding fail the job rather than print quietly.
+      - name: Run semgrep
+        run: semgrep --config p/security-audit --config p/python --error --quiet .
+
   lint-frontend:
     name: Frontend Lint
     runs-on: ubuntu-latest
