@@ -19,6 +19,42 @@ import type { ForecastResponse } from "../types/api.generated";
  * All endpoints require the `X-API-Key` header (injected in the constructor).
  * The deprecated /api/* aliases are no longer referenced by this client.
  */
+/** Request body for POST /v1/engine/energy. */
+export type EnergyRequest = {
+  user_goal: string;
+  n_agents?: number;
+  steps?: number;
+  connectivity?: number;
+  range_type?: "bipolar" | "unipolar";
+  seed?: number;
+  config_overrides?: Record<string, unknown> | null;
+};
+
+/** Response body for POST /v1/engine/energy. */
+export type EnergyResult = {
+  history: Record<string, unknown>[];
+  metrics_timeline: Record<string, number | string | null>[];
+  final_state: {
+    opinions: number[];
+    mean_opinion: number;
+    std_opinion: number;
+  };
+  summary: {
+    opinion_inicial: number;
+    opinion_final: number;
+    delta_total: number;
+    media: number;
+    desviacion: number;
+    polarizacion_media: number;
+    pasos: number;
+    regla_dominante: string;
+    neutro: number;
+    rango: string;
+  };
+  config_used: Record<string, unknown>;
+  archetype_info: Record<string, unknown>;
+};
+
 class ApiService {
   private client: AxiosInstance;
 
@@ -30,15 +66,28 @@ class ApiService {
       },
     });
 
-    // API key is read from the Vite env at init time. In dev mode the backend
-    // accepts the dev fallback "dev-secret-key", so a missing key simply
-    // disables auth rather than breaking the client build.
-    const apiKey =
-      import.meta.env.VITE_MASSIVE_API_KEY ||
-      (import.meta.env.MODE === "development" ? "dev-secret-key" : undefined);
+    // API key is read from the Vite env at init time.
+    //
+    // No credential is hardcoded here. This used to fall back to the literal
+    // "dev-secret-key" whenever MODE === "development", which baked a known
+    // credential into client source and contradicted the project's
+    // fail-closed invariant. It was also simply wrong: the backend only
+    // honours that fallback when MASSIVE_DEV_FALLBACK is explicitly set, so
+    // the client was silently sending a key the server would reject.
+    //
+    // To develop against a local backend, set VITE_MASSIVE_API_KEY in
+    // frontend/.env.local (git-ignored) to whatever MASSIVE_API_KEY the
+    // backend is running with.
+    const apiKey = import.meta.env.VITE_MASSIVE_API_KEY;
 
     if (apiKey) {
       this.client.defaults.headers.common["X-API-Key"] = apiKey;
+    } else {
+      console.warn(
+        "[MASSIVE] VITE_MASSIVE_API_KEY is not set — requests will be sent " +
+          "without an X-API-Key header and the API will answer 401/503. " +
+          "Set it in frontend/.env.local to match the backend's MASSIVE_API_KEY.",
+      );
     }
 
     this.client.interceptors.response.use(
@@ -132,37 +181,7 @@ class ApiService {
   }
 
   /** POST /v1/engine/energy — Langevin energy landscape simulation. */
-  async energy(payload: {
-    user_goal: string;
-    n_agents?: number;
-    steps?: number;
-    connectivity?: number;
-    range_type?: "bipolar" | "unipolar";
-    seed?: number;
-    config_overrides?: Record<string, unknown> | null;
-  }): Promise<{
-    history: Record<string, unknown>[];
-    metrics_timeline: Record<string, unknown>[];
-    final_state: {
-      opinions: number[];
-      mean_opinion: number;
-      std_opinion: number;
-    };
-    summary: {
-      opinion_inicial: number;
-      opinion_final: number;
-      delta_total: number;
-      media: number;
-      desviacion: number;
-      polarizacion_media: number;
-      pasos: number;
-      regla_dominante: string;
-      neutro: number;
-      rango: string;
-    };
-    config_used: Record<string, unknown>;
-    archetype_info: Record<string, unknown>;
-  }> {
+  async energy(payload: EnergyRequest): Promise<EnergyResult> {
     return this.post("/engine/energy", payload);
   }
 

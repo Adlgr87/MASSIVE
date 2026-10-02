@@ -70,3 +70,21 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
     stats = getattr(terminalreporter, "stats", {})
     failures = len(stats.get("failed", [])) + len(stats.get("error", []))
     terminalreporter.write_line(f"{failures} failed")
+
+
+# ── Host allow-list for the test session ────────────────────────────────
+#
+# ``backend.app.main`` freezes MASSIVE_ALLOWED_HOSTS at import time and, since
+# the Phase C fail-closed fix, rejects every request with 400 when no
+# allow-list is configured outside a development environment. Several auth
+# tests deliberately run with MASSIVE_ENV=production to assert 503/401
+# semantics; without an allow-list the Host middleware would answer 400 first
+# and mask what those tests are actually checking.
+#
+# Allow the TestClient's synthetic host so Host validation is a no-op by
+# default. Tests that specifically exercise the allow-list (see
+# tests/test_api_security.py::TestHostHeaderFailsClosed) override this and
+# reload the module with their own environment.
+import os as _os  # noqa: E402
+
+_os.environ.setdefault("MASSIVE_ALLOWED_HOSTS", "testserver,localhost,127.0.0.1")

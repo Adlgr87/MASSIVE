@@ -175,3 +175,132 @@ def test_constant_time_comparison_helper():
     assert api_key_matches(None, "k") is False
     assert api_key_matches("k", "") is False
     assert api_key_matches("ключ", "ключ") is True  # non-ascii safe
+
+
+# ---------------------------------------------------------------------------
+# Host header allow-list (A-03): must fail CLOSED outside development.
+# ---------------------------------------------------------------------------
+
+
+class TestHostHeaderFailsClosed:
+    """Guards against the fail-open host validation fixed in Phase C.
+
+    Two independent defects made production fail OPEN: the two branches of
+    ``validate_host_header`` were textually identical (both called through),
+    and the anti-wildcard guard emptied the allow-list, which then matched the
+    "no allow-list -> open mode" branch.
+    """
+
+    @pytest.fixture(autouse=True)
+    def _restore_backend_modules(self):
+        """Restore the original ``backend.app.*`` modules after each test.
+
+        These tests reload the app with a patched environment. Simply deleting
+        the reloaded modules is not enough: other test modules hold references
+        to the *original* ``app`` object through cached fixtures, so the real
+        requirement is that ``sys.modules`` ends up pointing at exactly the
+        module objects that were there before.
+        """
+        import sys
+
+        saved = {m: sys.modules[m] for m in list(sys.modules) if m.startswith("backend.app")}
+        try:
+            yield
+        finally:
+            for name in [m for m in list(sys.modules) if m.startswith("backend.app")]:
+                del sys.modules[name]
+            sys.modules.update(saved)
+
+    @staticmethod
+    def _client(monkeypatch, env):
+        import importlib
+        import sys
+
+        for key in ("MASSIVE_ENV", "MASSIVE_ALLOWED_HOSTS"):
+            monkeypatch.delenv(key, raising=False)
+        for key, value in env.items():
+            monkeypatch.setenv(key, value)
+        for name in [m for m in list(sys.modules) if m.startswith("backend.app")]:
+            del sys.modules[name]
+        import backend.app.main as main
+
+        from fastapi.testclient import TestClient
+
+        return TestClient(importlib.reload(main).app)
+
+    def test_dev_without_allowlist_is_open(self, monkeypatch):
+        client = self._client(monkeypatch, {"MASSIVE_ENV": "development"})
+        assert client.get("/health", headers={"host": "evil.com"}).status_code != 400
+
+    def test_prod_without_allowlist_rejects(self, monkeypatch):
+        client = self._client(monkeypatch, {"MASSIVE_ENV": "production"})
+        assert client.get("/health", headers={"host": "evil.com"}).status_code == 400
+
+    def test_prod_wildcard_is_not_honoured(self, monkeypatch):
+        client = self._client(
+            monkeypatch, {"MASSIVE_ENV": "production", "MASSIVE_ALLOWED_HOSTS": "*"}
+        )
+        assert client.get("/health", headers={"host": "evil.com"}).status_code == 400
+
+    def test_unset_env_defaults_to_fail_closed(self, monkeypatch):
+        client = self._client(monkeypatch, {})
+        assert client.get("/health", headers={"host": "evil.com"}).status_code == 400
+
+    def test_prod_allowlist_accepts_listed_host_only(self, monkeypatch):
+        client = self._client(
+            monkeypatch,
+            {"MASSIVE_ENV": "production", "MASSIVE_ALLOWED_HOSTS": "massive.example.com"},
+        )
+        assert (
+            client.get("/health", headers={"host": "massive.example.com"}).status_code != 400
+        )
+        assert client.get("/health", headers={"host": "evil.com"}).status_code == 400
+
+
+# ---------------------------------------------------------------------------
+# Upload limits + extension allow-list must be identical across both API
+# surfaces (M-01) and must honour MASSIVE_MAX_UPLOAD_MB.
+# ---------------------------------------------------------------------------
+
+
+class TestUploadLimitsAreUnified:
+    def test_both_surfaces_share_one_allowlist(self):
+        pytest.importorskip("networkx", reason="canonical app needs the full stack")
+        import backend.app.routers.llm as router_mod
+
+        from massive_core.config.uploads import ALLOWED_UPLOAD_EXTENSIONS
+
+        assert set(api_mod._ALLOWED_EXT) == set(ALLOWED_UPLOAD_EXTENSIONS)
+        assert set(router_mod._ALLOWED_EXT) == set(ALLOWED_UPLOAD_EXTENSIONS)
+
+    def test_max_upload_mb_is_honoured(self, monkeypatch):
+        from massive_core.config.uploads import max_upload_bytes
+
+        monkeypatch.setenv("MASSIVE_MAX_UPLOAD_MB", "3")
+        assert max_upload_bytes() == 3 * 1024 * 1024
+
+    def test_malformed_max_upload_mb_fails_safe_to_default(self, monkeypatch):
+        from massive_core.config.uploads import DEFAULT_MAX_UPLOAD_MB, max_upload_bytes
+
+        for bogus in ("not-a-number", "", "0", "-5"):
+            monkeypatch.setenv("MASSIVE_MAX_UPLOAD_MB", bogus)
+            assert max_upload_bytes() == DEFAULT_MAX_UPLOAD_MB * 1024 * 1024
+
+    def test_disallowed_extension_is_rejected(self):
+        from massive_core.config.uploads import safe_suffix
+
+        with pytest.raises(ValueError):
+            safe_suffix("payload.exe")
+        assert safe_suffix("report.pdf") == ".pdf"
+
+
+def test_frontend_does_not_hardcode_dev_api_key():
+    """The client must never ship a credential literal (A-02)."""
+    from pathlib import Path
+
+    source = Path(__file__).resolve().parents[1] / "frontend" / "src" / "services" / "api.ts"
+    text = source.read_text(encoding="utf-8")
+    code = "\n".join(
+        line for line in text.splitlines() if not line.strip().startswith(("//", "*", "/*"))
+    )
+    assert "dev-secret-key" not in code

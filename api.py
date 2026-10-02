@@ -127,17 +127,24 @@ def _rate_limit(request: Request) -> None:
 
 
 # ── Upload constraints ────────────────────────────────────────────────
-_MAX_UPLOAD_BYTES = int(os.getenv("MASSIVE_MAX_UPLOAD_MB", "10")) * 1024 * 1024
-_ALLOWED_EXT = {".pdf", ".json", ".csv", ".xlsx", ".txt", ".md"}
+# Upload limits + allow-list come from the shared config module so this
+# surface and backend/app/routers/llm.py cannot drift apart again.
+from massive_core.config.uploads import (  # noqa: E402
+    ALLOWED_UPLOAD_EXTENSIONS as _ALLOWED_EXT,
+)
+from massive_core.config.uploads import (  # noqa: E402
+    max_upload_bytes as _max_upload_bytes,
+)
+from massive_core.config.uploads import (  # noqa: E402
+    safe_suffix as _shared_safe_suffix,
+)
 
 
 def _safe_suffix(filename: str | None) -> str:
-    if not filename or "." not in filename:
-        return ".tmp"
-    ext = "." + filename.rsplit(".", 1)[-1].lower()
-    if ext not in _ALLOWED_EXT:
-        raise HTTPException(status_code=400, detail=f"Unsupported file type: {ext}")
-    return ext
+    try:
+        return _shared_safe_suffix(filename)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 # Lazily create adapter
@@ -181,7 +188,7 @@ async def api_extract(
     # exhaustion DoS where a multi-GB upload is fully buffered only to be
     # rejected afterwards. (Devil's Advocate Finding 16 — api.py:148)
     content_length = file.headers.get("content-length")
-    if content_length and content_length.isdigit() and int(content_length) > _MAX_UPLOAD_BYTES:
+    if content_length and content_length.isdigit() and int(content_length) > _max_upload_bytes():
         raise HTTPException(status_code=413, detail="File too large")
 
     try:
@@ -193,9 +200,9 @@ async def api_extract(
             if not chunk:
                 break
             content += chunk
-            if len(content) > _MAX_UPLOAD_BYTES:
+            if len(content) > _max_upload_bytes():
                 raise HTTPException(status_code=413, detail="File too large")
-        if len(content) > _MAX_UPLOAD_BYTES:
+        if len(content) > _max_upload_bytes():
             raise HTTPException(status_code=413, detail="File too large")
         with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
             tmp.write(content)

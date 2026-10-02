@@ -31,23 +31,26 @@ from backend.app.models import (
     LLMWizardResponse,
 )
 from backend.app.security import get_api_key, rate_limit_dependency
+from massive_core.config.uploads import (
+    ALLOWED_UPLOAD_EXTENSIONS,
+    max_upload_bytes,
+    safe_suffix,
+)
 from services.llm_orchestrator import classify_motor
 
 log = logging.getLogger(__name__)
 
-# Upload limits + helpers (shared by /extract endpoints)
-_ALLOWED_EXT = {".pdf", ".json", ".csv", ".xlsx", ".docx"}
-_MAX_UPLOAD_BYTES = 10 * 1024 * 1024  # 10 MB
+# Upload limits + helpers — single source of truth shared with the legacy
+# api.py surface (see massive_core.config.uploads for why).
+_ALLOWED_EXT = ALLOWED_UPLOAD_EXTENSIONS
 
 
 def _safe_suffix(filename: str | None) -> str:
     """Return the file extension, rejecting unsupported types."""
-    if not filename or "." not in filename:
-        return ".tmp"
-    ext = "." + filename.rsplit(".", 1)[-1].lower()
-    if ext not in _ALLOWED_EXT:
-        raise HTTPException(status_code=400, detail=f"Unsupported file type: {ext}")
-    return ext
+    try:
+        return safe_suffix(filename)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 def _public_error(exc: Exception) -> HTTPException:
@@ -246,7 +249,9 @@ async def v1_llm_extract(
     import contextlib
     import tempfile
 
-    _MAX_UPLOAD_BYTES = 10 * 1024 * 1024  # 10 MB
+    # Honour MASSIVE_MAX_UPLOAD_MB (this handler used to shadow the module
+    # constant with a hardcoded 10 MB, silently ignoring the setting).
+    _MAX_UPLOAD_BYTES = max_upload_bytes()
 
     content_length = file.headers.get("content-length")
     if content_length and content_length.isdigit() and int(content_length) > _MAX_UPLOAD_BYTES:

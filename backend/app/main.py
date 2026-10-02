@@ -150,21 +150,14 @@ def _path_group(path: str) -> str:
     return "other"
 
 
-@app.middleware("http")
-async def deprecation_warning(request: Request, call_next):
-    """Emit X-API-Warn header on legacy /api/* (non-v1) routes.
-
-    These endpoints are superseded by the /v1/* API surface and will be
-    removed in v1.0. The warning gives clients a migration signal without
-    breaking existing integrations.
-    """
-    response = await call_next(request)
-    path = request.url.path
-    if path.startswith("/api/") and not path.startswith("/api/v1"):
-        response.headers["X-API-Warn"] = (
-            "Deprecated endpoint. Use /v1/* instead. " "See PRODUCTION_ARCHITECTURE_SPEC.md §5.1"
-        )
-    return response
+# NOTE: a `deprecation_warning` middleware used to live here, tagging legacy
+# `/api/*` (non-`/v1`) routes with an `X-API-Warn` header. Every router in
+# this app is mounted under `/v1` or `/api/v1` only, so no such route exists:
+# the middleware ran on every single request and its condition could never
+# match a real endpoint. Removed rather than kept as decoration — dead
+# middleware still costs a coroutine hop per request and misleads readers into
+# thinking a deprecated surface is being served here. The legacy surface is
+# `api.py`, which is a separate ASGI app.
 
 
 @app.middleware("http")
@@ -227,34 +220,65 @@ async def request_context(request: Request, call_next):
 
 
 # --- Host header validation (host-header injection defence) ---------------
-# In production, only requests whose Host header matches MASSIVE_ALLOWED_HOSTS
-# are processed.  When MASSIVE_ALLOWED_HOSTS is unset the middleware is a
-# no-op (open mode) so local dev / CI never fails on Host validation alone.
-# In development, localhost / 127.0.0.1 / testserver are always allowed.
+# Defends against host-header injection (cache poisoning, password-reset
+# poisoning, SSRF bypass).
+#
+# Policy (fail-closed, matching the MASSIVE_API_KEY invariant):
+#   * dev  — the usual loopback hosts are always accepted, and an unset
+#            allow-list means "accept anything" so local work and CI never
+#            break on Host validation alone.
+#   * prod — an allow-list is MANDATORY. Unset, empty, or wildcard-only all
+#            resolve to "reject every request", never to open mode.
+#
+# This used to be fail-OPEN in production in two independent ways: the two
+# guard branches were textually identical (both called through), and the
+# anti-wildcard guard emptied the allow-list, which then matched the
+# "no allow-list → open mode" branch. A wildcard in production therefore
+# disabled the very check it was supposed to harden.
 _ALLOWED_HOSTS_DEV = {"", "localhost", "127.0.0.1", "0.0.0.0", "testserver"}
 _ALLOWED_HOSTS_ENV = os.getenv("MASSIVE_ALLOWED_HOSTS", "")
 _explicit_allowed_hosts: set[str] = {h.strip() for h in _ALLOWED_HOSTS_ENV.split(",") if h.strip()}
-# Wildcard is only honoured in dev; production treats it as fail-closed.
-if "*" in _explicit_allowed_hosts and not _is_dev:
-    _explicit_allowed_hosts = set()
+
+# Wildcard is only honoured in dev; production discards it (and the resulting
+# empty allow-list now means fail-closed, not open).
+_host_wildcard = "*" in _explicit_allowed_hosts
+if _host_wildcard and not _is_dev:
+    _explicit_allowed_hosts.discard("*")
+    logging.getLogger(__name__).error(
+        "SECURITY: MASSIVE_ALLOWED_HOSTS contains '*' but MASSIVE_ENV is not a "
+        "development environment. The wildcard is ignored and all requests "
+        "will be rejected until an explicit Host allow-list is configured."
+    )
+
+if not _explicit_allowed_hosts and not _is_dev:
+    logging.getLogger(__name__).error(
+        "SECURITY: MASSIVE_ALLOWED_HOSTS is not set and MASSIVE_ENV is not a "
+        "development environment. Failing closed: every request will be "
+        "rejected with 400. Set MASSIVE_ALLOWED_HOSTS to your public "
+        "hostname(s) — see .env.example."
+    )
 
 
 @app.middleware("http")
 async def validate_host_header(request: Request, call_next):
-    """Reject requests with disallowed Host headers.
+    """Reject requests whose Host header is not on the allow-list.
 
-    Defends against host-header injection (cache poisoning, password-reset
-    poisoning, SSRF bypass).  When ``MASSIVE_ALLOWED_HOSTS`` is explicitly set,
-    only matching hosts are accepted (wildcard allowed in dev only).  When
-    unset, all hosts are accepted (open mode for local dev / CI).
+    In development an unset allow-list disables the check; in production an
+    unset allow-list rejects everything (fail-closed). See the module-level
+    policy comment above.
     """
-    if not _explicit_allowed_hosts and _is_dev:
-        return await call_next(request)
-    if not _explicit_allowed_hosts:
-        # No allow-list configured and not dev → open mode (no validation).
-        return await call_next(request)
     host = request.headers.get("host", "").split(":")[0]
-    if host not in _explicit_allowed_hosts:
+
+    if _explicit_allowed_hosts:
+        allowed = host in _explicit_allowed_hosts
+    elif _is_dev:
+        # No allow-list configured in dev → open mode for local work / CI.
+        allowed = True
+    else:
+        # No allow-list configured outside dev → fail closed.
+        allowed = False
+
+    if not allowed:
         return JSONResponse(
             status_code=400,
             content={"detail": "Invalid Host header"},

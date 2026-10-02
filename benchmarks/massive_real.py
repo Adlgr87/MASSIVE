@@ -30,6 +30,7 @@ from __future__ import annotations
 
 import os
 import random
+import warnings
 from collections.abc import Sequence
 
 import numpy as np
@@ -39,8 +40,33 @@ SEED = 42
 
 
 def _seed_everything(seed: int = SEED) -> None:
-    """Set all RNGs deterministically. Idempotent."""
-    os.environ["PYTHONHASHSEED"] = str(seed)
+    """Set all RNGs deterministically. Idempotent.
+
+    Note on ``PYTHONHASHSEED``: it is read by CPython *once, at interpreter
+    startup*, to initialise string hash randomisation. Assigning it to
+    ``os.environ`` from inside a running process has no effect on the current
+    interpreter — this function used to do exactly that, which produced the
+    appearance of hash determinism without any of the substance.
+
+    To actually pin it, export it before launching Python::
+
+        PYTHONHASHSEED=42 python -m benchmarks.massive_real
+
+    We warn instead of silently pretending, so a benchmark whose results
+    depend on set/dict iteration order cannot be mistaken for reproducible.
+    """
+    expected = str(seed)
+    actual = os.environ.get("PYTHONHASHSEED")
+    if actual != expected:
+        warnings.warn(
+            f"PYTHONHASHSEED is {actual!r}, not {expected!r}. It must be set "
+            f"in the environment BEFORE the interpreter starts; setting it at "
+            f"runtime does nothing. Re-run with "
+            f"`PYTHONHASHSEED={expected} python -m benchmarks.massive_real` "
+            f"if you need hash-order determinism.",
+            RuntimeWarning,
+            stacklevel=2,
+        )
     random.seed(seed)
     np.random.seed(seed)
 
