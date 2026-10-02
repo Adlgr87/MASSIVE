@@ -139,3 +139,33 @@ class LLMExtractResponse(BaseModel):
     model_config = {"extra": "forbid"}
 
     config: dict[str, Any]
+
+
+class LLMSimulateUilRequest(BaseModel):
+    """Request body for ``POST /v1/llm/simulate_uil``.
+
+    Canonical replacement for the legacy ``POST /api/simulate-uil``. Only a
+    natural-language description is accepted: server filesystem paths are
+    deliberately not part of the contract (use ``/v1/llm/extract`` to upload a
+    document instead).
+    """
+
+    model_config = {"extra": "forbid"}
+
+    description: str = Field(
+        ...,
+        min_length=1,
+        max_length=2000,
+        description="Natural-language scenario description.",
+    )
+    llm: LLMLlmHint | None = None
+
+
+class LLMSimulateUilResponse(BaseModel):
+    """Response body for ``POST /v1/llm/simulate_uil``."""
+
+    model_config = {"extra": "forbid"}
+
+    config: dict[str, Any]
+    summary: dict[str, Any]
+    n_steps: int

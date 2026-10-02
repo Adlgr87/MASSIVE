@@ -328,6 +328,41 @@ def multi_potential_gradient(x: np.ndarray) -> np.ndarray:
 # ============================================================
 
 
+def _consensus_force(
+    weighted_sum: np.ndarray,
+    degree: np.ndarray,
+    opinions: np.ndarray,
+) -> np.ndarray:
+    """Degree-normalised consensus (DeGroot / Laplacian) force.
+
+    Returns ``mean_neighbour_opinion - own_opinion`` per agent, i.e. the
+    normalised graph-Laplacian term ``(D⁻¹A - I) x``.
+
+    Why this and not the raw ``A @ x``:
+
+    * **Relative, not absolute.** A social force must vanish when an agent
+      already agrees with its neighbourhood. The previous ``coupling·w·Σ_j
+      A_ij·x_j`` had no ``- x_i`` term, so it pushed agents even at perfect
+      consensus — it was a drive toward ±∞, not toward agreement.
+    * **Intensive, not extensive.** Without dividing by the degree the force
+      scaled with the number of neighbours. For N=1000, p=0.3 the mean degree
+      is ~300, so with coupling=0.003 and dt=0.01 the per-step displacement was
+      ``≈0.9·x̄`` — saturating the ``[x_min, x_max]`` clip in ~2 steps. The clip
+      then masked the divergence, producing plausible-looking but meaningless
+      trajectories whose outcome was independent of the dynamics.
+
+    This matches ``energy_engine.py`` (``λ·(x̄_vec − x_i)``), so both engines now
+    implement the same social-influence law. Isolated agents (degree 0) feel no
+    social force.
+    """
+    degree = np.asarray(degree, dtype=np.float64)
+    safe_degree = np.where(degree > 0.0, degree, 1.0)
+    mean_neighbour = weighted_sum / safe_degree
+    force = mean_neighbour - opinions
+    # Isolated agents: no neighbours, no social pull.
+    return np.where(degree > 0.0, force, 0.0)
+
+
 def _multilayer_langevin_step_core(
     x_vec: np.ndarray,
     layers_flat: np.ndarray,
@@ -347,13 +382,11 @@ def _multilayer_langevin_step_core(
     L = layers_flat.shape[0]
 
     social_force = np.zeros((N, Kdim))
+    opinions = x_vec[:, COL_OPINION]
     for ell in range(L):
         w = layer_weights[ell]
-        for i in range(N):
-            s = 0.0
-            for j in range(N):
-                s += layers_flat[ell, i, j] * x_vec[j, COL_OPINION]
-            social_force[i, COL_OPINION] += coupling * w * s
+        A = layers_flat[ell]
+        social_force[:, COL_OPINION] += coupling * w * _consensus_force(A @ opinions, A.sum(axis=1), opinions)
 
     grad_U = multi_potential_gradient(x_vec)
     x_new = (
@@ -398,8 +431,11 @@ def _multilayer_langevin_step_core_sparse(
     social_force = np.zeros((N, Kdim))
     for ell in range(L):
         w = layer_weights[ell]
-        contribution = np.asarray(layers_sparse[ell] @ x_vec[:, COL_OPINION]).ravel()
-        social_force[:, COL_OPINION] += coupling * w * contribution
+        A = layers_sparse[ell]
+        opinions = x_vec[:, COL_OPINION]
+        weighted = np.asarray(A @ opinions).ravel()
+        degree = np.asarray(A.sum(axis=1)).ravel()
+        social_force[:, COL_OPINION] += coupling * w * _consensus_force(weighted, degree, opinions)
 
     grad_U = multi_potential_gradient(x_vec)
     x_new = (
@@ -428,6 +464,12 @@ def multilayer_langevin_step(
     Paso de Euler-Maruyama de la dinámica de Langevin multicapa.
 
     Ecuación: dx_i = (-∇U + Σ_ℓ w_ℓ F_ℓ(x)) dt + θ_i · η_i · √dt
+
+    donde la fuerza social de cada capa es el término de consenso normalizado
+    por grado ``F_ℓ(x)_i = coupling · (⟨x⟩_vecinos(i,ℓ) − x_i)``; véase
+    :func:`_consensus_force`. Al ser intensiva y anularse en el consenso,
+    ``coupling`` tiene ahora unidades de tasa (1/tiempo) y la condición de
+    estabilidad de Euler-Maruyama es ``coupling · dt ≲ 1``, independiente de N.
 
     Noise is sampled with a local Generator (never process-global RNG).
 
@@ -712,9 +754,17 @@ class MultilayerEngine:
         def drift(x: np.ndarray, t: float = 0.0) -> np.ndarray:
             del t
             social_force = np.zeros_like(x)
+            opinions = x[:, COL_OPINION]
             for ell, weight in enumerate(self.layer_weights):
+                A = self._layers_flat[ell]
+                # Must stay identical to `_multilayer_langevin_step_core`,
+                # otherwise the opt-in scientific solver silently diverges from
+                # the legacy path (see the parity test in
+                # tests/test_scientific_integration.py).
                 social_force[:, COL_OPINION] += (
-                    self.coupling * weight * (self._layers_flat[ell] @ x[:, COL_OPINION])
+                    self.coupling
+                    * weight
+                    * _consensus_force(A @ opinions, A.sum(axis=1), opinions)
                 )
             return -multi_potential_gradient(x) + social_force
 

@@ -100,11 +100,27 @@ class TestEnergySettersAndLandscapes:
         base_r = [{"position": -0.5, "strength": 1.0}]
         a, r = eng.create_gini_adjusted_landscape(base_a, base_r)
         # Defaults derive from Gini exactly like create_wealth_potential:
-        # attractor = 1 + 2·g, repeller = 0.5 + 0.5·g
-        factor_a = 1.3 * (1.0 + 2.0 * 0.4)
-        factor_r = 1.3 * (0.5 + 0.5 * 0.4)
+        #   attractor = 1 + 2·g, repeller = 0.5 + 0.5·g
+        # The Gini factor is applied ONCE. It used to be multiplied by
+        # ``inequality_factor`` as well (itself 1 + 2·g), giving a quadratic
+        # (1 + 2·g)² law where the documentation declares a linear one.
+        factor_a = 1.0 + 2.0 * 0.4
+        factor_r = 0.5 + 0.5 * 0.4
         assert a[0]["strength"] == pytest.approx(1.0 * factor_a)
         assert r[0]["strength"] == pytest.approx(1.0 * factor_r)
+
+    def test_gini_amplification_is_linear_not_quadratic(self):
+        """Doubling the Gini-derived multiplier must not square the strength."""
+        base_a = [{"position": 0.0, "strength": 1.0}]
+        base_r = [{"position": 1.0, "strength": 1.0}]
+        low, _ = SocialEnergyEngine(gini_coefficient=0.0).create_gini_adjusted_landscape(
+            base_a, base_r
+        )
+        high, _ = SocialEnergyEngine(gini_coefficient=0.5).create_gini_adjusted_landscape(
+            base_a, base_r
+        )
+        # linear: (1 + 2·0.5) / (1 + 2·0) = 2.0  (quadratic would give 4.0)
+        assert high[0]["strength"] / low[0]["strength"] == pytest.approx(2.0)
 
     def test_create_gini_adjusted_landscape_uses_economic_potential(self):
         eng = SocialEnergyEngine()
@@ -118,8 +134,10 @@ class TestEnergySettersAndLandscapes:
         base_a = [{"position": 0.0, "strength": 1.0}]
         base_r = [{"position": 1.0, "strength": 1.0}]
         a, r = eng.create_gini_adjusted_landscape(base_a, base_r)
-        assert a[0]["strength"] == pytest.approx(eng.inequality_factor * 2.0)
-        assert r[0]["strength"] == pytest.approx(eng.inequality_factor * 1.0)
+        # An explicit Factbook-derived economic_potential fully determines the
+        # multiplier; inequality_factor must NOT be applied on top of it.
+        assert a[0]["strength"] == pytest.approx(2.0)
+        assert r[0]["strength"] == pytest.approx(1.0)
 
     def test_create_economic_landscape_single_attractor(self):
         eng = SocialEnergyEngine(gini_coefficient=0.4)

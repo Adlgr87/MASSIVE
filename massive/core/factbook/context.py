@@ -106,6 +106,21 @@ class CountryData:
         self.language_diversity = diversity_index(self.languages) if self.languages else 0.0
         self.gini_coefficient = normalize_0_100_to_0_1(self.gini_index)
 
+    #: Neutral social-pressure weight used when a distribution is unavailable.
+    #: Matches the fallback in :meth:`get_social_pressure_weights`.
+    NEUTRAL_SOCIAL_PRESSURE = 0.5
+
+    @classmethod
+    def _pressure_weight(cls, diversity: float, has_data: bool) -> float:
+        """Map a diversity index to a conformity-pressure weight.
+
+        Returns the neutral weight when the underlying distribution is empty,
+        so that *absence of evidence* never becomes *evidence of homogeneity*.
+        """
+        if not has_data:
+            return cls.NEUTRAL_SOCIAL_PRESSURE
+        return 1.0 - diversity
+
     def _derive_massive_params(self):
         """Derive MASSIVE-specific parameters from raw data."""
         # Agent initialization parameters
@@ -123,11 +138,25 @@ class CountryData:
             "language": normalize_dict(self.languages) if self.languages else {},
         }
 
-        # Social pressure weights based on diversity
+        # Social pressure weights based on diversity.
+        #
+        # Sign convention (deliberate, see docs/factbook.md and the A-6
+        # decision in docs/archive/AUDITORIA_PROYECTO_2026-09-22.md):
+        #   weight = 1 - diversity = Herfindahl index = homogeneity
+        # A homogeneous society concentrates around a single dominant norm and
+        # therefore exerts *more* conformity pressure; a fragmented society has
+        # competing norms and exerts less. Higher weight = stronger conformity.
+        #
+        # Missing data must be NEUTRAL, not maximal. `diversity_index` returns
+        # 0.0 for an empty distribution, which through `1 - 0.0` used to yield
+        # weight 1.0 — the strongest possible conformity pressure. A country
+        # with no ethnic breakdown in the Factbook was thus silently simulated
+        # as perfectly homogeneous. Absent data now maps to the same neutral
+        # 0.5 already used by `get_social_pressure_weights`.
         self.massive_params["social_pressure_weights"] = {
-            "ethnic": 1.0 - self.ethnic_diversity,
-            "religious": 1.0 - self.religious_diversity,
-            "language": 1.0 - self.language_diversity,
+            "ethnic": self._pressure_weight(self.ethnic_diversity, bool(self.ethnic_groups)),
+            "religious": self._pressure_weight(self.religious_diversity, bool(self.religions)),
+            "language": self._pressure_weight(self.language_diversity, bool(self.languages)),
         }
 
         # Economic parameters

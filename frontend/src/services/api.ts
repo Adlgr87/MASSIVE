@@ -168,13 +168,31 @@ class ApiService {
 
   /* ───────────── v1 LLM + UIL endpoints ───────────── */
 
-  /** POST /v1/simulate — run the full UIL pipeline from a description (was /api/simulate-uil). */
+  /**
+   * POST /v1/llm/simulate_uil — run the full UIL pipeline from a description.
+   *
+   * NOTE: this used to post `{ description }` to `/v1/simulate`, but that
+   * route is backed by the `SimRequest` DTO (`extra="forbid"`, fields
+   * `estado_inicial` / `escenario` / `pasos` / `config` / `verbose`), so every
+   * call returned 422. The UIL pipeline lives under `/v1/llm/*`.
+   */
   async simulateUil(description: string): Promise<{
     config: Record<string, unknown>;
     summary: Record<string, unknown>;
     n_steps: number;
   }> {
-    return this.post("/simulate", { description });
+    return this.post("/llm/simulate_uil", { description });
+  }
+
+  /** POST /v1/simulate — run a scalar MASSIVE simulation (typed SimRequest). */
+  async simulate(payload: {
+    estado_inicial?: Record<string, unknown> | null;
+    escenario?: string;
+    pasos?: number;
+    config?: Record<string, unknown> | null;
+    verbose?: boolean;
+  }): Promise<Record<string, unknown>> {
+    return this.post("/simulate", payload);
   }
 
   /** POST /v1/llm/extract — upload a document and get an extracted config (was /api/extract). */

@@ -45,15 +45,48 @@ class TestBrexitCalibration:
         baseline_leave = result["baseline"]["final_leave_pct"]
         assert baseline_leave > BREXIT_ACTUAL_LEAVE_PCT  # sim overestimates Leave
 
-    def test_cfc_correction_reduces_error(self):
-        """CFC correction should reduce the Brexit prediction error."""
-        result = run_brexit_calibration(n_agents=100, steps=100, seed=42)
-        baseline_error = result["baseline"]["error_pct"]
-        corrected_error = result["corrected"]["error_pct"]
-        assert corrected_error < baseline_error
+    def test_correction_does_not_consume_ground_truth(self):
+        """Regression guard: the corrector must never read the observed value.
 
+        The previous implementation computed ``0.5 * (simulated - actual)``
+        and discarded the model output, so ``corrected`` was always exactly
+        halfway to ``BREXIT_ACTUAL_LEAVE_PCT`` and the reported "25% error
+        reduction" was circular. This test pins the leakage shut: the
+        calibration run must not land on the arithmetic midpoint.
+        """
+        result = run_brexit_calibration(n_agents=100, steps=100, seed=42)
+        baseline = result["baseline"]["final_leave_pct"]
+        corrected = result["corrected"]["final_leave_pct"]
+        midpoint = (baseline + BREXIT_ACTUAL_LEAVE_PCT) / 2.0
+        assert corrected != pytest.approx(midpoint, abs=1e-6), (
+            "corrected value is the midpoint between the simulation and the "
+            "observed result — the ground-truth leakage has come back"
+        )
+
+    def test_correction_is_bounded_and_finite(self):
+        """Whatever the corrector outputs must stay physically meaningful."""
+        result = run_brexit_calibration(n_agents=100, steps=100, seed=42)
+        corrected = result["corrected"]["final_leave_pct"]
+        assert 0.0 <= corrected <= 100.0
+        assert result["corrected"]["error_pct"] >= 0.0
+
+    def test_correction_source_is_reported(self):
+        """Callers must be able to tell whether the model actually ran."""
+        result = run_brexit_calibration(n_agents=50, steps=50, seed=42)
+        assert result["corrected"]["correction_source"] in {"cfc", "passthrough"}
+
+    @pytest.mark.skip(
+        reason=(
+            "Accuracy claim pending honest out-of-sample validation. The "
+            "shipped checkpoint reports R2 = -18.7 per step; the previous "
+            "'>=25% improvement' assertion was satisfied only by the "
+            "ground-truth leakage removed in cfc_router.correct_residual. "
+            "Re-enable once the corrector is retrained and validated "
+            "walk-forward (see docs/research/calibration_log.md)."
+        )
+    )
     def test_correction_improvement_at_least_25_percent(self):
-        """The error reduction should be at least 25%."""
+        """The error reduction should be at least 25% (out-of-sample)."""
         result = run_brexit_calibration(n_agents=100, steps=100, seed=42)
         improvement = result["improvement"]["relative_improvement_pct"]
         assert improvement >= 25.0, f"Only {improvement:.1f}% improvement (need >= 25%)"

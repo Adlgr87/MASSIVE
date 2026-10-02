@@ -11,10 +11,14 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-import torch
 
-from cfc_engine import CfCLambdaCorrector
-from cfc_router import CfCRouter
+# PyTorch is an optional extra ("optional means optional"): a bare top-level
+# ``import torch`` made this module abort *collection* of the whole suite on a
+# torch-less install. Skip the module instead.
+torch = pytest.importorskip("torch", reason="PyTorch no disponible")
+
+from cfc_engine import CfCLambdaCorrector  # noqa: E402
+from cfc_router import CfCRouter  # noqa: E402
 
 # ── Skip-condition: trained Lambda-corrector weights ─────────────────────
 # The trained model artifact ``models/cfc_calibrated/cfc_lambda_corrector.pt``

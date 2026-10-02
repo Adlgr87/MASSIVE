@@ -38,6 +38,11 @@ import numpy as np
 
 log = logging.getLogger(__name__)
 
+#: Mean residual observed on the CfC training set (calibration_log.md §5).
+#: Used as a neutral prior for the lag features when no observed series is
+#: available. Documented here instead of being inlined as a magic number.
+_TRAINING_RESIDUAL_MEAN: float = 0.0426
+
 # Umbral de confianza mínimo para aceptar la predicción CfC.
 # Si la probabilidad máxima < CONFIDENCE_THRESHOLD → fallback LLM.
 CONFIDENCE_THRESHOLD: float = 0.75
@@ -362,23 +367,43 @@ class CfCRouter:
         actual: list[float] | float | None = None,
         dt: float = 0.1,
     ) -> tuple[float, str]:
-        """Apply CfC residual correction to an energy-engine opinion trajectory.
+        """Apply the CfC residual correction to an opinion trajectory.
 
-        Implements calibration_log.md §6: final(t) = ŷ(t) + r̂(t).
+        Implements ``final(t) = ŷ(t) + r̂(t)``, where ``r̂`` is the residual
+        predicted by the trained CfC corrector.
 
-        The trained model has R² = -18.7 per-step (poor point-wise
-        generalization), so the *bias direction* is used for adaptive
-        correction scaled toward the known baseline error (§7).
+        .. warning::
+           **Target leakage removed.** A previous implementation computed
+           ``correction = 0.5 * (simulated - actual)`` whenever a ground-truth
+           value was supplied, discarding the model output entirely. That made
+           ``corrected = 0.5*simulated + 0.5*actual`` — an interpolation toward
+           the answer, not a prediction — so any reported "error reduction"
+           measured against the same ``actual`` was circular. The corrector now
+           *always* uses ``r̂`` and never reads ``actual`` to build the
+           correction.
+
+           ``actual`` is still accepted, but strictly as the source of the
+           **past** residual lags that the model was trained on (a legitimate
+           walk-forward feature: residuals up to ``t-1`` are observable). The
+           most recent residual is never fed back, so the value being corrected
+           cannot leak into its own correction.
+
+        Note:
+            The shipped checkpoint reports R² = -18.7 per step on held-out data
+            (worse than predicting the training mean). Treat its output as a
+            bias indicator, not as a calibrated point correction, until it is
+            retrained and validated out-of-sample.
 
         Args:
-            history:  List of simulated leave% / opinion values, ≥ 3.
-            simulated: Latest simulated value (scalar) or full series.
-            actual:  Optional ground-truth series for adaptive scaling.
-            dt:      ODE integration step (matches training).
+            history:  Simulated opinion / leave-share series, ≥ 3 points.
+            simulated: Latest simulated value (scalar) or the full series.
+            actual:   Optional observed series, used **only** for lagged
+                residual features (never for the correction itself).
+            dt:       ODE integration step (matches training).
 
         Returns:
-            (corrected_value, source) — source is "cfc" or "passthrough".
-            Returns uncorrected value when model unavailable.
+            ``(corrected_value, source)`` where source is ``"cfc"`` when the
+            model ran, or ``"passthrough"`` when it was unavailable.
         """
         if self._residual is None or not self._torch_available:
             sim_val = float(np.asarray(simulated).ravel()[-1]) if simulated is not None else 0.0
@@ -393,9 +418,18 @@ class CfCRouter:
 
         sim_arr = np.asarray(simulated, dtype=np.float64)
         if sim_arr.ndim == 0 or sim_arr.size == 1:
+            # Scalar: broadcast the single simulated value over the history grid.
             sim_series = np.full(hist_arr.size, float(sim_arr.ravel()[-1]))
+        elif sim_arr.size >= hist_arr.size:
+            # Full series supplied — use it (the previous code silently dropped
+            # `simulated` here and re-used `history` instead).
+            sim_series = sim_arr.ravel()[: hist_arr.size]
         else:
-            sim_series = hist_arr
+            sim_series = np.pad(
+                sim_arr.ravel(),
+                (0, hist_arr.size - sim_arr.size),
+                mode="edge",
+            )
 
         n = hist_arr.size
         t_norm = np.arange(n, dtype=np.float64) / max(n, 1)
@@ -412,16 +446,22 @@ class CfCRouter:
                     else np.pad(actual_arr, (0, n - actual_arr.size))
                 )
             residuals = actual_series - sim_series
+            # Leakage guard: drop the most recent residual so the value being
+            # corrected never contributes to its own correction. Lags therefore
+            # start at t-1 (observable in a walk-forward setting).
+            residuals = residuals[:-1] if residuals.size > 1 else np.empty(0)
         else:
-            residuals = np.full(n, 0.0426)  # training mean (calibration_log §5)
+            residuals = np.full(n, _TRAINING_RESIDUAL_MEAN)
 
-        # Feature vector: 9 features = [t_norm, sim, mean(sim)] + 6 lags
+        # Feature vector: 9 features = [t_norm, sim, mean(sim)] + 6 residual lags
         u = np.zeros(self._residual.input_dim, dtype=np.float32)
         u[0] = float(t_norm[-1])
         u[1] = float(sim_series[-1])
         u[2] = mean_sim
         for i in range(6):
-            u[3 + i] = float(residuals[-1 - i]) if len(residuals) > i + 1 else 0.0
+            # Off-by-one fix: lag i needs len(residuals) > i (was > i + 1,
+            # which discarded the most recent available lag).
+            u[3 + i] = float(residuals[-1 - i]) if len(residuals) > i else 0.0
 
         x = torch.zeros(1, self._residual.hidden_size)
         u_tensor = torch.from_numpy(u).unsqueeze(0)
@@ -430,15 +470,10 @@ class CfCRouter:
 
         sim_val = float(sim_series[-1])
 
-        # Adaptive correction: scale 50% toward target when ground truth known;
-        # otherwise use raw model prediction for bias detection only.
-        if actual is not None:
-            baseline_error = sim_val - float(actual_arr.ravel()[-1]) if actual_arr.size else 0.0
-            correction = 0.5 * baseline_error  # positive when sim overestimates
-        else:
-            correction = r_hat
-
-        corrected = sim_val - correction  # subtract to move toward actual
+        # final(t) = ŷ(t) + r̂(t) — the residual is defined as (actual - sim)
+        # during training, so it is *added*. The model output is the only
+        # source of the correction: no ground-truth value is consulted here.
+        corrected = sim_val + r_hat
         return float(np.clip(corrected, -1.0, 1.0)), "cfc"
 
     @property

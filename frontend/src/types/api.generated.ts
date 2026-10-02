@@ -86,9 +86,9 @@ export interface TimelineResponse {
 export interface ForecastPoint {
   tick: number;
   mean_opinion: number;
-  polarization: number;
-  confidence_lower: number;
-  confidence_upper: number;
+  polarization?: number | null;
+  confidence_lower?: number | null;
+  confidence_upper?: number | null;
 }
 
 export interface Feasibility {

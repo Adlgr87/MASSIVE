@@ -29,6 +29,8 @@ from backend.app.models.dto_llm import (
     LLMRunResponse,
     LLMSummary,
     LLMTimelinePoint,
+    LLMSimulateUilRequest,
+    LLMSimulateUilResponse,
     LLMWizardRequest,
     LLMWizardResponse,
 )
@@ -78,6 +80,8 @@ __all__ = [
     "LLMLlmHint",
     "LLMAmbiguityResponse",
     "LLMExtractResponse",
+    "LLMSimulateUilRequest",
+    "LLMSimulateUilResponse",
     "LLMWizardRequest",
     "LLMWizardResponse",
     # request DTOs (extra=forbid, bounded)

@@ -293,3 +293,56 @@ class TestAttributes:
         df = generate_attributes(40)
         theta = compute_theta(df)
         assert np.all(theta > 0)
+
+
+class TestSocialForceIsConsensus:
+    """Regression guards for the degree-normalised consensus force (C-02).
+
+    The social force used to be ``coupling·w·Σ_j A_ij·x_j`` — extensive in the
+    degree and with no ``- x_i`` term — which saturated the opinion clip within
+    ~2 steps for dense graphs and kept pushing agents that already agreed.
+    """
+
+    def test_force_vanishes_at_consensus(self):
+        """A fully agreeing population must feel no social force."""
+        from multilayer_engine import _consensus_force
+
+        opinions = np.full(50, 0.42)
+        A = np.ones((50, 50)) - np.eye(50)
+        force = _consensus_force(A @ opinions, A.sum(axis=1), opinions)
+        np.testing.assert_allclose(force, 0.0, atol=1e-12)
+
+    def test_force_is_degree_intensive(self):
+        """Force magnitude must not grow with the number of neighbours."""
+        from multilayer_engine import _consensus_force
+
+        rng = np.random.default_rng(0)
+        opinions = rng.uniform(-1, 1, 200)
+        forces = []
+        for n_neighbours in (5, 50, 199):
+            A = np.zeros((200, 200))
+            for i in range(200):
+                idx = [(i + k) % 200 for k in range(1, n_neighbours + 1)]
+                A[i, idx] = 1.0
+            forces.append(np.abs(_consensus_force(A @ opinions, A.sum(axis=1), opinions)).mean())
+        # Denser graph averages over more neighbours, so the pull toward the
+        # global mean is, if anything, smoother — never orders of magnitude
+        # larger as it was with the un-normalised sum.
+        assert max(forces) < 3.0 * min(forces)
+
+    def test_isolated_agent_feels_no_social_force(self):
+        from multilayer_engine import _consensus_force
+
+        opinions = np.array([0.5, -0.5])
+        A = np.zeros((2, 2))
+        force = _consensus_force(A @ opinions, A.sum(axis=1), opinions)
+        np.testing.assert_allclose(force, 0.0)
+
+    def test_dense_graph_does_not_saturate_clip(self):
+        """With N=300 the engine used to pin every agent to the clip in ~2 steps."""
+        eng = MultilayerEngine(N=300, seed=1, dt=0.01)
+        for _ in range(50):
+            eng.step()
+        op = eng.x[:, COL_OPINION]
+        clipped = np.mean((op <= eng.x_min + 1e-9) | (op >= eng.x_max - 1e-9))
+        assert clipped < 0.5, f"{clipped:.0%} of agents pinned to the opinion clip"

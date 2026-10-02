@@ -9,6 +9,36 @@ import numpy as np
 Array = np.ndarray
 
 
+def _gaspari_cohn_matrix(n: int, radius: float) -> Array:
+    """Gaspari-Cohn (1999) 5th-order piecewise-rational correlation taper.
+
+    Returns an ``(n, n)`` matrix whose entry ``(i, j)`` decays smoothly from 1
+    at ``|i-j| = 0`` to exactly 0 at ``|i-j| >= 2·radius``. Unlike a hard
+    cut-off, this function is positive-definite, so the tapered covariance
+    remains a valid covariance matrix.
+    """
+    idx = np.arange(n)
+    dist = np.abs(idx[:, None] - idx[None, :]) / float(radius)
+    taper = np.zeros_like(dist)
+
+    near = dist <= 1.0
+    d = dist[near]
+    taper[near] = 1.0 - (5.0 / 3.0) * d**2 + (5.0 / 8.0) * d**3 + 0.5 * d**4 - 0.25 * d**5
+
+    far = (dist > 1.0) & (dist < 2.0)
+    d = dist[far]
+    taper[far] = (
+        4.0
+        - 5.0 * d
+        + (5.0 / 3.0) * d**2
+        + (5.0 / 8.0) * d**3
+        - 0.5 * d**4
+        + (1.0 / 12.0) * d**5
+        - (2.0 / 3.0) / d
+    )
+    return np.clip(taper, 0.0, 1.0)
+
+
 class EnsembleKalmanFilter:
     """Small Ensemble Kalman Filter with dimensionally correct covariance.
 
@@ -19,7 +49,25 @@ class EnsembleKalmanFilter:
         initial_ensemble: Optional initial ensemble with shape
             ``(n_ensemble, n_state_dim)``.
         rng: Optional NumPy random generator.
+        seed: Seed used when ``rng`` is not supplied. Defaults to
+            ``DEFAULT_ENKF_SEED`` so runs are reproducible; pass ``None``
+            explicitly for nondeterministic behaviour.
+        inflation: Multiplicative covariance inflation factor applied to the
+            ensemble anomalies before the analysis. Finite ensembles
+            systematically under-estimate the forecast spread, and the filter
+            then over-trusts its own prior and diverges from the observations
+            ("filter divergence"). Typical operational range is 1.0–1.1;
+            ``1.0`` disables inflation.
+        localization_radius: Radius (in state-index units) of the Gaspari-Cohn
+            taper applied to the state covariance. With a small ensemble the
+            sample covariance between distant state components is mostly noise;
+            tapering removes those spurious long-range correlations. ``None``
+            disables localization.
     """
+
+    #: Default seed — a data-assimilation filter whose RNG is unseeded makes
+    #: every simulation that uses it irreproducible.
+    DEFAULT_ENKF_SEED = 20240101
 
     def __init__(
         self,
@@ -28,15 +76,29 @@ class EnsembleKalmanFilter:
         observation_covariance: Array | None = None,
         initial_ensemble: Array | None = None,
         rng: np.random.Generator | None = None,
+        seed: int | None = DEFAULT_ENKF_SEED,
+        inflation: float = 1.02,
+        localization_radius: float | None = None,
     ) -> None:
         if n_ensemble < 2:
             raise ValueError("n_ensemble must be at least 2")
         if n_state_dim < 1:
             raise ValueError("n_state_dim must be positive")
+        if inflation < 1.0:
+            raise ValueError("inflation must be >= 1.0")
+        if localization_radius is not None and localization_radius <= 0:
+            raise ValueError("localization_radius must be positive or None")
 
         self.n_ensemble = n_ensemble
         self.n_state_dim = n_state_dim
-        self.rng = rng or np.random.default_rng()
+        self.inflation = float(inflation)
+        self.localization_radius = localization_radius
+        self.rng = rng if rng is not None else np.random.default_rng(seed)
+        self._localization_matrix = (
+            _gaspari_cohn_matrix(n_state_dim, localization_radius)
+            if localization_radius is not None
+            else None
+        )
         if initial_ensemble is None:
             self.ensemble = self.rng.normal(0.0, 1.0, size=(n_ensemble, n_state_dim))
         else:
@@ -92,14 +154,32 @@ class EnsembleKalmanFilter:
 
         x_mean = np.mean(self.ensemble, axis=0)
         anomalies = self.ensemble - x_mean
+
+        # Multiplicative covariance inflation — counteracts the systematic
+        # under-dispersion of a finite ensemble, which otherwise causes the
+        # filter to ignore observations and diverge.
+        if self.inflation != 1.0:
+            anomalies = anomalies * self.inflation
+            self.ensemble = x_mean + anomalies
+
         state_covariance = (anomalies.T @ anomalies) / (self.n_ensemble - 1)
+
+        # Covariance localization — tapers spurious long-range sample
+        # correlations that a small ensemble cannot resolve.
+        if self._localization_matrix is not None:
+            state_covariance = state_covariance * self._localization_matrix
+
         innovation_covariance = H_mat @ state_covariance @ H_mat.T + R
         kalman_gain = state_covariance @ H_mat.T @ np.linalg.pinv(innovation_covariance)
 
-        for i in range(self.n_ensemble):
-            perturbed_obs = y + self.rng.multivariate_normal(np.zeros(y.size), R)
-            innovation = perturbed_obs - H_mat @ self.ensemble[i]
-            self.ensemble[i] = self.ensemble[i] + kalman_gain @ innovation
+        # Vectorised stochastic (perturbed-observation) analysis: one
+        # multivariate draw for the whole ensemble instead of a Python loop
+        # re-factorising R on every member.
+        perturbations = self.rng.multivariate_normal(
+            np.zeros(y.size), R, size=self.n_ensemble
+        )
+        innovations = (y + perturbations) - self.ensemble @ H_mat.T
+        self.ensemble = self.ensemble + innovations @ kalman_gain.T
         return self.ensemble
 
     def get_state_estimate(self) -> tuple[Array, Array]:

@@ -37,10 +37,18 @@ from fastapi import Depends, FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse, Response
 
-from backend.app.metrics import registry as metrics_registry
-from backend.app.routers import benchmark, engine, forecast, llm, sim
-from backend.app.security import get_api_key
-from backend.app.settings import get_app_settings
+# --- .env loading (MUST run before any module-level os.getenv below) -----
+# Without this, every variable documented in .env.example was dead config:
+# docker-compose mounts ./.env into the container but nothing read it, so
+# MASSIVE_API_KEY stayed unset and the whole /v1 surface answered 503.
+from massive_core.config.env import load_env_file  # noqa: E402  (import order is deliberate)
+
+load_env_file()
+
+from backend.app.metrics import registry as metrics_registry  # noqa: E402
+from backend.app.routers import benchmark, engine, forecast, llm, sim  # noqa: E402
+from backend.app.security import get_api_key  # noqa: E402
+from backend.app.settings import get_app_settings  # noqa: E402
 
 # --- logging setup -------------------------------------------------------
 try:

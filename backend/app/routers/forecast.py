@@ -74,17 +74,19 @@ async def v1_forecast(
     data = result.model_dump() if hasattr(result, "model_dump") else dict(result)
 
     p_event = float(data.get("p_event", 0.0))
-    # Use engine-reported confidence bounds if available, otherwise use ±5%
+    # Report the engine's confidence bounds (Wilson score interval over the
+    # Monte-Carlo successes) or nothing at all. The former ±5% fallback
+    # manufactured a fixed-width band for the analytical mode, where no
+    # sampling distribution exists — an uncertainty claim the model never made,
+    # and one that never narrowed as n_runs grew.
     confidence_lower = data.get("p_ci_low", data.get("confidence_lower"))
     confidence_upper = data.get("p_ci_high", data.get("confidence_upper"))
-    if confidence_lower is not None and confidence_upper is not None:
-        cl, cu = float(confidence_lower), float(confidence_upper)
-    else:
-        cl, cu = max(0.0, p_event - 0.05), min(1.0, p_event + 0.05)
+    cl = float(confidence_lower) if confidence_lower is not None else None
+    cu = float(confidence_upper) if confidence_upper is not None else None
     point = ForecastPoint(
         tick=data.get("steps_to_event") or 0,
         mean_opinion=p_event,
-        polarization=0.0,
+        polarization=None,
         confidence_lower=cl,
         confidence_upper=cu,
     )

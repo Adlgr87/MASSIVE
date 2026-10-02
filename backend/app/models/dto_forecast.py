@@ -18,18 +18,24 @@ class ForecastPoint(BaseModel):
     Args:
         tick: Future tick index (relative to the forecast origin).
         mean_opinion: Predicted population mean opinion.
-        polarization: Predicted polarization index.
-        confidence_lower: Lower bound of the 95 % confidence interval.
-        confidence_upper: Upper bound of the 95 % confidence interval.
+        confidence_lower: Lower bound of the 95 % confidence interval, or
+            ``None`` when the forecast mode provides no sampling distribution
+            from which an interval can be estimated (e.g. the analytical
+            mode). Never fabricate a fixed-width band: an invented interval is
+            indistinguishable from a measured one to the consumer.
+        confidence_upper: Upper bound of the 95 % confidence interval, or
+            ``None`` — same condition as ``confidence_lower``.
+        polarization: Predicted polarization index, or ``None`` when the
+            forecast mode does not estimate it.
     """
 
     model_config = {"extra": "forbid"}
 
     tick: int
     mean_opinion: float
-    polarization: float
-    confidence_lower: float
-    confidence_upper: float
+    polarization: float | None = None
+    confidence_lower: float | None = None
+    confidence_upper: float | None = None
 
 
 class Feasibility(BaseModel):

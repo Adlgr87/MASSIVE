@@ -25,6 +25,8 @@ from backend.app.models import (
     LLMExtractResponse,
     LLMRunRequest,
     LLMRunResponse,
+    LLMSimulateUilRequest,
+    LLMSimulateUilResponse,
     LLMWizardRequest,
     LLMWizardResponse,
 )
@@ -175,6 +177,60 @@ async def v1_llm_wizard(payload: LLMWizardRequest) -> LLMWizardResponse:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
 
     return LLMWizardResponse(config=config)
+
+
+@router.post(
+    "/simulate_uil",
+    response_model=LLMSimulateUilResponse,
+    dependencies=[Depends(get_api_key), Depends(rate_limit_dependency)],
+)
+async def v1_llm_simulate_uil(
+    request: Request,
+    payload: LLMSimulateUilRequest,
+) -> LLMSimulateUilResponse:
+    """Run the full UIL pipeline from a natural-language description.
+
+    Canonical replacement for the legacy ``POST /api/simulate-uil``. The
+    frontend previously posted ``{"description": ...}`` to ``POST /v1/simulate``,
+    whose ``SimRequest`` DTO is ``extra="forbid"`` and has no ``description``
+    field — every such call returned 422. This endpoint restores the capability
+    under the versioned surface with a typed contract.
+
+    Returns:
+        ``config``, ``summary`` and ``n_steps``. The raw history is dropped
+        because it can be arbitrarily large.
+
+    Raises:
+        HTTPException: 503 when the UIL adapter / LLM provider is unavailable
+            (fail-closed: this flow is inherently LLM-driven).
+    """
+    from uil_adapter import create_uil_adapter
+
+    try:
+        adapter = create_uil_adapter(
+            llm_provider=(payload.llm.provider if payload.llm else os.getenv("PROVIDER", "groq")),
+            llm_api_key=os.getenv("GROQ_API_KEY", os.getenv("OPENAI_API_KEY", "")),
+        )
+    except Exception as exc:
+        log.warning("UIL adapter unavailable: %s", exc)
+        raise HTTPException(status_code=503, detail="UIL adapter unavailable") from exc
+
+    try:
+        result = adapter.full_pipeline(description=payload.description)
+    except HTTPException:
+        raise
+    except RuntimeError as exc:
+        # Inherently LLM-driven flow → fail closed with a clear 503.
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except Exception as exc:
+        raise _public_error(exc) from exc
+
+    history = result.get("history") or []
+    return LLMSimulateUilResponse(
+        config=result.get("config") or {},
+        summary=result.get("summary") or {},
+        n_steps=len(history),
+    )
 
 
 @router.post(

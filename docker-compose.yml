@@ -18,6 +18,12 @@ services:
     volumes:
       - ./.env:/app/.env:ro
       - massive-logs:/app/reports/validation/ci
+    # Belt and braces: the app itself loads /app/.env via
+    # massive_core.config.env.load_env_file(), and Compose also injects the
+    # same file so the variables are visible to anything that bypasses the
+    # Python loader (healthchecks, shell entrypoints, `docker compose exec`).
+    env_file:
+      - .env
     environment:
       - MASSIVE_ENV=${MASSIVE_ENV:-development}
     networks:

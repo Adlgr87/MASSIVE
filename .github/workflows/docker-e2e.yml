@@ -17,8 +17,11 @@ jobs:
 
       - name: Create minimal env file
         run: |
-          echo "MASSIVE_API_KEY=$(python -c 'import secrets; print(secrets.token_hex(32))')" > .env
+          API_KEY="$(python -c 'import secrets; print(secrets.token_hex(32))')"
+          echo "MASSIVE_API_KEY=${API_KEY}" > .env
           echo "MASSIVE_CORS_ORIGINS=http://localhost:3000" >> .env
+          # Exported for the authenticated smoke step below.
+          echo "MASSIVE_API_KEY=${API_KEY}" >> "$GITHUB_ENV"
 
       - name: Build image
         run: docker compose build
@@ -45,11 +48,43 @@ jobs:
           docker compose logs --no-color | tail -200
           exit 1
 
-      - name: Smoke endpoints
+      - name: Smoke endpoints (unauthenticated infra probes)
         run: |
           curl -fsS "http://127.0.0.1:8000/health" | tee /tmp/health.json
           curl -fsS -o /dev/null -w "%{http_code}\n" "http://127.0.0.1:8000/health"
           curl -fsS -o /dev/null -w "%{http_code}\n" "http://127.0.0.1:8000/version"
+
+      # Regression guard: /health and /version need no API key, so they stayed
+      # green even when .env was never loaded and every /v1 route answered 503.
+      # This step exercises an authenticated endpoint so that class of bug
+      # cannot reach main again.
+      - name: Smoke authenticated /v1 endpoint
+        run: |
+          set -e
+          code=$(curl -s -o /tmp/sim.json -w "%{http_code}" \
+            -X POST "http://127.0.0.1:8000/v1/simulate" \
+            -H "Content-Type: application/json" \
+            -H "X-API-Key: ${MASSIVE_API_KEY}" \
+            -d '{"escenario":"campana","pasos":3}')
+          echo "POST /v1/simulate -> ${code}"
+          cat /tmp/sim.json
+          if [ "${code}" != "200" ]; then
+            echo "::error::Authenticated /v1 call failed (HTTP ${code}). \
+          A 503 here means the container never loaded MASSIVE_API_KEY from .env."
+            docker compose logs --no-color | tail -200
+            exit 1
+          fi
+
+      - name: Reject unauthenticated /v1 call (fail-closed check)
+        run: |
+          code=$(curl -s -o /dev/null -w "%{http_code}" \
+            -X POST "http://127.0.0.1:8000/v1/simulate" \
+            -H "Content-Type: application/json" -d '{"pasos":3}')
+          echo "unauthenticated POST /v1/simulate -> ${code}"
+          if [ "${code}" != "401" ] && [ "${code}" != "403" ]; then
+            echo "::error::Unauthenticated /v1 call returned ${code}, expected 401/403"
+            exit 1
+          fi
 
       - name: Tear down
         if: always()

@@ -216,6 +216,12 @@ def main(argv: Sequence[str] | None = None) -> int:
     Returns:
         Process exit code (0 on success).
     """
+    # Load .env so the CLI honours the same configuration as the HTTP layers
+    # (see massive_core.config.env). Real environment variables still win.
+    from massive_core.config.env import load_env_file
+
+    load_env_file()
+
     parser = _build_parser()
     args = parser.parse_args(argv)
     _configure_logging(getattr(args, "verbose", False))

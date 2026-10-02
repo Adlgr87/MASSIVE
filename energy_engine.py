@@ -82,7 +82,12 @@ def _gaussian(x: float, position: float, sigma: float = _SIGMA) -> float:
     return float(np.exp(-(diff**2) / (2 * sigma**2)))
 
 
-def _landscape_gradient(x: float, attractors: list, repellers: list) -> float:
+def _landscape_gradient(
+    x: float,
+    attractors: list,
+    repellers: list,
+    sigma: float = _SIGMA,
+) -> float:
     """
     Calcula ∇U(x) para el paisaje de atractores y repulsores.
 
@@ -93,28 +98,50 @@ def _landscape_gradient(x: float, attractors: list, repellers: list) -> float:
     Gradiente (derivada analítica):
       ∇U(x) = Σ strength_a · (x - pos_a) / σ² · G(x, pos_a)
              -Σ strength_r · (x - pos_r) / σ² · G(x, pos_r)
+
+    Args:
+        x:          Punto de evaluación.
+        attractors: Lista de dicts con 'position' y 'strength'.
+        repellers:  Lista de dicts con 'position' y 'strength'.
+        sigma:      Ancho del paisaje. **Debe ser el mismo σ que usa la
+            dinámica** (``effective_sigma(gini)``); de lo contrario el
+            gradiente aquí calculado no deriva del potencial que gobierna
+            la integración.
     """
     grad = 0.0
-    sigma2 = _SIGMA**2
+    sigma2 = sigma**2
 
     for att in attractors:
         diff = x - att["position"]
-        grad += att["strength"] * diff / sigma2 * _gaussian(x, att["position"])
+        grad += att["strength"] * diff / sigma2 * _gaussian(x, att["position"], sigma)
 
     for rep in repellers:
         diff = x - rep["position"]
-        grad -= rep["strength"] * diff / sigma2 * _gaussian(x, rep["position"])
+        grad -= rep["strength"] * diff / sigma2 * _gaussian(x, rep["position"], sigma)
 
     return grad
 
 
-def _landscape_energy(x: float, attractors: list, repellers: list) -> float:
-    """Calcula U(x) — energía potencial en el punto x."""
+def _landscape_energy(
+    x: float,
+    attractors: list,
+    repellers: list,
+    sigma: float = _SIGMA,
+) -> float:
+    """Calcula U(x) — energía potencial en el punto x.
+
+    Args:
+        sigma: Ancho del paisaje, que **debe coincidir** con el usado por
+            :meth:`SocialEnergyEngine.step` (``effective_sigma(gini)``).
+            Usar el ``_SIGMA`` fijo mientras la dinámica usa un σ modulado
+            por el Gini hacía que la energía reportada correspondiera a un
+            potencial distinto del integrado.
+    """
     energy = 0.0
     for att in attractors:
-        energy -= att["strength"] * _gaussian(x, att["position"])
+        energy -= att["strength"] * _gaussian(x, att["position"], sigma)
     for rep in repellers:
-        energy += rep["strength"] * _gaussian(x, rep["position"])
+        energy += rep["strength"] * _gaussian(x, rep["position"], sigma)
     return energy
 
 
@@ -525,12 +552,18 @@ class SocialEnergyEngine:
         Returns:
             Tuple of (adjusted_attractors, adjusted_repellers)
         """
-        inequality = self.inequality_factor
-
-        # Multipliers default to the same Gini-derived formula as
-        # massive.core.factbook.mappings.create_wealth_potential, so the
-        # engine and the Factbook mapping layer stay consistent:
-        #   attractor = 1 + 2·gini, repeller = 0.5 + 0.5·gini
+        # Single source of the Gini amplification.
+        #
+        # This previously multiplied by BOTH ``self.inequality_factor``
+        # (= 1 + 2·gini) AND ``attractor_multiplier`` (also 1 + 2·gini by
+        # default), yielding a (1 + 2·gini)² dependence — quadratic where the
+        # documentation (and massive.core.factbook.mappings.create_wealth_
+        # potential) declares it linear. At gini = 0.5 that is ×4 instead of
+        # ×2. The Gini factor is now applied exactly once.
+        #
+        # Precedence: an explicit Factbook-derived ``economic_potential``
+        # overrides the engine default; otherwise use the shared formula
+        #   attractor = 1 + 2·gini,  repeller = 0.5 + 0.5·gini
         attractor_multiplier = self.economic_potential.get(
             "attractor_strength", 1.0 + 2.0 * self.gini_coefficient
         )
@@ -539,24 +572,22 @@ class SocialEnergyEngine:
         )
 
         # Adjust attractors: higher inequality = stronger attractors
-        adjusted_attractors = []
-        for att in base_attractors:
-            adjusted_attractors.append(
-                {
-                    "position": att["position"],
-                    "strength": att["strength"] * inequality * attractor_multiplier,
-                }
-            )
+        adjusted_attractors = [
+            {
+                "position": att["position"],
+                "strength": att["strength"] * attractor_multiplier,
+            }
+            for att in base_attractors
+        ]
 
         # Adjust repulsors: higher inequality = stronger repulsors (more polarization)
-        adjusted_repellers = []
-        for rep in base_repellers:
-            adjusted_repellers.append(
-                {
-                    "position": rep["position"],
-                    "strength": rep["strength"] * inequality * repeller_multiplier,
-                }
-            )
+        adjusted_repellers = [
+            {
+                "position": rep["position"],
+                "strength": rep["strength"] * repeller_multiplier,
+            }
+            for rep in base_repellers
+        ]
 
         return adjusted_attractors, adjusted_repellers
 
@@ -589,11 +620,18 @@ class SocialEnergyEngine:
 
         # Create attractors (economic opportunities)
         # In more unequal societies, opportunities are more concentrated
+        # Use the SAME Gini→strength law as create_gini_adjusted_landscape and
+        # mappings.create_wealth_potential. Three different laws used to coexist
+        # ((1+2g), (1+2g)² and (1+g)), so the Gini→attractor correlation was
+        # not reproducible across entry points.
+        attractor_multiplier = 1.0 + 2.0 * gini
+        repeller_multiplier = 0.5 + 0.5 * gini
+
         attractors = []
         for i in range(n_attractors):
             position = -0.5 + (i / max(n_attractors - 1, 1)) if n_attractors > 1 else 0.0
-            # Higher Gini = more concentrated opportunities (higher strength, fewer positions)
-            strength = 2.0 * income_scale * (1.0 + gini)
+            # Higher Gini = more concentrated opportunities (higher strength)
+            strength = 2.0 * income_scale * attractor_multiplier
             attractors.append({"position": position, "strength": strength})
 
         # Create repulsors (economic barriers)
@@ -601,7 +639,7 @@ class SocialEnergyEngine:
         for i in range(n_repellers):
             position = -0.7 + (i / max(n_repellers - 1, 1)) * 1.4
             # Higher Gini = stronger barriers
-            strength = 1.5 * income_scale * (1.0 + gini * 2.0)
+            strength = 1.5 * income_scale * repeller_multiplier
             repellers.append({"position": position, "strength": strength})
 
         return attractors, repellers
@@ -626,8 +664,11 @@ class SocialEnergyEngine:
         # Polarización: desviación estándar normalizada al semi-rango
         polarizacion = calculate_polarization(opinions, self.range_type)
 
-        # Energía total del sistema
-        energies = [_landscape_energy(x, attractors, repellers) for x in opinions]
+        # Energía total del sistema — evaluada con el MISMO σ que la dinámica
+        # (``step`` usa ``effective_sigma(self.gini_coefficient)``), de modo que
+        # ``energia_total`` sea realmente el potencial que se está integrando.
+        sigma = effective_sigma(self.gini_coefficient)
+        energies = [_landscape_energy(x, attractors, repellers, sigma) for x in opinions]
         energia_total = float(np.sum(energies))
         energia_media = float(np.mean(energies))
 

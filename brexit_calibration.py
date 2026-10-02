@@ -147,10 +147,14 @@ def run_brexit_calibration(
     corrected_val = final_leave
 
     if router.status.get("residual_corrector"):
+        # NOTE: `actual` is deliberately NOT passed. Feeding the observed
+        # Leave share into the corrector made the "error reduction" circular
+        # (the old implementation returned 0.5*sim + 0.5*actual, i.e. a fixed
+        # 50% improvement by construction). The corrector must stand on its
+        # own prediction for this calibration to mean anything.
         corrected_raw, src = router.correct_residual(
             history=sim_leave_series,
             simulated=final_leave,
-            actual=BREXIT_ACTUAL_LEAVE,
         )
         corrected_val = corrected_raw
         residual_source = src

@@ -12,6 +12,7 @@ from massive_core.config.api_auth import (
     is_dev_env,
     is_dev_fallback_allowed,
 )
+from massive_core.config.env import load_env_file, reset_env_loader_state
 from massive_core.config.logging_setup import configure_logging, get_logger
 from massive_core.config.rate_limit import (
     FileRateLimiter,
@@ -33,6 +34,8 @@ from massive_core.config.settings import (
 
 __all__ = [
     "ScientificRuntimeConfig",
+    "load_env_file",
+    "reset_env_loader_state",
     "AppSettings",
     "LLMProviderSettings",
     "LoggingSettings",

@@ -22,9 +22,24 @@ from fastapi import Depends, FastAPI, File, Header, HTTPException, Request, Uplo
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import APIKeyHeader
 
+from massive_core.config.env import load_env_file
+
+# Load .env before any module-level os.getenv below (see massive_core.config.env).
+load_env_file()
+
 log = logging.getLogger(__name__)
 
-app = FastAPI(title="MASSIVE UIL API", version="1.0.0")
+# Auto-generated docs leak the full API contract to unauthenticated consumers.
+# Mirror backend/app/main.py: expose them only in an explicit dev environment.
+_LEGACY_IS_DEV = os.getenv("MASSIVE_ENV", "").strip().lower() in {"development", "dev"}
+
+app = FastAPI(
+    title="MASSIVE UIL API",
+    version="1.0.0",
+    docs_url="/docs" if _LEGACY_IS_DEV else None,
+    redoc_url="/redoc" if _LEGACY_IS_DEV else None,
+    openapi_url="/openapi.json" if _LEGACY_IS_DEV else None,
+)
 
 # ── Auth ──────────────────────────────────────────────────────────────
 api_key_header = APIKeyHeader(name="X-API-Key", auto_error=False)
@@ -348,9 +363,25 @@ async def api_forecast(
         if not isinstance(simulation_state, dict):
             raise HTTPException(status_code=400, detail="'simulation_state' (dict) is required")
         temporal_cfg = payload.get("temporal_config") or {}
+        # `forecast()` requires a TemporalConfig instance — it accesses
+        # attributes such as `.event_type`. Passing the raw dict through (as
+        # this endpoint used to do) raised AttributeError on every call, so
+        # /api/v1/forecast always returned 500. Build the config here, and
+        # surface a bad override as 422 instead of a generic server error.
+        from forecast.temporal_config import TemporalConfig
+
+        try:
+            temporal_config = TemporalConfig(
+                **(temporal_cfg if isinstance(temporal_cfg, dict) else {})
+            )
+        except Exception as exc:
+            raise HTTPException(
+                status_code=422, detail=f"invalid temporal_config: {exc}"
+            ) from exc
+
         result = forecast(
             simulation_state,
-            temporal_config=temporal_cfg if isinstance(temporal_cfg, dict) else {},
+            temporal_config=temporal_config,
             mode=payload.get("mode", "analytical"),
             n_runs=int(payload.get("n_runs", 200)),
         )
@@ -362,14 +393,23 @@ async def api_forecast(
             from backend.app.models import Feasibility, ForecastPoint
 
             _p_event = float(data.get("p_event", 0.0))
-            _lower = max(0.0, _p_event - 0.05)
-            _upper = min(1.0, _p_event + 0.05)
+            # Use the REAL interval computed by the forecast engine (a Wilson
+            # score interval over the Monte-Carlo successes). The previous
+            # code discarded it and fabricated a constant ±0.05 band, which
+            # was indistinguishable from a measured uncertainty to any
+            # consumer and did not shrink with n_runs. In analytical mode no
+            # sampling distribution exists, so the engine returns None and the
+            # bounds stay absent rather than invented.
+            _lower = data.get("p_ci_low")
+            _upper = data.get("p_ci_high")
             point = ForecastPoint(
                 tick=data.get("steps_to_event") or 0,
                 mean_opinion=_p_event,
-                polarization=0.0,
-                confidence_lower=_lower,
-                confidence_upper=_upper,
+                # Not estimated by the forecast engine; reporting 0.0 asserted
+                # "no polarization", which is a claim the model never made.
+                polarization=None,
+                confidence_lower=float(_lower) if _lower is not None else None,
+                confidence_upper=float(_upper) if _upper is not None else None,
             )
             feas = Feasibility(
                 score=_p_event,
@@ -384,9 +424,9 @@ async def api_forecast(
             point = {
                 "tick": data.get("steps_to_event") or 0,
                 "mean_opinion": float(data.get("p_event", 0.0)),
-                "polarization": 0.0,
-                "confidence_lower": max(0.0, float(data.get("p_event", 0.0)) - 0.05),
-                "confidence_upper": min(1.0, float(data.get("p_event", 0.0)) + 0.05),
+                "polarization": None,
+                "confidence_lower": data.get("p_ci_low"),
+                "confidence_upper": data.get("p_ci_high"),
             }
             feas = {
                 "score": float(data.get("p_event", 0.0)),
@@ -460,7 +500,7 @@ async def root():
         "status": "ok",
         "service": "MASSIVE UIL API",
         "version": "1.0.0",
-        "docs": "/docs",
+        "docs": "/docs" if _LEGACY_IS_DEV else None,
     }
 
 
