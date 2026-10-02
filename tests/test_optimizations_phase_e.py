@@ -58,18 +58,14 @@ class TestInPlaceUpdateFailsLoudly:
     def test_float64_array_is_mutated(self):
         agents = np.zeros((4, 2), dtype=np.float64)
         agents[:, 0] = 0.5
-        langevin_opinion_update_inplace(
-            agents, np.ones(4), np.zeros(4), np.zeros(4), 0.1, 0.0
-        )
+        langevin_opinion_update_inplace(agents, np.ones(4), np.zeros(4), np.zeros(4), 0.1, 0.0)
         assert np.allclose(agents[:, 0], 0.6)
 
     @pytest.mark.parametrize("dtype", [np.float32, np.int64])
     def test_wrong_dtype_raises_instead_of_silently_copying(self, dtype):
         agents = np.zeros((4, 2), dtype=dtype)
         with pytest.raises(TypeError, match="float64"):
-            langevin_opinion_update_inplace(
-                agents, np.ones(4), np.zeros(4), np.zeros(4), 0.1, 0.0
-            )
+            langevin_opinion_update_inplace(agents, np.ones(4), np.zeros(4), np.zeros(4), 0.1, 0.0)
 
     def test_non_array_raises(self):
         with pytest.raises(TypeError, match="ndarray"):
@@ -81,9 +77,7 @@ class TestInPlaceUpdateFailsLoudly:
         agents = np.zeros((4, 2), dtype=np.float64)
         agents.flags.writeable = False
         with pytest.raises(TypeError, match="writable"):
-            langevin_opinion_update_inplace(
-                agents, np.ones(4), np.zeros(4), np.zeros(4), 0.1, 0.0
-            )
+            langevin_opinion_update_inplace(agents, np.ones(4), np.zeros(4), np.zeros(4), 0.1, 0.0)
 
 
 class TestCfCStatusIsObservable:
@@ -98,3 +92,54 @@ class TestCfCStatusIsObservable:
             "landscape_model",
         }
         assert all(isinstance(v, bool) for v in engine.cfc_status.values())
+
+
+class TestLodAggregationPreservesSpread:
+    """LOD aggregation must not understate dispersion.
+
+    `build_aggregated_super_agents` replaces each cluster by its mean, which
+    destroys the within-cluster variance. The engine reported std/polarization
+    straight from the centres, so by the law of total variance
+    (Var_total = E[Var_within] + Var_between) it only ever saw the second
+    term — understating spread, and reporting exactly zero at M=1.
+    """
+
+    @staticmethod
+    def _bimodal_population(n=2000, k=5, seed=0):
+        rng = np.random.default_rng(seed)
+        states = rng.normal(0.0, 0.4, (n, k))
+        states[:, 0] = np.clip(
+            np.concatenate([rng.normal(-0.6, 0.1, n // 2), rng.normal(0.6, 0.1, n - n // 2)]),
+            -1.0,
+            1.0,
+        )
+        return states
+
+    @pytest.mark.parametrize("m", [1000, 200, 50, 10, 2])
+    def test_reported_std_matches_micro_population(self, m):
+        from massive_engine import MassiveSimEngine
+
+        states = self._bimodal_population()
+        expected = float(states[:, 0].std())
+
+        engine = MassiveSimEngine(
+            N=states.shape[0],
+            M=m,
+            K=states.shape[1],
+            lod_mode="aggregated",
+            agent_states=states,
+            seed=1,
+        )
+        reported = engine._build_result(0.0, 0)["std_opinion"]
+        assert reported == pytest.approx(
+            expected, abs=0.02
+        ), f"M={m}: reported std {reported:.4f} vs true {expected:.4f}"
+
+    def test_population_and_mean_are_conserved_exactly(self):
+        from massive_engine import build_aggregated_super_agents
+
+        states = self._bimodal_population(n=1000)
+        centers, counts, _ = build_aggregated_super_agents(states, 50, seed=7)
+        assert counts.sum() == states.shape[0]
+        weighted_mean = (centers * counts[:, None]).sum(axis=0) / counts.sum()
+        np.testing.assert_allclose(weighted_mean, states.mean(axis=0), atol=1e-12)

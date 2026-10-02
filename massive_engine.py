@@ -928,6 +928,12 @@ class MassiveSimEngine:
         self.layer_weights: np.ndarray = w / w.sum()
 
         # ── Estrategia 1: super-agentes (sintéticos o agregados) ─────
+        # Within-cluster variance discarded by aggregation, per state
+        # dimension. Needed to report an unbiased spread: see
+        # `_build_result`. Zero for synthetic super-agents, which have no
+        # underlying micro-population to lose variance from.
+        self._within_cluster_var: np.ndarray = np.zeros(K, dtype=np.float64)
+
         if lod_mode == "aggregated":
             self._x, self._counts, self._cluster_labels = build_aggregated_super_agents(
                 agent_states,
@@ -935,6 +941,26 @@ class MassiveSimEngine:
                 feature_matrix=feature_matrix,
                 seed=seed,
             )
+            # Aggregation replaces every cluster by its mean, so the spread
+            # *inside* each cluster is destroyed. By the law of total variance
+            #     Var_total = E[Var_within] + Var_between
+            # and the super-agent centres only carry the second term. Reporting
+            # std/polarization straight from the centres therefore understates
+            # the real dispersion — badly for small M (at M=1 it reports zero
+            # spread for any population). Capture the lost term here, while the
+            # micro-states are still available, so the metrics can add it back.
+            micro = np.asarray(agent_states, dtype=np.float64)
+            labels = self._cluster_labels
+            total_w = 0.0
+            acc = np.zeros(K, dtype=np.float64)
+            for j in range(self.M):
+                members = micro[labels == j]
+                if members.shape[0] < 1:
+                    continue
+                acc += members.var(axis=0) * members.shape[0]
+                total_w += members.shape[0]
+            if total_w > 0:
+                self._within_cluster_var = acc / total_w
         else:
             self._x, self._counts = build_super_agents(N, self.M, K, seed)
 
@@ -1239,16 +1265,29 @@ class MassiveSimEngine:
         counts_f = self._counts.astype(np.float64)
 
         w_mean = float(np.average(x_f[:, 0], weights=counts_f))
-        w_var = float(np.average((x_f[:, 0] - w_mean) ** 2, weights=counts_f))
+        # Between-cluster variance (all the centres retain) plus the
+        # within-cluster variance that aggregation discarded — the law of
+        # total variance, Var_total = E[Var_within] + Var_between. Without
+        # the first term, std_opinion and polarization are systematically
+        # biased low in `lod_mode="aggregated"` (to exactly zero at M=1).
+        w_var_between = float(np.average((x_f[:, 0] - w_mean) ** 2, weights=counts_f))
+        w_var = w_var_between + float(self._within_cluster_var[0])
         w_std = float(np.sqrt(max(w_var, 0.0)))
+
+        # Polarization is defined as std / half_range, so it must use the same
+        # total-variance std rather than recomputing from the centres alone.
+        half_range = 1.0  # bipolar opinions span [-1, 1]
+        polarization = (
+            float(np.clip(w_std / half_range, 0.0, 1.0))
+            if self._cluster_labels is not None
+            else calculate_polarization(x_f[:, 0], "bipolar")
+        )
 
         mem = self.memory_report
         return {
             "mean_opinion": w_mean,
             "std_opinion": w_std,
-            # Note: unified polarization metric uses np.std (unweighted).
-            # Replacing weighted average of absolute values for consistency.
-            "polarization": calculate_polarization(x_f[:, 0], "bipolar"),
+            "polarization": polarization,
             "mean_cooperation": (
                 float(np.average(x_f[:, 1], weights=counts_f)) if self.K > 1 else 0.0
             ),

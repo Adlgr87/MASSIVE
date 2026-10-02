@@ -386,7 +386,9 @@ def _multilayer_langevin_step_core(
     for ell in range(L):
         w = layer_weights[ell]
         A = layers_flat[ell]
-        social_force[:, COL_OPINION] += coupling * w * _consensus_force(A @ opinions, A.sum(axis=1), opinions)
+        social_force[:, COL_OPINION] += (
+            coupling * w * _consensus_force(A @ opinions, A.sum(axis=1), opinions)
+        )
 
     grad_U = multi_potential_gradient(x_vec)
     x_new = (
@@ -762,9 +764,7 @@ class MultilayerEngine:
                 # the legacy path (see the parity test in
                 # tests/test_scientific_integration.py).
                 social_force[:, COL_OPINION] += (
-                    self.coupling
-                    * weight
-                    * _consensus_force(A @ opinions, A.sum(axis=1), opinions)
+                    self.coupling * weight * _consensus_force(A @ opinions, A.sum(axis=1), opinions)
                 )
             return -multi_potential_gradient(x) + social_force
 

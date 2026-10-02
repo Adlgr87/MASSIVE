@@ -75,6 +75,6 @@ class TestSocialPressureMapping:
         ctx = _context()
         weights = ctx.massive_params["social_pressure_weights"]
         for key in ("ethnic", "religious", "language"):
-            assert weights[key] == pytest.approx(0.5), (
-                f"{key}: missing data must map to the neutral 0.5, not to maximum pressure"
-            )
+            assert weights[key] == pytest.approx(
+                0.5
+            ), f"{key}: missing data must map to the neutral 0.5, not to maximum pressure"

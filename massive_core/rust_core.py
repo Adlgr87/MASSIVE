@@ -95,9 +95,7 @@ def langevin_opinion_update_inplace(
             "with `agents.astype(np.float64)` and keep the result."
         )
     if not agents.flags.writeable:
-        raise TypeError(
-            "langevin_opinion_update_inplace requires a writable `agents` array."
-        )
+        raise TypeError("langevin_opinion_update_inplace requires a writable `agents` array.")
 
     agents_arr = agents
     drift = np.asarray(drift_vector, dtype=np.float64)

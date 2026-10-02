@@ -130,9 +130,6 @@ def _rate_limit(request: Request) -> None:
 # Upload limits + allow-list come from the shared config module so this
 # surface and backend/app/routers/llm.py cannot drift apart again.
 from massive_core.config.uploads import (  # noqa: E402
-    ALLOWED_UPLOAD_EXTENSIONS as _ALLOWED_EXT,
-)
-from massive_core.config.uploads import (  # noqa: E402
     max_upload_bytes as _max_upload_bytes,
 )
 from massive_core.config.uploads import (  # noqa: E402
@@ -382,9 +379,7 @@ async def api_forecast(
                 **(temporal_cfg if isinstance(temporal_cfg, dict) else {})
             )
         except Exception as exc:
-            raise HTTPException(
-                status_code=422, detail=f"invalid temporal_config: {exc}"
-            ) from exc
+            raise HTTPException(status_code=422, detail=f"invalid temporal_config: {exc}") from exc
 
         result = forecast(
             simulation_state,

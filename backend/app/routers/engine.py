@@ -41,7 +41,6 @@ async def v1_energy(
         config_overrides: dict (optional)
     """
     from energy_runner import run_energy_simulation
-
     from services.llm_orchestrator import _sanitize_for_json
 
     try:

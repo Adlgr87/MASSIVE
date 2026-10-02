@@ -222,9 +222,9 @@ class TestHostHeaderFailsClosed:
             monkeypatch.setenv(key, value)
         for name in [m for m in list(sys.modules) if m.startswith("backend.app")]:
             del sys.modules[name]
-        import backend.app.main as main
-
         from fastapi.testclient import TestClient
+
+        import backend.app.main as main
 
         return TestClient(importlib.reload(main).app)
 
@@ -251,9 +251,7 @@ class TestHostHeaderFailsClosed:
             monkeypatch,
             {"MASSIVE_ENV": "production", "MASSIVE_ALLOWED_HOSTS": "massive.example.com"},
         )
-        assert (
-            client.get("/health", headers={"host": "massive.example.com"}).status_code != 400
-        )
+        assert client.get("/health", headers={"host": "massive.example.com"}).status_code != 400
         assert client.get("/health", headers={"host": "evil.com"}).status_code == 400
 
 
@@ -264,14 +262,28 @@ class TestHostHeaderFailsClosed:
 
 
 class TestUploadLimitsAreUnified:
-    def test_both_surfaces_share_one_allowlist(self):
+    def test_both_surfaces_accept_and_reject_the_same_extensions(self):
+        """Behavioural check: the two `_safe_suffix` gates must agree.
+
+        Asserting on a module-level constant would not catch the real defect
+        (the surfaces disagreeing on a given filename), and the legacy module
+        no longer needs to re-export the allow-list now that it delegates.
+        """
         pytest.importorskip("networkx", reason="canonical app needs the full stack")
         import backend.app.routers.llm as router_mod
-
         from massive_core.config.uploads import ALLOWED_UPLOAD_EXTENSIONS
 
-        assert set(api_mod._ALLOWED_EXT) == set(ALLOWED_UPLOAD_EXTENSIONS)
-        assert set(router_mod._ALLOWED_EXT) == set(ALLOWED_UPLOAD_EXTENSIONS)
+        for ext in ALLOWED_UPLOAD_EXTENSIONS:
+            name = f"upload{ext}"
+            assert api_mod._safe_suffix(name) == ext
+            assert router_mod._safe_suffix(name) == ext
+
+        for bad in (".exe", ".sh", ".zip"):
+            name = f"payload{bad}"
+            for surface in (api_mod, router_mod):
+                with pytest.raises(Exception) as excinfo:
+                    surface._safe_suffix(name)
+                assert getattr(excinfo.value, "status_code", None) == 400
 
     def test_max_upload_mb_is_honoured(self, monkeypatch):
         from massive_core.config.uploads import max_upload_bytes

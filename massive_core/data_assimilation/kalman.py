@@ -175,9 +175,7 @@ class EnsembleKalmanFilter:
         # Vectorised stochastic (perturbed-observation) analysis: one
         # multivariate draw for the whole ensemble instead of a Python loop
         # re-factorising R on every member.
-        perturbations = self.rng.multivariate_normal(
-            np.zeros(y.size), R, size=self.n_ensemble
-        )
+        perturbations = self.rng.multivariate_normal(np.zeros(y.size), R, size=self.n_ensemble)
         innovations = (y + perturbations) - self.ensemble @ H_mat.T
         self.ensemble = self.ensemble + innovations @ kalman_gain.T
         return self.ensemble
