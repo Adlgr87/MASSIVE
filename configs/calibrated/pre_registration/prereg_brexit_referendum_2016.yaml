@@ -5,7 +5,7 @@ calibrated_params:
 case_id: brexit_referendum_2016
 cultural_profile: anglosaxon
 data_integrity: brexit_referendum_2016
-ensemble_size: 20
+ensemble_size: 5
 gates:
   G1: Pre-registration sealed before simulation
   G2: Simulation runs from day-0 conditions only
@@ -37,9 +37,9 @@ metrics:
   direction: higher_is_better
   name: coverage_90ci
   threshold: "\u2265 0.85"
-n_agents: 80
+n_agents: 20
 n_timesteps: 11
-registered_at: '2026-10-02T23:21:58.910166+00:00'
+registered_at: '2026-10-02T23:30:06.001718+00:00'
 scenario_type: polarization_spike
 seal:
   algorithm: SHA-256

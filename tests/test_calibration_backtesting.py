@@ -6,18 +6,16 @@ Preregistration: Pre-registration sealing before simulation.
 """
 from __future__ import annotations
 
-import json
 import tempfile
 from pathlib import Path
 
 import numpy as np
 import pytest
-import yaml
 
 from massive.core.abcsbi import ABCCalibrator, TrajectoryObservation
 from massive.core.backtesting import (
-    BacktestMetrics,
     Backtester,
+    BacktestMetrics,
     coverage_90ci,
     direction_error,
     dtw_rmse,
@@ -26,14 +24,13 @@ from massive.core.backtesting import (
 )
 from massive.core.data_provenance import (
     get_seed_sequence,
-    hash_file,
     hash_directory,
+    hash_file,
     register_dataset,
     verify_integrity,
 )
 from massive.core.physics_calibration import (
     PHYSICS_RANGES,
-    PhysicsParams,
     simulate_opinion_dynamics,
 )
 
@@ -192,7 +189,7 @@ class TestBacktesterLoading:
         loaded = 0
         for case_id in sorted(case_dirs):
             try:
-                event = bt.load_event(case_id)
+                bt.load_event(case_id)
                 loaded += 1
             except Exception:
                 pass
@@ -364,14 +361,14 @@ class TestABCCalibrator:
         abc.calibrate(Brexit_OBS, n_rounds=2, n_samples=20, threshold=0.5, seed=42)
         summary = abc.posterior_summary()
         assert set(summary.keys()) == {"sigma", "epsilon", "lambda_social"}
-        for param_name, vals in summary.items():
+        for vals in summary.values():
             assert "mean" in vals
             assert "std" in vals
             assert "ci_lower" in vals
             assert "ci_upper" in vals
             assert "n" in vals
-            assert "n_samples" in vals or True  # accept either key
-            assert 0 <= vals["std"]  # std is non-negative
+            assert vals["std"] >= 0  # std is non-negative
+            assert vals["n"] > 0  # at least one sample accepted
 
     def test_posterior_mean_params_in_ranges(self):
         abc = ABCCalibrator(n_agents=30, n_steps=11, seed=42)
@@ -395,8 +392,7 @@ class TestABCCalibrator:
         """Posterior distance should be lower than prior distance."""
         abc = ABCCalibrator(n_agents=30, n_steps=11, seed=42)
         abc.calibrate(Brexit_OBS, n_rounds=2, n_samples=30, threshold=0.5, seed=42)
-        prior = abc.prior_mean_distance()
-        # Simulate with posterior mean
+        # This is a weak test — at Tier 1, improvement may be marginal
         params = abc.posterior_mean_params()
         sim_traj, _ = simulate_opinion_dynamics(
             sigma=params.sigma,
@@ -411,8 +407,6 @@ class TestABCCalibrator:
             TrajectoryObservation(trajectory=sim_traj),
             TrajectoryObservation(trajectory=Brexit_OBS),
         )
-        # The posterior should not be worse than the prior (on average)
-        # This is a weak test — at Tier 1, improvement may be marginal
         assert np.isfinite(post_dist)
 
 

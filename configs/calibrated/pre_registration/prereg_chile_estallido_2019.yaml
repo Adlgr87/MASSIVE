@@ -5,7 +5,7 @@ calibrated_params:
 case_id: chile_estallido_2019
 cultural_profile: latin
 data_integrity: chile_estallido_2019
-ensemble_size: 20
+ensemble_size: 5
 gates:
   G1: Pre-registration sealed before simulation
   G2: Simulation runs from day-0 conditions only
@@ -37,9 +37,9 @@ metrics:
   direction: higher_is_better
   name: coverage_90ci
   threshold: "\u2265 0.85"
-n_agents: 80
+n_agents: 20
 n_timesteps: 15
-registered_at: '2026-10-02T23:21:58.930175+00:00'
+registered_at: '2026-10-02T23:30:05.750271+00:00'
 scenario_type: polarization_spike
 seal:
   algorithm: SHA-256

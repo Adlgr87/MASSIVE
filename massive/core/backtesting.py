@@ -21,8 +21,8 @@ ex-post outcome validation (similar to PVU-BS pre-registration).
 from __future__ import annotations
 
 import json
-from dataclasses import dataclass, field
-from datetime import datetime, timezone
+from dataclasses import dataclass
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -31,8 +31,6 @@ import yaml
 from scipy.stats import wasserstein_distance
 
 from massive.core.physics_calibration import (
-    PHYSICS_RANGES,
-    PARAM_NAMES,
     PhysicsParams,
     p_to_opinions,
     simulate_opinion_dynamics,
@@ -520,7 +518,7 @@ class Backtester:
 
         record: dict[str, Any] = {
             "case_id": case_id,
-            "registered_at": datetime.now(timezone.utc).isoformat(),
+            "registered_at": datetime.now(UTC).isoformat(),
             "version": "1.0.0",
             "scenario_type": event["scenario_type"],
             "cultural_profile": event["cultural_profile"],
@@ -649,7 +647,7 @@ class Backtester:
         # fall back to a heuristic based on peak observed P.
         a_well = event.get("attractor_position",
                            float(max(event["P"])) * 0.95)
-        peak_step = int(np.argmax(event["P"]))
+        int(np.argmax(event["P"]))
 
         # Build initial opinions from P0 and scale to exact P0
         rng_init = np.random.default_rng(seed)
@@ -685,9 +683,9 @@ class Backtester:
         # ── Ensemble run (perturbed params, for 90 % CI coverage) ──────────────
         ensemble_trajectories = np.empty((self.ensemble_size, n_steps + 1))
 
-        base_sigma = float(self.params.sigma)
+        float(self.params.sigma)
         base_epsilon = float(self.params.epsilon)
-        base_lambda = float(self.params.lambda_social)
+        float(self.params.lambda_social)
 
         for i in range(self.ensemble_size):
             member_seed = seed + i * 1000 + 1
@@ -850,10 +848,7 @@ class Backtester:
         de = direction_error(sim_traj, obs_traj)
 
         # Coverage
-        if sim_intervals is not None:
-            cov = coverage_90ci(sim_intervals, obs_traj)
-        else:
-            cov = 0.0
+        cov = coverage_90ci(sim_intervals, obs_traj) if sim_intervals is not None else 0.0
 
         passed = (
             w <= thresholds["wasserstein_max"]
