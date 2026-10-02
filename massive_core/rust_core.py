@@ -72,8 +72,34 @@ def langevin_opinion_update_inplace(
         diffusion_sigma: Diffusion coefficient.
         x_min: Minimum allowed opinion.
         x_max: Maximum allowed opinion.
+
+    Raises:
+        TypeError: if ``agents`` is not a writable float64 ``ndarray``. This
+            function mutates its argument and returns ``None``, so it cannot
+            accept anything that would need converting: ``np.asarray(agents,
+            dtype=np.float64)`` silently *copies* a float32 array or a list,
+            the update lands on the throwaway copy, and the caller observes
+            no change at all with no error raised. Converting the input is
+            the caller's decision to make, explicitly.
     """
-    agents_arr = np.asarray(agents, dtype=np.float64)
+    if not isinstance(agents, np.ndarray):
+        raise TypeError(
+            "langevin_opinion_update_inplace mutates `agents` in place and so "
+            f"requires a numpy ndarray, got {type(agents).__name__}."
+        )
+    if agents.dtype != np.float64:
+        raise TypeError(
+            "langevin_opinion_update_inplace requires a float64 `agents` array "
+            f"(got {agents.dtype}); converting it here would write the update "
+            "to a temporary copy and silently discard it. Convert explicitly "
+            "with `agents.astype(np.float64)` and keep the result."
+        )
+    if not agents.flags.writeable:
+        raise TypeError(
+            "langevin_opinion_update_inplace requires a writable `agents` array."
+        )
+
+    agents_arr = agents
     drift = np.asarray(drift_vector, dtype=np.float64)
     diffusion = np.asarray(diffusion_noise, dtype=np.float64)
     jumps = np.asarray(jump_values, dtype=np.float64)

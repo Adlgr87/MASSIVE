@@ -37,6 +37,55 @@ except ImportError:
 # Ancho gaussiano por defecto para pozos/picos del paisaje
 _SIGMA = 0.3
 
+#: Guard so the CfC availability summary is logged once per process rather
+#: than on every engine instantiation (simulations build many engines).
+_CFC_STATUS_LOGGED = False
+
+
+def _log_cfc_status_once(status: dict) -> None:
+    """Log which optional CfC modulators are active, once per process.
+
+    Published weights currently cover only the residual corrector; the
+    temperature and landscape modulators have configs and training logs in
+    ``models/cfc_calibrated/`` but no ``.pt`` file (``*.pt`` is git-ignored).
+    Without this message the engine reports nothing and the rule-based
+    fallback is indistinguishable from a learned one.
+    """
+    global _CFC_STATUS_LOGGED
+    if _CFC_STATUS_LOGGED:
+        return
+    _CFC_STATUS_LOGGED = True
+
+    inactive = [name for name, active in status.items() if name != "torch_available" and not active]
+    if not inactive:
+        log.info("[EnergyEngine] All CfC modulators loaded.")
+        return
+    if not status.get("torch_available"):
+        log.info(
+            "[EnergyEngine] torch not installed — CfC modulators disabled, "
+            "using rule-based multipliers (%s).",
+            ", ".join(inactive),
+        )
+        return
+    log.info(
+        "[EnergyEngine] CfC weights not found for: %s. Using rule-based "
+        "multipliers for those. Train them with the scripts in docs/examples/ "
+        "to populate models/cfc_calibrated/.",
+        ", ".join(inactive),
+    )
+
+
+#: Maximum N for which a dense (N, N) adjacency matrix may be built.
+#: The result alone costs N²·8 bytes — 20 GB at this cap. Exposed as a module
+#: constant so callers (e.g. services.llm_orchestrator) can clamp against the
+#: same number instead of hardcoding their own copy.
+DENSE_ADJACENCY_CAP = 50_000
+
+#: Row-block size used when generating dense adjacency matrices, chosen so one
+#: block stays small (1024 × N float64 ≈ 400 MB at the cap) while keeping the
+#: number of Python-level iterations low.
+_ADJACENCY_BLOCK_ROWS = 1024
+
 # Gini de referencia: el ancho efectivo del paisaje se modula alrededor de
 # este valor para que la configuración por defecto no cambie resultados
 # históricos (σ = _SIGMA cuando gini = _GINI_SIGMA_ANCHOR).
@@ -220,6 +269,21 @@ class SocialEnergyEngine:
 
         # Load trained CfC landscape modulator (optional, for EWS landscape adaptation)
         self._landscape_model = self._load_landscape_model()
+
+        # Report which optional CfC components actually loaded.
+        #
+        # Falling back to the rule-based path is legitimate ("optional means
+        # optional"), but it was entirely SILENT: only `cfc_residual.pt` is
+        # published in the repository, so the temperature and landscape
+        # modulators fall back on every run, forever, and nothing said so.
+        # Results looked like CfC-modulated output while being plain rules.
+        self.cfc_status: dict[str, bool] = {
+            "torch_available": bool(self._torch_available),
+            "temperature_model": self._temp_model is not None,
+            "lambda_model": self._lambda_model is not None,
+            "landscape_model": self._landscape_model is not None,
+        }
+        _log_cfc_status_once(self.cfc_status)
 
     def _load_temperature_model(self):
         """Load the trained CfC temperature modulator, or None if unavailable."""
@@ -706,23 +770,55 @@ def random_network(
     if n_agents < 2:
         raise ValueError("n_agents must be >= 2")
 
-    # Guard against O(N²) memory blowup: a dense (N, N) float64 adjacency for
-    # N > 50 000 would allocate >12 GB and risk instant OOM (Devil's Advocate
-    # Finding 22). Callers wanting large N must use MassiveSimEngine LOD
-    # instead of the energy engine's dense path.
-    _DENSE_CAP = 50_000
-    if n_agents > _DENSE_CAP:
+    # Guard against O(N²) memory blowup. The returned dense (N, N) float64
+    # adjacency is itself N²·8 bytes — 20 GB at N = 50 000, not the "12 GB"
+    # a previous comment claimed. Callers wanting larger N must use
+    # MassiveSimEngine (LOD) instead of the energy engine's dense path.
+    if n_agents > DENSE_ADJACENCY_CAP:
         raise ValueError(
             f"random_network: n_agents={n_agents} exceeds dense-adjacency cap "
-            f"({_DENSE_CAP}). Use MassiveSimEngine (LOD) for large populations."
+            f"({DENSE_ADJACENCY_CAP}; the result alone would need "
+            f"{n_agents * n_agents * 8 / 1e9:.1f} GB). "
+            f"Use MassiveSimEngine (LOD) for large populations."
         )
 
     rng = np.random.default_rng(seed)
-    upper = rng.random((n_agents, n_agents))
-    mask = (upper < connectivity).astype(float)
+    adj = np.zeros((n_agents, n_agents), dtype=np.float64)
 
-    # Simetrizar y eliminar auto-lazos
-    adj = np.triu(mask, k=1)
-    adj = adj + adj.T
-    np.fill_diagonal(adj, 0.0)
+    # Build the strict upper triangle in row blocks.
+    #
+    # The previous implementation held four N×N arrays alive at once — the
+    # uniform draw, its `.astype(float)` copy, the `np.triu` copy, and the
+    # `adj + adj.T` result — so peak usage was ~4× the size of the output
+    # (about 80 GB at the cap, which no "20 GB" budget would predict).
+    # Generating in blocks and symmetrising in place keeps the peak at
+    # essentially the size of the result plus one small block.
+    #
+    # Determinism is unchanged: `rng.random` fills row-major, so drawing
+    # consecutive (block, N) chunks consumes exactly the same stream in the
+    # same order as a single (N, N) draw. Identical seeds still give
+    # identical networks (pinned by a test).
+    block_rows = max(1, min(n_agents, _ADJACENCY_BLOCK_ROWS))
+    for start in range(0, n_agents, block_rows):
+        stop = min(start + block_rows, n_agents)
+        draw = rng.random((stop - start, n_agents))
+        # Keep only strictly-upper entries (global column j > global row i).
+        # For local row li, that is j >= li + (start + 1).
+        adj[start:stop, :] = np.triu(draw < connectivity, k=start + 1)
+
+    # Mirror the upper triangle into the lower one, block by block. A plain
+    # `adj += adj.T` would alias (adj.T is a view of adj) and corrupt the
+    # result; `adj + adj.T` is correct but allocates a second full matrix.
+    for start in range(0, n_agents, block_rows):
+        stop = min(start + block_rows, n_agents)
+        # Columns strictly before this block: copy from the already-filled
+        # upper triangle.
+        if start:
+            adj[start:stop, :start] = adj[:start, start:stop].T
+        # The square block on the diagonal still only holds its own upper
+        # half, so mirror it too. The temporary is block_rows², not N².
+        diag_block = adj[start:stop, start:stop]
+        adj[start:stop, start:stop] = diag_block + diag_block.T
+
+    # Diagonal is already zero: np.triu(..., k=start+1) excludes it.
     return adj

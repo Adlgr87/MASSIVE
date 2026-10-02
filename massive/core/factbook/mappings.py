@@ -307,7 +307,20 @@ SOCIAL_FIELDS: dict[str, dict[str, Any]] = {
 # MASSIVE PARAMETER MAPPINGS FROM FACTBOOK
 # =============================================================================
 
-# How Factbook data maps to MASSIVE simulation parameters
+# How Factbook data maps to MASSIVE simulation parameters.
+#
+# IMPORTANT — this table is DESCRIPTIVE, not executable. Nothing reads it to
+# perform a transformation: the ``transformation`` values are human-readable
+# strings, and the real conversions live in
+# ``massive.core.factbook.context.FactbookContext._derive_massive_params``
+# together with the helper functions further down this module.
+#
+# It is retained as a single-page catalogue of the Factbook → engine mapping,
+# but because it is never executed nothing stops it drifting from the code it
+# claims to describe — and it had: the ``budget_balance`` entry documented a
+# sign-only transformation that scored a deficit *higher* than a surplus (see
+# the note on that entry). When changing a mapping, change the implementation
+# first and update this table to match.
 FACTBOOK_TO_MASSIVE: dict[str, dict[str, Any]] = {
     # Agent initialization
     "agent_initialization": {
@@ -390,8 +403,24 @@ FACTBOOK_TO_MASSIVE: dict[str, dict[str, Any]] = {
         "budget_balance": {
             "source": "budget_surplus_deficit",
             "target": "fiscal_constraint",
-            "transformation": "lambda x: max(0, min(1, 1 - (x / abs(x)) * 0.1)) if x != 0 else 0.5",
-            "description": "Fiscal capacity affects intervention feasibility",
+            # Kept in sync with FactbookContext._derive_massive_params.
+            #
+            # The previous entry read
+            #   lambda x: max(0, min(1, 1 - (x / abs(x)) * 0.1)) if x != 0 else 0.5
+            # which depends only on the SIGN of the balance and is inverted: a
+            # deficit yielded 1.0 (maximum fiscal capacity) while a surplus
+            # yielded 0.9. It also ignored magnitude entirely, so a -1 M and a
+            # -1 Tn deficit scored identically. The live implementation is
+            # monotonic in the balance-to-revenue ratio, which is what the
+            # intervention optimiser actually consumes.
+            "transformation": (
+                "lambda balance, revenues: clip(0.5 + 2.0 * "
+                "(balance / max(abs(revenues), 1e-9)), 0, 1)"
+            ),
+            "description": (
+                "Fiscal capacity from the budget balance relative to revenues: "
+                "deficit below 0.5, balanced 0.5, surplus above 0.5"
+            ),
         },
         "sector_composition": {
             "source": ["agriculture", "industry", "services"],

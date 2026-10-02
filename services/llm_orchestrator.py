@@ -311,10 +311,15 @@ def _dispatch(
 
         n_steps = int(steps or config.get("pasos") or _DEFAULT_STEPS.get(motor, 100))
         n_agents = int(config.get("n_agents") or 50)
-        # Cap to dense-adjacency safe range (see energy_engine.random_network)
-        # Dense adjacency is O(n²); 5000 agents keeps memory < 200 MB.
-        if n_agents > 5000:
-            n_agents = 5000
+        # Cap to a dense-adjacency safe range. The adjacency matrix is O(n²)
+        # float64, so 5 000 agents costs 5000²·8 ≈ 200 MB for the result (the
+        # generator's peak is ~1.5× that). This LLM-driven path keeps a much
+        # tighter budget than energy_engine.DENSE_ADJACENCY_CAP because the
+        # caller is an untrusted natural-language request, not an operator who
+        # has sized the machine.
+        _LLM_AGENT_CAP = 5000
+        if n_agents > _LLM_AGENT_CAP:
+            n_agents = _LLM_AGENT_CAP
         connectivity = float(config.get("connectivity") or 0.3)
         range_type = str(config.get("range_type") or "bipolar").strip().lower()
         if range_type not in ("bipolar", "unipolar"):
