@@ -145,7 +145,7 @@ def register_dataset(name: str, path: str | Path) -> dict[str, Any]:
         _PATH: str(path),
         _HASH: digest,
         _FILE_COUNT: file_count,
-        _REGISTERED_AT: datetime.datetime.now(datetime.timezone.utc).isoformat(),
+        _REGISTERED_AT: datetime.datetime.now(datetime.UTC).isoformat(),
     }
     registry[name] = entry
     _save_registry()

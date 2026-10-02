@@ -10,14 +10,14 @@
     "file_count": 3,
     "name": "brexit_referendum_2016",
     "path": "/home/adlg/Escritorio/Proyectos/MASSIVE/datasets/real_cases/brexit_referendum_2016",
-    "registered_at": "2026-10-02T23:21:58.912405+00:00",
+    "registered_at": "2026-10-02T23:30:06.016258+00:00",
     "sha256": "a3ef6bdfa36511dadadd13199f0fd437d1ff16ff081d18d3ff9bf96044574644"
   },
   "chile_estallido_2019": {
     "file_count": 3,
     "name": "chile_estallido_2019",
     "path": "/home/adlg/Escritorio/Proyectos/MASSIVE/datasets/real_cases/chile_estallido_2019",
-    "registered_at": "2026-10-02T23:21:58.932533+00:00",
+    "registered_at": "2026-10-02T23:30:05.833198+00:00",
     "sha256": "d2149c0f7f0933d05d74e8b8cfaee70c9d4f566bf7d526ece20fda19c9902c22"
   },
   "colombia_paro_2021": {
@@ -73,21 +73,21 @@
     "file_count": 3,
     "name": "south_korea_candlelight_2016",
     "path": "/home/adlg/Escritorio/Proyectos/MASSIVE/datasets/real_cases/south_korea_candlelight_2016",
-    "registered_at": "2026-10-02T23:21:59.176353+00:00",
+    "registered_at": "2026-10-02T23:30:05.725063+00:00",
     "sha256": "e95da222ced2001fd29616ea76a9f54e2e2c241ea5577c2ae942e7639cd24b7d"
   },
   "test_case": {
     "file_count": 2,
     "name": "test_case",
-    "path": "/tmp/tmpsu9bdmjn/test_case",
-    "registered_at": "2026-10-02T16:47:28.947654+00:00",
+    "path": "/tmp/tmpamn1re87/test_case",
+    "registered_at": "2026-10-02T23:30:05.966926+00:00",
     "sha256": "82d937c954e79faf6b34ba8693b554bcd6ebb5c13f8df1d1cf38ac849d0bea5c"
   },
   "us_election_2020": {
     "file_count": 3,
     "name": "us_election_2020",
     "path": "/home/adlg/Escritorio/Proyectos/MASSIVE/datasets/real_cases/us_election_2020",
-    "registered_at": "2026-10-02T23:21:59.209409+00:00",
+    "registered_at": "2026-10-02T23:30:05.717423+00:00",
     "sha256": "1f0db14d37d5361ffb4ca76c01fb9f5c789e7ba9b342872ca843fed70ba0c7b6"
   }
 }

@@ -31,15 +31,15 @@ References
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 import numpy as np
 from scipy.stats import wasserstein_distance
 
 from massive.core.physics_calibration import (
-    PHYSICS_RANGES,
     PARAM_NAMES,
+    PHYSICS_RANGES,
     PhysicsParams,
     p_to_opinions,
     simulate_opinion_dynamics,
@@ -532,7 +532,7 @@ class NeuralPosteriorEstimator:
         samples: np.ndarray,
         lr: float = 0.05,
         n_iter: int = 300,
-    ) -> "NeuralPosteriorEstimator":
+    ) -> NeuralPosteriorEstimator:
         """Fit the mixture density network to posterior samples.
 
         Args:
@@ -546,7 +546,6 @@ class NeuralPosteriorEstimator:
 
         try:
             import torch
-            import torch.nn as nn
         except ImportError as exc:  # pragma: no cover
             raise ImportError(
                 "torch is required for NeuralPosteriorEstimator"
@@ -637,7 +636,6 @@ class NeuralPosteriorEstimator:
         if not self._fitted:
             raise RuntimeError("Call fit() before evaluating density")
 
-        from scipy.stats import norm
 
         points = np.asarray(points, dtype=np.float64)
         if points.ndim == 1:

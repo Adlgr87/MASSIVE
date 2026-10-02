@@ -30,9 +30,9 @@ from benchmarks.baselines import (
     NaiveBaseline,
     SeasonalNaiveBaseline,
 )
+from benchmarks.io import load_cases
 from benchmarks.metrics import directional_accuracy, mae, rmse
 from benchmarks.walk_forward import rolling_origin_splits
-from benchmarks.io import load_cases
 
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "reports" / "baselines_12cases.json"

@@ -5,7 +5,7 @@ calibrated_params:
 case_id: us_election_2020
 cultural_profile: anglosaxon
 data_integrity: us_election_2020
-ensemble_size: 20
+ensemble_size: 5
 gates:
   G1: Pre-registration sealed before simulation
   G2: Simulation runs from day-0 conditions only
@@ -37,9 +37,9 @@ metrics:
   direction: higher_is_better
   name: coverage_90ci
   threshold: "\u2265 0.85"
-n_agents: 80
+n_agents: 30
 n_timesteps: 14
-registered_at: '2026-10-02T23:21:59.206361+00:00'
+registered_at: '2026-10-02T23:30:05.715791+00:00'
 scenario_type: polarization_escalation
 seal:
   algorithm: SHA-256

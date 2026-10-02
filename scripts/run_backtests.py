@@ -13,7 +13,6 @@ from __future__ import annotations
 
 import argparse
 import json
-import time
 from pathlib import Path
 
 from massive.core.backtesting import Backtester
@@ -49,9 +48,7 @@ def main() -> None:
         print(f"\n{'='*60}")
         print(f"Backtest: {case_id}")
         print(f"{'='*60}")
-        start = time.time()
         result = bt.run_backtest(case_id, seed=args.seed)
-        elapsed = time.time() - start
 
         summary = {
             "case_id": result.case_id,
@@ -82,7 +79,7 @@ def main() -> None:
     total = len(results)
     print(f"\n{'='*60}")
     print(f"SUMMARY: {passed}/{total} cases passed G3 (metrics within thresholds)")
-    print(f"Best overall baseline MAE (from baselines_12cases.json): 0.0482")
+    print("Best overall baseline MAE (from baselines_12cases.json): 0.0482")
     print(f"{'='*60}")
 
     report = {
