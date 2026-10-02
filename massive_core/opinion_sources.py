@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import csv
 import json
+import os
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Protocol
@@ -39,6 +40,8 @@ __all__ = [
     "ConnectorSource",
     "score_texts",
     "resample_opinions",
+    "twitter_source_from_env",
+    "reddit_source_from_env",
 ]
 
 # A corpus bigger than this is almost certainly a mistaken argument (a whole
@@ -249,3 +252,63 @@ class ConnectorSource:
             range_type=range_type,
             metadata=metadata,
         )
+
+
+# --- Credentials from the environment ------------------------------------
+#
+# `.env.example` has shipped TWITTER_BEARER_TOKEN, REDDIT_CLIENT_ID and
+# REDDIT_CLIENT_SECRET for a long time, but nothing read them: setting them
+# did literally nothing. These two helpers make the documented configuration
+# real. Both return None rather than raising when credentials are absent, so
+# "optional means optional" holds and callers can fall back to a corpus.
+
+
+def twitter_source_from_env(query: str, **kwargs: Any) -> ConnectorSource | None:
+    """Build a Twitter-backed source from ``TWITTER_BEARER_TOKEN``.
+
+    Returns:
+        ``None`` when the token is unset or ``tweepy`` is not installed.
+    """
+    token = os.getenv("TWITTER_BEARER_TOKEN", "").strip()
+    if not token:
+        return None
+    try:
+        from social_connectors import TwitterConnector
+    except ImportError:  # pragma: no cover - import guard
+        return None
+    try:
+        connector = TwitterConnector(bearer_token=token)
+    except (ImportError, ValueError):
+        # tweepy missing, or the token is present but unusable. Degrade to the
+        # default path instead of taking the whole simulation down.
+        return None
+    return ConnectorSource(connector, label=f"twitter:{query}", query=query, **kwargs)
+
+
+def reddit_source_from_env(
+    subreddit_name: str, query: str, **kwargs: Any
+) -> ConnectorSource | None:
+    """Build a Reddit-backed source from ``REDDIT_CLIENT_ID``/``_SECRET``.
+
+    Returns:
+        ``None`` when either credential is unset or ``praw`` is not installed.
+    """
+    client_id = os.getenv("REDDIT_CLIENT_ID", "").strip()
+    client_secret = os.getenv("REDDIT_CLIENT_SECRET", "").strip()
+    if not client_id or not client_secret:
+        return None
+    try:
+        from social_connectors import RedditConnector
+    except ImportError:  # pragma: no cover - import guard
+        return None
+    try:
+        connector = RedditConnector(client_id=client_id, client_secret=client_secret)
+    except (ImportError, ValueError):
+        return None
+    return ConnectorSource(
+        connector,
+        label=f"reddit:r/{subreddit_name}",
+        subreddit_name=subreddit_name,
+        query=query,
+        **kwargs,
+    )
