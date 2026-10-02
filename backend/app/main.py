@@ -25,6 +25,7 @@ Auth
 
 from __future__ import annotations
 
+import copy
 import logging
 import os
 import sys
@@ -407,11 +408,17 @@ async def openapi_v1_spec() -> dict[str, Any]:
     """
     if not _is_dev:
         raise HTTPException(status_code=404, detail="Not Found")
-    schema = app.openapi()
-    v1_paths = {
+
+    # `app.openapi()` returns the *cached* schema object, not a copy. Filtering
+    # it in place used to mutate the app's own schema permanently: after one
+    # request to this endpoint, `/openapi.json` and `/docs` silently lost every
+    # non-`/v1` route (`/health`, `/ready`, `/version`, `/metrics`, `/`) and the
+    # API title changed to "MASSIVE UIL API v1" for the lifetime of the process.
+    # Deep-copy before narrowing so this stays a read-only projection.
+    schema = copy.deepcopy(app.openapi())
+    schema["paths"] = {
         path: methods for path, methods in schema["paths"].items() if path.startswith("/v1")
     }
-    schema["paths"] = v1_paths
     schema.setdefault("info", {})["version"] = "1.0.0"
     schema["info"]["title"] = "MASSIVE UIL API v1"
     return schema
