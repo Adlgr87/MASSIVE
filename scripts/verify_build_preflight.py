@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
-"""Static preflight for the Docker image and the Rust extension.
+"""Static preflight for the Docker image build context.
 
 Catches the classes of defect that only ever surface during a real
-``docker compose build`` / ``cargo build`` — in an environment where neither
-toolchain is available. It is not a substitute for running the build, but
+``docker compose build`` — in an environment where Docker is not available. It is not a substitute for running the build, but
 every check here corresponds to a failure that actually occurred in this
 repository:
 
 * ``setcap`` invoked without installing ``libcap2-bin`` → image build aborts.
 * ``nginx.conf`` / ``supervisord.conf`` living outside the build context →
   ``COPY`` fails (this was finding C-09).
-* ``Cargo.toml`` pointing ``[lib] path`` at a file that does not exist →
-  ``cargo build`` fails before compiling anything.
 * A fail-closed ``MASSIVE_ALLOWED_HOSTS`` with no default in Compose →
   healthcheck gets 400, container restarts forever.
 
@@ -326,58 +323,6 @@ def check_supervisord(report: Report) -> None:
                 report.fail(f"{section}: ASGI module {target.group(1)} not found")
 
 
-def check_rust(report: Report) -> None:
-    print("rust_core")
-    manifest = ROOT / "rust_core" / "Cargo.toml"
-    if not manifest.exists():
-        report.warn("rust_core/Cargo.toml not found — Rust acceleration unavailable")
-        return
-    text = manifest.read_text(encoding="utf-8")
-
-    # [lib] path is relative to the manifest directory, a classic trap.
-    match = re.search(r'^\s*path\s*=\s*"([^"]+)"', text, re.MULTILINE)
-    if match:
-        lib_path = manifest.parent / match.group(1)
-        if lib_path.exists():
-            report.ok(f"[lib] path -> {lib_path.relative_to(ROOT)}")
-        else:
-            report.fail(
-                f"[lib] path '{match.group(1)}' resolves to "
-                f"{lib_path.relative_to(ROOT) if ROOT in lib_path.parents else lib_path}, "
-                f"which does not exist (paths are relative to Cargo.toml's directory)"
-            )
-    else:
-        report.warn("[lib] path not declared; cargo will assume src/lib.rs")
-
-    # The PyO3 module name must equal what Python imports.
-    module = (
-        re.search(
-            r"#\[pymodule\]\s*\n\s*fn\s+(\w+)",
-            (manifest.parent / "src" / "lib.rs").read_text(encoding="utf-8"),
-        )
-        if (manifest.parent / "src" / "lib.rs").exists()
-        else None
-    )
-    lib_name = re.search(r'^\s*name\s*=\s*"(\w+)"', text.split("[lib]", 1)[-1], re.MULTILINE)
-    if module and lib_name:
-        if module.group(1) == lib_name.group(1):
-            report.ok(f"#[pymodule] `{module.group(1)}` matches [lib] name")
-        else:
-            report.fail(
-                f"#[pymodule] is `{module.group(1)}` but [lib] name is "
-                f"`{lib_name.group(1)}` — the extension would not be importable"
-            )
-
-    # Python must tolerate the extension being absent.
-    wrapper = ROOT / "massive_core" / "rust_core.py"
-    if wrapper.exists():
-        src = wrapper.read_text(encoding="utf-8")
-        if "find_spec" in src or "ImportError" in src:
-            report.ok("Python wrapper degrades gracefully when the extension is absent")
-        else:
-            report.fail("massive_core/rust_core.py has no import guard for the optional extension")
-
-
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--verbose", "-v", action="store_true", help="list passing checks too")
@@ -389,7 +334,6 @@ def main() -> int:
         check_compose,
         check_nginx,
         check_supervisord,
-        check_rust,
     ):
         check(report)
 

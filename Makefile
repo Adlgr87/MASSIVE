@@ -38,7 +38,7 @@ typecheck: ## Gradual mypy slice
 verify: ## Full verification harness (lint, types, tests, docs, G-1 guardrails)
 	$(PYTHON) scripts/verify_harness.py
 
-verify-build: ## Static preflight for the Docker image + Rust extension (no docker/cargo needed)
+verify-build: ## Static preflight for the Docker image build context (no docker needed)
 	$(BIN)/python scripts/verify_build_preflight.py --verbose
 
 verify-baseline: ## Snapshot audit baseline -> reports/audit_baseline.json

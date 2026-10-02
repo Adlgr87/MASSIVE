@@ -353,7 +353,7 @@ log = get_logger("massive.micro_orchestrator")  # para micro_massive
 |------|--------|--------|
 | ✅ `README.md` | Hecho | Documenta instalación, uso rápido, Docker |
 | ✅ `requirements.txt` | Hecho | Dependencias declaradas |
-| ✅ `pyproject.toml` | Hecho | Metadata `0.1.0`, `build-system = maturin` |
+| ✅ `pyproject.toml` | Hecho | Metadata `0.1.0`, `build-system = setuptools` |
 | ✅ `Dockerfile` | Hecho | Multi-stage + nginx + supervisord |
 | ✅ `docker-compose.yml` | Hecho | 3 puertos expuestos |
 | ✅ CI `pytest.yml` | Hecho | Jobs: core, scientific, api, full-suite |

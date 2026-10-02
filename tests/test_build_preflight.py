@@ -1,7 +1,7 @@
-"""Tests for the static Docker/Rust build preflight.
+"""Tests for the static Docker build preflight.
 
-The preflight exists because `docker compose build` and `cargo build` cannot
-run in every environment. These tests check it actually *detects* the three
+The preflight exists because `docker compose build` cannot run in every
+environment. These tests check it actually *detects* the three
 defects it was written for — a checker that always passes is worthless.
 """
 
@@ -32,7 +32,6 @@ def repo_copy(tmp_path: Path) -> Path:
     """A minimal copy of the build-relevant files, safe to mutate."""
     dest = tmp_path / "repo"
     (dest / "scripts").mkdir(parents=True)
-    (dest / "rust_core" / "src").mkdir(parents=True)
     (dest / "backend" / "app").mkdir(parents=True)
     (dest / "massive_core").mkdir(parents=True)
     (dest / "frontend").mkdir(parents=True)
@@ -45,9 +44,6 @@ def repo_copy(tmp_path: Path) -> Path:
         "supervisord.conf",
         ".dockerignore",
         "requirements.txt",
-        "rust_core/Cargo.toml",
-        "rust_core/src/lib.rs",
-        "massive_core/rust_core.py",
     ):
         src = ROOT / rel
         if src.exists():
@@ -79,16 +75,6 @@ def test_detects_copy_source_missing_from_context(repo_copy: Path):
     result = _run(repo_copy)
     assert result.returncode == 1
     assert "nginx.conf" in result.stdout
-
-
-def test_detects_unresolvable_cargo_lib_path(repo_copy: Path):
-    manifest = repo_copy / "rust_core" / "Cargo.toml"
-    manifest.write_text(
-        manifest.read_text().replace('path = "src/lib.rs"', 'path = "rust_core/src/lib.rs"')
-    )
-    result = _run(repo_copy)
-    assert result.returncode == 1
-    assert "[lib] path" in result.stdout
 
 
 def test_detects_copy_source_excluded_by_dockerignore(repo_copy: Path):

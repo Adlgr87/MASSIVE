@@ -70,7 +70,7 @@ function SimulatePage() {
           <h2 className="text-xl font-semibold">Energy engine</h2>
           <p className="text-sm text-muted-foreground">
             Langevin dynamics over a social energy landscape. Deterministic for a
-            given seed — no LLM, GPU or Rust extension required.
+            given seed — no LLM or GPU required.
           </p>
         </div>
         <SimulationForm

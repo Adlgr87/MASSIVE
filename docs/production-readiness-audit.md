@@ -2,7 +2,7 @@
 
 > Auditor: Agent (Arena) · Fecha inicio: 2026-08-20 · HEAD: `288ba9a` (main)
 > Entorno de verificación: Python 3.11.2 (venv limpio), Node 22.22.3, pytest 8, ruff/black/mypy actuales.
-> Sin Docker ni toolchain Rust en el sandbox (limitación documentada; esas verificaciones se delegan a CI).
+> Sin Docker en el sandbox (limitación documentada; esa verificación se delega a CI, con `make verify-build` como preflight estático).
 >
 > **Estado (2026-08-20, rama arena/01a01fbd-massive, PR #85):**
 > - **Hito 0 COMPLETO** (CI verificada en PR: core/scientific/api/pvu/full-suite/compose-build-health/frontend/lint/mypy ✅ — 14/15 checks; solo gitleaks 🔴 por SEC-01 pre-existente, ver §3).
@@ -205,7 +205,7 @@ No se fija umbral arbitrario hasta medir en HEAD actual.
 ## 5. Definición de "production-ready" (checklist ejecutable)
 
 - [ ] Clonación limpia + instalación + arranque documentados y verificados.
-- [ ] Build Python/Rust/frontend aplicable verde (Rust: vía CI mientras el sandbox no tenga toolchain).
+- [ ] Build Python/frontend verde.
 - [ ] Docker/Compose construye y pasa smoke (CI).
 - [ ] Rutas y flujos críticos con tests automatizados verdes.
 - [ ] Sin fallos bloqueantes ni vulns críticas/altas sin aceptación explícita documentada.

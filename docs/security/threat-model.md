@@ -25,7 +25,7 @@
    - Kit UI-NG (no expuesto actualmente): auth multi-key constant-time, security headers, TrustedHost.
 2. **Contenedores**: runtime no-root (`appuser`) — correcto. nginx sin TLS (se asume terminator externo). supervisord con streamlit fantasma (OPS-02).
 3. **CI/CD**: `secret_scan` (gitleaks) verde; workflows con `permissions` mínimos en lint/validate; **deploy a Azure en push a main** sin gate de tests (revisar `main_massive.yml`); HF sync requiere `HF_TOKEN` (fallo actual, no riesgo).
-4. **Cadena de suministro**: `pip-audit` limpio (2026-08-20); lockfile Rust (`Cargo.lock`) versionado; `package-lock.json` frontend versionado.
+4. **Cadena de suministro**: `pip-audit` limpio (2026-08-20); `package-lock.json` frontend versionado.
 
 ## 3. Amenazas (STRIDE resumido) con estado
 

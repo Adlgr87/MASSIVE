@@ -7,7 +7,7 @@ import pytest
 
 import energy_engine as E
 from energy_engine import DENSE_ADJACENCY_CAP, random_network
-from massive_core.rust_core import langevin_opinion_update_inplace
+from massive_core.kernels import langevin_opinion_update_inplace
 
 
 def _legacy_random_network(n, connectivity=0.3, seed=42):

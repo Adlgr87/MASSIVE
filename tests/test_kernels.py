@@ -1,6 +1,6 @@
 import numpy as np
 
-from massive_core import rust_core
+from massive_core import kernels
 
 
 def test_langevin_opinion_update_wrapper_matches_numpy_formula():
@@ -9,7 +9,7 @@ def test_langevin_opinion_update_wrapper_matches_numpy_formula():
     diffusion_noise = np.array([0.5, 0.5, -0.5], dtype=np.float64)
     jumps = np.array([0.0, 0.2, -0.2], dtype=np.float64)
 
-    rust_core.langevin_opinion_update_inplace(
+    kernels.langevin_opinion_update_inplace(
         agents,
         drift,
         diffusion_noise,
@@ -38,7 +38,7 @@ def test_active_mask_step_reactivates_changed_neighbors():
         dtype=np.float64,
     )
 
-    active = rust_core.active_mask_step(x_prev, x_new, adj, threshold=0.1)
+    active = kernels.active_mask_step(x_prev, x_new, adj, threshold=0.1)
 
     np.testing.assert_array_equal(active, np.array([True, True, True]))
 
@@ -46,7 +46,7 @@ def test_active_mask_step_reactivates_changed_neighbors():
 def test_multi_potential_gradient_wrapper_matches_reference_terms():
     x = np.array([[0.7, 0.6, 0.4, 0.5, 0.5]], dtype=np.float64)
 
-    grad = rust_core.multi_potential_gradient(x)
+    grad = kernels.multi_potential_gradient(x)
 
     assert grad.shape == x.shape
     assert abs(grad[0, 0]) < 1e-12

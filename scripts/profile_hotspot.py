@@ -2,7 +2,7 @@
 """Profile-guided hotspot helper (B16).
 
 Runs a short multilayer + energy workload under ``cProfile`` and prints the
-top cumulative functions. Use before proposing micro-optimizations or Rust
+top cumulative functions. Use before proposing micro-optimizations
 ports.
 
 Usage:
@@ -60,7 +60,7 @@ def main() -> int:
     print(stream.getvalue())
     print(
         "Hint: prefer optimizing pure array loops that dominate cumulative time; "
-        "see docs/rust_core_plan_ES.md before proposing Rust ports."
+        "profile first: the NumPy kernels are already vectorized."
     )
     return 0
 

@@ -11,7 +11,6 @@ intervention outcomes over complex social systems — from 10 agents to 100 mill
 [![Python: 3.11+](https://img.shields.io/badge/Python-3.11+-blue?logo=python)](pyproject.toml)
 [![Tests](https://github.com/Adlgr87/MASSIVE/actions/workflows/pytest.yml/badge.svg?branch=main)](.github/workflows/pytest.yml)
 [![Type-check: MyPy (blocking)](https://github.com/Adlgr87/MASSIVE/actions/workflows/typecheck.yml/badge.svg)](.github/workflows/typecheck.yml)
-[![Rust: optional PoC](https://img.shields.io/badge/Rust-optional_compilable-orange?logo=rust)](rust_core/)
 
 [Quick start](#-quick-start) · [Architecture](#-architecture) · [API](#-http-api) · [The LLM layer](#-the-llm-layer-natural-language--mathematics) · [Benchmarks](#-benchmarks) · [Docs](#-documentation)
 
@@ -32,7 +31,7 @@ MASSIVE is **hybrid by design** at every layer:
 | 📡 **Data assimilation for opinion dynamics** | Sparse Ensemble Kalman Filter fuses real-world observations into the running state, the way numerical weather prediction does. | `massive_core/data_assimilation/` |
 | ⚗️ **Scientific opt-in layer** | Adaptive steppers, stability & bifurcation analysis, physics-informed neural nets, network inference and statistical mechanics — all behind explicit config flags that never alter the default dynamics. | `massive_core/` |
 | 🧬 **Inverse intervention design** | Ask *"what campaign reaches this consensus?"* — the social architect searches the intervention space backwards from the goal. | `social_architect.py` |
-| ⚡ **Optional Rust kernels** | 3 kernels (multi_potential_gradient, langevin_opinion_update, active_mask_step) compiled with pyo3/maturin — a conceptual PoC, not yet a significant speedup. Transparent pure-Python fallbacks everywhere. | `rust_core/` → `massive_rust_core` |
+| ⚡ **Vectorized NumPy kernels** | The 3 hot-path kernels (multi_potential_gradient, langevin_opinion_update, active_mask_step) are fully vectorized: 100k agents x 5D in ~4.5 ms. | `massive_core/kernels.py` |
 | 🔬 **Validation-first culture** | Pre-registered anti-leakage protocol, seeded RNG everywhere, contract-validated APIs, 16-check CI, offline PVU benchmark suite. | `datasets/pvu_cases/` (sample cases + `datasets/real_cases/` for validation), `benchmarks/` |
 
 ---
@@ -96,7 +95,7 @@ capability so it can bind `:80` inside the non-root container; security headers
 > ℹ️ A legacy single-service variant (`Dockerfile.optimized` +
 > `docker-compose.single.yml`) is archived under [`docs/examples/`](docs/examples/).
 
-> Minimum: Python 3.11, 500 MB RAM. Rust/CUDA/torch/LLM keys are all optional —
+> Minimum: Python 3.11, 500 MB RAM. CUDA/torch/LLM keys are all optional —
 > every optional layer has a deterministic fallback.
 
 ---
@@ -139,7 +138,6 @@ flowchart TB
         C1["adaptive steppers · stability · bifurcation"]
         C2["sparse EnKF assimilation"]
         C3["PINNs · network inference · metalearning"]
-        C4["optional Rust kernels (massive_rust_core)"]
     end
 
     DATA["CIA World Factbook (sample: 5 countries in `data/factbook/`; full dataset external) (260+ countries)<br/>demographics · Gini · GDP · diversity"]
@@ -152,7 +150,7 @@ flowchart TB
 Key invariants:
 
 - **The engines are the product** — APIs, CLI and LLM layers are thin, typed boundaries over them.
-- **Optional means optional**: no Rust build, no GPU, no LLM key, no Factbook data → everything still runs deterministically (seeds + `PYTHONHASHSEED` respected).
+- **Optional means optional**: no GPU, no LLM key, no Factbook data → everything still runs deterministically (seeds + `PYTHONHASHSEED` respected).
 - **Fail-closed security**: staging/production refuse to start serving without `MASSIVE_API_KEY` (singular) and `MASSIVE_API_KEYS` (plural, for multi-key rotation); the dev fallback key is loudly logged and impossible in production.
 
 ---
@@ -279,7 +277,6 @@ MASSIVE/
 ├── social_architect.py   # Inverse intervention strategy search
 ├── cfc_*.py              # CfC (liquid NN) residual corrector: engine, router, trainer
 ├── forecast/             # Temporal risk forecasting
-├── rust_core/            # Optional pyo3 kernels (massive_rust_core)
 ├── frontend/             # React 18 + Vite + TS SPA (typed DTOs generated from Python)
 ├── configs/llm_contract/ # Machine-readable MASSIVE↔LLM contract (v1.1.0)
 ├── datasets/pvu_cases/   # Offline validation cases (pre-registered)

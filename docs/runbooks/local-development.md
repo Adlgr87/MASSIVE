@@ -43,17 +43,7 @@ npm run dev        # Vite :3000 con proxy /api → :8000
 npm run build      # verifica build de producción (requiere fix de alias en HEAD de trabajo)
 ```
 
-## 5. Rust (opcional)
-
-```bash
-# requiere toolchain Rust estable + maturin
-pip install maturin && maturin develop --release
-python -c "import massive_rust_core; print('ok')"
-```
-
-> Si `massive_rust_core` no está compilado, los motores usan fallbacks numpy (comportamiento soportado).
-
-## 6. Docker (local)
+## 5. Docker (local)
 
 ```bash
 cp .env.example .env
@@ -62,7 +52,7 @@ docker compose up --build          # nginx :80, API :8000
 docker compose -f docker-compose.single.yml up --build
 ```
 
-## 7. Problemas conocidos (2026-08-20)
+## 6. Problemas conocidos (2026-08-20)
 
 | Síntoma | Causa | Estado |
 |---|---|---|

@@ -44,7 +44,7 @@ from typing import Any
 import numpy as np
 from scipy import sparse
 
-from massive_core.rust_core import active_mask_step
+from massive_core.kernels import active_mask_step
 from metrics.unified_metrics import calculate_polarization
 
 log = logging.getLogger(__name__)

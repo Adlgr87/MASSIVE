@@ -17,9 +17,9 @@ jobs:
 
       # Fails in seconds on the defects that otherwise surface minutes into a
       # cold image build (missing apt package for a command used in RUN, a
-      # COPY source excluded by .dockerignore, a Cargo [lib] path that does
-      # not resolve). Runs first so a broken build context never burns a full
-      # build cycle.
+      # COPY source excluded by .dockerignore, a compose file that demands a
+      # file nobody ships). Runs first so a broken build context never burns a
+      # full build cycle.
       - name: Build preflight (static)
         run: python scripts/verify_build_preflight.py --verbose
 

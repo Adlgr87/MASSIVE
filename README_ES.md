@@ -11,7 +11,6 @@ resultados de intervenciones sobre sistemas sociales complejos — de 10 agentes
 [![Python: 3.11+](https://img.shields.io/badge/Python-3.11+-blue?logo=python)](pyproject.toml)
 [![Tests](https://github.com/Adlgr87/MASSIVE/actions/workflows/pytest.yml/badge.svg?branch=main)](.github/workflows/pytest.yml)
 [![Type-check: MyPy](https://github.com/Adlgr87/MASSIVE/actions/workflows/typecheck.yml/badge.svg)](.github/workflows/typecheck.yml)
-[![Rust: opcional](https://img.shields.io/badge/Rust-aceleración_opcional-orange?logo=rust)](Cargo.toml)
 
 [Inicio rápido](#-inicio-rápido) · [Arquitectura](#-arquitectura) · [API](#-api-http) · [Capa LLM](#-la-capa-llm-lenguaje-natural--matemáticas) · [Benchmarks](#-benchmarks) · [Documentación](#-documentación)
 
@@ -32,7 +31,7 @@ MASSIVE es **híbrido por diseño** en cada capa:
 | 📡 **Asimilación de datos para dinámicas de opinión** | Un Ensemble Kalman Filter disperso fusiona observaciones reales con el estado en ejecución, como la predicción numérica del clima. | `massive_core/data_assimilation/` |
 | ⚗️ **Capa científica opt-in** | Steppers adaptativos, análisis de estabilidad y bifurcación, PINNs, inferencia de redes y mecánica estadística — tras flags explícitos que nunca alteran la dinámica por defecto. | `massive_core/` |
 | 🧬 **Diseño inverso de intervenciones** | Pregunta *"¿qué campaña alcanza este consenso?"* — el arquitecto social busca el espacio de intervenciones hacia atrás desde el objetivo. | `social_architect.py` |
-| ⚡ **Kernels Rust opcionales** | Numérica de ruta caliente compilada con pyo3/maturin, con fallbacks transparentes en Python puro. | `rust_core/` → `massive_rust_core` |
+| ⚡ **Kernels NumPy vectorizados** | Los 3 kernels de ruta caliente (multi_potential_gradient, langevin_opinion_update, active_mask_step) están totalmente vectorizados: 100k agentes x 5D en ~4,5 ms. | `massive_core/kernels.py` |
 | 🔬 **Cultura validation-first** | Protocolo anti-leakage con pre-registro, RNG con semilla en todo el sistema, APIs validadas por contrato, CI de 16 checks, suite PVU offline. | `datasets/pvu_cases/`, `benchmarks/` |
 
 ---
@@ -89,7 +88,7 @@ SPA de React y proxy `/api/`, `/v1/`, `/docs`, `/health`, `/ready`, `/version`,
 > ℹ️ Una variante legada de servicio único (`Dockerfile.optimized` +
 > `docker-compose.single.yml`) está archivada en [`examples/`](examples/).
 
-> Mínimo: Python 3.11, 500 MB RAM. Rust/CUDA/torch/claves LLM son opcionales —
+> Mínimo: Python 3.11, 500 MB RAM. CUDA/torch/claves LLM son opcionales —
 > cada capa opcional tiene un fallback determinista.
 
 ---
@@ -132,7 +131,6 @@ flowchart TB
         C1["steppers adaptativos · estabilidad · bifurcación"]
         C2["asimilación EnKF dispersa"]
         C3["PINNs · inferencia de red · metalearning"]
-        C4["kernels Rust opcionales (massive_rust_core)"]
     end
 
     DATA["CIA World Factbook (260+ países)<br/>demografía · Gini · PIB · diversidad"]
@@ -145,7 +143,7 @@ flowchart TB
 Invariantes clave:
 
 - **Los motores son el producto** — APIs, CLI y capa LLM son fronteras delgadas y tipadas sobre ellos.
-- **Opcional significa opcional**: sin build Rust, sin GPU, sin clave LLM, sin datos Factbook → todo corre deterministicamente (semillas + `PYTHONHASHSEED` respetados).
+- **Opcional significa opcional**: sin GPU, sin clave LLM, sin datos Factbook → todo corre deterministicamente (semillas + `PYTHONHASHSEED` respetados).
 - **Seguridad fail-closed**: staging/producción se niegan a servir sin `MASSIVE_API_KEY`; la clave fallback de dev se loguea ruidosamente y es imposible en producción.
 
 ---
@@ -252,7 +250,6 @@ MASSIVE/
 ├── social_architect.py   # Búsqueda inversa de estrategias de intervención
 ├── forecast/             # Forecast de riesgo temporal
 ├── cfc_*.py              # Corrector residual CfC (liquid NN): engine, router, trainer
-├── rust_core/            # Kernels pyo3 opcionales (massive_rust_core)
 ├── frontend/             # SPA React 18 + Vite + TS (DTOs tipados generados desde Python)
 ├── configs/llm_contract/ # Contrato MASSIVE↔LLM legible por máquina (v1.1.0)
 ├── datasets/pvu_cases/   # Casos de validación offline (pre-registrados)

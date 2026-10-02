@@ -1,24 +1,21 @@
-"""Optional Python wrappers for the PyO3/Maturin Rust core.
+"""Vectorized NumPy kernels for the hot paths of the simulation engines.
 
-The project keeps the public Python API stable: callers use this module and get
-Rust acceleration when the compiled ``massive_rust_core`` extension is installed,
-or NumPy fallbacks otherwise.
+These three functions are the inner loop of the opinion dynamics: the social
+potential gradient, the Langevin update, and the event-driven active mask.
+
+Historical note: this module used to dispatch to an optional PyO3 Rust
+extension, falling back to NumPy when it was absent. That extension was never
+actually built by anything in the project: the build backend is setuptools
+rather than maturin, so ``pip install -e .`` never produced it; no CI job or
+Dockerfile ever invoked cargo; and the crate's ``[lib] path`` did not even
+resolve. The NumPy path below is therefore the only code that has ever run,
+and it is already fully vectorized (100k agents x 5D in ~4.5 ms). The
+dual-path indirection was removed so that what you read here is what executes.
 """
 
 from __future__ import annotations
 
-import importlib.util
-from typing import Final
-
 import numpy as np
-
-_RUST_EXTENSION: Final[str] = "massive_rust_core"
-RUST_CORE_AVAILABLE: Final[bool] = importlib.util.find_spec(_RUST_EXTENSION) is not None
-
-if RUST_CORE_AVAILABLE:
-    import massive_rust_core as _rust_core
-else:  # pragma: no cover - exercised implicitly in environments without maturin builds
-    _rust_core = None
 
 
 def multi_potential_gradient(x: np.ndarray) -> np.ndarray:
@@ -31,9 +28,6 @@ def multi_potential_gradient(x: np.ndarray) -> np.ndarray:
         Gradient matrix with the same shape as ``x``.
     """
     arr = np.asarray(x, dtype=np.float64)
-    if _rust_core is not None:
-        return np.asarray(_rust_core.multi_potential_gradient_rs(arr), dtype=np.float64)
-
     grad = np.zeros_like(arr)
     op = arr[:, 0]
     grad[:, 0] = 4.0 * op * (op * op - 0.49)
@@ -102,19 +96,6 @@ def langevin_opinion_update_inplace(
     diffusion = np.asarray(diffusion_noise, dtype=np.float64)
     jumps = np.asarray(jump_values, dtype=np.float64)
 
-    if _rust_core is not None:
-        _rust_core.langevin_opinion_update_inplace(
-            agents_arr,
-            drift,
-            diffusion,
-            jumps,
-            float(dt),
-            float(diffusion_sigma),
-            float(x_min),
-            float(x_max),
-        )
-        return
-
     updated = agents_arr[:, 0] + drift * dt + diffusion_sigma * diffusion + jumps
     agents_arr[:, 0] = np.clip(updated, x_min, x_max)
 
@@ -139,11 +120,6 @@ def active_mask_step(
     prev = np.asarray(x_prev, dtype=np.float64)
     new = np.asarray(x_new, dtype=np.float64)
     adjacency = np.asarray(adj, dtype=np.float64)
-    if _rust_core is not None:
-        return np.asarray(
-            _rust_core.active_mask_step_rs(prev, new, adjacency, float(threshold)), dtype=bool
-        )
-
     changed = np.abs(new - prev).max(axis=1) > threshold
     if changed.any():
         neighbor_active = adjacency[changed, :].sum(axis=0) > 0

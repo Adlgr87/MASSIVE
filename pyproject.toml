@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "massive"
 version = "1.0.0"
-description = "MASSIVE simulation toolkit with optional Rust acceleration"
+description = "MASSIVE simulation toolkit"
 requires-python = ">=3.10"
 readme = "README.md"
 license = { text = "Apache-2.0" }
@@ -59,11 +59,6 @@ Homepage = "https://github.com/Adlgr87/MASSIVE"
 Documentation = "https://adlgr87.github.io/MASSIVE/"
 Repository = "https://github.com/Adlgr87/MASSIVE"
 Issues = "https://github.com/Adlgr87/MASSIVE/issues"
-
-# The Rust extension (massive_rust_core) is built separately via maturin
-# in the dedicated CI job (rust.yml) — see W3-T02. It is intentionally NOT
-# part of this setuptools wheel so `pip install -e .` works without a Rust
-# toolchain.
 
 [tool.setuptools.packages.find]
 where = ["."]

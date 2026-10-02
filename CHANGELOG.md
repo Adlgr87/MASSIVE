@@ -5,13 +5,26 @@ All notable changes to **MASSIVE** are documented here. This project follows
 
 ## [Unreleased] — production-readiness hardening (2026-08-20)
 
+### Removed
+- **Optional Rust acceleration layer (`rust_core/` crate + `massive_rust_core`
+  extension).** Audit evidence showed it had never executed once: the build
+  backend is setuptools rather than maturin, so `pip install -e .` never
+  produced the extension; no workflow or Dockerfile invoked cargo; the
+  `rust.yml` CI job referenced by `pyproject.toml` did not exist; and the
+  crate's `[lib] path` did not resolve. The NumPy path was the only code ever
+  running, and it is already vectorized (100k agents x 5D in ~4.5 ms).
+  `massive_core/rust_core.py` became `massive_core/kernels.py` with the
+  dual-path dispatch removed; behaviour is bit-for-bit identical (verified on
+  600 randomized cases). Also drops the Dependabot `cargo` ecosystem and the
+  docs that advertised an acceleration that did not exist.
+
 ### Added
 - **Professional README rewrite** (EN + ES, verified 2026-08-20): accurate
   quick start (canonical API + CLI + Docker, all commands executed against a
   real uvicorn server), verified route inventory from OpenAPI, Mermaid
   architecture diagram, "why it's different" frontier table (LOD population
   scale, LLM-as-math-translator contract, CfC residual correction, EnKF
-  assimilation, scientific opt-in layer, inverse design, Rust kernels),
+  assimilation, scientific opt-in layer, inverse design),
   quality/production-posture table, repository layout and full documentation
   index. Replaces the stale quickstart (`app.py` never existed) and
   de-duplicated endpoint tables.

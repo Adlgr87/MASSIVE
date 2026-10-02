@@ -182,7 +182,6 @@ def extract_bare_paths(text: str) -> list[tuple[str, int]]:
         "schemas/",
         "monitoring/",
         "benchmarks/",
-        "rust_core/",
         "target/",
         ".github/",
         "site/",
