@@ -42,8 +42,10 @@ async def v1_energy(
     """
     from energy_runner import run_energy_simulation
 
+    from services.llm_orchestrator import _sanitize_for_json
+
     try:
-        return run_energy_simulation(
+        result = run_energy_simulation(
             user_goal=payload.user_goal,
             n_agents=payload.n_agents,
             steps=payload.steps,
@@ -52,6 +54,12 @@ async def v1_energy(
             seed=payload.seed,
             config_overrides=payload.config_overrides,
         )
+        # The engine returns numpy arrays/scalars (opinions, metric series).
+        # Pydantic cannot serialize those, and the failure happens *after*
+        # this handler returns — during response serialization — so the
+        # except-block below never saw it and every call to this endpoint
+        # produced an unhandled 500.
+        return _sanitize_for_json(result)
     except ValidationError:
         raise
     except Exception as _exc:
