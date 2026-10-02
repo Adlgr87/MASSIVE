@@ -1,0 +1,659 @@
+{
+  "version": "1.0.0",
+  "seed": 42,
+  "generated_at": "2026-10-02T09:14:19.730097+00:00",
+  "method": "chronological_split_deterministic_seeded",
+  "fractions": {
+    "train": 0.6,
+    "validation": 0.25,
+    "historical_test": 0.15
+  },
+  "seal": {
+    "method": "sha256",
+    "seal_hash": "335406e70254cd1aa00295bd016ad52bc21c3704bdfcd25988af286ef13ae181",
+    "sealed_at": "2026-10-02T16:47:32.201425+00:00",
+    "note": "The historical_test split indices are not stored in plaintext. They are derivable from the seed but require an explicit unlock key via ground_truth.unlock_historical_test()."
+  },
+  "events": {
+    "brazil_election_2022": {
+      "n_timesteps": 12,
+      "split_fractions": {
+        "train": 0.6,
+        "validation": 0.25,
+        "historical_test": 0.15
+      },
+      "train": {
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "dates": [
+          "2022-W30",
+          "2022-W32",
+          "2022-W34",
+          "2022-W36",
+          "2022-W38",
+          "2022-W40",
+          "2022-W42"
+        ],
+        "hash": "068ff0cf40cd49ec76ac5101505e9ea3875525b709a9db927049e4812f3bd59f"
+      },
+      "validation": {
+        "indices": [
+          7,
+          8,
+          9
+        ],
+        "dates": [
+          "2022-W44",
+          "2022-W46",
+          "2022-W48"
+        ],
+        "hash": "ff95c0e84bf3979f69819fecbe53216c81616b46a61a905e295880e0c5ff1993"
+      },
+      "historical_test": {
+        "sealed": true,
+        "n_samples": 2,
+        "hash": "fd8ec61301ce6a90f46021aefae6bb71db8254c78b6394736ce63dba0ff5cbba",
+        "unlock_hash": "35bfd88c1abee823ea11349d32f6d04cdcc9c59ca5cbcba0213dcd99f832ec1a",
+        "unlock_required": true
+      }
+    },
+    "brexit_referendum_2016": {
+      "n_timesteps": 11,
+      "split_fractions": {
+        "train": 0.6,
+        "validation": 0.25,
+        "historical_test": 0.15
+      },
+      "train": {
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "dates": [
+          "2016-W01",
+          "2016-W04",
+          "2016-W08",
+          "2016-W12",
+          "2016-W16",
+          "2016-W20",
+          "2016-W23"
+        ],
+        "hash": "068ff0cf40cd49ec76ac5101505e9ea3875525b709a9db927049e4812f3bd59f"
+      },
+      "validation": {
+        "indices": [
+          7,
+          8,
+          9
+        ],
+        "dates": [
+          "2016-W24",
+          "2016-W26",
+          "2016-W28"
+        ],
+        "hash": "ff95c0e84bf3979f69819fecbe53216c81616b46a61a905e295880e0c5ff1993"
+      },
+      "historical_test": {
+        "sealed": true,
+        "n_samples": 1,
+        "hash": "41164c427f4cf681cc1b50eaf1a175e3574a1d015c6c90fbdaf77aea39d24086",
+        "unlock_hash": "59e7e729cbabd1eab9b97554add887da50b1eb1f207ede3781bbb872b771669d",
+        "unlock_required": true
+      }
+    },
+    "chile_estallido_2019": {
+      "n_timesteps": 15,
+      "split_fractions": {
+        "train": 0.6,
+        "validation": 0.25,
+        "historical_test": 0.15
+      },
+      "train": {
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "dates": [
+          "2019-W40",
+          "2019-W41",
+          "2019-W42",
+          "2019-W43",
+          "2019-W44",
+          "2019-W45",
+          "2019-W46",
+          "2019-W47",
+          "2019-W48"
+        ],
+        "hash": "b4fd587ed6b9c523aae092d02df1a3f3367e7c9fd446175b37d05398ae8f223c"
+      },
+      "validation": {
+        "indices": [
+          9,
+          10,
+          11,
+          12
+        ],
+        "dates": [
+          "2019-W49",
+          "2019-W50",
+          "2019-W51",
+          "2019-W52"
+        ],
+        "hash": "9a3813a0e291486c45b8ece7de73ca2625893e773f7731dd22e04a49a1b1d0d2"
+      },
+      "historical_test": {
+        "sealed": true,
+        "n_samples": 2,
+        "hash": "97b0bcd3f640539d6a943bc14280cb1929de1d282af9ed2063f1f426cb15f8b8",
+        "unlock_hash": "7371d6ac0dab0c9505ae9814695b91b77f13a7cf31b2fcae726a4e816c5779a4",
+        "unlock_required": true
+      }
+    },
+    "colombia_paro_2021": {
+      "n_timesteps": 15,
+      "split_fractions": {
+        "train": 0.6,
+        "validation": 0.25,
+        "historical_test": 0.15
+      },
+      "train": {
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "dates": [
+          "2021-W14",
+          "2021-W15",
+          "2021-W16",
+          "2021-W17",
+          "2021-W18",
+          "2021-W19",
+          "2021-W20",
+          "2021-W21",
+          "2021-W22"
+        ],
+        "hash": "b4fd587ed6b9c523aae092d02df1a3f3367e7c9fd446175b37d05398ae8f223c"
+      },
+      "validation": {
+        "indices": [
+          9,
+          10,
+          11,
+          12
+        ],
+        "dates": [
+          "2021-W23",
+          "2021-W24",
+          "2021-W25",
+          "2021-W26"
+        ],
+        "hash": "9a3813a0e291486c45b8ece7de73ca2625893e773f7731dd22e04a49a1b1d0d2"
+      },
+      "historical_test": {
+        "sealed": true,
+        "n_samples": 2,
+        "hash": "97b0bcd3f640539d6a943bc14280cb1929de1d282af9ed2063f1f426cb15f8b8",
+        "unlock_hash": "74c0e8e6e5370207b68f51f8e75468fc4d08fa67b3d63dcac709fdf90fe0b1fb",
+        "unlock_required": true
+      }
+    },
+    "egypt_arab_spring_2011": {
+      "n_timesteps": 14,
+      "split_fractions": {
+        "train": 0.6,
+        "validation": 0.25,
+        "historical_test": 0.15
+      },
+      "train": {
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "dates": [
+          "2011-W03",
+          "2011-W04",
+          "2011-W05",
+          "2011-W06",
+          "2011-W07",
+          "2011-W08",
+          "2011-W09",
+          "2011-W10"
+        ],
+        "hash": "809d533fc370950a0e8c21b32c9e303611bc2ea742fe8532180a1ce64075835f"
+      },
+      "validation": {
+        "indices": [
+          8,
+          9,
+          10,
+          11
+        ],
+        "dates": [
+          "2011-W11",
+          "2011-W12",
+          "2011-W13",
+          "2011-W14"
+        ],
+        "hash": "fb2198a0acebc52f7b463ee9f6d4a1fd1398f43515f3f2932dc5b4b90b4139a8"
+      },
+      "historical_test": {
+        "sealed": true,
+        "n_samples": 2,
+        "hash": "88788e32b394b9b7bf14c567426ee8cf7bb7a966db5aad197b70ba798e395bb0",
+        "unlock_hash": "0ddd7a825b374142473b3812f915aa9b1c337d7237cfc466a9091474961cfb76",
+        "unlock_required": true
+      }
+    },
+    "france_gilets_jaunes_2018": {
+      "n_timesteps": 15,
+      "split_fractions": {
+        "train": 0.6,
+        "validation": 0.25,
+        "historical_test": 0.15
+      },
+      "train": {
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "dates": [
+          "2018-W44",
+          "2018-W45",
+          "2018-W46",
+          "2018-W47",
+          "2018-W48",
+          "2018-W49",
+          "2018-W50",
+          "2018-W51",
+          "2019-W01"
+        ],
+        "hash": "b4fd587ed6b9c523aae092d02df1a3f3367e7c9fd446175b37d05398ae8f223c"
+      },
+      "validation": {
+        "indices": [
+          9,
+          10,
+          11,
+          12
+        ],
+        "dates": [
+          "2019-W02",
+          "2019-W04",
+          "2019-W06",
+          "2019-W08"
+        ],
+        "hash": "9a3813a0e291486c45b8ece7de73ca2625893e773f7731dd22e04a49a1b1d0d2"
+      },
+      "historical_test": {
+        "sealed": true,
+        "n_samples": 2,
+        "hash": "97b0bcd3f640539d6a943bc14280cb1929de1d282af9ed2063f1f426cb15f8b8",
+        "unlock_hash": "abb11a26e44e5ebffd1c7869c1791f4ece613248a29cc64bfb676e9346a91175",
+        "unlock_required": true
+      }
+    },
+    "germany_pegida_2014": {
+      "n_timesteps": 15,
+      "split_fractions": {
+        "train": 0.6,
+        "validation": 0.25,
+        "historical_test": 0.15
+      },
+      "train": {
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "dates": [
+          "2014-W41",
+          "2014-W43",
+          "2014-W45",
+          "2014-W47",
+          "2014-W49",
+          "2015-W01",
+          "2015-W05",
+          "2015-W09",
+          "2015-W13"
+        ],
+        "hash": "b4fd587ed6b9c523aae092d02df1a3f3367e7c9fd446175b37d05398ae8f223c"
+      },
+      "validation": {
+        "indices": [
+          9,
+          10,
+          11,
+          12
+        ],
+        "dates": [
+          "2015-W26",
+          "2015-W28",
+          "2015-W40",
+          "2015-W52"
+        ],
+        "hash": "9a3813a0e291486c45b8ece7de73ca2625893e773f7731dd22e04a49a1b1d0d2"
+      },
+      "historical_test": {
+        "sealed": true,
+        "n_samples": 2,
+        "hash": "97b0bcd3f640539d6a943bc14280cb1929de1d282af9ed2063f1f426cb15f8b8",
+        "unlock_hash": "85c601f4d062dce97bcf6a0af164af04bf2a31e58bfd1265e8bb7a49056b2659",
+        "unlock_required": true
+      }
+    },
+    "hong_kong_protests_2019": {
+      "n_timesteps": 15,
+      "split_fractions": {
+        "train": 0.6,
+        "validation": 0.25,
+        "historical_test": 0.15
+      },
+      "train": {
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "dates": [
+          "2019-W22",
+          "2019-W23",
+          "2019-W24",
+          "2019-W25",
+          "2019-W26",
+          "2019-W28",
+          "2019-W30",
+          "2019-W32",
+          "2019-W34"
+        ],
+        "hash": "b4fd587ed6b9c523aae092d02df1a3f3367e7c9fd446175b37d05398ae8f223c"
+      },
+      "validation": {
+        "indices": [
+          9,
+          10,
+          11,
+          12
+        ],
+        "dates": [
+          "2019-W36",
+          "2019-W38",
+          "2019-W40",
+          "2019-W44"
+        ],
+        "hash": "9a3813a0e291486c45b8ece7de73ca2625893e773f7731dd22e04a49a1b1d0d2"
+      },
+      "historical_test": {
+        "sealed": true,
+        "n_samples": 2,
+        "hash": "97b0bcd3f640539d6a943bc14280cb1929de1d282af9ed2063f1f426cb15f8b8",
+        "unlock_hash": "60215cb080d7525fab46265415163e620158f6ebd44c2cde7084e1cdd1e04945",
+        "unlock_required": true
+      }
+    },
+    "iran_mahsa_amini_2022": {
+      "n_timesteps": 14,
+      "split_fractions": {
+        "train": 0.6,
+        "validation": 0.25,
+        "historical_test": 0.15
+      },
+      "train": {
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "dates": [
+          "2022-W37",
+          "2022-W38",
+          "2022-W39",
+          "2022-W40",
+          "2022-W41",
+          "2022-W42",
+          "2022-W43",
+          "2022-W44"
+        ],
+        "hash": "809d533fc370950a0e8c21b32c9e303611bc2ea742fe8532180a1ce64075835f"
+      },
+      "validation": {
+        "indices": [
+          8,
+          9,
+          10,
+          11
+        ],
+        "dates": [
+          "2022-W45",
+          "2022-W46",
+          "2022-W47",
+          "2022-W48"
+        ],
+        "hash": "fb2198a0acebc52f7b463ee9f6d4a1fd1398f43515f3f2932dc5b4b90b4139a8"
+      },
+      "historical_test": {
+        "sealed": true,
+        "n_samples": 2,
+        "hash": "88788e32b394b9b7bf14c567426ee8cf7bb7a966db5aad197b70ba798e395bb0",
+        "unlock_hash": "773c384821612cfc67a3d4a5c8b0845554f3a7dfd4a5b0726551e21a9b571294",
+        "unlock_required": true
+      }
+    },
+    "myanmar_coup_cdm_2021": {
+      "n_timesteps": 15,
+      "split_fractions": {
+        "train": 0.6,
+        "validation": 0.25,
+        "historical_test": 0.15
+      },
+      "train": {
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "dates": [
+          "2021-W05",
+          "2021-W06",
+          "2021-W07",
+          "2021-W08",
+          "2021-W09",
+          "2021-W10",
+          "2021-W11",
+          "2021-W12",
+          "2021-W13"
+        ],
+        "hash": "b4fd587ed6b9c523aae092d02df1a3f3367e7c9fd446175b37d05398ae8f223c"
+      },
+      "validation": {
+        "indices": [
+          9,
+          10,
+          11,
+          12
+        ],
+        "dates": [
+          "2021-W14",
+          "2021-W16",
+          "2021-W18",
+          "2021-W20"
+        ],
+        "hash": "9a3813a0e291486c45b8ece7de73ca2625893e773f7731dd22e04a49a1b1d0d2"
+      },
+      "historical_test": {
+        "sealed": true,
+        "n_samples": 2,
+        "hash": "97b0bcd3f640539d6a943bc14280cb1929de1d282af9ed2063f1f426cb15f8b8",
+        "unlock_hash": "cce2133394135b9e45059a6e37983418c1bbe1f98bf3deda27ddb7452ad2a911",
+        "unlock_required": true
+      }
+    },
+    "south_korea_candlelight_2016": {
+      "n_timesteps": 14,
+      "split_fractions": {
+        "train": 0.6,
+        "validation": 0.25,
+        "historical_test": 0.15
+      },
+      "train": {
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "dates": [
+          "2016-W40",
+          "2016-W41",
+          "2016-W42",
+          "2016-W43",
+          "2016-W44",
+          "2016-W46",
+          "2016-W48",
+          "2016-W50"
+        ],
+        "hash": "809d533fc370950a0e8c21b32c9e303611bc2ea742fe8532180a1ce64075835f"
+      },
+      "validation": {
+        "indices": [
+          8,
+          9,
+          10,
+          11
+        ],
+        "dates": [
+          "2017-W01",
+          "2017-W04",
+          "2017-W08",
+          "2017-W10"
+        ],
+        "hash": "fb2198a0acebc52f7b463ee9f6d4a1fd1398f43515f3f2932dc5b4b90b4139a8"
+      },
+      "historical_test": {
+        "sealed": true,
+        "n_samples": 2,
+        "hash": "88788e32b394b9b7bf14c567426ee8cf7bb7a966db5aad197b70ba798e395bb0",
+        "unlock_hash": "b323ab75d6794ca931fb8b2fe340e0ed55f6a9b6730b8dcf18945fc8f895fc21",
+        "unlock_required": true
+      }
+    },
+    "us_election_2020": {
+      "n_timesteps": 14,
+      "split_fractions": {
+        "train": 0.6,
+        "validation": 0.25,
+        "historical_test": 0.15
+      },
+      "train": {
+        "indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "dates": [
+          "2020-W01",
+          "2020-W04",
+          "2020-W08",
+          "2020-W12",
+          "2020-W16",
+          "2020-W20",
+          "2020-W24",
+          "2020-W28"
+        ],
+        "hash": "809d533fc370950a0e8c21b32c9e303611bc2ea742fe8532180a1ce64075835f"
+      },
+      "validation": {
+        "indices": [
+          8,
+          9,
+          10,
+          11
+        ],
+        "dates": [
+          "2020-W32",
+          "2020-W36",
+          "2020-W40",
+          "2020-W44"
+        ],
+        "hash": "fb2198a0acebc52f7b463ee9f6d4a1fd1398f43515f3f2932dc5b4b90b4139a8"
+      },
+      "historical_test": {
+        "sealed": true,
+        "n_samples": 2,
+        "hash": "88788e32b394b9b7bf14c567426ee8cf7bb7a966db5aad197b70ba798e395bb0",
+        "unlock_hash": "8bd3997fcb143eb433dcc128fd51705f2fd1f424d843c5764d1097f067c92007",
+        "unlock_required": true
+      }
+    }
+  }
+}

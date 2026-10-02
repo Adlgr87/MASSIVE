@@ -14,9 +14,14 @@
   "is_synthetic": false,
   "data_type": "empirical_estimated",
   "data_confidence": "medium-high",
-  "data_notes": "Polarization values estimated from published surveys and research. Values normalized to [0,1] where 0=consensus, 0.5=moderate division, 1.0=max polarization. For SIR-type cases, P represents protest participation rate rather than polarization.",
+  "data_notes": "P represents fraction_participating (units: fraction_participating). Series reconstructed from published research sources (empirical_estimated). Observation operator H: fraction(|opinion| > 0.5). At Tier 1 (< 500 observations), only aggregate parameters can be calibrated against this case; see docs/validation/PROMPT_CALIBRACION_EQUIPO_AGENTES.md.",
   "network_type": "watts_strogatz",
   "n_timesteps": 14,
   "pvu_level_target": "bronze",
-  "cluster_id": "contagion_sir"
+  "cluster_id": "contagion_sir",
+  "target_variable": "fraction_participating",
+  "target_units": "fraction_participating",
+  "observation_operator": "fraction(|opinion| > 0.5)",
+  "observation_operator_description": "Protest participation fraction: P follows SIR contagion curve. Observation operator H: fraction of agents with |opinion| > 0.5 (strong mobilization threshold in bipolar encoding).",
+  "n_observations": 14
 }

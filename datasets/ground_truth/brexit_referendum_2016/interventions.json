@@ -1,0 +1,20 @@
+[
+  {
+    "date": "2016-W15",
+    "label": "Campaign intensification",
+    "type": "polarization",
+    "description": "Major campaign rallies and media coverage intensify"
+  },
+  {
+    "date": "2016-W18",
+    "label": "Final week mobilization",
+    "type": "polarization",
+    "description": "Get-out-the-vote mobilization on both sides"
+  },
+  {
+    "date": "2016-W20",
+    "label": "Post-referendum reflection",
+    "type": "consensus",
+    "description": "After the vote, public discourse shifts toward unity themes"
+  }
+]

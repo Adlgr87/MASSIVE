@@ -1,0 +1,24 @@
+# ── Backtest thresholds for historical validation ───────────────────────────
+# Loaded automatically by massive.core.backtesting.Backtester
+
+thresholds:
+  wasserstein_max: 0.15      # Wasserstein-1 distance (P trajectories)
+  kl_div_max: 0.3            # Symmetric KL (Gaussian approx on P trajectories)
+  dtw_rmse_max: 0.1          # DTW-RMSE between simulated and observed P
+  direction_error_max: 0.1   # Fraction of wrong-direction steps
+  coverage_min: 0.85         # 90% CI coverage of observed values
+
+# Ensemble settings (used when thresholds are loaded by the Backtester)
+ensemble:
+  n_agents: 100
+  n_members: 30
+  sigma_perturbation: [0.5, 1.6]   # multiplicative range around calibrated σ
+  lambda_perturbation: [0.3, 1.8]  # multiplicative range around calibrated λ
+  ic_perturbation: 0.03            # Gaussian noise std on initial opinions
+
+# Gate requirements (pre-registration protocol)
+gates:
+  G1: "Pre-registration sealed before simulation"
+  G2: "Simulation runs from day-0 conditions only (no assimilation)"
+  G3: "All metrics below thresholds (Wasserstein, KL, DTW, Directional, Coverage)"
+  G4: "90% CI coverage ≥ coverage_min"

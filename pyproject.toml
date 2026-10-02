@@ -70,6 +70,7 @@ where = ["."]
 include = [
   "massive*", "backend*", "services*", "benchmarks*", "micro_massive*",
   "forecast*", "massive_core*", "metrics*", "adapters*", "monitoring*",
+  "ground_truth*",
 ]
 
 # The 31 legacy root-level .py modules (excl. conftest.py) are distributed
@@ -100,7 +101,7 @@ addopts = "-q"
 [tool.coverage.run]
 source = ["massive", "massive_core", "micro_massive", "services", "backend",
           "forecast", "energy_engine", "massive_engine", "multilayer_engine",
-          "micro_engine", "simulator", "api"]
+          "micro_engine", "simulator", "api", "ground_truth"]
 branch = true
 omit = [
   "*/tests/*",

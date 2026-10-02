@@ -1,0 +1,92 @@
+{
+  "version": "1.0.0",
+  "description": "Variable dictionary for microdata_synthetic.parquet. Generated via IPF / SAFE methodology.",
+  "generated_at": "2026-10-02T09:14:15.423478+00:00",
+  "n_agents": 10000,
+  "seed": 42,
+  "variables": {
+    "agent_id": {
+      "type": "int",
+      "description": "Unique integer agent identifier (0-indexed).",
+      "source": "Synthetic — derived from IPF sampling."
+    },
+    "age_group": {
+      "type": "categorical",
+      "description": "Broad age cohort of the agent.",
+      "categories": [
+        "18-29",
+        "30-44",
+        "45-59",
+        "60-74",
+        "75+"
+      ],
+      "source": "US Census Bureau (2020), Table PCT12."
+    },
+    "education_level": {
+      "type": "categorical",
+      "description": "Highest educational attainment.",
+      "categories": [
+        "less_than_high_school",
+        "high_school",
+        "some_college",
+        "bachelor",
+        "graduate"
+      ],
+      "source": "OECD Education at a Glance (2023), Table A1.1."
+    },
+    "income_quintile": {
+      "type": "categorical",
+      "description": "Household income relative to national distribution deciles.",
+      "categories": [
+        "Q1",
+        "Q2",
+        "Q3",
+        "Q4",
+        "Q5"
+      ],
+      "source": "OECD Income Distribution Database (2022)."
+    },
+    "gender": {
+      "type": "categorical",
+      "description": "Self-identified gender category.",
+      "categories": [
+        "male",
+        "female"
+      ],
+      "source": "US Census Bureau (2020), Table SEX."
+    },
+    "region": {
+      "type": "categorical",
+      "description": "Broad geographic region within the simulated democracy.",
+      "categories": [
+        "northeast",
+        "midwest",
+        "south",
+        "west",
+        "territories"
+      ],
+      "source": "US Census Bureau (2020), Census divisions."
+    },
+    "cultural_profile": {
+      "type": "categorical",
+      "description": "Cultural-psychological profile based on Hofstede dimensions, used by MASSIVE_EMPIRICAL_MASTER to select parameter variances.",
+      "categories": [
+        "anglosaxon",
+        "latin",
+        "east_asian",
+        "middle_east",
+        "nordic"
+      ],
+      "source": "Hofstede et al. (2010), Cultural Dimensions."
+    },
+    "opinion_baseline": {
+      "type": "continuous",
+      "description": "Agent's initial political-opinion position on a bipolar [-1, +1] spectrum (−1 = far-left/progressive, +1 = far-right /conservative, 0 = moderate).  All values are clipped with np.clip after computation.",
+      "range": [
+        -1.0,
+        1.0
+      ],
+      "source": "Regression-based assignment using demographic coefficients from Lelkes et al. (2020), Inglehart & Norris (2000), Pew Research Center (2020), and Hofstede et al. (2010)."
+    }
+  }
+}
