@@ -34,6 +34,29 @@ puntos temporales**. En total, **~170 observaciones reales**.
 | south_korea_candlelight_2016 | 14 |
 | us_election_2020 | 14 |
 
+### Hecho 1-bis — La variable objetivo no está definida, y no es la misma en todos los casos
+
+Esto es **más bloqueante que la escasez de datos** y se descubrió al construir el
+validador. Los doce `timeseries.csv` tienen la columna `P`, pero **ningún `meta.json`
+dice qué mide**, y demostrablemente mide cosas distintas:
+
+| Caso | `scenario_type` | Serie `P` | Qué parece medir |
+|---|---|---|---|
+| brexit_referendum_2016 | polarization_spike | 0,28 → 0,62 → 0,52 | Cuota de voto *Leave* |
+| egypt_arab_spring_2011 | contagion_sir | 0,02 → 0,70 → 0,08 | Fracción participante (curva SIR) |
+| south_korea_candlelight_2016 | consensus_cascade | 0,35 → 0,50 → 0,23 | Cascada de consenso |
+
+Una cuota de voto y una fracción de movilización **no son el mismo observable**.
+Agruparlas porque comparten nombre de columna no es *pooling*: es un error de tipo.
+
+Además, `data_type` es `empirical_estimated` en los doce: las series fueron
+**reconstruidas a mano desde fuentes publicadas**, no medidas directamente. Es
+legítimo, pero debe declararse y ponderarse distinto que un dato medido.
+
+**Nada se calibra hasta que cada caso declare `target_variable`, `target_units` y
+`observation_operator`.** `python scripts/validate_dataset.py` ya lo exige y
+actualmente falla los doce casos.
+
 ### Hecho 2 — El corrector CfC falló, y se sabe exactamente por qué
 
 El checkpoint de `models/cfc_calibrated/` tiene **10.177 parámetros** y se entrenó
@@ -97,6 +120,89 @@ inflada anterior sobrevivió porque nadie la auditó desde fuera.
 
 ---
 
+## 1-BIS. SPRINT 0 — TRES ENTREGABLES OBLIGATORIOS ANTES DE TODO LO DEMÁS
+
+Nada de las fases siguientes empieza hasta cerrar estos tres. Son baratos, son
+rápidos y determinan si el resto del trabajo tiene sentido.
+
+### G0 — Etiqueta de la variable objetivo: el léxico de sentimiento
+
+**Esta es la prioridad número uno, por encima de conseguir más datos.** Si la
+variable objetivo está mal etiquetada, ninguna calibración la arregla: *garbage in,
+garbage out*.
+
+`social_connectors.py` puntúa texto con **37 palabras positivas y 36 negativas**, en
+inglés y español, **sin negación, sin intensificadores, sin ironía y sin pesos**.
+«No es nada bueno» puntúa **positivo**. Todo el camino de sembrado desde opinión real
+(`massive_core/opinion_sources.py`) descansa sobre esto.
+
+Entregables:
+
+1. **Gold set humano de 200–300 mensajes**, muestreados del dominio real (protesta,
+   elección, polarización), en español e inglés, anotados por ≥ 2 personas.
+2. **Acuerdo entre anotadores** (kappa de Cohen o Krippendorff). Si κ < 0,6, el
+   problema es la guía de anotación, no el modelo: corregidla antes de seguir.
+3. **Medición del léxico actual contra el gold set**: accuracy, F1 macro, y matriz de
+   confusión. Documentad explícitamente el comportamiento ante negación.
+4. **Decisión fundamentada**: sustituir por un transformer de dominio (XLM-T,
+   RoBERTa en español afinado, o similar) o, como mínimo, un léxico con manejo de
+   negación e intensificadores. Reportad la mejora medida sobre el mismo gold set.
+
+**Criterio de salida de G0:** el analizador elegido supera al léxico actual sobre el
+gold set con significación, y su F1 se publica. Sin esto, el sembrado desde opinión
+real no es utilizable para calibrar.
+
+### G0-bis — Definición de la variable objetivo y del operador de observación
+
+Para **cada** caso de `datasets/real_cases/`, rellenad en `meta.json`:
+
+- `target_variable`: qué mide `P`, en palabras inequívocas
+  (p. ej. `leave_vote_share`, `fraction_participating`, `polarization_index`).
+- `target_units`: `share` | `fraction_participating` | `index` | …
+- `observation_operator`: **cómo se obtiene la medición a partir del estado del
+  simulador**. Ejemplos: `mean(opinion > 0)` para una cuota de voto;
+  `fraction(|opinion| > umbral)` para participación; `std(opinion)/half_range` para
+  un índice de polarización.
+
+Sin el operador **H**, ninguna distancia entre simulación y realidad (RMSE,
+Wasserstein, KL) está bien definida — se estaría comparando magnitudes distintas.
+
+**Criterio de salida:** `python scripts/validate_dataset.py` termina con código 0.
+Hoy falla los doce casos por esta razón exacta.
+
+### G0-ter — Plan de sourcing con fuentes y costos reales
+
+Una meta de «2.000 observaciones» sin decir de dónde salen es una lista de deseos.
+Entregad una tabla con fuente, volumen estimado, licencia, **coste real** y esfuerzo:
+
+| Fuente | Tipo | Volumen estimado | Licencia | Coste | Notas |
+|---|---|---|---|---|---|
+| Latinobarómetro | Encuesta anual, 18 países | alto | Registro gratuito | 0 € | Serie larga, ideal para pooling |
+| CEP (Chile) | Encuesta, serie histórica | medio | Pública | 0 € | Cubre el caso Chile 2019 |
+| ANES / CSES | Panel electoral | alto | Académica | 0 € | Requiere acuerdo de uso |
+| Eurobarómetro | Encuesta UE | alto | Pública | 0 € | Serie muy larga |
+| Archivos Pushshift / Reddit | Texto con timestamp | muy alto | Variable | 0 € | Verificad estado actual del archivo |
+| Kaggle (datasets de opinión) | Mixto | medio | Por dataset | 0 € | Revisar licencia caso por caso |
+| Comentarios de medios con timestamp | Texto | medio | Por medio | Variable | Suele requerir permiso |
+| **API de X/Twitter** | Texto | alto | Comercial | **Caro y restringido** | **No asumir disponibilidad** |
+
+**Criterio de salida:** un plan que llegue al Nivel 2 (500 obs) con fuentes concretas,
+licencias verificadas y coste cerrado. No basta con enumerar posibilidades.
+
+### G0-quater — Líneas base sobre los 12 casos
+
+Antes de calibrar nada, medid qué hace falta batir. Sobre los doce casos actuales:
+
+- **Persistencia** (último valor observado).
+- **Lineal** (tendencia ajustada por mínimos cuadrados).
+- **Mean-reverting** (Ornstein-Uhlenbeck / AR(1)).
+
+Usad `benchmarks/baselines.py` y `benchmarks/metrics.py`, que ya existen. Publicad la
+tabla en `reports/baselines_12cases.json`. **Ese es el listón.** Cualquier motor o red
+que no lo supere no se publica como mejora.
+
+---
+
 ## 2. FASE 1 — ADQUISICIÓN DE DATOS (bloqueante)
 
 Nada de lo demás tiene sentido sin esto.
@@ -139,15 +245,27 @@ anterior. Si una serie tiene 15 puntos, tiene 15 puntos. La interpolación es le
 recuento efectivo de observaciones sigue siendo el número de mediciones reales — así
 debe reportarse en todos los cálculos de capacidad y significación.
 
-### 2.4 Meta cuantitativa
+### 2.4 Escalera de capacidad (no es un muro: cada peldaño habilita trabajo real)
 
-Para que un modelo de ~10k parámetros sea defendible hacen falta, como orden de
-magnitud, **miles de observaciones reales**. Objetivos escalonados:
+El estado actual es **169 observaciones** → Nivel 1. Cada peldaño habilita técnicas,
+no solo permisos. `scripts/validate_dataset.py` calcula el nivel automáticamente.
 
-- **Mínimo para recalibrar motores (Fase 3):** 500 observaciones, ≥ 10 casos.
-- **Mínimo para reentrenar el CfC (Fase 4):** 2.000 observaciones, ≥ 25 casos,
-  con diversidad cultural y de régimen político.
-- **Si no se alcanza:** no se entrena. Se reduce la capacidad del modelo (ver §5.3).
+| Nivel | Observaciones válidas | Qué se puede hacer | Qué queda prohibido |
+|---|---|---|---|
+| **1** | < 500 | Líneas base; parámetros **agregados** (σ, ε promedio) con **priors fuertes**; pooling jerárquico | Redes neuronales; parámetros por segmento o por arista (`W` completa, ε por perfil) |
+| **2** | 500 – 2.000 | Calibración paramétrica por **SBI/ABC con pooling jerárquico**; posteriores con incertidumbre | Correctores neuronales residuales |
+| **3** | > 2.000, ≥ 25 casos | Corrector neuronal con capacidad ajustada al número de observaciones | Nada por volumen; la identificabilidad sigue mandando |
+
+**Qué cuenta como observación válida** (el validador lo exige):
+
+1. Tiene **timestamp** parseable y ordenado.
+2. Pertenece a una **serie**, no es un escalar suelto sin contexto temporal.
+3. Su caso declara `target_variable`, `target_units` y `observation_operator`.
+4. Está en `[0,1]` y su `data_type` está declarado.
+
+Una serie **escalar** (`date,P` sin dispersión) cuenta para el volumen pero **no
+habilita calibrar parámetros distribucionales**. Para eso hacen falta columnas de
+dispersión (`P_std`, `n_sample`, o intervalos).
 
 ---
 
@@ -164,6 +282,12 @@ magnitud, **miles de observaciones reales**. Objetivos escalonados:
 4. **Partición pre-registrada.** Antes de mirar los datos de test, fijad la partición
    y registradla usando `docs/validation/preregistration_template_ES.md`. Esto ya
    existe en el repo: **usadlo, no lo reinventéis**.
+5. **Umbral de éxito pre-registrado, con número exacto.** Antes de ejecutar nada,
+   escribid la métrica primaria, el valor que cuenta como éxito y el test estadístico
+   — por ejemplo: *«RMSE out-of-sample menor que la persistencia, con DM test
+   p < 0,05 tras Holm-Bonferroni»*. Decidirlo después de ver los resultados es
+   p-hacking aunque no se le llame así, y es exactamente cómo sobrevivió la cifra
+   inflada del 50 %.
 
 ---
 
@@ -200,11 +324,60 @@ estimables. Haced:
    justificación documentada**. Un parámetro no identificable "calibrado" es ruido
    presentado como ciencia.
 
+### 4.2-bis La granularidad de los datos acota la del modelo
+
+Con un observable **escalar** por instante (que es lo que hay: `date,P`), la regla es
+dura y no negociable:
+
+| Lo que se observa | Lo que se puede identificar | Lo que NO |
+|---|---|---|
+| Escalar por instante (`P`) | Dinámica **agregada**: σ global, ε promedio, tasa de reversión, profundidad media del atractor | `W` completa, ε por perfil, profundidad por segmento, cualquier parámetro distribucional |
+| Escalar + dispersión (`P_std`, `n_sample`) | Lo anterior + varianza del estado | Estructura de red individual |
+| Distribución completa por instante | Parámetros distribucionales | Identidades de agente |
+
+Consecuencia directa para el motor: **el Langevin 5D no es observable con datos
+escasos y escalares**. Las cinco dimensiones (opinión, cooperación, jerarquía,
+ingreso, acceso a información) no se pueden separar a partir de un único número por
+fecha. Dos salidas legítimas, elegid una y documentadla:
+
+1. **Reducir la dimensión de estado** para la calibración: calibrad un modelo de
+   opinión 1D y tratad las otras cuatro capas como fijas o derivadas.
+2. **Definir un operador de observación H explícito** que proyecte el estado 5D al
+   escalar medido, y calibrad solo lo que H deja identificable. Este es el mismo H que
+   necesita el EnKF (`massive_core/data_assimilation/kalman.py`): definidlo **una vez**
+   y reutilizadlo en ambos sitios.
+
+### 4.2-ter Pooling jerárquico bayesiano entre casos
+
+Con 12 casos cortos, tratarlos por separado desperdicia información y tratarlos como
+uno solo borra sus diferencias. La forma eficiente es **partial pooling**:
+
+```
+  theta_caso_i ~ Normal(mu_global, tau)      # cada caso tiene su parámetro…
+  mu_global, tau ~ priors                     # …extraído de una población común
+```
+
+Así cada caso toma fuerza estadística prestada de los demás, y `tau` cuantifica
+cuánto varían realmente entre contextos — que es en sí un resultado publicable.
+
+**Advertencia derivada del Hecho 1-bis:** solo se agrupan casos que compartan
+`target_variable`. Una cuota de voto y una fracción de movilización no pertenecen a
+la misma población de parámetros. Si tras G0-bis resultan ser tres observables
+distintos, haced **tres jerarquías**, no una.
+
 ### 4.3 Método
 
-- **Estimación bayesiana** preferida (ABC / SMC / emulador gaussiano), porque entrega
-  **distribuciones posteriores** y no puntos. Con tan pocos datos, la incertidumbre
-  *es* el resultado.
+- **Estimación bayesiana** preferida, porque entrega **distribuciones posteriores** y
+  no puntos. Con tan pocos datos, la incertidumbre *es* el resultado.
+- **Coste computacional, que decide el método.** ABC por rechazo puro es prohibitivo:
+  necesita cientos de miles de simulaciones. Usad **estimación neuronal de posterior
+  (NPE/SNPE)**, que amortiza el coste entrenando un estimador sobre un presupuesto
+  acotado de simulaciones.
+- **Simulad sobre `massive_engine.py` (super-agentes LOD), no sobre el motor a
+  resolución completa.** El bucle de inferencia ejecuta miles de simulaciones; a plena
+  resolución es inviable. Antes de usarlo, **verificad que el LOD preserva los
+  estadísticos que alimentan la verosimilitud** (media y varianza se conservan; hay
+  tests que lo cubren) y documentad el error de aproximación que introduce.
 - Alternativa frecuentista aceptable: optimización + *bootstrap* para intervalos.
 - **Prohibido** ajustar a ojo hasta que "se parezca". Si se hace manualmente, debe
   documentarse como tal y no llamarse calibración.
@@ -227,8 +400,13 @@ calibración: separadlo en su propia propuesta con su justificación.
 
 ### 5.1 Puerta de entrada
 
-**No entrenéis hasta que la Fase 1 alcance 2.000 observaciones reales y ≥ 25 casos.**
-Si no se llega, documentadlo como resultado y pasad a §5.3.
+**No se reentrena el CfC.** Es una decisión tomada, no una recomendación: con 169
+observaciones el reentrenamiento repetiría el fallo del Hecho 2.
+
+El Nivel 3 de la escalera (§2.4) —más de 2.000 observaciones válidas y ≥ 25 casos— es
+condición **necesaria pero no suficiente** para reabrir la cuestión. También hace falta
+haber cerrado G0 (etiquetas fiables) y G0-bis (operador H), y que el validador con veto
+lo autorice. Si no se llega, eso no es un fracaso: es el resultado, y se documenta.
 
 ### 5.2 Protocolo de entrenamiento
 
@@ -249,12 +427,12 @@ Si no se llega, documentadlo como resultado y pasad a §5.3.
 
 Elegid la capacidad según los datos, no al revés:
 
-| Observaciones reales | Modelo defendible |
-|---|---|
-| < 500 | Ninguno. Usad persistencia; está documentada y funciona |
-| 500 – 2.000 | Lineal regularizado / GP con pocos hiperparámetros (< 100 parámetros) |
-| 2.000 – 10.000 | CfC pequeño (hidden 8–16, < 1.000 parámetros) |
-| > 10.000 | CfC actual (hidden 64) justificable |
+| Observaciones reales | Modelo defendible | Nivel (§2.4) |
+|---|---|---|
+| < 500 | Ninguno. Persistencia + parámetros agregados con priors fuertes | 1 |
+| 500 – 2.000 | SBI/ABC paramétrico con pooling jerárquico (< 100 parámetros) | 2 |
+| 2.000 – 10.000 | CfC pequeño (hidden 8–16, < 1.000 parámetros) | 3 |
+| > 10.000 | CfC actual (hidden 64, 10.177 parámetros) justificable | 3 |
 
 Reportad siempre la ratio **parámetros : observaciones reales** en el informe. Si
 supera 1:10, justificadlo explícitamente o reducid el modelo.
@@ -273,17 +451,12 @@ ambigüedad.
 Estas no se pidieron explícitamente, pero sin ellas la simulación no será
 "completamente funcional" en ningún sentido defendible.
 
-### 6.1 El léxico de sentimiento es el eslabón más débil
+### 6.1 El léxico de sentimiento → promovido a G0
 
-`social_connectors.py` puntúa texto con un diccionario de **37 palabras positivas y
-36 negativas**, en inglés y español, **sin negación, sin ironía, sin intensificadores
-y sin pesos**. "No es nada bueno" puntúa positivo. Todo el camino de sembrado desde
-opinión real (`massive_core/opinion_sources.py`) descansa sobre esto.
-
-**Tarea:** sustituidlo por un analizador validado (VADER, un modelo multilingüe
-afinado, o un léxico con negación), y **medid su acuerdo con anotación humana** sobre
-una muestra etiquetada. Reportad kappa de Cohen. Sin esa medición, no sabéis si estáis
-sembrando opinión o ruido.
+Era el punto más subestimado de la versión anterior de este documento. Está ahora en
+**§1-BIS / G0** como entregable bloqueante del Sprint 0, por delante de conseguir más
+datos: una variable objetivo mal etiquetada no se arregla con ninguna calibración
+posterior.
 
 ### 6.2 Cuantificación de incertidumbre de extremo a extremo
 
@@ -324,13 +497,35 @@ Documentad a quién representan y a quién no los datos (cobertura digital, sesg
 urbano, idioma, acceso). Una simulación calibrada sobre Twitter no modela una
 población: modela a quienes tuitean. Debe decirse en la salida, no en una nota al pie.
 
-### 6.8 Deriva y recalibración
+### 6.8 Dominio de validez declarado
+
+Los doce casos están sesgados a **protestas y elecciones polarizadas**, en su mayoría
+episodios de crisis de 2011–2022. Un simulador calibrado sobre eso **no es un
+simulador social general**.
+
+Declarad explícitamente, en la salida de la API y en el README, para qué familia de
+eventos es válido y para cuál no se ha verificado. No afirméis fidelidad universal:
+es la forma más rápida de perder la credibilidad que el resto del trabajo construye.
+
+### 6.9 Datos sintéticos: solo como puente
+
+Se permiten **únicamente** para stress-testing, pruebas de recuperación de parámetros
+(¿recupera el calibrador un valor conocido?) y pruebas de carga. **Nunca para
+calibrar**, y siempre etiquetados `data_type: synthetic` — el validador ya los marca y
+los excluye del recuento de calibración.
+
+Un uso legítimo y valioso: **prueba de recuperación**. Generad datos con parámetros
+conocidos, pasadlos por el pipeline completo y comprobad que la posterior los
+recupera. Si no los recupera con datos sintéticos limpios, no los recuperará jamás con
+datos reales — y eso se sabe antes de gastar el presupuesto de datos.
+
+### 6.10 Deriva y recalibración
 
 Los parámetros sociales no son constantes universales. Definid cada cuánto se
 revalida, con qué criterio se declara obsoleta una calibración, y dejadlo
 automatizado en CI.
 
-### 6.9 Reproducibilidad de la calibración
+### 6.11 Reproducibilidad de la calibración
 
 Todo el pipeline debe poder re-ejecutarse de cero con un comando y dar el mismo
 resultado: semillas fijas, versiones de datos ancladas (hash), entorno declarado.
@@ -376,10 +571,14 @@ Si la calibración no es reproducible, no es verificable.
 
 | # | Entregable | Ruta |
 |---|---|---|
-| 1 | Inventario de fuentes con licencias | `docs/validation/DATA_SOURCES.md` |
-| 2 | Dataset ampliado + validador | `datasets/real_cases/`, `scripts/validate_dataset.py` |
+| 0a | **G0** Gold set + medición del léxico + decisión | `reports/sentiment_goldset.md` |
+| 0b | **G0-bis** `target_variable` + `observation_operator` en los 12 casos | `datasets/real_cases/*/meta.json` |
+| 0c | **G0-ter** Plan de sourcing con costos | `docs/validation/DATA_SOURCES.md` |
+| 0d | **G0-quater** Líneas base sobre los 12 casos | `reports/baselines_12cases.json` |
+| 1 | Validador del corpus | `scripts/validate_dataset.py` **(ya entregado)** |
+| 2 | Dataset ampliado | `datasets/real_cases/` |
 | 3 | Pre-registro de la partición | `docs/validation/preregistration_*.md` |
-| 4 | Análisis de identificabilidad | `reports/identifiability.json` |
+| 4 | Análisis de identificabilidad + jerarquía de pooling | `reports/identifiability.json` |
 | 5 | Calibración de motores + posteriores | `reports/engine_calibration.json` |
 | 6 | Informe de entrenamiento con líneas base | `reports/cfc_validation.json` |
 | 7 | Estudio de ablación | `reports/ablation.md` |
@@ -401,6 +600,10 @@ La simulación se considera **calibrada y funcional** cuando:
 4. Cada mecanismo activo **justifica su presencia** en la ablación.
 5. Todo el pipeline es **reproducible desde cero** con un comando.
 6. La documentación publicada **coincide exactamente** con lo medido.
+7. `python scripts/validate_dataset.py` termina en 0: cada caso declara su variable
+   objetivo y su operador de observación.
+8. El **dominio de validez** está declarado y no se afirma fidelidad fuera de él.
+9. El umbral de éxito estaba **pre-registrado antes** de ver los resultados.
 
 Si no se alcanza alguno, el entregable es el informe honesto de por qué — no una
 versión maquillada de las cifras.
