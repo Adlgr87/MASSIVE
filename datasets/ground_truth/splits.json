@@ -11,7 +11,7 @@
   "seal": {
     "method": "sha256",
     "seal_hash": "335406e70254cd1aa00295bd016ad52bc21c3704bdfcd25988af286ef13ae181",
-    "sealed_at": "2026-10-02T23:30:06.108515+00:00",
+    "sealed_at": "2026-10-02T23:40:49.720057+00:00",
     "note": "The historical_test split indices are not stored in plaintext. They are derivable from the seed but require an explicit unlock key via ground_truth.unlock_historical_test()."
   },
   "events": {
