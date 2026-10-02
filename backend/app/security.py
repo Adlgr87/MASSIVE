@@ -53,10 +53,10 @@ async def get_api_key(
         HTTPException: 401 if the key is missing/invalid, 503 if the
             server is not yet configured (production only).
     """
-    expected = os.getenv("MASSIVE_API_KEY")
-    if not expected:
+    accepted = _configured_api_keys()
+    if not accepted:
         if is_dev_fallback_allowed():
-            expected = DEV_FALLBACK_API_KEY
+            accepted = [DEV_FALLBACK_API_KEY]
             log.warning(
                 "MASSIVE_API_KEY not set — using dev fallback "
                 "(development + MASSIVE_DEV_FALLBACK, dev only)"
@@ -66,9 +66,41 @@ async def get_api_key(
                 status_code=503,
                 detail="API key not configured — server is not ready",
             )
-    if api_key is None or not api_key_matches(api_key, expected):
+    # Compare against every accepted key, and never short-circuit: `any()` over
+    # a generator would stop at the first match and leak, through timing, which
+    # key matched and how many were checked. Accumulate instead, so the cost is
+    # the same for every request regardless of the outcome.
+    matched = False
+    for candidate in accepted:
+        matched |= api_key is not None and api_key_matches(api_key, candidate)
+    if not matched:
         raise HTTPException(status_code=401, detail="Invalid API Key")
     return api_key
+
+
+def _configured_api_keys() -> list[str]:
+    """Every API key the server accepts, in no particular order.
+
+    Supports two variables, both documented in ``.env.example`` and the README:
+
+    * ``MASSIVE_API_KEY``  — a single key.
+    * ``MASSIVE_API_KEYS`` — comma-separated, for rotation: publish the new key
+      alongside the old one, move clients over, then drop the old one.
+
+    The plural form was documented and shipped in ``.env.example`` but **never
+    read by any code**. An operator rotating credentials with it would have had
+    their new keys silently ignored, and an operator who set *only* the plural
+    would get a 503 with nothing in the logs pointing at the cause.
+    """
+    keys: list[str] = []
+    single = os.getenv("MASSIVE_API_KEY", "").strip()
+    if single:
+        keys.append(single)
+    for raw in os.getenv("MASSIVE_API_KEYS", "").split(","):
+        candidate = raw.strip()
+        if candidate and candidate not in keys:
+            keys.append(candidate)
+    return keys
 
 
 # --- Rate limiting -------------------------------------------------------

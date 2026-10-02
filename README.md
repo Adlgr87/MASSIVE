@@ -178,7 +178,7 @@ Key invariants:
 
 - **The engines are the product** — APIs, CLI and LLM layers are thin, typed boundaries over them.
 - **Optional means optional**: no GPU, no LLM key, no Factbook data → everything still runs deterministically (seeds + `PYTHONHASHSEED` respected).
-- **Fail-closed security**: staging/production refuse to start serving without `MASSIVE_API_KEY` (singular) and `MASSIVE_API_KEYS` (plural, for multi-key rotation); the dev fallback key is loudly logged and impossible in production.
+- **Fail-closed security**: staging/production refuse to serve without an API key. Both `MASSIVE_API_KEY` (singular) and `MASSIVE_API_KEYS` (comma-separated, for rotation — publish the new key beside the old one, move clients across, then drop the old one) are accepted, and every configured key is checked in constant time. The dev fallback key is loudly logged and impossible in production.
 
 ---
 
