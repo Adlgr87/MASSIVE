@@ -79,7 +79,7 @@ addopts = "-q"
 [tool.coverage.run]
 source = ["massive", "massive_core", "micro_massive", "services", "backend",
           "forecast", "energy_engine", "massive_engine", "multilayer_engine",
-          "micro_engine", "simulator", "api"]
+          "micro_engine", "simulator", "api", "ground_truth"]
 branch = true
 omit = [
   "*/tests/*",

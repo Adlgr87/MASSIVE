@@ -1,0 +1,14 @@
+[
+  {
+    "date": "2016-W44",
+    "label": "Protest escalation",
+    "type": "polarization",
+    "description": "Candlelight protests intensify, driving public opinion apart"
+  },
+  {
+    "date": "2016-W46",
+    "label": "Impeachment motion",
+    "type": "consensus",
+    "description": "National Assembly impeachment motion begins consensus-building process"
+  }
+]

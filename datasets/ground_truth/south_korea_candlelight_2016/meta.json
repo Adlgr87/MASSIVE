@@ -1,0 +1,13 @@
+{
+  "case_id": "south_korea_candlelight_2016",
+  "event_name": "South Korea Candlelight Protest",
+  "date": "2016-12-09",
+  "scenario_type": "polarization_spike",
+  "cultural_profile": "collectivist",
+  "geography": "South Korea",
+  "description": "The Candlelight protests against Park Geun-hye produced a sharp spike in polarization that rapidly converged as the movement shifted toward consensus.",
+  "peak_step": 3,
+  "peak_p": 0.5,
+  "final_p": 0.23,
+  "attractor_position": 0.55
+}

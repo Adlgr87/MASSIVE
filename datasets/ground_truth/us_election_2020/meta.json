@@ -1,0 +1,13 @@
+{
+  "case_id": "us_election_2020",
+  "event_name": "United States presidential election",
+  "date": "2020-11-03",
+  "scenario_type": "polarization_escalation",
+  "cultural_profile": "mixed",
+  "geography": "United States",
+  "description": "2020 US election saw sustained polarization escalation throughout the campaign season, peaking with post-election vote counting uncertainty.",
+  "peak_step": 11,
+  "peak_p": 0.75,
+  "final_p": 0.71,
+  "attractor_position": 0.65
+}

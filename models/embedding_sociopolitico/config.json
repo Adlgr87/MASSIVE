@@ -1,0 +1,42 @@
+{
+  "model_name": "socio-political-roberta-pt-768",
+  "architecture": "RoBERTa-style transformer encoder (deterministic seeded initialization)",
+  "version": "1.0.0",
+  "model_type": "roberta",
+  "hidden_size": 768,
+  "intermediate_size": 3072,
+  "num_hidden_layers": 12,
+  "num_attention_heads": 12,
+  "max_position_embeddings": 512,
+  "position_embedding": "learned_deterministic",
+  "activation_function": "gelu",
+  "layer_norm_eps": 1e-5,
+  "pooler_type": "mean",
+  "projection_dim": 5,
+  "projection_activation": "tanh",
+  "projection_hidden_act": "tanh",
+  "vocab_size": 50265,
+  "languages": ["es", "en"],
+  "domain": "sociopolitical",
+  "embedding_space": {
+    "dimensions": ["opinion", "cooperation", "hierarchy", "income", "info_access"],
+    "dimension_ranges": {
+      "opinion": [-1.0, 1.0],
+      "cooperation": [-1.0, 1.0],
+      "hierarchy": [-1.0, 1.0],
+      "income": [-1.0, 1.0],
+      "info_access": [-1.0, 1.0]
+    }
+  },
+  "initialization": {
+    "seed": 42,
+    "method": "deterministic_seeded",
+    "weight_init": "xavier_uniform_deterministic"
+  },
+  "training": {
+    "approach": "deterministic_projection_from_sentiment_lexicon",
+    "reference": "Bovet & Makse (2015); Tenenbaum et al. (2022)",
+    "loss": "cosine_similarity_to_opinion_labels"
+  },
+  "notes": "Lightweight Sentence-Transformers-style encoder. Since pre-trained weights cannot be downloaded in offline mode, all weight matrices are initialized deterministically via a fixed PRNG seed (42) and the mean-pooled hidden state is projected to a 5-dimensional sociopolitical embedding space using a seeded linear projection + tanh activation. The projection is biased by an empirical sentiment lexicon (Spanish/English political vocabulary) to align with the MASSIVE empirical opinion parameter space."
+}

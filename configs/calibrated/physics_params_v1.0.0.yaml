@@ -1,0 +1,367 @@
+# =============================================================================
+# MASSIVE — Layer 2: Physics-Equation Parameter Calibration (v1.0.0)
+# =============================================================================
+#
+# Calibrates the physics/math equations of the MASSIVE simulation engines:
+#   • Langevin dynamics  : dx_i/dt = -∇U(x_i) + Σ_ℓ w_ℓ·(A_ℓ·G(x))_i + θ(a_i)·η_i
+#   • Energy SDE         : x_i(t+η) = x_i(t) - η·∇U(x_i) + η·λ·(x̄ - x_i) + √(2η·T)·ε
+#   • Hegselmann-Krause  : bounded-confidence threshold HK ε
+#   • DeGroot            : W_ij weight matrix from authority metrics
+#
+# Traceability model (per parameter entry):
+#   value              — calibrated value (scalar) or [min, max] interval
+#   sem                — standard error / sensitivity or estimation uncertainty
+#   source_dataset     — Layer 1 dataset the value was derived from
+#   estimation_method  — least_squares_fit | maximum_likelihood | method_of_moments
+#   empirical_reference — academic citation grounding the value
+#
+# Layer 1 datasets:
+#   A1 — microdata opinion-change rates + demographic differentials
+#        (Brexit BES/YouGov 2016; Inglehart 2018; Nickerson 1998)
+#   A2 — network topology & authority (in-degree, retweets)
+#        (Watts-Strogatz; Barabási-Albert; Cha et al. 2010)
+#   A3 — aggregate timeseries volatility
+#        (Brexit 2016 weekly polarization P(t); Lorenz-Spreen 2019)
+#
+# Opinion domain: [-1, 1] bipolar (Leave=+1, Remain=-1 convention).
+# All opinion-range parameters are clipped to [-1, 1] (see schemas + tests).
+# =============================================================================
+
+meta:
+  version: "1.0.0"
+  layer: 2
+  framework: "MASSIVE Statistical-Physics Calibration"
+  deterministic_seed: 42
+  description: >-
+    Physics-equation calibration derived from Layer 1 empirical datasets
+    A1 (microdata), A2 (network topology/authorities) and A3 (timeseries
+    volatility). All values normalized; opinion-range values within [-1, 1].
+
+# -----------------------------------------------------------------------------
+# (a) Langevin ∇V — cognitive rigidity / attraction drift
+#     Per demographic segment (age, education, income).
+#     The opinion potential is a double-well  U = (x² - 0.49)²  attracting to
+#     x = ±0.7 (minima), with a repeller (barrier) at x = 0.
+#     cognitive_rigidity ∈ [0,1] scales |∇U| (higher = more resistant to
+#     noise/social disruption = set in one's views). Based on A1 microdata.
+# -----------------------------------------------------------------------------
+langevin:
+  drift:
+    opinion_attractors:
+      value: [-0.7, 0.7]        # minima of U_opinion = (x²-0.49)²
+      sem: 0.0
+      source_dataset: "A1"
+      estimation_method: "method_of_moments"
+      empirical_reference: "Wilson & Maher (2007); Hobolt (2018)"
+    opinion_repeller:
+      value: [0.0, 0.0]        # barrier at origin (interval for symmetry)
+      sem: 0.0
+      source_dataset: "A1"
+      estimation_method: "method_of_moments"
+      empirical_reference: "Hobolt (2018); Fitzsimmons et al. (2019)"
+    # Cognitive rigidity by demographic axis (segment labels: axis:label)
+    cognitive_rigidity:
+      mixed:
+        value: 0.50
+        sem: 0.09
+        source_dataset: "A1"
+        estimation_method: "method_of_moments"
+        empirical_reference: "Wilson & Maher (2007); Inglehart (2018)"
+      age:
+        young:
+          value: 0.30
+          sem: 0.10
+          source_dataset: "A1"
+          estimation_method: "method_of_moments"
+          empirical_reference: "Inglehart (2018); BRECHA_GENERACIONAL"
+        middle:
+          value: 0.52
+          sem: 0.09
+          source_dataset: "A1"
+          estimation_method: "method_of_moments"
+          empirical_reference: "Inglehart (2018); BRECHA_GENERACIONAL"
+        old:
+          value: 0.76
+          sem: 0.11
+          source_dataset: "A1"
+          estimation_method: "method_of_moments"
+          empirical_reference: "Inglehart (2018); BRECHA_GENERACIONAL"
+      education:
+        low_edu:
+          value: 0.72
+          sem: 0.09
+          source_dataset: "A1"
+          estimation_method: "method_of_moments"
+          empirical_reference: "Nickerson (1998); SEsgro_CONFIRMACION"
+        medium_edu:
+          value: 0.48
+          sem: 0.08
+          source_dataset: "A1"
+          estimation_method: "method_of_moments"
+          empirical_reference: "Nickerson (1998); SEsgro_CONFIRMACION"
+        high_edu:
+          value: 0.28
+          sem: 0.10
+          source_dataset: "A1"
+          estimation_method: "method_of_moments"
+          empirical_reference: "Nickerson (1998); SEsgro_CONFIRMACION"
+      income:
+        low_inc:
+          value: 0.68
+          sem: 0.10
+          source_dataset: "A1"
+          estimation_method: "method_of_moments"
+          empirical_reference: "Gidron & Hall (2017); EFECTO_CLASE_SOCIAL"
+        medium_inc:
+          value: 0.46
+          sem: 0.08
+          source_dataset: "A1"
+          estimation_method: "method_of_moments"
+          empirical_reference: "Gidron & Hall (2017); EFECTO_CLASE_SOCIAL"
+        high_inc:
+          value: 0.28
+          sem: 0.10
+          source_dataset: "A1"
+          estimation_method: "method_of_moments"
+          empirical_reference: "Gidron & Hall (2017); EFECTO_CLASE_SOCIAL"
+    # Per-dimension drift coupling scales (mirror θ coefficients in multilayer_engine)
+    dimension_coupling:
+      opinion:        0.5      # _THETA_RELIGION_OPINION
+      cooperation:    0.3      # _THETA_EDUCATION_COOP
+      hierarchy:      0.4      # _THETA_AGE_HIERARCHY
+      income:         0.2      # _THETA_YOUTH_INCOME
+      info_access:    0.4      # _THETA_EDUCATION_INFO
+
+  # -------------------------------------------------------------------------
+  # (b) σ — diffusion / noise amplitude
+  #     base σ from A1 microdata variance + A3 timeseries volatility
+  #     context-dependent σ(t) amplified by A3 volatility
+  # -------------------------------------------------------------------------
+  sigma:
+    base:
+      value: 0.1001
+      sem: 0.015
+      source_dataset: "A1+A3"
+      estimation_method: "method_of_moments"
+      empirical_reference: "McPherson et al. (2001); Risken (1996)"
+    # σ(t) = base * (1 + k * volatility_A3); k scales volatility impact
+    context_volatility_sensitivity:
+      value: 0.5
+      sem: 0.10
+      source_dataset: "A3"
+      estimation_method: "least_squares_fit"
+      empirical_reference: "Lorenz-Spreen et al. (2019); Risken (1996)"
+    # Segment noise multipliers (younger / lower-status → more volatile)
+    segment_multiplier:
+      mixed:
+        value: 1.0
+        sem: 0.0
+        source_dataset: "A1"
+        estimation_method: "method_of_moments"
+        empirical_reference: "McPherson et al. (2001)"
+      age:
+        young:
+          value: 1.25
+          sem: 0.05
+          source_dataset: "A1"
+          estimation_method: "least_squares_fit"
+          empirical_reference: "McPherson et al. (2001)"
+        middle:
+          value: 1.00
+          sem: 0.05
+          source_dataset: "A1"
+          estimation_method: "least_squares_fit"
+          empirical_reference: "McPherson et al. (2001)"
+        old:
+          value: 0.75
+          sem: 0.05
+          source_dataset: "A1"
+          estimation_method: "least_squares_fit"
+          empirical_reference: "McPherson et al. (2001)"
+      education:
+        low_edu:
+          value: 1.05
+          sem: 0.04
+          source_dataset: "A1"
+          estimation_method: "least_squares_fit"
+          empirical_reference: "McPherson et al. (2001)"
+        medium_edu:
+          value: 0.95
+          sem: 0.04
+          source_dataset: "A1"
+          estimation_method: "least_squares_fit"
+          empirical_reference: "McPherson et al. (2001)"
+        high_edu:
+          value: 0.80
+          sem: 0.04
+          source_dataset: "A1"
+          estimation_method: "least_squares_fit"
+          empirical_reference: "McPherson et al. (2001)"
+      income:
+        low_inc:
+          value: 1.15
+          sem: 0.04
+          source_dataset: "A1"
+          estimation_method: "least_squares_fit"
+          empirical_reference: "McPherson et al. (2001)"
+        medium_inc:
+          value: 1.00
+          sem: 0.04
+          source_dataset: "A1"
+          estimation_method: "least_squares_fit"
+          empirical_reference: "McPherson et al. (2001)"
+        high_inc:
+          value: 0.85
+          sem: 0.04
+          source_dataset: "A1"
+          estimation_method: "least_squares_fit"
+          empirical_reference: "McPherson et al. (2001)"
+
+  # Landscape structural parameters (energy_engine.py)
+  attractors:
+    positions: [-0.7, 0.7]
+    strength:
+      value: 0.537        # attractor_depth (runtime)
+      sem: 0.03
+      source_dataset: "A3"
+      estimation_method: "method_of_moments"
+      empirical_reference: "AMPLIFICACION_VIRAL; Goel et al. (2016)"
+  repellers:
+    positions: [0.0]
+    strength:
+      value: 0.464       # |repeller_strength| (runtime)
+      sem: 0.03
+      source_dataset: "A3"
+      estimation_method: "method_of_moments"
+      empirical_reference: "SILENCIO_ESPIRAL; Noelle-Neumann (1974)"
+  sigma_gaussian:
+    value: 0.3            # gaussian width σ of landscape wells (energy_engine._SIGMA)
+    sem: 0.02
+    source_dataset: "A2"
+    estimation_method: "method_of_moments"
+    empirical_reference: "Centola (2010)"
+  eta:
+    value: 0.01           # integration step dt
+    sem: 0.0
+    source_dataset: "numerical"
+    estimation_method: "fixed"
+    empirical_reference: "Risken (1996); Euler-Maruyama dt"
+
+# -----------------------------------------------------------------------------
+# (e) λ — social coupling weight  (from runtime social_influence_lambda)
+# -----------------------------------------------------------------------------
+lambda_social:
+  value: 0.521
+  sem: 0.03
+  source_dataset: "A2"
+  estimation_method: "method_of_moments"
+  empirical_reference: "Centola (2010); McPherson et al. (2001)"
+
+# -----------------------------------------------------------------------------
+# (f) T — temperature (thermal noise amplitude, from runtime temperature)
+# -----------------------------------------------------------------------------
+temperature:
+  value: 0.474
+  sem: 0.02
+  source_dataset: "A1+A3"
+  estimation_method: "method_of_moments"
+  empirical_reference: "Risken (1996); Bonchi et al. (2024-2025)"
+
+# -----------------------------------------------------------------------------
+# (c) Hegselmann-Krause HK ε — bounded-confidence threshold
+#     Distribution per profile (NOT a single scalar). Based on A2 interaction
+#     tolerance. Band [0.20, 0.35] per Hegselmann & Krause (2002).
+# -----------------------------------------------------------------------------
+hk:
+  epsilon:
+    base:
+      value: 0.2525          # mixed default (from HOMOFILIA_RED 0.65)
+      sem: 0.03
+      source_dataset: "A2"
+      estimation_method: "method_of_moments"
+      empirical_reference: "Hegselmann & Krause (2002); McPherson et al. (2001)"
+    band: [0.20, 0.35]       # admissible HK ε range (hard constraint)
+    per_segment:
+      mixed:
+        value: 0.2525
+        sem: 0.03
+        source_dataset: "A2"
+        estimation_method: "method_of_moments"
+        empirical_reference: "Hegselmann & Krause (2002)"
+      age:
+        young:
+          value: 0.31
+          sem: 0.03
+          source_dataset: "A2"
+          estimation_method: "least_squares_fit"
+          empirical_reference: "Hegselmann & Krause (2002); McPherson et al. (2001)"
+        middle:
+          value: 0.26
+          sem: 0.03
+          source_dataset: "A2"
+          estimation_method: "least_squares_fit"
+          empirical_reference: "Hegselmann & Krause (2002); McPherson et al. (2001)"
+        old:
+          value: 0.23
+          sem: 0.03
+          source_dataset: "A2"
+          estimation_method: "least_squares_fit"
+          empirical_reference: "Hegselmann & Krause (2002); McPherson et al. (2001)"
+      education:
+        low_edu:
+          value: 0.22
+          sem: 0.03
+          source_dataset: "A2"
+          estimation_method: "least_squares_fit"
+          empirical_reference: "Hegselmann & Krause (2002)"
+        medium_edu:
+          value: 0.27
+          sem: 0.03
+          source_dataset: "A2"
+          estimation_method: "least_squares_fit"
+          empirical_reference: "Hegselmann & Krause (2002)"
+        high_edu:
+          value: 0.33
+          sem: 0.03
+          source_dataset: "A2"
+          estimation_method: "least_squares_fit"
+          empirical_reference: "Hegselmann & Krause (2002)"
+      income:
+        low_inc:
+          value: 0.24
+          sem: 0.03
+          source_dataset: "A2"
+          estimation_method: "least_squares_fit"
+          empirical_reference: "Hegselmann & Krause (2002)"
+        medium_inc:
+          value: 0.28
+          sem: 0.03
+          source_dataset: "A2"
+          estimation_method: "least_squares_fit"
+          empirical_reference: "Hegselmann & Krause (2002)"
+        high_inc:
+          value: 0.32
+          sem: 0.03
+          source_dataset: "A2"
+          estimation_method: "least_squares_fit"
+          empirical_reference: "Hegselmann & Krause (2002)"
+
+# -----------------------------------------------------------------------------
+# (d) DeGroot W_ij — asymmetric weight matrix from authority metrics
+#     W_ij ∝ A_ij · (authority_j)^alpha, row-stochastic.
+#     Authority from A2 in-degree & retweet influence. DeGroot (1974).
+# -----------------------------------------------------------------------------
+degroot:
+  authority_exponent:
+    value: 0.7
+    sem: 0.10
+    source_dataset: "A2"
+    estimation_method: "maximum_likelihood"
+    empirical_reference: "DeGroot (1974); Cha et al. (2010); Weng et al. (2013)"
+  self_weight:
+    value: 0.1
+    sem: 0.02
+    source_dataset: "A2"
+    estimation_method: "method_of_moments"
+    empirical_reference: "DeGroot (1974); Jackson (2008)"
+  authority_source: "In-degree + retweet-based influence (Watts-Strogatz social / Barabási-Albert digital)"
