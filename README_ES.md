@@ -7,6 +7,14 @@
 *Plataforma híbrida física + IA que simula formación de opinión, polarización y
 resultados de intervenciones sobre sistemas sociales complejos — de 10 agentes a 100 millones.*
 
+</div>
+
+> **El comportamiento caótico de los individuos a nivel micro se cancela
+> estadísticamente, y a nivel macro emergen situaciones deterministas y
+> continuas. Esa es exactamente la apuesta de MASSIVE.**
+
+<div align="center">
+
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Python: 3.11+](https://img.shields.io/badge/Python-3.11+-blue?logo=python)](pyproject.toml)
 [![Tests](https://github.com/Adlgr87/MASSIVE/actions/workflows/pytest.yml/badge.svg?branch=main)](.github/workflows/pytest.yml)
@@ -20,6 +28,12 @@ resultados de intervenciones sobre sistemas sociales complejos — de 10 agentes
 
 ## Qué hace diferente a MASSIVE
 
+MASSIVE **no** intenta predecir qué hará una persona concreta: el comportamiento
+individual es ruidoso, dependiente de la trayectoria y, a efectos prácticos,
+impredecible. Modela el nivel en el que ese ruido se promedia — la mecánica
+estadística de poblaciones, donde las regularidades son lo bastante estables como
+para integrarlas, calibrarlas contra datos reales e intervenir sobre ellas.
+
 La mayoría de los simuladores sociales obligan a elegir entre escala, rigor científico y usabilidad.
 MASSIVE es **híbrido por diseño** en cada capa:
 
@@ -27,12 +41,13 @@ MASSIVE es **híbrido por diseño** en cada capa:
 |---|---|---|
 | 🌍 **Escala poblacional por compresión LOD** | Agentes con features idénticas colapsan en *super-agentes*: **100 millones de agentes en ~8 GB de RAM** — memoria casi constante con actualizaciones dispersas event-driven y cuantización uint8. | `massive_engine.py` |
 | 🤖 **LLM como *traductor matemático*, no chatbot** | Lenguaje natural → configuración validada bajo un **contrato versionado legible por máquina** (v1.1.0): la clasificación del intent enruta al motor correcto, las peticiones ambiguas devuelven `422 + requested_fields`, y todo corre **determinísticamente sin ninguna API key**. | `services/llm_orchestrator.py`, `configs/llm_contract/` |
-| 🧠 **Corrección residual con redes líquidas** | Una red Closed-form Continuous-time (CfC) aprende el *sesgo sistemático* del motor físico y lo corrige — **50 % de reducción del error de dirección** en el caso del Brexit (10/10 semillas mejoraron). | `cfc_engine.py`, `models/cfc_calibrated/` |
+| 🧠 **Corrección residual con redes líquidas** | Una red Closed-form Continuous-time (CfC) aprende el *sesgo sistemático* del motor físico como un residuo sobre él. El corrector se puntúa fuera de muestra frente a líneas base (`scripts/validate_cfc_walkforward.py`, informe en `reports/cfc_validation.json`) y cada llamada indica qué estimador corrió realmente, de modo que un valor corregido nunca se confunde con uno crudo. | `cfc_engine.py`, `cfc_router.py`, `models/cfc_calibrated/` |
 | 📡 **Asimilación de datos para dinámicas de opinión** | Un Ensemble Kalman Filter disperso fusiona observaciones reales con el estado en ejecución, como la predicción numérica del clima. | `massive_core/data_assimilation/` |
 | ⚗️ **Capa científica opt-in** | Steppers adaptativos, análisis de estabilidad y bifurcación, PINNs, inferencia de redes y mecánica estadística — tras flags explícitos que nunca alteran la dinámica por defecto. | `massive_core/` |
 | 🧬 **Diseño inverso de intervenciones** | Pregunta *"¿qué campaña alcanza este consenso?"* — el arquitecto social busca el espacio de intervenciones hacia atrás desde el objetivo. | `social_architect.py` |
 | ⚡ **Kernels NumPy vectorizados** | Los 3 kernels de ruta caliente (multi_potential_gradient, langevin_opinion_update, active_mask_step) están totalmente vectorizados: 100k agentes x 5D en ~4,5 ms. | `massive_core/kernels.py` |
-| 🔬 **Cultura validation-first** | Protocolo anti-leakage con pre-registro, RNG con semilla en todo el sistema, APIs validadas por contrato, CI de 16 checks, suite PVU offline. | `datasets/pvu_cases/`, `benchmarks/` |
+| 📰 **Sembrado con opinión real, no con ruido** | Una simulación puede arrancar desde opinión medida en vez de un sorteo uniforme: corpus locales (`.txt`/`.jsonl`/`.csv`) o conectores vivos de Twitter/Reddit se puntúan al rango del motor y se remuestrean al número de agentes, conservando la forma de la distribución real. Cada resultado lleva un bloque de procedencia `initial_conditions`. | `massive_core/opinion_sources.py`, `social_connectors.py` |
+| 🔬 **Cultura validation-first** | Protocolo anti-leakage con pre-registro, RNG con semilla en todo el sistema, APIs validadas por contrato, 11 workflows de CI por PR, suite PVU offline. | `datasets/pvu_cases/`, `benchmarks/` |
 
 ---
 
@@ -86,7 +101,7 @@ SPA de React y proxy `/api/`, `/v1/`, `/docs`, `/health`, `/ready`, `/version`,
 `/metrics`).
 
 > ℹ️ Una variante legada de servicio único (`Dockerfile.optimized` +
-> `docker-compose.single.yml`) está archivada en [`examples/`](examples/).
+> `docker-compose.single.yml`) está archivada en [`examples/`](docs/examples/).
 
 > Mínimo: Python 3.11, 500 MB RAM. CUDA/torch/claves LLM son opcionales —
 > cada capa opcional tiene un fallback determinista.
@@ -105,7 +120,6 @@ flowchart TB
 
     subgraph API["Backends FastAPI"]
         V1["Canónico /v1 (backend/app/)<br/>simulate · forecast · engine · benchmarks · llm<br/>DTOs tipados (extra=forbid) · X-API-Key · rate limit"]
-        LEG["Legacy /api (api.py)<br/>extract · wizard · simulate-uil"]
     end
 
     subgraph Services["services/ — frontera de orquestación"]
@@ -150,7 +164,9 @@ Invariantes clave:
 
 ## 📡 API HTTP
 
-**Canónica — `backend.app.main:app`** (recomendada para integraciones nuevas)
+Servida por **`backend.app.main:app`** — una única superficie versionada. Todas las
+rutas viven bajo `/v1/*`; el cliente React (`frontend/src/services/api.ts`) usa
+`baseURL: "/v1"`.
 
 | Endpoint | Método | Propósito |
 |---|---|---|
@@ -160,20 +176,19 @@ Invariantes clave:
 | `/v1/engine/architect` | POST | Búsqueda inversa de intervenciones |
 | `/v1/benchmarks` | POST | Validación offline PVU-BS |
 | `/v1/llm/run_simulation` | POST | **Intent NL → motor → resultado narrado** (contrato v1.1.0) |
+| `/v1/llm/wizard` | POST | Genera configuración desde una descripción |
+| `/v1/llm/extract` | POST | Extrae configuración de un documento subido (PDF/DOCX) |
+| `/v1/llm/simulate_uil` | POST | Pipeline UIL completo desde lenguaje natural |
+| `/openapi/v1.json` | GET | Spec OpenAPI filtrada a los endpoints `/v1/*` |
 | `/health`, `/ready`, `/version` | GET | Liveness · readiness (solo dependencias requeridas) · metadatos |
 | `/metrics` | GET | Contadores Prometheus (`http_requests_total`, uptime) |
 | `/docs` | GET | UI OpenAPI autogenerada |
 
-**Legacy — `api.py`** (usada por el frontend React; superficie de compatibilidad)
-
-`POST /api/extract` (PDF/CSV/JSON/XLSX → config) · `POST /api/wizard` (LLM) ·
-`POST /api/simulate-uil` · `POST /api/v1/{architect,forecast,energy}`
-
-**Defaults operativos**: auth `X-API-Key` (comparación constant-time) · 60 req/min por IP
+**Defaults operativos**: auth `X-API-Key` (comparación constant-time; se aceptan `MASSIVE_API_KEY` y `MASSIVE_API_KEYS` separada por comas, para rotación) · 60 req/min por IP
 (`MASSIVE_RATE_LIMIT_PER_MIN`) · límite de body 10 MB (`MASSIVE_MAX_BODY_MB`) ·
 CORS sin wildcards · allowlist de extensiones en uploads ·
 correlación `X-Request-ID` en cada respuesta · access log estructurado con duración.
-Referencia completa de variables: `.env.example` y [`security/secrets-and-configuration.md`](security/secrets-and-configuration.md).
+Referencia completa de variables: `.env.example` y [`security/secrets-and-configuration.md`](docs/security/secrets-and-configuration.md).
 
 ---
 
@@ -211,7 +226,7 @@ Medidos en el rig de benchmarks del repo (31 GB RAM — ejecuta `benchmark_scala
 
 Micro-benchmarks de referencia (sandbox 2 vCPU, vía capa de servicios, mín de 3):
 escalar 50 pasos **0.029 s** · multilayer 100×50 **0.008 s** · massive LOD 10K×50 **0.023 s** ·
-energy 50×100 **0.012 s** — método en [`performance/baseline.md`](performance/baseline.md).
+energy 50×100 **0.012 s** — método en [`performance/baseline.md`](docs/performance/baseline.md).
 
 **Validación científica**: el protocolo PVU-MASSIVE corre casos reales offline
 (`python -m benchmarks.runner --cases datasets/pvu_cases --offline`), con plantilla de
@@ -224,10 +239,10 @@ el error de dirección en el caso Brexit (54.5 % → 53.2 % Leave; 10/10 semilla
 
 | Señal | Estado |
 |---|---|
-| Suite de tests | **530 tests, ~38 s**, sin exclusiones — `make test` / `pytest tests/` |
-| Cobertura | 68 % branch (alcance: motores + servicios + backend) — `make test-cov` |
+| Suite de tests | **837 tests (824 pasan, 13 se saltan sin dependencias opcionales), ~35 s** — `make test` / `pytest tests/` |
+| Cobertura | **71,9 %** (umbral `fail_under = 60`) — `make test-cov` |
 | Calidad estática | ruff + black + mypy (slice gradual) verdes en CI |
-| CI | 16 checks por PR: lint, tipos, suites core/scientific/api/full, build+lint frontend, salud de Docker compose, sincronía de tipos TS, secret scan, semgrep, benchmark PVU |
+| CI | 11 workflows de CI por PR: lint, tipos, suites core/scientific/api/full, build+lint frontend, salud de Docker compose, sincronía de tipos TS, secret scan, semgrep, benchmark PVU |
 | Seguridad | auth fail-closed, rate & body limits, comparaciones constant-time, sin secretos en el árbol (un token histórico documentado + rotación pendiente, ver `security/threat-model.md`) |
 | Observabilidad | `/metrics` Prometheus, `X-Request-ID`, access logs estructurados, readiness con modo degradado |
 | Runbooks | dev local · operaciones · incidentes — `docs/runbooks/` |
@@ -255,7 +270,7 @@ MASSIVE/
 ├── datasets/pvu_cases/   # Casos de validación offline (pre-registrados)
 ├── benchmarks/           # Runner PVU-BS + benchmarks científicos
 ├── docs/                 # Sitio MkDocs + suite de production-readiness
-└── tests/                # 530 tests: unit, integración, contrato, seguridad, reproducibilidad
+└── tests/                # 837 tests: unit, integración, contrato, seguridad, reproducibilidad
 ```
 
 ---
@@ -265,15 +280,15 @@ MASSIVE/
 | Tema | Enlace |
 |---|---|
 | Sitio MkDocs (referencia API, validación, ciencia) | `python -m mkdocs serve -a localhost:8001` → http://localhost:8001 |
-| Arquitectura — estado actual (mapa verificado) | [`architecture/current-state.md`](architecture/current-state.md) |
+| Arquitectura — estado actual (mapa verificado) | [`architecture/current-state.md`](docs/architecture/current-state.md) |
 | Integración Factbook (simulaciones calibradas por país) | [`docs/factbook.md`](docs/factbook.md) |
-| Arquitectura — estado objetivo y decisiones abiertas | [`architecture/target-state.md`](architecture/target-state.md) |
-| Auditoría de production-readiness y matriz de riesgos | [`production-readiness-audit.md`](production-readiness-audit.md) |
-| Runbooks (dev · ops · incidentes) | [`docs/runbooks/`](runbooks/local-development.md) |
-| Seguridad (modelo de amenazas, secretos) | [`security/threat-model.md`](security/threat-model.md) |
-| Estrategia de testing y cobertura | [`testing/test-strategy.md`](testing/test-strategy.md) |
-| Baseline de rendimiento | [`performance/baseline.md`](performance/baseline.md) |
-| Checklist de release | [`release-checklist.md`](release-checklist.md) |
+| Arquitectura — estado objetivo y decisiones abiertas | [`architecture/target-state.md`](docs/architecture/target-state.md) |
+| Auditoría de production-readiness y matriz de riesgos | [`production-readiness-audit.md`](docs/production-readiness-audit.md) |
+| Runbooks (dev · ops · incidentes) | [`docs/runbooks/`](docs/runbooks/local-development.md) |
+| Seguridad (modelo de amenazas, secretos) | [`security/threat-model.md`](docs/security/threat-model.md) |
+| Estrategia de testing y cobertura | [`testing/test-strategy.md`](docs/testing/test-strategy.md) |
+| Baseline de rendimiento | [`performance/baseline.md`](docs/performance/baseline.md) |
+| Checklist de release | [`release-checklist.md`](docs/release-checklist.md) |
 | README en inglés | README.md(README.md) |
 
 ---

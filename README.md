@@ -7,6 +7,14 @@
 *A hybrid physics + AI platform that simulates opinion formation, polarization and
 intervention outcomes over complex social systems — from 10 agents to 100 million.*
 
+</div>
+
+> **The chaotic behaviour of individuals at the micro level cancels out
+> statistically, and at the macro level deterministic, continuous dynamics
+> emerge. That is exactly the bet MASSIVE makes.**
+
+<div align="center">
+
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Python: 3.11+](https://img.shields.io/badge/Python-3.11+-blue?logo=python)](pyproject.toml)
 [![Tests](https://github.com/Adlgr87/MASSIVE/actions/workflows/pytest.yml/badge.svg?branch=main)](.github/workflows/pytest.yml)
@@ -20,6 +28,12 @@ intervention outcomes over complex social systems — from 10 agents to 100 mill
 
 ## Why MASSIVE is different
 
+MASSIVE does **not** try to predict what any particular person will do — individual
+behaviour is noisy, path-dependent and, for practical purposes, unpredictable. It
+models the level where that noise averages out: the statistical mechanics of
+populations, where regularities become stable enough to integrate, calibrate against
+real data, and intervene on.
+
 Most social simulators force a choice between scale, scientific rigor and usability.
 MASSIVE is **hybrid by design** at every layer:
 
@@ -27,12 +41,13 @@ MASSIVE is **hybrid by design** at every layer:
 |---|---|---|
 | 🌍 **Population-scale via LOD compression** | Agents with identical features collapse into *super-agents*, so **100 million agents run in ~8 GB RAM** — near-constant memory with event-driven, uint8-quantized sparse updates. | `massive_engine.py` |
 | 🤖 **LLM as a *mathematical translator*, not a chatbot** | Natural language → validated simulation config under a **versioned machine contract** (v1.1.0): intent classification routes to the right engine, ambiguous requests get `422 + requested_fields`, and every run degrades **deterministically** — basic simulations run without LLM; advanced inverse design fails closed with 503 when no LLM key configured. | `services/llm_orchestrator.py`, `configs/llm_contract/` |
-| 🧠 **Liquid neural residual correction** | A Closed-form Continuous-time (CfC) network learns the *systematic bias* of the physics engine and corrects it — **~50% error reduction** on the Brexit 2016 referendum case (validated on 10/10 seeds, see `calibration_log.md` for full metrics). | `cfc_engine.py`, `models/cfc_calibrated/`, `calibration_log.md` |
+| 🧠 **Liquid neural residual correction** | A Closed-form Continuous-time (CfC) network learns the *systematic bias* of the physics engine as a residual on top of it. The corrector is scored out-of-sample against baselines (`scripts/validate_cfc_walkforward.py`, report in `reports/cfc_validation.json`) and the estimator that actually ran is reported per call, so a corrected number is never mistaken for a raw one. | `cfc_engine.py`, `cfc_router.py`, `models/cfc_calibrated/` |
 | 📡 **Data assimilation for opinion dynamics** | Sparse Ensemble Kalman Filter fuses real-world observations into the running state, the way numerical weather prediction does. | `massive_core/data_assimilation/` |
 | ⚗️ **Scientific opt-in layer** | Adaptive steppers, stability & bifurcation analysis, physics-informed neural nets, network inference and statistical mechanics — all behind explicit config flags that never alter the default dynamics. | `massive_core/` |
 | 🧬 **Inverse intervention design** | Ask *"what campaign reaches this consensus?"* — the social architect searches the intervention space backwards from the goal. | `social_architect.py` |
 | ⚡ **Vectorized NumPy kernels** | The 3 hot-path kernels (multi_potential_gradient, langevin_opinion_update, active_mask_step) are fully vectorized: 100k agents x 5D in ~4.5 ms. | `massive_core/kernels.py` |
-| 🔬 **Validation-first culture** | Pre-registered anti-leakage protocol, seeded RNG everywhere, contract-validated APIs, 16-check CI, offline PVU benchmark suite. | `datasets/pvu_cases/` (sample cases + `datasets/real_cases/` for validation), `benchmarks/` |
+| 📰 **Seeded from real opinion, not noise** | A run can start from measured opinion instead of a uniform draw: local corpora (`.txt`/`.jsonl`/`.csv`) or live Twitter/Reddit connectors are scored into the engine's range and resampled to the agent count, preserving the shape of the real distribution. Every result carries an `initial_conditions` provenance block. | `massive_core/opinion_sources.py`, `social_connectors.py` |
+| 🔬 **Validation-first culture** | Pre-registered anti-leakage protocol, seeded RNG everywhere, contract-validated APIs, 11 CI workflows per PR, offline PVU benchmark suite. | `datasets/pvu_cases/` (sample cases + `datasets/real_cases/` for validation), `benchmarks/` |
 
 ---
 
@@ -137,9 +152,8 @@ flowchart TB
         AG["LLM agents / curl"]
     end
 
-    subgraph API["FastAPI backends"]
+    subgraph API["FastAPI backend"]
         V1["Canonical /v1 (backend/app/)<br/>simulate · forecast · engine · benchmarks · llm<br/>typed DTOs (extra=forbid) · X-API-Key · rate limit"]
-        LEG["Legacy /api (api.py)<br/>extract · wizard · simulate-uil<br/><em>deprecated</em>"]
     end
 
     subgraph Services["services/ — orchestration boundary"]
@@ -184,10 +198,8 @@ Key invariants:
 
 ## 📡 HTTP API
 
-**Canonical — `backend.app.main:app`** (recommended for new integrations).
-Routes are served under **both** `/v1/*` (canonical) and `/api/v1/*`
-(compat alias so the `frontend/src/services/api.ts` client — which uses
-`baseURL: "/api"` — keeps working without changes).
+Served by **`backend.app.main:app`** — a single versioned surface. All routes live
+under `/v1/*`; the React client (`frontend/src/services/api.ts`) uses `baseURL: "/v1"`.
 
 | Endpoint | Method | Purpose |
 |---|---|---|
@@ -199,17 +211,13 @@ Routes are served under **both** `/v1/*` (canonical) and `/api/v1/*`
 | `/v1/llm/run_simulation` | POST | **NL intent → engine → narrated result** (contract v1.1.0) |
 | `/v1/llm/wizard` | POST | Generate simulation config from description |
 | `/v1/llm/extract` | POST | Extract config from uploaded document (PDF/DOCX) |
+| `/v1/llm/simulate_uil` | POST | Full UIL pipeline from a natural-language description |
 | `/health` | GET | Liveness probe |
 | `/ready` | GET | Readiness probe (required deps only) |
 | `/version` | GET | Build metadata |
 | `/metrics` | GET | Prometheus metrics (counters + histograms + SLO gauges) |
 | `/openapi/v1.json` | GET | OpenAPI v1 spec (filtered to /v1/* endpoints) |
 | `/docs` | GET | Auto-generated Swagger UI |
-
-**Legacy — `api.py`** (used by the React frontend; compatibility surface)
-
-`POST /api/extract` (PDF/CSV/JSON/XLSX → config) · `POST /api/wizard` (LLM) ·
-`POST /api/simulate-uil` · `POST /api/v1/{architect,forecast,energy}`
 
 **Operational defaults**: `X-API-Key` auth (constant-time compare via `hmac.compare_digest` in `massive_core/config/api_auth.py`) · 60 req/min per IP
 (`MASSIVE_RATE_LIMIT_PER_MIN`) · 10 MB body limit (`MASSIVE_MAX_BODY_MB`) ·
@@ -257,11 +265,25 @@ energy 50×100 **0.012 s** — method in [`docs/performance/baseline.md`](docs/p
 
 **Scientific validation**: the PVU-MASSIVE protocol runs real-case studies offline
 (`python -m benchmarks.runner --cases datasets/pvu_cases --offline`), with a
-pre-registration template to prevent analysis leakage. The calibrated CfC corrector
-reduced **absolute Leave-percentage error** on the Brexit case by ~50 % (54.5 % →
-53.2 % Leave; actual 51.9 %; 10/10 seeds improved). This is a **direction-error**
-metric — the ~27 % *RMSE* reduction (the primary scientific metric) is detailed in
-`calibration_log.md` §4 with the negative-R² caveat.
+pre-registration template to prevent analysis leakage.
+
+The CfC residual corrector is held to the same standard. On the held-out split of
+the Brexit 2016 case it is scored against the baselines a reviewer would reach for,
+and the numbers are published rather than summarised
+(`python scripts/validate_cfc_walkforward.py`, report in `reports/cfc_validation.json`):
+
+| Estimator | RMSE | R² |
+|---|---:|---:|
+| Persistence (last observed residual) | **0.00457** | **+0.709** |
+| Best possible constant | 0.00847 | 0.000 |
+| Training-mean constant | 0.03184 | −13.13 |
+| CfC model | 0.03763 | −18.73 |
+| No correction at all | 0.07373 | −74.78 |
+
+The shipped checkpoint reduces error versus applying no correction, but it is beaten
+by a trivial baseline, so it is **not** presented as a calibrated point corrector.
+`correct_residual(strategy=...)` defaults to `auto`, which uses persistence when
+observations are available and reports which estimator ran.
 
 ---
 
@@ -269,8 +291,8 @@ metric — the ~27 % *RMSE* reduction (the primary scientific metric) is detaile
 
 | Signal | Status |
 |---|---|
-| Test suite | **775 tests (762 passing, 13 skipped without optional deps), ~31 s** — `pytest tests/` |
-| Coverage | 68 % branch (scope: engines + services + backend) — `make test-cov` |
+| Test suite | **837 tests (824 passing, 13 skipped without optional deps), ~35 s** — `pytest tests/` |
+| Coverage | **71.9 %** (gate `fail_under = 60`) — `make test-cov` |
 | Static quality | ruff + black + mypy (gradual slice) green in CI |
 | CI | 11 CI workflows per PR: lint, types, core/scientific/api/full suites, frontend build+lint, Docker compose health, TS-type sync, secret scan, PVU benchmark |
 | Security | fail-closed auth, rate & body limits (`MASSIVE_MAX_BODY_MB`, streaming upload guard), constant-time compares, `n_agents` cap (prevents 8 TB OOM), `max_intentos` clamp (prevents LLM DoS), CSP/HSTS/X-Frame-Options at nginx edge, no secrets in tree |
@@ -286,12 +308,14 @@ metric — the ~27 % *RMSE* reduction (the primary scientific metric) is detaile
 ```
 MASSIVE/
 ├── backend/app/          # Canonical FastAPI (/v1): routers, DTOs, security, metrics
-│   ├── main.py           # FastAPI entrypoint (8 v1 endpoints + infra)
+│   ├── main.py           # FastAPI entrypoint (9 v1 endpoints + infra probes)
 │   ├── metrics.py        # Prometheus counters + histograms + SLO gauges
 │   ├── security.py       # Auth + rate limiting (memory/file backends)
 │   ├── models/           # Pydantic v2 DTOs (extra="forbid")
 │   └── routers/          # API endpoint modules (sim, forecast, engine, llm, benchmark)
 ├── massive_core/         # Opt-in scientific layer (steppers, EnKF, PINNs, config…)
+│   ├── kernels.py        # Vectorized hot-path kernels (gradient, Langevin, active mask)
+│   ├── opinion_sources.py# Seed a run from a text corpus or live social connector
 │   └── config/           # api_auth, rate_limit, logging, settings, scientific
 ├── massive/              # CLI + core/factbook (loader, mappings, validator)
 │   └── core/             # Legacy core modules (empirical, intervention, utility)
@@ -308,10 +332,11 @@ MASSIVE/
 ├── configs/llm_contract/ # Machine-readable MASSIVE↔LLM contract (v1.1.0)
 ├── datasets/pvu_cases/   # Offline validation cases (pre-registered)
 ├── benchmarks/           # PVU-BS runner + scientific benchmarks
-├── scripts/              # Backup automation, security audit, TS type generator
+├── scripts/              # Backup automation, build preflight, CfC validation, TS types
+├── reports/              # Published validation results (e.g. cfc_validation.json)
 ├── docs/                 # MkDocs site + production-readiness suite
 ├── monitoring/           # Prometheus alert rules + Grafana dashboard spec
-└── tests/                # 775 tests: unit, integration, contract, security, reproducibility
+└── tests/                # 837 tests: unit, integration, contract, security, reproducibility
 ```
 
 ---
