@@ -28,9 +28,7 @@ WS_ROOT = os.path.dirname(TESTS_DIR)
 MODELS_DIR = os.path.join(WS_ROOT, "models")
 EMBEDDING_DIR = os.path.join(MODELS_DIR, "embedding_sociopolitico")
 AGENTS_PATH = os.path.join(MODELS_DIR, "agent_profiles.json")
-BENCHMARK_PATH = os.path.join(
-    EMBEDDING_DIR, "benchmark_results.json"
-)
+BENCHMARK_PATH = os.path.join(EMBEDDING_DIR, "benchmark_results.json")
 ENCODER_PATH = os.path.join(EMBEDDING_DIR, "encoder.py")
 
 
@@ -80,6 +78,7 @@ class TestSocioPoliticalEncoder(unittest.TestCase):
     def setUpClass(cls):
         """Initialise the encoder once for all tests."""
         from models.embedding_sociopolitico.encoder import SocioPoliticalEncoder
+
         cls.encoder = SocioPoliticalEncoder(seed=42)
         cls.SocioPoliticalEncoder = SocioPoliticalEncoder
 
@@ -105,8 +104,11 @@ class TestSocioPoliticalEncoder(unittest.TestCase):
         opinion_dims = embeddings[:, 0]
 
         r, _ = self._pearson(labels, opinion_dims)
-        self.assertGreater(r, CORRELATION_THRESHOLD,
-                           f"Pearson r = {r:.4f}, below threshold {CORRELATION_THRESHOLD}")
+        self.assertGreater(
+            r,
+            CORRELATION_THRESHOLD,
+            f"Pearson r = {r:.4f}, below threshold {CORRELATION_THRESHOLD}",
+        )
 
     def test_deterministic(self):
         """Same input with same seed yields identical embeddings."""
@@ -127,6 +129,7 @@ class TestSocioPoliticalEncoder(unittest.TestCase):
         """Compute Pearson correlation (scipy-optional, fallback manual)."""
         try:
             from scipy import stats
+
             return stats.pearsonr(x, y)
         except ImportError:
             x_mean = x.mean()
@@ -153,9 +156,7 @@ class TestConvergenceCertifier(unittest.TestCase):
 
     def test_rejects_unstable_strategy(self):
         """Unstable strategy (eta too large) is rejected — spectral radius > 1.0."""
-        engine = self.SocialEnergyEngine(
-            range_type="bipolar", seed=42, lambda_social=0.0
-        )
+        engine = self.SocialEnergyEngine(range_type="bipolar", seed=42, lambda_social=0.0)
         strategy = {
             "attractors": [{"position": 0.5, "strength": 10.0}],
             "repellers": [],
@@ -166,14 +167,15 @@ class TestConvergenceCertifier(unittest.TestCase):
         }
         cert = self._certify_strategy(strategy, engine, 0.0)
         self.assertFalse(cert.converges)
-        self.assertGreaterEqual(cert.spectral_radius, 1.0,
-                                f"spectral_radius={cert.spectral_radius:.4f} should be >= 1.0")
+        self.assertGreaterEqual(
+            cert.spectral_radius,
+            1.0,
+            f"spectral_radius={cert.spectral_radius:.4f} should be >= 1.0",
+        )
 
     def test_accepts_stable_trajectory(self):
         """Stable strategy with attractor converges — spectral radius < 1.0."""
-        engine = self.SocialEnergyEngine(
-            range_type="bipolar", seed=42, lambda_social=0.0
-        )
+        engine = self.SocialEnergyEngine(range_type="bipolar", seed=42, lambda_social=0.0)
         strategy = {
             "attractors": [{"position": 0.5, "strength": 2.0}],
             "repellers": [{"position": -0.5, "strength": 0.5}],
@@ -190,9 +192,7 @@ class TestConvergenceCertifier(unittest.TestCase):
 
     def test_opinions_clipped_to_bounds(self):
         """All opinion values during trajectory remain in [-1, 1]."""
-        engine = self.SocialEnergyEngine(
-            range_type="bipolar", seed=42, lambda_social=0.0
-        )
+        engine = self.SocialEnergyEngine(range_type="bipolar", seed=42, lambda_social=0.0)
         strategy = {
             "attractors": [{"position": 0.5, "strength": 5.0}],
             "repellers": [{"position": -0.5, "strength": 0.5}],
@@ -209,9 +209,7 @@ class TestConvergenceCertifier(unittest.TestCase):
 
     def test_certifier_handles_dict_initial_state(self):
         """Certifier accepts dict-based initial state with 'opinion' key."""
-        engine = self.SocialEnergyEngine(
-            range_type="bipolar", seed=42, lambda_social=0.0
-        )
+        engine = self.SocialEnergyEngine(range_type="bipolar", seed=42, lambda_social=0.0)
         strategy = {
             "attractors": [{"position": 0.3, "strength": 2.0}],
             "repellers": [],
@@ -249,32 +247,26 @@ class TestDeterministicPlanner(unittest.TestCase):
         # neighbor-mean pull-to-zero issue in single-agent 1D systems)
         planner.params["social_influence_lambda"] = 0.0
 
-        engine = self.SocialEnergyEngine(
-            range_type="bipolar", seed=42, lambda_social=0.0
-        )
-        strategy = planner.plan(
-            initial_state=-0.5, goal_state=0.5, n_steps=200
-        )
+        engine = self.SocialEnergyEngine(range_type="bipolar", seed=42, lambda_social=0.0)
+        strategy = planner.plan(initial_state=-0.5, goal_state=0.5, n_steps=200)
         cert = self._certify_strategy(strategy, engine, -0.5)
-        self.assertTrue(cert.converges,
-                        f"Planner strategy should converge. Spectral radius={cert.spectral_radius:.4f}")
+        self.assertTrue(
+            cert.converges,
+            f"Planner strategy should converge. Spectral radius={cert.spectral_radius:.4f}",
+        )
         self.assertLess(cert.spectral_radius, 1.0)
 
     def test_planner_eta_is_small(self):
         """Planner computes a small, stable eta (< 0.1)."""
         planner = self.DeterministicPlanner(seed=42)
-        strategy = planner.plan(
-            initial_state=0.2, goal_state=0.8, n_steps=100
-        )
+        strategy = planner.plan(initial_state=0.2, goal_state=0.8, n_steps=100)
         self.assertLess(strategy["eta"], 0.1)
         self.assertGreater(strategy["eta"], 0.0)
 
     def test_planner_strategy_has_required_keys(self):
         """Planner output contains all keys needed by certify_strategy."""
         planner = self.DeterministicPlanner(seed=42)
-        strategy = planner.plan(
-            initial_state=0.0, goal_state=0.5, n_steps=50
-        )
+        strategy = planner.plan(initial_state=0.0, goal_state=0.5, n_steps=50)
         for key in ("attractors", "repellers", "eta", "n_steps", "proof"):
             self.assertIn(key, strategy)
 
@@ -315,8 +307,9 @@ class TestSyntheticBenchmark(unittest.TestCase):
         pearson = data["metrics"]["pearson_correlation"]
         for dim in ("opinion", "cooperation", "hierarchy", "income", "info_access"):
             self.assertGreater(
-                pearson[dim], CORRELATION_THRESHOLD,
-                f"{dim} correlation {pearson[dim]} below {CORRELATION_THRESHOLD}"
+                pearson[dim],
+                CORRELATION_THRESHOLD,
+                f"{dim} correlation {pearson[dim]} below {CORRELATION_THRESHOLD}",
             )
 
     def test_benchmarking_is_deterministic(self):
@@ -343,8 +336,12 @@ class TestAgentProfiles(unittest.TestCase):
         profiles = data["profiles"]
         self.assertEqual(len(profiles), 6)
         expected_keys = {
-            "activist_left", "activist_right", "centrist",
-            "apathetic", "conspiracy_leaning", "institutional_truster",
+            "activist_left",
+            "activist_right",
+            "centrist",
+            "apathetic",
+            "conspiracy_leaning",
+            "institutional_truster",
         }
         self.assertEqual(set(profiles.keys()), expected_keys)
 
@@ -386,8 +383,7 @@ class TestAgentProfiles(unittest.TestCase):
         with open(AGENTS_PATH, "r", encoding="utf-8") as f:
             data = json.load(f)
         vals = {
-            name: p["parameters"]["response_to_evidence"]
-            for name, p in data["profiles"].items()
+            name: p["parameters"]["response_to_evidence"] for name, p in data["profiles"].items()
         }
         self.assertEqual(min(vals, key=vals.get), "conspiracy_leaning")
 
@@ -417,14 +413,10 @@ class TestIntegration(unittest.TestCase):
 
         planner = self.DeterministicPlanner(seed=42)
         planner.params["social_influence_lambda"] = 0.0
-        engine = self.SocialEnergyEngine(
-            range_type="bipolar", seed=42, lambda_social=0.0
-        )
+        engine = self.SocialEnergyEngine(range_type="bipolar", seed=42, lambda_social=0.0)
 
         # Plan from encoded opinion to neutral
-        strategy = planner.plan(
-            initial_state=initial_opinion, goal_state=0.0, n_steps=200
-        )
+        strategy = planner.plan(initial_state=initial_opinion, goal_state=0.0, n_steps=200)
         cert = self._certify_strategy(strategy, engine, initial_opinion)
         self.assertTrue(cert.trajectory_norm >= 0.0)
         self.assertIn("spectral", cert.proof.lower())
@@ -438,16 +430,13 @@ class TestIntegration(unittest.TestCase):
 
         planner = self.DeterministicPlanner(seed=42)
         planner.params["social_influence_lambda"] = 0.0
-        engine = self.SocialEnergyEngine(
-            range_type="bipolar", seed=42, lambda_social=0.0
-        )
+        engine = self.SocialEnergyEngine(range_type="bipolar", seed=42, lambda_social=0.0)
 
-        strategy = planner.plan(
-            initial_state=initial_opinion, goal_state=-0.5, n_steps=200
-        )
+        strategy = planner.plan(initial_state=initial_opinion, goal_state=-0.5, n_steps=200)
         cert = self._certify_strategy(strategy, engine, initial_opinion)
-        self.assertTrue(cert.converges,
-                        f"Full pipeline should converge from {initial_opinion:.4f} to -0.5")
+        self.assertTrue(
+            cert.converges, f"Full pipeline should converge from {initial_opinion:.4f} to -0.5"
+        )
 
 
 if __name__ == "__main__":

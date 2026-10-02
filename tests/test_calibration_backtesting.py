@@ -4,6 +4,7 @@ G0-quater: Baseline comparisons.
 G4: Historical backtesting with Wasserstein-1 and KL divergence.
 Preregistration: Pre-registration sealing before simulation.
 """
+
 from __future__ import annotations
 
 import tempfile
@@ -36,9 +37,7 @@ from massive.core.physics_calibration import (
 
 # ── Test data ──────────────────────────────────────────────────────────────────
 
-Brexit_OBS = np.array(
-    [0.28, 0.30, 0.32, 0.35, 0.42, 0.52, 0.58, 0.62, 0.58, 0.55, 0.52]
-)
+Brexit_OBS = np.array([0.28, 0.30, 0.32, 0.35, 0.42, 0.52, 0.58, 0.62, 0.58, 0.55, 0.52])
 EGYPT_OBS = np.array(
     [0.02, 0.05, 0.15, 0.35, 0.55, 0.70, 0.65, 0.55, 0.45, 0.35, 0.25, 0.18, 0.12, 0.08]
 )
@@ -185,6 +184,7 @@ class TestBacktesterLoading:
     def test_loads_all_12_cases(self):
         bt = Backtester(n_agents=50, ensemble_size=10, seed=42)
         import os
+
         case_dirs = [d for d in os.listdir(CASES_DIR) if os.path.isdir(CASES_DIR / d)]
         loaded = 0
         for case_id in sorted(case_dirs):
@@ -238,6 +238,7 @@ class TestBacktesterRun:
         bt.run_backtest("brexit_referendum_2016")
         # Check that pre-registration files exist
         import glob
+
         prereg_files = glob.glob("configs/calibrated/pre_registration/prereg_brexit*.yaml")
         assert len(prereg_files) >= 1
 
@@ -284,8 +285,11 @@ class TestPreRegistration:
         record = bt.pre_register("chile_estallido_2019")
         metric_names = [m["name"] for m in record["metrics"]]
         assert set(metric_names) == {
-            "wasserstein", "kl_divergence", "dtw_rmse",
-            "direction_error", "coverage_90ci",
+            "wasserstein",
+            "kl_divergence",
+            "dtw_rmse",
+            "direction_error",
+            "coverage_90ci",
         }
 
 
@@ -350,9 +354,7 @@ class TestABCCalibrator:
 
     def test_calibrate_produces_posterior(self):
         abc = ABCCalibrator(n_agents=30, n_steps=11, seed=42)
-        particles = abc.calibrate(
-            Brexit_OBS, n_rounds=2, n_samples=30, threshold=0.5, seed=42
-        )
+        particles = abc.calibrate(Brexit_OBS, n_rounds=2, n_samples=30, threshold=0.5, seed=42)
         assert particles.shape[1] == 3
         assert len(particles) > 0
 
@@ -421,9 +423,7 @@ class TestABCCalibratorDeterminism:
         summary2 = abc2.posterior_summary()
 
         for param in ["sigma", "epsilon", "lambda_social"]:
-            assert summary1[param]["mean"] == pytest.approx(
-                summary2[param]["mean"], abs=1e-8
-            )
+            assert summary1[param]["mean"] == pytest.approx(summary2[param]["mean"], abs=1e-8)
 
 
 # ═══════════════════════════════════════════════════════════════════════════════

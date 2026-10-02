@@ -51,6 +51,7 @@ class HistoricalTestSealedError(RuntimeError):
 
 # ── Key derivation ─────────────────────────────────────────────────────
 
+
 def derive_unlock_key(case_id: str, seed: int = SPLITS_SEED) -> str:
     """Derive the deterministic unlock key for a given seed + case_id.
 
@@ -75,12 +76,11 @@ def derive_unlock_key(case_id: str, seed: int = SPLITS_SEED) -> str:
     Returns:
         A 32-character hex-string unlock key.
     """
-    return hashlib.sha256(
-        f"{seed}:{case_id}:historical_test".encode()
-    ).hexdigest()[:32]
+    return hashlib.sha256(f"{seed}:{case_id}:historical_test".encode()).hexdigest()[:32]
 
 
 # ── Internal helpers ───────────────────────────────────────────────────
+
 
 def _load_splits() -> dict[str, Any]:
     """Load the splits definition from disk."""
@@ -132,12 +132,13 @@ def _compute_test_indices(case_id: str, n_timesteps: int) -> list[int]:
         n_val = n_timesteps - n_train - n_test
 
     all_indices = np.arange(n_timesteps, dtype=np.int64)
-    test_indices = all_indices[n_train + n_val:].tolist()
+    test_indices = all_indices[n_train + n_val :].tolist()
     _ = rng  # seed is consumed by generate_splits but not needed here
     return test_indices
 
 
 # ── Public API ─────────────────────────────────────────────────────────
+
 
 def seal_splits() -> dict[str, Any]:
     """Compute and store hash locks for all splits.
@@ -156,12 +157,8 @@ def seal_splits() -> dict[str, Any]:
         train_indices = event_data["train"]["indices"]
         val_indices = event_data["validation"]["indices"]
 
-        event_data["train"]["hash"] = _sha256_str(
-            json.dumps(train_indices, sort_keys=True)
-        )
-        event_data["validation"]["hash"] = _sha256_str(
-            json.dumps(val_indices, sort_keys=True)
-        )
+        event_data["train"]["hash"] = _sha256_str(json.dumps(train_indices, sort_keys=True))
+        event_data["validation"]["hash"] = _sha256_str(json.dumps(val_indices, sort_keys=True))
 
         # Recompute the historical-test hash (indices not stored in plaintext)
         n_ts = event_data["n_timesteps"]
@@ -184,6 +181,7 @@ def seal_splits() -> dict[str, Any]:
     splits["seal"]["sealed_at"] = _sha256_str  # placeholder; updated below
 
     from datetime import datetime, timezone
+
     splits["seal"]["sealed_at"] = datetime.now(timezone.utc).isoformat()
 
     _save_splits(splits)
@@ -211,12 +209,8 @@ def verify_seal() -> bool:
 
     # Verify each event's train/val hashes
     for case_id, event_data in splits["events"].items():
-        train_h = _sha256_str(
-            json.dumps(event_data["train"]["indices"], sort_keys=True)
-        )
-        val_h = _sha256_str(
-            json.dumps(event_data["validation"]["indices"], sort_keys=True)
-        )
+        train_h = _sha256_str(json.dumps(event_data["train"]["indices"], sort_keys=True))
+        val_h = _sha256_str(json.dumps(event_data["validation"]["indices"], sort_keys=True))
         if train_h != event_data["train"]["hash"]:
             return False
         if val_h != event_data["validation"]["hash"]:
@@ -342,6 +336,7 @@ def get_split(
 
 # ── Utilities ──────────────────────────────────────────────────────────
 
+
 def _constant_time_compare(a: str, b: str) -> bool:
     """Constant-time string comparison to prevent timing attacks."""
     if len(a) != len(b):
@@ -355,4 +350,5 @@ def _constant_time_compare(a: str, b: str) -> bool:
 def _read_parquet_dates(path: Path) -> "pd.DataFrame":  # noqa: F821
     """Read date column from a parquet file (lazy import to avoid hard dep)."""
     import pandas as pd
+
     return pd.read_parquet(path)

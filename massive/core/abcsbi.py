@@ -186,9 +186,7 @@ class ABCCalibrator:
         if self._initial_opinions is None:
             # Default: small spread, mean 0
             rng = np.random.default_rng(seed)
-            self._initial_opinions = np.clip(
-                rng.standard_normal(self.n_agents) * 0.05, -1.0, 1.0
-            )
+            self._initial_opinions = np.clip(rng.standard_normal(self.n_agents) * 0.05, -1.0, 1.0)
 
         return simulate_opinion_dynamics(
             sigma=sigma,
@@ -308,9 +306,7 @@ class ABCCalibrator:
 
         for i in range(n_samples):
             traj, dist = self.simulate(prior_samples[i], seeds[0] + i)
-            distances[i] = self.compute_distance(
-                TrajectoryObservation(traj, dist), obs
-            )
+            distances[i] = self.compute_distance(TrajectoryObservation(traj, dist), obs)
 
         self._prior_distances = distances.copy()
 
@@ -351,8 +347,7 @@ class ABCCalibrator:
                 # Perturb with Gaussian kernel
                 perturb_widths = np.array(
                     [
-                        (PHYSICS_RANGES[p][1] - PHYSICS_RANGES[p][0])
-                        * _PERTURB_FRACTION
+                        (PHYSICS_RANGES[p][1] - PHYSICS_RANGES[p][0]) * _PERTURB_FRACTION
                         for p in PARAM_NAMES
                     ]
                 )
@@ -360,9 +355,7 @@ class ABCCalibrator:
                 params = _clip_to_ranges(params)
 
                 traj, dist = self.simulate(params, seeds[r] + _)
-                dist_val = self.compute_distance(
-                    TrajectoryObservation(traj, dist), obs
-                )
+                dist_val = self.compute_distance(TrajectoryObservation(traj, dist), obs)
 
                 if dist_val <= r_threshold:
                     new_particles.append(params)
@@ -547,9 +540,7 @@ class NeuralPosteriorEstimator:
         try:
             import torch
         except ImportError as exc:  # pragma: no cover
-            raise ImportError(
-                "torch is required for NeuralPosteriorEstimator"
-            ) from exc
+            raise ImportError("torch is required for NeuralPosteriorEstimator") from exc
 
         samples = np.asarray(samples, dtype=np.float32)
         if samples.ndim != 2:
@@ -573,7 +564,7 @@ class NeuralPosteriorEstimator:
             optimiser.zero_grad()
 
             weights = torch.softmax(log_w, dim=0)  # (K,)
-            stds = torch.exp(log_stds)              # (K, D)
+            stds = torch.exp(log_stds)  # (K, D)
 
             # Compute log-likelihood of each sample under each component
             # shape: (N, K)
@@ -610,18 +601,14 @@ class NeuralPosteriorEstimator:
             raise RuntimeError("Call fit() before sampling")
 
         rng = np.random.default_rng(self.seed)
-        components = rng.choice(
-            self.n_components, size=n, p=self._weights
-        )
+        components = rng.choice(self.n_components, size=n, p=self._weights)
         n_dim = self._means.shape[1]
         out = np.empty((n, n_dim), dtype=np.float64)
         for k in range(self.n_components):
             mask = components == k
             nk = int(mask.sum())
             if nk > 0:
-                out[mask] = rng.normal(
-                    self._means[k], self._stds[k], size=(nk, n_dim)
-                )
+                out[mask] = rng.normal(self._means[k], self._stds[k], size=(nk, n_dim))
         return out
 
     def density(self, points: np.ndarray) -> np.ndarray:
@@ -635,7 +622,6 @@ class NeuralPosteriorEstimator:
         """
         if not self._fitted:
             raise RuntimeError("Call fit() before evaluating density")
-
 
         points = np.asarray(points, dtype=np.float64)
         if points.ndim == 1:

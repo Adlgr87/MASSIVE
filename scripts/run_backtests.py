@@ -20,9 +20,9 @@ from massive.core.backtesting import Backtester
 ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "reports" / "backtest_results.json"
 DEFAULT_CASES = [
-    "brexit_referendum_2016",     # polarization_spike, leave_vote_share
-    "egypt_arab_spring_2011",     # contagion_sir, fraction_participating
-    "us_election_2020",           # polarization_escalation, polarization_index
+    "brexit_referendum_2016",  # polarization_spike, leave_vote_share
+    "egypt_arab_spring_2011",  # contagion_sir, fraction_participating
+    "us_election_2020",  # polarization_escalation, polarization_index
     "south_korea_candlelight_2016",  # consensus_cascade
 ]
 
@@ -30,7 +30,9 @@ DEFAULT_CASES = [
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--cases", type=str, default="",
+        "--cases",
+        type=str,
+        default="",
         help="comma-separated case IDs (default: 4 representative cases)",
     )
     parser.add_argument("--n-agents", type=int, default=80)

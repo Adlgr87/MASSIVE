@@ -113,15 +113,17 @@ def _eval_case(case: dict) -> CaseBaseline:
         if not fold_maes:
             continue
 
-        results.append(BaselineResult(
-            name=name,
-            mae=float(np.mean(fold_maes)),
-            rmse=float(np.mean(fold_rmses)),
-            directional_accuracy=float(np.mean(fold_das)) if fold_das else 0.0,
-            n_folds=len(fold_maes),
-            per_fold_mae=fold_maes,
-            per_fold_rmse=fold_rmses,
-        ))
+        results.append(
+            BaselineResult(
+                name=name,
+                mae=float(np.mean(fold_maes)),
+                rmse=float(np.mean(fold_rmses)),
+                directional_accuracy=float(np.mean(fold_das)) if fold_das else 0.0,
+                n_folds=len(fold_maes),
+                per_fold_mae=fold_maes,
+                per_fold_rmse=fold_rmses,
+            )
+        )
 
     # Sort by MAE (lower is better)
     results.sort(key=lambda r: r.mae)
@@ -140,8 +142,7 @@ def _eval_case(case: dict) -> CaseBaseline:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--cases", type=int, default=0,
-                        help="limit to first N cases (0 = all)")
+    parser.add_argument("--cases", type=int, default=0, help="limit to first N cases (0 = all)")
     parser.add_argument("--out", type=str, default=str(OUTPUT))
     args = parser.parse_args()
 
@@ -154,8 +155,7 @@ def main() -> None:
     for case in cases:
         result = _eval_case(case)
         case_results.append(result)
-        print(f"  {result.case_id}: best={result.best_baseline} "
-              f"(MAE={result.best_mae:.4f})")
+        print(f"  {result.case_id}: best={result.best_baseline} " f"(MAE={result.best_mae:.4f})")
 
     # Aggregate summary
     all_baselines = {}
@@ -188,9 +188,7 @@ def main() -> None:
             aggregated.keys(),
             key=lambda k: aggregated[k]["mean_mae"],
         ),
-        "best_overall_mae": min(
-            aggregated[k]["mean_mae"] for k in aggregated
-        ),
+        "best_overall_mae": min(aggregated[k]["mean_mae"] for k in aggregated),
         "total_observations": sum(cr.n_observations for cr in case_results),
     }
 
@@ -198,8 +196,10 @@ def main() -> None:
     out_path.parent.mkdir(parents=True, exist_ok=True)
     out_path.write_text(json.dumps(report, indent=2, ensure_ascii=False))
     print(f"\nReport written to: {out_path}")
-    print(f"Best overall baseline: {report['best_overall_baseline']} "
-          f"(mean MAE = {report['best_overall_mae']:.4f})")
+    print(
+        f"Best overall baseline: {report['best_overall_baseline']} "
+        f"(mean MAE = {report['best_overall_mae']:.4f})"
+    )
 
 
 if __name__ == "__main__":

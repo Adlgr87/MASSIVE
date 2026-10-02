@@ -94,6 +94,7 @@ class TestPhysicsParamsYaml:
 
     def test_traceability_fields_present(self, params: PhysicsParams):
         """Every calibrated entry carries the five traceability fields."""
+
         def check(entry):
             assert hasattr(entry, "value")
             assert hasattr(entry, "sem")
@@ -166,6 +167,7 @@ class TestOpinionRangeBounds:
         Noise multipliers may legitimately exceed 1.0 (they amplify sigma),
         so only the opinion-domain fractionals are range-checked here.
         """
+
         def _check(entry):
             v = entry.value
             assert isinstance(v, float), "expected a scalar fraction"
@@ -268,8 +270,15 @@ class TestHKBand:
 
     def test_hk_distribution_per_segment_in_band(self, params: PhysicsParams):
         """All demographic segments respect the HK band."""
-        for seg in ("mixed", "age:young", "age:old", "education:low_edu",
-                    "education:high_edu", "income:low_inc", "income:high_inc"):
+        for seg in (
+            "mixed",
+            "age:young",
+            "age:old",
+            "education:low_edu",
+            "education:high_edu",
+            "income:low_inc",
+            "income:high_inc",
+        ):
             eps = hk_epsilon_distribution(seg, params, n=500)
             assert np.all(eps >= 0.20), f"{seg} produced epsilon below 0.20"
             assert np.all(eps <= 0.35), f"{seg} produced epsilon above 0.35"

@@ -51,8 +51,8 @@ _PREREG_DIR = _CONFIG_DIR / "pre_registration"
 _PREREG_TEMPLATE = _CONFIG_DIR / "pre_registration_pvu_template.yaml"
 
 # Steps in the PVU pre-registration protocol
-_PRE_GATE = "G1"   # Pre-registration exists and is sealed
-_SIM_GATE = "G2"   # Simulation runs from day-0 conditions
+_PRE_GATE = "G1"  # Pre-registration exists and is sealed
+_SIM_GATE = "G2"  # Simulation runs from day-0 conditions
 _METRIC_GATE = "G3"  # All metrics below thresholds
 _COVERAGE_GATE = "G4"  # 90 % CI coverage ≥ coverage_min
 
@@ -72,8 +72,9 @@ def wasserstein_distance_1d(sim: np.ndarray, obs: np.ndarray) -> float:
     Returns:
         Wasserstein-1 distance (0 = identical distributions).
     """
-    return float(wasserstein_distance(np.asarray(sim, dtype=np.float64),
-                                      np.asarray(obs, dtype=np.float64)))
+    return float(
+        wasserstein_distance(np.asarray(sim, dtype=np.float64), np.asarray(obs, dtype=np.float64))
+    )
 
 
 def kl_divergence(sim: np.ndarray, obs: np.ndarray, bins: int = 20) -> float:
@@ -110,7 +111,7 @@ def kl_divergence(sim: np.ndarray, obs: np.ndarray, bins: int = 20) -> float:
     if len(sim) < 50 or len(obs) < 50:
         mu_a, std_a = float(np.mean(sim)), float(np.std(sim)) + 1e-10
         mu_b, std_b = float(np.mean(obs)), float(np.std(obs)) + 1e-10
-        var_a, var_b = std_a ** 2, std_b ** 2
+        var_a, var_b = std_a**2, std_b**2
         kl_ab = np.log(std_b / std_a) + (var_a + (mu_a - mu_b) ** 2) / (2 * var_b) - 0.5
         kl_ba = np.log(std_a / std_b) + (var_b + (mu_a - mu_b) ** 2) / (2 * var_a) - 0.5
         return float(kl_ab + kl_ba)
@@ -185,11 +186,9 @@ def dtw_rmse(sim: np.ndarray, obs: np.ndarray) -> float:
         path.append((i, j))
 
     path.reverse()
-    squared_errors = np.array([
-        (sim[idx_i - 1] - obs[idx_j - 1]) ** 2
-        for idx_i, idx_j in path
-        if idx_i > 0 and idx_j > 0
-    ])
+    squared_errors = np.array(
+        [(sim[idx_i - 1] - obs[idx_j - 1]) ** 2 for idx_i, idx_j in path if idx_i > 0 and idx_j > 0]
+    )
     if len(squared_errors) == 0:
         return 0.0
     return float(np.sqrt(np.mean(squared_errors)))
@@ -433,15 +432,11 @@ class Backtester:
         """
         case_dir = self.ground_truth_dir / case_id
         if not case_dir.is_dir():
-            raise FileNotFoundError(
-                f"Ground-truth case not found: {case_dir}"
-            )
+            raise FileNotFoundError(f"Ground-truth case not found: {case_dir}")
 
         ts_path = case_dir / "timeseries.csv"
         if not ts_path.exists():
-            raise FileNotFoundError(
-                f"timeseries.csv missing in {case_dir}"
-            )
+            raise FileNotFoundError(f"timeseries.csv missing in {case_dir}")
 
         # Load timeseries
         import csv
@@ -594,9 +589,7 @@ class Backtester:
         # Verify data integrity
         from massive.core.data_provenance import verify_integrity
 
-        record["seal"]["status"] = (
-            "verified" if verify_integrity(case_id) else "unverified"
-        )
+        record["seal"]["status"] = "verified" if verify_integrity(case_id) else "unverified"
 
         # Re-write with seal status
         with open(prereg_path, "w", encoding="utf-8") as fh:
@@ -645,8 +638,7 @@ class Backtester:
 
         # Derive attractor position: prefer case-specific value from meta.json,
         # fall back to a heuristic based on peak observed P.
-        a_well = event.get("attractor_position",
-                           float(max(event["P"])) * 0.95)
+        a_well = event.get("attractor_position", float(max(event["P"])) * 0.95)
         int(np.argmax(event["P"]))
 
         # Build initial opinions from P0 and scale to exact P0
@@ -654,9 +646,7 @@ class Backtester:
         initial_opinions = p_to_opinions(p0, self.n_agents, rng_init)
         current_p0 = float(np.std(initial_opinions))
         if current_p0 > 1e-10:
-            initial_opinions = np.clip(
-                initial_opinions * (p0 / current_p0), -1.0, 1.0
-            )
+            initial_opinions = np.clip(initial_opinions * (p0 / current_p0), -1.0, 1.0)
 
         # ── Build intervention forcing from event data ──────────────────────
         intervention_steps = _map_interventions_to_steps(
@@ -702,7 +692,8 @@ class Backtester:
             if abs(p0_factor - 1.0) > 0.01:
                 init_i = np.clip(
                     init_i * (p0_factor * p0 / max(np.std(init_i), 1e-10)),
-                    -1.0, 1.0,
+                    -1.0,
+                    1.0,
                 )
 
             a_i = float(a_well * rng_ens.uniform(0.85, 1.15))
@@ -725,10 +716,12 @@ class Backtester:
         # stochastic noise while still reflecting the calibrated physics.
         mean_trajectory = ensemble_trajectories.mean(axis=0)
         # Include the reference trajectory in the final distribution pool
-        final_distribution = np.concatenate([
-            ref_dist,
-            ensemble_trajectories[:, -1].ravel(),
-        ])
+        final_distribution = np.concatenate(
+            [
+                ref_dist,
+                ensemble_trajectories[:, -1].ravel(),
+            ]
+        )
 
         # 90 % CI from ensemble
         ci_lower = np.percentile(ensemble_trajectories, 5, axis=0)
@@ -737,9 +730,7 @@ class Backtester:
 
         # Observed distribution (synthetic, from final P)
         rng_dist = np.random.default_rng(seed + 999)
-        observed_distribution = p_to_opinions(
-            float(event["P"][-1]), self.n_agents, rng_dist
-        )
+        observed_distribution = p_to_opinions(float(event["P"][-1]), self.n_agents, rng_dist)
 
         # ── Evaluate (G3 + G4) ─────────────────────────────────────────────
         # Trajectory metrics use the ensemble mean trajectory (smoother than
@@ -809,7 +800,11 @@ class Backtester:
         # Extract components
         if isinstance(simulated, dict):
             sim_traj = np.asarray(simulated["trajectory"], dtype=np.float64)
-            sim_dist = np.asarray(simulated.get("distribution"), dtype=np.float64) if simulated.get("distribution") is not None else None
+            sim_dist = (
+                np.asarray(simulated.get("distribution"), dtype=np.float64)
+                if simulated.get("distribution") is not None
+                else None
+            )
             sim_intervals = simulated.get("intervals")
         else:
             sim_traj = np.asarray(simulated, dtype=np.float64)
@@ -818,7 +813,11 @@ class Backtester:
 
         if isinstance(observed, dict):
             obs_traj = np.asarray(observed["trajectory"], dtype=np.float64)
-            obs_dist = np.asarray(observed.get("distribution"), dtype=np.float64) if observed.get("distribution") is not None else None
+            obs_dist = (
+                np.asarray(observed.get("distribution"), dtype=np.float64)
+                if observed.get("distribution") is not None
+                else None
+            )
         else:
             obs_traj = np.asarray(observed, dtype=np.float64)
             obs_dist = None
@@ -829,17 +828,13 @@ class Backtester:
         if sim_dist is not None and obs_dist is not None:
             w = wasserstein_distance_1d(sim_dist, obs_dist)
         else:
-            w = wasserstein_distance_1d(
-                _resample_trajectory(sim_traj, len(obs_traj)), obs_traj
-            )
+            w = wasserstein_distance_1d(_resample_trajectory(sim_traj, len(obs_traj)), obs_traj)
 
         # KL divergence
         if sim_dist is not None and obs_dist is not None:
             kl = kl_divergence(sim_dist, obs_dist)
         else:
-            kl = kl_divergence(
-                _resample_trajectory(sim_traj, len(obs_traj)), obs_traj
-            )
+            kl = kl_divergence(_resample_trajectory(sim_traj, len(obs_traj)), obs_traj)
 
         # DTW-RMSE on aggregate trajectory
         dtw = dtw_rmse(sim_traj, obs_traj)
@@ -983,17 +978,29 @@ def _map_interventions_to_steps(
             push_str = 0.5
             compress_str = 0.35
             compress_dur = min(4, n_steps - peak_step)
-        intervention_steps.append((
-            push_step,
-            {"direction": 1.0, "strength": push_str, "duration": push_dur,
-             "label": "polarization_buildup"},
-        ))
+        intervention_steps.append(
+            (
+                push_step,
+                {
+                    "direction": 1.0,
+                    "strength": push_str,
+                    "duration": push_dur,
+                    "label": "polarization_buildup",
+                },
+            )
+        )
         if peak_step <= n_steps:
-            intervention_steps.append((
-                peak_step,
-                {"direction": -1.0, "strength": compress_str, "duration": compress_dur,
-                 "label": "post_event_convergence"},
-            ))
+            intervention_steps.append(
+                (
+                    peak_step,
+                    {
+                        "direction": -1.0,
+                        "strength": compress_str,
+                        "duration": compress_dur,
+                        "label": "post_event_convergence",
+                    },
+                )
+            )
 
     elif scenario_type == "polarization_escalation":
         # Continuous push throughout the campaign, then moderate compress.
@@ -1001,33 +1008,47 @@ def _map_interventions_to_steps(
         if not push_steps:
             push_steps = [1]
         for s in push_steps:
-            intervention_steps.append((
-                s,
-                {"direction": 1.0, "strength": 0.30, "duration": 4,
-                 "label": "escalation_push"},
-            ))
+            intervention_steps.append(
+                (
+                    s,
+                    {"direction": 1.0, "strength": 0.30, "duration": 4, "label": "escalation_push"},
+                )
+            )
         if peak_step <= n_steps:
-            intervention_steps.append((
-                peak_step,
-                {"direction": -1.0, "strength": 0.30, "duration": 3,
-                 "label": "post_peak_convergence"},
-            ))
+            intervention_steps.append(
+                (
+                    peak_step,
+                    {
+                        "direction": -1.0,
+                        "strength": 0.30,
+                        "duration": 3,
+                        "label": "post_peak_convergence",
+                    },
+                )
+            )
 
     elif scenario_type == "consensus_cascade":
         # Sharp initial push, then rapid convergence.
         push_step = max(0, peak_step - 2)
-        intervention_steps.append((
-            push_step,
-            {"direction": 1.0, "strength": 0.6, "duration": 3,
-             "label": "consensus_buildup"},
-        ))
+        intervention_steps.append(
+            (
+                push_step,
+                {"direction": 1.0, "strength": 0.6, "duration": 3, "label": "consensus_buildup"},
+            )
+        )
         if peak_step + 1 <= n_steps:
             compress_dur = min(8, n_steps - peak_step)
-            intervention_steps.append((
-                peak_step + 1,
-                {"direction": -1.0, "strength": 0.5, "duration": compress_dur,
-                 "label": "cascade_convergence"},
-            ))
+            intervention_steps.append(
+                (
+                    peak_step + 1,
+                    {
+                        "direction": -1.0,
+                        "strength": 0.5,
+                        "duration": compress_dur,
+                        "label": "cascade_convergence",
+                    },
+                )
+            )
 
     else:
         # Generic: use label-based direction inference
@@ -1039,16 +1060,22 @@ def _map_interventions_to_steps(
                 direction = 1.0
                 if "remain" in label_lower or "democrat" in label_lower or "liberal" in label_lower:
                     direction = -1.0
-                elif "impeachment" in label_lower or "court" in label_lower or "protest" in label_lower:
+                elif (
+                    "impeachment" in label_lower
+                    or "court" in label_lower
+                    or "protest" in label_lower
+                ):
                     direction = -0.5
-                intervention_steps.append((
-                    step,
-                    {
-                        "direction": direction,
-                        "strength": 0.15,
-                        "label": iv.get("label", ""),
-                    },
-                ))
+                intervention_steps.append(
+                    (
+                        step,
+                        {
+                            "direction": direction,
+                            "strength": 0.15,
+                            "label": iv.get("label", ""),
+                        },
+                    )
+                )
 
     return intervention_steps
 
@@ -1057,10 +1084,7 @@ def _discover_cases(root: Path) -> list[str]:
     """Return sorted list of case directory names under *root*."""
     if not root.is_dir():
         return []
-    return sorted(
-        d.name for d in root.iterdir()
-        if d.is_dir() and (d / "timeseries.csv").exists()
-    )
+    return sorted(d.name for d in root.iterdir() if d.is_dir() and (d / "timeseries.csv").exists())
 
 
 __all__ = [

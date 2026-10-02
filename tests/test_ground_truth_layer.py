@@ -116,6 +116,7 @@ class TestMicrodata:
     def test_opinion_in_range(self, microdata: pd.DataFrame):
         """All opinion_baseline values must be in [-1, 1]."""
         import numpy as np
+
         opinions = microdata["opinion_baseline"].to_numpy()
         assert np.all(opinions >= -1.0), "Opinion below -1.0 found"
         assert np.all(opinions <= 1.0), "Opinion above 1.0 found"
@@ -166,13 +167,14 @@ class TestMicrodata:
         """
         income_counts = microdata["income_quintile"].value_counts(normalize=True)
         for q in ["Q1", "Q2", "Q3", "Q4", "Q5"]:
-            assert abs(income_counts.get(q, 0) - 0.20) < 0.10, (
-                f"Income quintile {q}: {income_counts.get(q, 0):.3f} vs 0.200"
-            )
+            assert (
+                abs(income_counts.get(q, 0) - 0.20) < 0.10
+            ), f"Income quintile {q}: {income_counts.get(q, 0):.3f} vs 0.200"
 
     def test_opinion_distribution_reasonable(self, microdata: pd.DataFrame):
         """Opinion distribution should be centred near 0 with spread."""
         import numpy as np
+
         opinions = microdata["opinion_baseline"].to_numpy()
         mean = float(np.mean(opinions))
         std = float(np.std(opinions))
@@ -354,17 +356,17 @@ class TestTimeseries:
         """The 2016->2019 typo in Hong Kong data should be fixed."""
         df = load_timeseries("hong_kong_protests_2019")
         dates = df["date"].tolist()
-        assert not any(d.startswith("2016-") for d in dates), (
-            "Hong Kong data still has the 2016 year typo"
-        )
+        assert not any(
+            d.startswith("2016-") for d in dates
+        ), "Hong Kong data still has the 2016 year typo"
 
     def test_myanmar_year_correction(self):
         """The 2011->2021 typo in Myanmar data should be fixed."""
         df = load_timeseries("myanmar_coup_cdm_2021")
         dates = df["date"].tolist()
-        assert not any(d.startswith("2011-") for d in dates), (
-            "Myanmar data still has the 2011 year typo"
-        )
+        assert not any(
+            d.startswith("2011-") for d in dates
+        ), "Myanmar data still has the 2011 year typo"
 
     def test_metadata_embedded(self):
         """Parquet metadata should include case_id and scenario_type."""
@@ -417,9 +419,7 @@ class TestSealedSplits:
         for case_id, event_data in splits["events"].items():
             ht = event_data["historical_test"]
             assert ht.get("sealed") is True, f"{case_id}: historical_test not sealed"
-            assert "indices" not in ht, (
-                f"{case_id}: historical_test indices leaked in plaintext!"
-            )
+            assert "indices" not in ht, f"{case_id}: historical_test indices leaked in plaintext!"
             assert "hash" in ht
             assert "unlock_required" in ht
 
@@ -452,9 +452,7 @@ class TestSealedSplits:
     def test_historical_test_unlocked_with_correct_key(self):
         """Historical-test should unlock with the correct derived key."""
         key = derive_unlock_key("brexit_referendum_2016")
-        result = get_split(
-            "brexit_referendum_2016", "historical_test", unlock_key=key
-        )
+        result = get_split("brexit_referendum_2016", "historical_test", unlock_key=key)
         assert "indices" in result
         assert "hash" in result
         assert len(result["indices"]) > 0
@@ -471,16 +469,14 @@ class TestSealedSplits:
     def test_historical_test_unlocked_indices_are_last_timesteps(self):
         """Historical-test indices should be the last timesteps of the series."""
         key = derive_unlock_key("brexit_referendum_2016")
-        result = unlock_historical_test(
-            "brexit_referendum_2016", unlock_key=key
-        )
+        result = unlock_historical_test("brexit_referendum_2016", unlock_key=key)
         train = get_split("brexit_referendum_2016", "train")
         val = get_split("brexit_referendum_2016", "validation")
         max_train_val_idx = max(train["indices"][-1], val["indices"][-1])
         for idx in result["indices"]:
-            assert idx > max_train_val_idx, (
-                f"Test index {idx} should be after train/val (max={max_train_val_idx})"
-            )
+            assert (
+                idx > max_train_val_idx
+            ), f"Test index {idx} should be after train/val (max={max_train_val_idx})"
         assert result["n_samples"] == len(result["indices"])
 
     def test_invalid_split_name_raises(self):
@@ -519,9 +515,9 @@ class TestSplitDeterminism:
             expected_hash = hashlib.sha256(
                 json.dumps(event_data["train"]["indices"], sort_keys=True).encode()
             ).hexdigest()
-            assert event_data["train"]["hash"] == expected_hash, (
-                f"Train hash mismatch for {case_id}"
-            )
+            assert (
+                event_data["train"]["hash"] == expected_hash
+            ), f"Train hash mismatch for {case_id}"
 
     def test_seal_hash_consistency(self, splits: dict):
         """Seal hash should be a valid SHA-256 of the events data."""
@@ -611,6 +607,7 @@ class TestModuleAPI:
     def test_all_public_symbols_exported(self):
         """All documented public symbols should be importable."""
         import ground_truth as gt
+
         for name in gt.__all__:
             assert hasattr(gt, name), f"Missing public symbol: {name}"
 

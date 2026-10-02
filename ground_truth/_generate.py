@@ -79,6 +79,7 @@ from ground_truth._constants import (
 
 # ── Helpers ────────────────────────────────────────────────────────────
 
+
 def _sha256_file(path: str | Path) -> str:
     """Return the SHA-256 hex digest of a file."""
     h = hashlib.sha256()
@@ -99,6 +100,7 @@ def _now_iso() -> str:
 
 
 # ── 1. Synthetic microdata via IPF ─────────────────────────────────────
+
 
 def _iterative_proportional_fitting(
     marginals: dict[int, npt.NDArray[np.float64]],
@@ -231,16 +233,18 @@ def generate_microdata(
     # Clip to [-1, 1] per MASSIVE convention
     opinion = np.clip(opinion, -1.0, 1.0)
 
-    df = pd.DataFrame({
-        "agent_id": np.arange(n_agents, dtype=np.int64),
-        "age_group": age_vals,
-        "education_level": edu_vals,
-        "income_quintile": income_vals,
-        "gender": gender_vals,
-        "region": region_vals,
-        "cultural_profile": culture_vals,
-        "opinion_baseline": opinion.astype(np.float64),
-    })
+    df = pd.DataFrame(
+        {
+            "agent_id": np.arange(n_agents, dtype=np.int64),
+            "age_group": age_vals,
+            "education_level": edu_vals,
+            "income_quintile": income_vals,
+            "gender": gender_vals,
+            "region": region_vals,
+            "cultural_profile": culture_vals,
+            "opinion_baseline": opinion.astype(np.float64),
+        }
+    )
 
     return df
 
@@ -282,6 +286,7 @@ def _write_microdata(df: pd.DataFrame) -> None:
 
 
 # ── 2. Network topology metrics ────────────────────────────────────────
+
 
 def _generate_representative_graph(
     n_nodes: int = NETWORK_N_NODES,
@@ -481,7 +486,9 @@ def compute_network_metrics(
     influencer_cutoff = max(1, int(0.0005 * n))
     influencer_mean = float(np.mean(sorted_weights[:influencer_cutoff]))
     follower_mean = float(np.mean(sorted_weights[influencer_cutoff:]))
-    follower_influencer_ratio = influencer_mean / follower_mean if follower_mean > 0 else float("inf")
+    follower_influencer_ratio = (
+        influencer_mean / follower_mean if follower_mean > 0 else float("inf")
+    )
 
     metrics = {
         "metadata": {
@@ -557,7 +564,9 @@ def compute_network_metrics(
         "echo_chamber_density": {
             "intra_community_edge_ratio": round(float(intra_ratio), 4),
             "inter_community_edge_ratio": round(float(inter_ratio), 4),
-            "intra_to_inter_ratio": round(float(echo_ratio), 3) if np.isfinite(echo_ratio) else None,
+            "intra_to_inter_ratio": (
+                round(float(echo_ratio), 3) if np.isfinite(echo_ratio) else None
+            ),
             "method": "community_edge_classification",
             "empirical_values": {
                 "intra_ratio": NETWORK_ECHO_INTRA_RATIO,
@@ -613,6 +622,7 @@ def _write_network_topology(metrics: dict) -> None:
 
 
 # ── 3. Timeseries conversion ───────────────────────────────────────────
+
 
 def convert_all_timeseries() -> list[dict]:
     """Convert every real_cases/*/timeseries.csv to parquet.
@@ -698,18 +708,20 @@ def convert_all_timeseries() -> list[dict]:
 
         pq.write_table(table, str(out_path))
 
-        records.append({
-            "case_id": case_id,
-            "output_path": str(out_path.relative_to(DATASETS_DIR)),
-            "n_timesteps": len(df),
-            "source_csv": f"datasets/real_cases/{case_id}/timeseries.csv",
-            "meta_path": f"datasets/real_cases/{case_id}/meta.json",
-            "corrections": corrections_made,
-            "sha256": _sha256_file(out_path),
-            "title": meta.get("title", ""),
-            "scenario_type": meta.get("scenario_type", ""),
-            "generated_at": _now_iso(),
-        })
+        records.append(
+            {
+                "case_id": case_id,
+                "output_path": str(out_path.relative_to(DATASETS_DIR)),
+                "n_timesteps": len(df),
+                "source_csv": f"datasets/real_cases/{case_id}/timeseries.csv",
+                "meta_path": f"datasets/real_cases/{case_id}/meta.json",
+                "corrections": corrections_made,
+                "sha256": _sha256_file(out_path),
+                "title": meta.get("title", ""),
+                "scenario_type": meta.get("scenario_type", ""),
+                "generated_at": _now_iso(),
+            }
+        )
 
     return records
 
@@ -720,6 +732,7 @@ def _ts_path(case_id: str) -> Path:
 
 
 # ── 4. Sealed splits ───────────────────────────────────────────────────
+
 
 def generate_splits() -> dict:
     """Generate sealed train / validation / historical-test splits.
@@ -745,9 +758,7 @@ def generate_splits() -> dict:
 
         # Deterministic split indices based on seed
         indices = np.arange(n, dtype=np.int64)
-        rng_shuffled = np.random.default_rng(
-            hash((SPLITS_SEED, case_id)) % (2 ** 32 - 1)
-        )
+        rng_shuffled = np.random.default_rng(hash((SPLITS_SEED, case_id)) % (2**32 - 1))
         # Actually, for time-series we should NOT shuffle — split chronologically.
         # Train = first 60 %, val = next 25 %, test = last 15 %.
         n_train = max(1, int(round(n * TRAIN_FRACTION)))
@@ -758,8 +769,8 @@ def generate_splits() -> dict:
             n_val = n - n_train - n_test
 
         train_indices = indices[:n_train].tolist()
-        val_indices = indices[n_train:n_train + n_val].tolist()
-        test_indices = indices[n_train + n_val:].tolist()
+        val_indices = indices[n_train : n_train + n_val].tolist()
+        test_indices = indices[n_train + n_val :].tolist()
 
         # Hash locks
         train_hash = _sha256_bytes(json.dumps(train_indices, sort_keys=True).encode())
@@ -851,12 +862,11 @@ def _derive_unlock_key(seed: int, case_id: str) -> str:
     Returns:
         A hex-string unlock key.
     """
-    return hashlib.sha256(
-        f"{seed}:{case_id}:historical_test".encode()
-    ).hexdigest()[:32]
+    return hashlib.sha256(f"{seed}:{case_id}:historical_test".encode()).hexdigest()[:32]
 
 
 # ── 5. Provenance registry ─────────────────────────────────────────────
+
 
 def generate_provenance(
     microdata_path: str,
@@ -957,9 +967,7 @@ def generate_provenance(
     # Splits
     registry["datasets"]["splits"] = {
         "path": "splits.json",
-        "sha256": _sha256_bytes(
-            json.dumps(splits_def, sort_keys=True).encode()
-        ),
+        "sha256": _sha256_bytes(json.dumps(splits_def, sort_keys=True).encode()),
         "format": "json",
         "seed": SPLITS_SEED,
         "method": "chronological_split_deterministic_seeded",
@@ -991,6 +999,7 @@ def _write_provenance(registry: dict) -> None:
 
 # ── Orchestrator ───────────────────────────────────────────────────────
 
+
 def generate_all() -> dict:
     """Generate all Layer 1 ground-truth artefacts.
 
@@ -1014,7 +1023,9 @@ def generate_all() -> dict:
     _write_variable_dictionary()
     print(f"  → {MICRODATA_PATH} ({len(df)} agents)")
     print(f"  → {MICRODATA_DICT_PATH}")
-    print(f"  Opinion range: [{df['opinion_baseline'].min():.4f}, {df['opinion_baseline'].max():.4f}]")
+    print(
+        f"  Opinion range: [{df['opinion_baseline'].min():.4f}, {df['opinion_baseline'].max():.4f}]"
+    )
 
     # 2. Network topology
     print("\n[2/5] Computing network topology metrics...")

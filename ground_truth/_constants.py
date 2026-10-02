@@ -149,7 +149,11 @@ EDUCATION_MARGINAL = {
 
 # Income quintiles: by construction each quintile = 20 %.
 INCOME_MARGINAL = {
-    "Q1": 0.20, "Q2": 0.20, "Q3": 0.20, "Q4": 0.20, "Q5": 0.20,
+    "Q1": 0.20,
+    "Q2": 0.20,
+    "Q3": 0.20,
+    "Q4": 0.20,
+    "Q5": 0.20,
 }
 
 # Gender: US Census Bureau (2020).
@@ -204,7 +208,11 @@ OPINION_BETA_EDU = {
 # Income effect: higher income → slightly more conservative economically
 # (Pew Research 2020).
 OPINION_BETA_INCOME = {
-    "Q1": -0.05, "Q2": -0.03, "Q3": 0.03, "Q4": 0.05, "Q5": 0.08,
+    "Q1": -0.05,
+    "Q2": -0.03,
+    "Q3": 0.03,
+    "Q4": 0.05,
+    "Q5": 0.08,
 }
 
 # Gender effect: women more liberal on social issues (Inglehart & Norris 2000).
@@ -297,8 +305,7 @@ REFERENCES: dict[str, dict] = {
         "authors": "Bakshy, E., Messing, S. & Adamic, L. A.",
         "year": 2015,
         "title": (
-            "The effect of ideologically diverse news and opinion on "
-            "political participation"
+            "The effect of ideologically diverse news and opinion on " "political participation"
         ),
         "journal": "Psychological Science, 26(2), 214-228",
         "doi": "10.1177/0956797614567448",
@@ -312,7 +319,7 @@ REFERENCES: dict[str, dict] = {
     },
     "conover_2011": {
         "authors": "Conover, M. D., Ratkiewicz, J., Francisco, M. R., Gonçalves, B., Menczer, F., "
-                   "Flammini, A.",
+        "Flammini, A.",
         "year": 2011,
         "title": "Political polarization on Twitter",
         "journal": "ICWSM, 133(2011), 89-96",

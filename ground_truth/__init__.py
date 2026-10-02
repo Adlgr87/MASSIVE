@@ -97,6 +97,7 @@ LAYER_VERSION = "1.0.0"
 
 # ── Loaders ────────────────────────────────────────────────────────────
 
+
 def load_microdata() -> pd.DataFrame:
     """Load the synthetic census microdata as a DataFrame.
 
@@ -170,8 +171,7 @@ def load_timeseries(case_id: str) -> pd.DataFrame:
         # Try with the full case_id from real_cases directory
         available = list_timeseries_events()
         raise FileNotFoundError(
-            f"Timeseries for '{case_id}' not found. "
-            f"Available events: {available}"
+            f"Timeseries for '{case_id}' not found. " f"Available events: {available}"
         )
     return pd.read_parquet(ts_path)
 
@@ -186,8 +186,7 @@ def list_timeseries_events() -> list[str]:
     if not DATASETS_DIR.exists():
         return []
     return sorted(
-        p.stem.replace("timeseries_", "")
-        for p in DATASETS_DIR.glob("timeseries_*.parquet")
+        p.stem.replace("timeseries_", "") for p in DATASETS_DIR.glob("timeseries_*.parquet")
     )
 
 
