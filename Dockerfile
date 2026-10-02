@@ -36,11 +36,14 @@ ENV PIP_NO_CACHE_DIR=1
 ENV PIP_DISABLE_PIP_VERSION_CHECK=1
 WORKDIR /app
 
-# OS deps: nginx + runtime libs needed by wheels (libmagic, poppler, ffmpeg)
+# OS deps: nginx + runtime libs needed by wheels (libmagic, poppler, ffmpeg).
+# libcap2-bin provides `setcap`, used further down to let non-root nginx bind
+# :80. python:3.11-slim does NOT ship it, so without this the `RUN setcap`
+# layer fails with "setcap: not found" and the whole image build aborts.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         ca-certificates curl libmagic1 poppler-utils ffmpeg \
-        nginx supervisor \
+        libcap2-bin nginx supervisor \
     && rm -rf /var/lib/apt/lists/*
 
 # Non-root user for app processes

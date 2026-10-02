@@ -15,11 +15,23 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Fails in seconds on the defects that otherwise surface minutes into a
+      # cold image build (missing apt package for a command used in RUN, a
+      # COPY source excluded by .dockerignore, a Cargo [lib] path that does
+      # not resolve). Runs first so a broken build context never burns a full
+      # build cycle.
+      - name: Build preflight (static)
+        run: python scripts/verify_build_preflight.py --verbose
+
       - name: Create minimal env file
         run: |
           API_KEY="$(python -c 'import secrets; print(secrets.token_hex(32))')"
           echo "MASSIVE_API_KEY=${API_KEY}" > .env
           echo "MASSIVE_CORS_ORIGINS=http://localhost:3000" >> .env
+          # The API fails closed on the Host header outside development, and
+          # nginx forwards the client's Host verbatim. Be explicit rather than
+          # relying on the compose default.
+          echo "MASSIVE_ALLOWED_HOSTS=localhost,127.0.0.1" >> .env
           # Exported for the authenticated smoke step below.
           echo "MASSIVE_API_KEY=${API_KEY}" >> "$GITHUB_ENV"
 

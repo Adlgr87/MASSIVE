@@ -6,8 +6,8 @@ VENV ?= .venv
 BIN := $(VENV)/bin
 
 .PHONY: help install test test-cov lint format typecheck api api-legacy \
-        verify verify-baseline cli-verify frontend-install frontend-dev \
-        frontend-build benchmark clean
+        verify verify-baseline verify-build cli-verify frontend-install \
+        frontend-dev frontend-build benchmark clean
 
 help: ## Show this help
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-18s\033[0m %s\n", $$1, $$2}'
@@ -37,6 +37,9 @@ typecheck: ## Gradual mypy slice
 
 verify: ## Full verification harness (lint, types, tests, docs, G-1 guardrails)
 	$(PYTHON) scripts/verify_harness.py
+
+verify-build: ## Static preflight for the Docker image + Rust extension (no docker/cargo needed)
+	$(BIN)/python scripts/verify_build_preflight.py --verbose
 
 verify-baseline: ## Snapshot audit baseline -> reports/audit_baseline.json
 	$(PYTHON) scripts/verify_harness.py --baseline

@@ -353,16 +353,23 @@ Nomenclatura «fricción» invertida (`multilayer_engine.py:317`) · constante m
 
 # 9. PENDIENTES DE VERIFICACIÓN DINÁMICA [DIN]
 
-1. `docker compose build` — confirmar el fallo en el `COPY nginx.conf` y revisar el último run de `docker-e2e.yml`.
+1. ~~`docker compose build`~~ — **cerrado por vía estática.** Docker no está instalado en el entorno de trabajo, así que en lugar de dejarlo como suposición se escribió `scripts/verify_build_preflight.py` (`make verify-build`), que valida sin construir: cada `COPY` existe y no lo excluye `.dockerignore`, cada `--from` apunta a un stage declarado, cada comando usado en un `RUN` tiene su paquete apt, el compose no exige ficheros ausentes, nginx escribe sólo en rutas accesibles a no-root y su puerto upstream coincide con el `--port` de supervisord, y el `[lib] path` de Cargo resuelve. Enganchado a `.github/workflows/docker-e2e.yml` **antes** del build.
+
+   El preflight destapó **tres defectos que habrían abortado el build**, ya corregidos:
+   - `Dockerfile`: `RUN setcap …` sin `libcap2-bin` en el apt del stage runtime (`python:3.11-slim` no trae `setcap`) → `setcap: not found`.
+   - `docker-compose.yml`: el bind-mount `./.env:/app/.env:ro` crea un **directorio** `.env` en un checkout limpio (que luego ensombrece el fichero real), y `env_file: - .env` requerido hacía fallar `docker compose up`. Se eliminó el mount y el `env_file` pasó a `required: false`.
+   - `docker-compose.yml` × fail-closed (Fase C): nginx reenvía `Host $host` y el HEALTHCHECK curlea `127.0.0.1`; sin `MASSIVE_ALLOWED_HOSTS` la API responde 400 a todo → contenedor *unhealthy* + `restart: unless-stopped` = **bucle de reinicio infinito**. Añadido el default `localhost,127.0.0.1`.
+
+   Cobertura de regresión en `tests/test_build_preflight.py`: 5 tests que reintroducen cada defecto y exigen que el preflight lo detecte. Queda fuera del alcance estático lo que sólo un build real prueba (resolución de versiones apt/pip, capas, tamaño de imagen).
 2. `pytest tests/ -q --cov` — cobertura real frente al `fail_under = 30`; cuántos de los 689 tests se **saltan** sin torch ni pesos CfC (hay 33 marcas `skipif`, la mayoría ligadas a `models/cfc_*`).
-3. Paridad numérica Rust↔Python: compilar con maturin y comparar las tres rutas con tolerancia; **no existe test de paridad**.
+3. Paridad numérica Rust↔Python: compilar con maturin y comparar las tres rutas con tolerancia; **no existe test de paridad**. `cargo` tampoco está disponible aquí; lo verificable sin compilar ya está cubierto por el preflight (el manifiesto resuelve, el nombre de `#[pymodule]` coincide con `[lib] name` —si no, el `import massive_rust_core` fallaría en silencio y caería al fallback NumPy sin avisar—, y el wrapper degrada correctamente cuando la extensión falta). **Nota de alcance:** `pyproject.toml` usa setuptools, no maturin, así que la extensión nunca se compila con `pip install -e .`; es opcional por diseño y el camino NumPy es el que se ejecuta en CI.
 4. Verificar que `massive_core.numerics.steppers` aplique `√dt` (y no `dt`) a la difusión, para confirmar la equivalencia de las dos ramas de `energy_engine.step`.
 5. Confirmar que `build_theta_matrix` produce θ ≥ 0.
 6. Medir la zona muerta de la cuantización uint8: ejecutar `MassiveSimEngine(quantize=True)` con `dt` decreciente y comprobar en qué punto la dinámica se congela.
 7. Comprobar conservación de media y varianza en `build_aggregated_super_agents`.
 8. `ruff check . && black --check . && mypy` — el informe no ejecutó linters.
 9. Auditoría de secretos históricos: **imposible aquí** (el clon tiene 1 commit). Ejecutar gitleaks sobre el historial completo en origen.
-10. `pip-audit` / `npm audit` sobre `uv.lock` y `package-lock.json`.
+10. ~~`pip-audit` / `npm audit`~~ — **cerrado.** `pip-audit`: 0 vulnerabilidades. `npm audit`: de **7 (4 altas) a 0**, subiendo axios 1.7→1.20.0, vite 5.4→7.3.6 y react-router-dom 6.22→7.18.4 (open redirect). El salto de major de react-router se validó antes de aplicarlo: el frontend sólo usa 3 símbolos (`BrowserRouter` en `src/main.tsx:3`, `Routes`/`Route` en `src/App.tsx:2`), ninguno con cambios de ruptura en v7, de modo que el upgrade fue efectivamente no-op. Comprobado después con `tsc --noEmit`, `eslint`, `vite build` (268.73 kB / 90.86 kB gzip) y en caliente: index 200, ruta inexistente 200 (fallback SPA), y el proxy a `/v1/engine/energy` devolviendo 200 con `X-API-Key` y 401 sin ella.
 11. Confirmar en caliente que `/v1/*` responde 503 en un contenedor levantado con sólo `.env` (demostración de C-07).
 
 ---
