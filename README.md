@@ -100,6 +100,33 @@ capability so it can bind `:80` inside the non-root container; security headers
 
 ---
 
+### Seeding a simulation from real opinion data
+
+By default a run starts from a uniform draw. To start from measured opinion
+instead, pass a corpus — no credentials or network required:
+
+```python
+from massive_core.opinion_sources import CorpusSource
+from energy_runner import run_energy_simulation
+
+result = run_energy_simulation(
+    user_goal="social polarization",
+    n_agents=500,
+    opinion_source=CorpusSource("datasets/examples/opinion_corpus_sample.jsonl"),
+)
+result["initial_conditions"]   # provenance: source, n_documents, mean, std
+```
+
+Over HTTP, send the texts inline (the API accepts no path or URL by design):
+
+```bash
+curl -X POST localhost:8000/v1/engine/energy -H "X-API-Key: $MASSIVE_API_KEY" \
+  -d '{"user_goal":"polarization","opinion_texts":["great news","terrible fraud"]}'
+```
+
+Live Twitter/Reddit connectors are opt-in extras (`pip install massive[social]`)
+and plug in through `ConnectorSource`.
+
 ## 🏗 Architecture
 
 ```mermaid

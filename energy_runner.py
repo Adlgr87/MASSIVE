@@ -22,7 +22,19 @@ def run_energy_simulation(
     llm_client=None,
     config_overrides: dict | None = None,
     metrics_every_n: int = 1,
+    opinion_source=None,
 ) -> dict:
+    """Run a Langevin energy-landscape simulation.
+
+    Args:
+        opinion_source: Optional ``massive_core.opinion_sources.OpinionSource``.
+            When given, the initial opinions are resampled from that empirical
+            distribution instead of drawn uniformly, which is what lets a run
+            start from real measured opinion (a text corpus, or a live
+            Twitter/Reddit connector) rather than from noise. Provenance is
+            echoed back under ``initial_conditions`` so a data-seeded result
+            can never be mistaken for a synthetic one.
+    """
     if n_agents < 2 or steps < 1:
         raise ValueError("n_agents debe ser >= 2 y steps >= 1")
 
@@ -52,7 +64,20 @@ def run_energy_simulation(
 
     min_val, max_val = (0.0, 1.0) if range_type == "unipolar" else (-1.0, 1.0)
     rng = np.random.default_rng(seed)
-    opinions = rng.uniform(min_val, max_val, size=n_agents)
+
+    if opinion_source is None:
+        opinions = rng.uniform(min_val, max_val, size=n_agents)
+        initial_conditions = {"source": "uniform", "n_documents": 0, "range_type": range_type}
+    else:
+        from massive_core.opinion_sources import resample_opinions
+
+        sample = opinion_source.sample(range_type=range_type)
+        # Fails loudly on an empty sample rather than falling back to uniform:
+        # a silent fallback would report a data-seeded run that was actually
+        # synthetic.
+        opinions = resample_opinions(sample, n_agents, rng)
+        opinions = np.clip(opinions, min_val, max_val)
+        initial_conditions = sample.summary()
 
     history = []
     metrics_timeline = []
@@ -158,4 +183,8 @@ def run_energy_simulation(
         },
         "config_used": validated.model_dump(),
         "archetype_info": landscape.get("metadata", {}),
+        # Provenance of the initial condition. Always present, so a consumer
+        # can tell a run seeded from real opinion data apart from a synthetic
+        # one without having to know which argument the caller passed.
+        "initial_conditions": initial_conditions,
     }

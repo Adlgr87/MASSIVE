@@ -28,7 +28,33 @@ All notable changes to **MASSIVE** are documented here. This project follows
   600 randomized cases). Also drops the Dependabot `cargo` ecosystem and the
   docs that advertised an acceleration that did not exist.
 
+### Added
+- **Simulations can be seeded from real opinion data.**
+  `social_connectors.py` could score tweets and Reddit posts into opinions but
+  nothing consumed it — every run started from `rng.uniform(...)`, so the
+  connectors were an island. `massive_core/opinion_sources.py` is the wiring:
+  `CorpusSource` (local .txt/.jsonl/.csv, no credentials, no network),
+  `InlineTextSource`, and `ConnectorSource` adapting the live clients.
+  `run_energy_simulation(opinion_source=...)` resamples the empirical
+  distribution to the agent count, and every result now carries an
+  `initial_conditions` provenance block so a data-seeded run cannot be
+  mistaken for a synthetic one. A real corpus preserves bimodality a uniform
+  draw destroys (std ~1.0 vs ~0.577). The HTTP surface takes `opinion_texts`
+  inline and deliberately accepts **no path or URL** — that would recreate the
+  arbitrary-file-read primitive the removed `api.py` had to blocklist.
+- **`scripts/validate_cfc_walkforward.py`** — out-of-sample scoring of the
+  residual corrector against baselines, with a committed report at
+  `reports/cfc_validation.json`.
+
 ### Fixed
+- **The CfC residual corrector was fed scrambled features.** Three
+  train/inference mismatches in `cfc_router.py`, any one of them enough to
+  stop the model working whatever its quality: slot 1 received the *simulated*
+  value where training put the *observed* one, slot 2 received `mean(sim)`
+  where training put the current simulated value, and the six residual lags
+  were written newest-first, reversing the context window declared in
+  `config.json`. Short histories now pad with the training residual mean
+  rather than 0.0, which biased them toward a residual never seen in training.
 - **`benchmark_scalability.py` was benchmarking a reimplementation, not the
   engine.** It carried its own copy of `_landscape_gradient`, so published
   numbers did not reflect shipped code; it now calls `energy_engine`'s. While
@@ -39,6 +65,16 @@ All notable changes to **MASSIVE** are documented here. This project follows
   were never used.
 
 ### Changed
+- **The CfC corrector is no longer presented as calibrated.** Measured, not
+  assumed: on the 55 held-out points it scores RMSE 0.03763 / R^2 = -18.73. It
+  does beat applying no correction (0.07373), but it loses to a constant
+  (0.03184) and is 8x worse than repeating the last residual (0.00457,
+  R^2 = 0.709); its predictions have std 0.00223 against an actual residual
+  std of 0.00847, i.e. it is a biased constant. `correct_residual` therefore
+  takes a `strategy` argument (`auto` default, `cfc`, `persistence`, `off`);
+  `auto` prefers persistence when observations exist, and the returned
+  `source` names the estimator that actually ran. Persistence honours the same
+  leakage guard (uses t-2, never the pair being corrected).
 - **The social potential gradient now has one executable definition.** It was
   written out three times; `multilayer_engine.multi_potential_gradient` was a
   Python loop over agents duplicating the vectorized kernel. It delegates to

@@ -367,6 +367,24 @@ Nomenclatura «fricción» invertida (`multilayer_engine.py:317`) · constante m
    Mantenerlo costaba un crate muerto, un ecosistema `cargo` en Dependabot apuntando a código que nadie construye, una sección extra en el preflight, documentación que prometía una aceleración inexistente y **este pendiente de auditoría, imposible de cerrar por definición**. Se retiró: crate borrado, `massive_core/rust_core.py` → `massive_core/kernels.py` sin la indirección de doble ruta. Equivalencia verificada **bit a bit en 600 casos aleatorios** (200 por kernel) contra la implementación anterior recuperada con `git show`.
 4. ~~`√dt` en la difusión~~ — **verificado.** Var ≈ 1,0 invariante a `dt` (1,006 / 0,993 / 1,000 para dt = 0,1 / 0,01 / 0,001), lo que confirma el escalado `√dt` y la equivalencia de las dos ramas de `energy_engine.step`.
 5. ~~θ ≥ 0~~ — **verificado**, mínimo 1,000000 sobre 300×200 muestras. *Corrección al informe:* la función no se llama `build_theta_matrix` (no existe); es **`compute_theta`** en `multilayer_engine.py:231`.
+5bis. ~~**Revalidación out-of-sample del corrector CfC** (el pendiente más importante)~~ — **ejecutada; refuta la precisión declarada.** `scripts/validate_cfc_walkforward.py` (reproducible, informe en `reports/cfc_validation.json`) puntúa el checkpoint publicado sobre los 55 puntos retenidos de `models/cfc_calibrated/predictions.npz` y lo compara con líneas base:
+
+   | estrategia | RMSE | MAE | R² |
+   |---|---:|---:|---:|
+   | persistencia (lag-1) | **0,00457** | 0,00381 | **0,709** |
+   | media del propio test (constante óptima) | 0,00847 | 0,00629 | 0,000 |
+   | media de entrenamiento (constante) | 0,03184 | 0,03069 | −13,128 |
+   | **modelo CfC** | 0,03763 | 0,03653 | **−18,732** |
+   | sin corrección | 0,07373 | 0,07325 | −74,779 |
+
+   Matiz importante, para no exagerar el hallazgo: el modelo **sí** mejora sobre no corregir (RMSE 0,0376 vs 0,0737). Lo que no es defendible es presentarlo como *corrector calibrado*: pierde contra una constante y es **8× peor que repetir el último residuo**. Sus predicciones tienen std 0,00223 frente a una std real del residuo de 0,00847 — se comporta como una **constante sesgada**, no sigue el residuo.
+
+   Prueba directa de la fuga original: en `validation.json` los diez seeds del stress test mejoran **exactamente 50,000 %**, porque `0,5·sim + 0,5·actual` divide el error a la mitad por aritmética, con independencia del modelo. Queda como marcador de regresión en `tests/test_cfc_validation.py`.
+
+   **Tres desajustes de paridad entrenamiento↔inferencia** encontrados y corregidos en `cfc_router.py`, cualquiera de ellos suficiente para impedir que el modelo funcionara: la ranura 1 recibía el valor *simulado* donde el entrenamiento puso el *observado*; la ranura 2 recibía `mean(sim)` donde el entrenamiento puso el simulado actual; y los seis lags se escribían del más reciente al más antiguo, **invirtiendo** la ventana de contexto declarada en `config.json`.
+
+   **Resolución funcional:** `correct_residual` acepta `strategy` (`auto` por defecto, `cfc`, `persistence`, `off`). `auto` usa persistencia cuando hay observaciones y recurre al modelo si no las hay, y `source` indica **qué estimador corrió realmente** — distinción necesaria cuando difieren en un orden de magnitud. La persistencia respeta el mismo guard de fuga (usa `t-2`, nunca el par que se corrige).
+
 6. Medir la zona muerta de la cuantización uint8: ejecutar `MassiveSimEngine(quantize=True)` con `dt` decreciente y comprobar en qué punto la dinámica se congela.
 7. ~~Conservación en `build_aggregated_super_agents`~~ — **verificado, y destapó un defecto.** Población y media se conservan (error ≤ 3,05e-16), pero la **varianza intra-clúster se destruía**, subestimando std y polarización (0 % a M=1). Corregido con `_within_cluster_var` y `Var_total = E[Var_within] + Var_between`: con población bimodal, std real 0,6108 → 0,6109 / 0,6108 / 0,6111 / 0,6112 / 0,6083 para M = 1000 / 200 / 50 / 10 / 2.
 8. ~~Linters~~ — **ejecutados y limpios**: `ruff check .` y `black --check .` pasan sobre todo el repo. Se añadió además **semgrep** (`p/security-audit` + `p/python`, con `--error`) al workflow `lint.yml`, verificado en local antes de activarlo: 0 hallazgos. `mypy` sigue siendo parcial (`scripts/typecheck_slice.py`), único resto de este punto.

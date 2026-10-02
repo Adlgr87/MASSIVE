@@ -39,9 +39,16 @@ async def v1_energy(
         range_type: str        (default ``"bipolar"``)
         seed: int              (default 42)
         config_overrides: dict (optional)
+        opinion_texts: list[str] (optional) — seed from real opinion data
     """
     from energy_runner import run_energy_simulation
     from services.llm_orchestrator import _sanitize_for_json
+
+    opinion_source = None
+    if payload.opinion_texts:
+        from massive_core.opinion_sources import InlineTextSource
+
+        opinion_source = InlineTextSource(payload.opinion_texts, label="api:inline")
 
     try:
         result = run_energy_simulation(
@@ -52,6 +59,7 @@ async def v1_energy(
             range_type=payload.range_type,
             seed=payload.seed,
             config_overrides=payload.config_overrides,
+            opinion_source=opinion_source,
         )
         # The engine returns numpy arrays/scalars (opinions, metric series).
         # Pydantic cannot serialize those, and the failure happens *after*

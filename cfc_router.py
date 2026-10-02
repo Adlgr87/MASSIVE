@@ -60,6 +60,43 @@ _STATE_KEYS = (
 )
 
 
+def _last_observable_residual(
+    history: list[float],
+    simulated: list[float] | float,
+    actual: list[float] | float | None,
+) -> float | None:
+    """Most recent residual that is observable in a walk-forward setting.
+
+    Returns ``None`` when no ground truth is available, so the caller can fall
+    back rather than invent one.
+
+    Only residuals strictly before the step being corrected are eligible: the
+    last pair is dropped so the value under correction cannot contribute to its
+    own correction. That is the same leakage guard the model path uses, and it
+    is what makes the comparison between the two estimators fair.
+    """
+    if actual is None:
+        return None
+
+    actual_arr = np.asarray(actual, dtype=np.float64).ravel()
+    sim_arr = np.asarray(simulated, dtype=np.float64).ravel()
+    if actual_arr.size == 0:
+        return None
+
+    if sim_arr.size < actual_arr.size:
+        hist_arr = np.asarray(history, dtype=np.float64).ravel()
+        sim_arr = hist_arr if hist_arr.size >= actual_arr.size else sim_arr
+    if sim_arr.size == 0:
+        return None
+
+    usable = min(actual_arr.size, sim_arr.size)
+    if usable < 2:
+        return None
+
+    residuals = actual_arr[:usable] - sim_arr[:usable]
+    return float(residuals[-2])
+
+
 class CfCRouter:
     """
     Singleton que gestiona los tres modelos CfC de MASSIVE.
@@ -366,6 +403,7 @@ class CfCRouter:
         *,
         actual: list[float] | float | None = None,
         dt: float = 0.1,
+        strategy: str = "auto",
     ) -> tuple[float, str]:
         """Apply the CfC residual correction to an opinion trajectory.
 
@@ -389,10 +427,20 @@ class CfCRouter:
            cannot leak into its own correction.
 
         Note:
-            The shipped checkpoint reports R² = -18.7 per step on held-out data
-            (worse than predicting the training mean). Treat its output as a
-            bias indicator, not as a calibrated point correction, until it is
-            retrained and validated out-of-sample.
+            **The shipped checkpoint is not fit for purpose as a point
+            corrector**, measured rather than assumed — run
+            ``scripts/validate_cfc_walkforward.py`` to reproduce. On the 55
+            held-out points it scores RMSE 0.03763 / R² = -18.73. It does beat
+            applying no correction (RMSE 0.07373), but it is beaten by a
+            constant (training mean, 0.03184) and by simple persistence
+            (0.00457, R² = 0.709). Its predictions have std 0.00223 against an
+            actual residual std of 0.00847: it is behaving as a biased
+            constant, not tracking the residual.
+
+            Consequently ``strategy="auto"`` (the default) uses persistence
+            whenever observed residuals are available, and the ``source``
+            returned says which estimator actually ran. Pass
+            ``strategy="cfc"`` to force the neural corrector.
 
         Args:
             history:  Simulated opinion / leave-share series, ≥ 3 points.
@@ -400,21 +448,45 @@ class CfCRouter:
             actual:   Optional observed series, used **only** for lagged
                 residual features (never for the correction itself).
             dt:       ODE integration step (matches training).
+            strategy: ``"auto"`` (default) prefers persistence when observed
+                residuals exist and falls back to the CfC model otherwise;
+                ``"cfc"`` forces the neural corrector; ``"persistence"`` forces
+                the lag-1 estimator; ``"off"`` disables correction entirely.
 
         Returns:
-            ``(corrected_value, source)`` where source is ``"cfc"`` when the
-            model ran, or ``"passthrough"`` when it was unavailable.
+            ``(corrected_value, source)``. ``source`` names the estimator that
+            actually ran — ``"persistence"``, ``"cfc"`` or ``"passthrough"`` —
+            so a caller can never mistake one for another. This matters here:
+            the three behave very differently out-of-sample.
         """
+        if strategy not in {"auto", "cfc", "persistence", "off"}:
+            raise ValueError(
+                f"unknown strategy {strategy!r}; use 'auto', 'cfc', 'persistence' or 'off'"
+            )
+
+        sim_tail = float(np.asarray(simulated).ravel()[-1]) if simulated is not None else 0.0
+
+        if strategy == "off":
+            return sim_tail, "passthrough"
+
+        # Persistence: r_hat(t) = r(t-1). Beaten by nothing else available here
+        # (R^2 = 0.709 out-of-sample vs the model's -18.73), needs no torch and
+        # no checkpoint. Requires observed values to form a residual.
+        if strategy in {"auto", "persistence"}:
+            last = _last_observable_residual(history, simulated, actual)
+            if last is not None:
+                return float(np.clip(sim_tail + last, -1.0, 1.0)), "persistence"
+            if strategy == "persistence":
+                return sim_tail, "passthrough"
+
         if self._residual is None or not self._torch_available:
-            sim_val = float(np.asarray(simulated).ravel()[-1]) if simulated is not None else 0.0
-            return sim_val, "passthrough"
+            return sim_tail, "passthrough"
 
         import torch
 
         hist_arr = np.asarray(history, dtype=np.float64).ravel()
         if hist_arr.size < 3:
-            sim_val = float(np.asarray(simulated).ravel()[-1]) if simulated is not None else 0.0
-            return sim_val, "passthrough"
+            return sim_tail, "passthrough"
 
         sim_arr = np.asarray(simulated, dtype=np.float64)
         if sim_arr.ndim == 0 or sim_arr.size == 1:
@@ -433,7 +505,6 @@ class CfCRouter:
 
         n = hist_arr.size
         t_norm = np.arange(n, dtype=np.float64) / max(n, 1)
-        mean_sim = float(np.mean(sim_series))
 
         if actual is not None:
             actual_arr = np.asarray(actual, dtype=np.float64)
@@ -453,15 +524,32 @@ class CfCRouter:
         else:
             residuals = np.full(n, _TRAINING_RESIDUAL_MEAN)
 
-        # Feature vector: 9 features = [t_norm, sim, mean(sim)] + 6 residual lags
+        # Feature vector, 9 wide. The ORDER must match training exactly;
+        # `models/cfc_calibrated/config.json` declares
+        #   input_features  = [time_normalized, actual_leave_pct, simulated_leave_pct]
+        #   context_features= [residual_t-6 ... residual_t-1]   (oldest first)
+        #
+        # Three mismatches used to live here, which alone would stop the model
+        # from working whatever its quality: slot 1 was fed the *simulated*
+        # value where training put the *actual* one, slot 2 was fed mean(sim)
+        # where training put the current simulated value, and the six lags
+        # were written newest-first, reversing the context window.
         u = np.zeros(self._residual.input_dim, dtype=np.float32)
         u[0] = float(t_norm[-1])
-        u[1] = float(sim_series[-1])
-        u[2] = mean_sim
+        # Training fed the observed value here. At inference it is often
+        # unknown; reconstruct it from the last observable residual
+        # (actual ~= sim + r_{t-1}) rather than silently substituting `sim`,
+        # which would shift the feature by the whole residual magnitude.
+        last_resid = float(residuals[-1]) if len(residuals) else _TRAINING_RESIDUAL_MEAN
+        u[1] = float(sim_series[-1]) + last_resid
+        u[2] = float(sim_series[-1])
         for i in range(6):
-            # Off-by-one fix: lag i needs len(residuals) > i (was > i + 1,
-            # which discarded the most recent available lag).
-            u[3 + i] = float(residuals[-1 - i]) if len(residuals) > i else 0.0
+            # Oldest first: u[3] is t-6 and u[8] is t-1, matching
+            # `context_features`. Missing history pads with the training mean,
+            # not 0.0 — the residual mean is ~0.043, so zero-padding biases a
+            # short window toward a residual the training set never saw.
+            lag = 6 - i  # u[3] -> t-6, ..., u[8] -> t-1
+            u[3 + i] = float(residuals[-lag]) if len(residuals) >= lag else _TRAINING_RESIDUAL_MEAN
 
         x = torch.zeros(1, self._residual.hidden_size)
         u_tensor = torch.from_numpy(u).unsqueeze(0)

@@ -62,6 +62,9 @@ models/**/checkpoints/
 experiments/**/results.json
 experiments/**/metrics.json
 reports/**/*.json
+# Exception: this one is a published validation claim cited by the audit
+# report and pinned by tests/test_cfc_validation.py, not a churning artifact.
+!reports/cfc_validation.json
 !reports/audit_baseline.json
 
 # ─── Security: Prevent credential leaks ─────────────────────────────

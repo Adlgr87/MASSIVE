@@ -55,6 +55,21 @@ class EngineEnergyRequest(BaseModel):
         default=None,
         description="Extra engine-specific configuration overrides.",
     )
+    # Deliberately texts and NOT a path or URL. Accepting a filesystem path
+    # here would reintroduce the arbitrary-read hole the removed `api.py` had
+    # to blocklist by hand; accepting a URL would make the API a fetch proxy.
+    # Local corpora and live Twitter/Reddit connectors are available to CLI
+    # and library callers via `massive_core.opinion_sources`.
+    opinion_texts: list[str] | None = Field(
+        default=None,
+        max_length=5_000,
+        description=(
+            "Optional texts (posts, comments, survey answers) used to seed the "
+            "initial opinion distribution from real data instead of a uniform "
+            "draw. Scored into the engine's range; agents are resampled from "
+            "the resulting empirical distribution. Omit for a synthetic run."
+        ),
+    )
 
 
 class ArchitectRequest(BaseModel):

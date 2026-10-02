@@ -1,0 +1,64 @@
+{
+  "n_eval_points": 55,
+  "actual_residual": {
+    "mean": 0.073245096816258,
+    "std": 0.00847008143846053,
+    "min": 0.0459962897002697,
+    "max": 0.084117092192173
+  },
+  "model_prediction": {
+    "mean": 0.10977718247608705,
+    "std": 0.0022306382633215586,
+    "min": 0.09338540583848953,
+    "max": 0.11008073389530182
+  },
+  "scores": [
+    {
+      "strategy": "cfc_model",
+      "rmse": 0.03762511627930556,
+      "mae": 0.03653208565982905,
+      "r2": -18.732428122360307,
+      "beats_no_correction": true,
+      "note": "the shipped corrector"
+    },
+    {
+      "strategy": "zero",
+      "rmse": 0.0737332115616644,
+      "mae": 0.073245096816258,
+      "r2": -74.7793942354152,
+      "beats_no_correction": false,
+      "note": "apply no correction at all"
+    },
+    {
+      "strategy": "train_mean",
+      "rmse": 0.031836725561694874,
+      "mae": 0.03068932737804011,
+      "r2": -13.128030228577158,
+      "beats_no_correction": true,
+      "note": "a single constant from training"
+    },
+    {
+      "strategy": "oracle_mean",
+      "rmse": 0.00847008143846053,
+      "mae": 0.0062864711560493645,
+      "r2": 0.0,
+      "beats_no_correction": true,
+      "note": "best possible constant; R^2 = 0 by construction"
+    },
+    {
+      "strategy": "persistence",
+      "rmse": 0.00457185828476707,
+      "mae": 0.003809753195805983,
+      "r2": 0.7086531359184248,
+      "beats_no_correction": true,
+      "note": "repeat the last observed residual"
+    }
+  ],
+  "model_beats_no_correction": true,
+  "baselines_beating_the_model": [
+    "train_mean",
+    "oracle_mean",
+    "persistence"
+  ],
+  "verdict": "NOT FIT FOR PURPOSE \u2014 the model reduces error versus doing nothing (RMSE 0.03763), but is beaten out-of-sample by: train_mean, oracle_mean, persistence. A trained neural ODE that loses to a trivial baseline should not be presented as a calibrated corrector."
+}
