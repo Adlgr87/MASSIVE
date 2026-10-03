@@ -150,7 +150,7 @@ PY
 | **Tamaño** | S |
 | **Depende de** | — |
 
-**Resultado esperado.** Existen `.github/ISSUE_TEMPLATE/{bug_report.yml, feature_request.yml, documentation.yml}` como formularios estructurados; `SECURITY.md` en root con canal de reporte privado y referencia a `docs/security/threat-model.md`; `.github/CODEOWNERS`; `.github/dependabot.yml` cubriendo `pip`, `npm` (ambos frontends), `github-actions` y `cargo`. Labels creados en el repo: `severity:critical`, `severity:high`, `severity:medium`, `area:engines`, `area:backend`, `area:frontend`, `area:docs`, `area:ci`, `area:security`, `area:packaging`, `area:perf`, `debt`, `good first issue`, `help wanted`.
+**Resultado esperado.** Existen `.github/ISSUE_TEMPLATE/{bug_report.yml, feature_request.yml, documentation.yml}` como formularios estructurados; `SECURITY.md` en root con canal de reporte privado y referencia a `docs/security/threat-model.md`; `.github/CODEOWNERS`; `.github/dependabot.yml` cubriendo `pip`, `npm` (ambos frontends) y `github-actions`. Labels creados en el repo: `severity:critical`, `severity:high`, `severity:medium`, `area:engines`, `area:backend`, `area:frontend`, `area:docs`, `area:ci`, `area:security`, `area:packaging`, `area:perf`, `debt`, `good first issue`, `help wanted`.
 
 **Criterio de aceptación.**
 ```bash
@@ -847,14 +847,14 @@ gh api repos/Adlgr87/MASSIVE/tags --jq 'length'             # → ≥ 1
 | **Tamaño** | L |
 | **Depende de** | `W2-T10` · `PE-2` |
 
-**Resultado esperado.** `pip install -e .` funciona sin toolchain Rust. El paquete Python y la extensión Rust están desacoplados (build-backend `setuptools` para `massive`, extensión publicada aparte o construida en un job dedicado). `packages.find` incluye todo lo que los módulos incluidos consumen: los 31 módulos root declarados vía `py-modules`, más `metrics*`, `adapters*` y `monitoring*` — o bien la migración a `massive/core/` está lo bastante avanzada como para que el `include` actual sea correcto. Un wheel construido e instalado en un venv limpio importa sin `ModuleNotFoundError`. `install.sh install` y `install.sh install-dev` completan. El nombre de distribución en PyPI está verificado como disponible.
+**Resultado esperado.** `pip install -e .` funciona sin toolchain Rust (capa Rust eliminada del repo). `packages.find` incluye todo lo que los módulos incluidos consumen: los 31 módulos root declarados vía `py-modules`, más `metrics*`, `adapters*` y `monitoring*` — o bien la migración a `massive/core/` está lo bastante avanzada como para que el `include` actual sea correcto. Un wheel construido e instalado en un venv limpio importa sin `ModuleNotFoundError`. `install.sh install` y `install.sh install-dev` completan. El nombre de distribución en PyPI está verificado como disponible.
 
 **Criterio de aceptación.**
 ```bash
 python -m venv /tmp/w3t01 && . /tmp/w3t01/bin/activate && pip install -q -U pip
 pip install -e ".[dev]" ; echo "editable=$?"                                  # → 0
 python -c "import tomllib;p=tomllib.load(open('pyproject.toml','rb'));
-print(p['build-system']['build-backend'])"                                    # → setuptools (o maturin con Rust disponible en CI)
+print(p['build-system']['build-backend'])"                                    # → setuptools
 python -m build 2>&1 | tail -2                                                # → Successfully built …whl …tar.gz
 pip install -q dist/*.whl && python - <<'PY'
 import importlib
@@ -868,38 +868,14 @@ grep -A5 "packages.find" pyproject.toml | grep -cE "metrics|adapters"          #
 pip index versions massive 2>&1 | head -1                                      # → decisión de nombre registrada
 ```
 
-#### W3-T02 · Rust: un solo manifiesto, compilado y testeado en CI, con paridad verificada
+#### W3-T02 · Capa Rust removida del repositorio
 
 | | |
 |---|---|
-| **Hallazgos** | `D3-017` · `D3-018` · `D7-009` · `D9-007` |
-| **Tamaño** | M |
-| **Depende de** | `W3-T01` |
+| **Estado** | COMPLETADO — capa Rust eliminada |
+| **Acción** | `rust_core/` directory removed entirely. No Cargo.toml, no maturin, no pyo3. |
 
-**Resultado esperado.** Un único `Cargo.toml` (el huérfano de `rust_core/` eliminado, o convertido en workspace member real que resuelve). Un job `rust` en CI con toolchain estable que ejecuta `cargo fmt --check`, `cargo clippy -- -D warnings`, `cargo test`, `maturin develop` y un test de paridad Rust↔NumPy sobre los tres kernels. `massive_core/rust_core.py` tiene el `# pragma: no cover` en la rama correcta. Las constantes numéricas de los kernels están en un único sitio documentado. El badge de Rust del README enlaza al manifiesto real y afirma sólo lo verificado.
-
-**Criterio de aceptación.**
-```bash
-test ! -f rust_core/Cargo.toml -o (cd rust_core && cargo metadata --no-deps -q) && echo "manifiesto resoluble"
-find . -name Cargo.toml -not -path "./.git/*" | wc -l                          # → 1 (o 2 si es workspace válido)
-cargo fmt --check ; echo "fmt=$?"                                             # → 0
-cargo clippy -- -D warnings ; echo "clippy=$?"                                # → 0
-cargo test ; echo "cargo-test=$?"                                             # → 0
-grep -c "rust" .github/workflows/*.yml | grep -v ":0"                          # → ≥ 1 workflow
-python - <<'PY'
-import numpy as np
-from massive_core.rust_core import RUST_CORE_AVAILABLE, multi_potential_gradient
-if RUST_CORE_AVAILABLE:
-    import massive_rust_core as r
-    x = np.random.default_rng(0).uniform(-1,1,(64,5))
-    np.testing.assert_allclose(multi_potential_gradient(x),
-                               np.asarray(r.multi_potential_gradient(x)), rtol=1e-12)
-    print("paridad Rust↔NumPy OK")
-else:
-    print("RUST_CORE_AVAILABLE=False — la paridad se verifica en el job rust de CI")
-PY
-grep -n "pragma: no cover" massive_core/rust_core.py                           # → en la rama que NO se ejecuta
-```
+**Resultado.** La capa Rust ha sido removida del repositorio. Los motores usan exclusivamente numpy/scipy como backend computacional. No existe `massive_core/rust_core.py` ni `massive_rust_core`. No hay dependencia de toolchain Rust ni maturin en CI.
 
 #### W3-T03 · Un camino de despliegue documentado
 

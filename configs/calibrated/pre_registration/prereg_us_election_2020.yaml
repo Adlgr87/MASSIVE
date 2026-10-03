@@ -39,7 +39,7 @@ metrics:
   threshold: "\u2265 0.85"
 n_agents: 30
 n_timesteps: 14
-registered_at: '2026-10-03T00:37:32.390999+00:00'
+registered_at: '2026-10-03T01:01:27.992966+00:00'
 scenario_type: polarization_escalation
 seal:
   algorithm: SHA-256

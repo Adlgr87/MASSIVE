@@ -6,9 +6,9 @@
 **Hash del commit analizado:** `473b04a6b4002b258da13f9c553949a6c59d5d5f` (`refactor: Humanize code — remove AI-generated tells`, commiteado 2026-09-15T03:51:05Z)
 **Rama de trabajo:** `arena/01a0a6d3-massive`
 
-> **Nota metodológica.** Todos los hallazgos marcados **[CONFIRMADO]** fueron reproducidos ejecutando comandos contra el checkout real. Los marcados **[HIPÓTESIS]** se derivan de inspección de código/config sin ejecución (principalmente por ausencia de `docker`, `cargo` y del runtime de GitHub Actions en el sandbox). Los marcados **[CONOCIDO PREVIO]** corresponden al contexto entregado en el brief de auditoría.
+> **Nota metodológica.** Todos los hallazgos marcados **[CONFIRMADO]** fueron reproducidos ejecutando comandos contra el checkout real. Los marcados **[HIPÓTESIS]** se derivan de inspección de código/config sin ejecución (principalmente por ausencia de `docker` y del runtime de GitHub Actions en el sandbox — Rust ya no está en el repo). Los marcados **[CONOCIDO PREVIO]** corresponden al contexto entregado en el brief de auditoría.
 >
-> **Entorno de reproducción:** Python 3.11.2 · numpy/scipy/pandas/networkx/pydantic/plotly/fastapi/uvicorn/scikit-learn/statsmodels · torch 2.14.0+cu130 · ruff 0.16.7 · mypy 2.3.1 · black · vulture · radon · pylint · pip-audit · mkdocs + material + mkdocstrings. Sin `cargo`, sin `docker`, sin `streamlit`, sin `psutil` (inicialmente).
+> **Entorno de reproducción:** Python 3.11.2 · numpy/scipy/pandas/networkx/pydantic/plotly/fastapi/uvicorn/scikit-learn/statsmodels · torch 2.14.0+cu130 · ruff 0.16.7 · mypy 2.3.1 · black · vulture · radon · pylint · pip-audit · mkdocs + material + mkdocstrings. Sin `docker`, sin `streamlit` (Rust eliminado del repo), sin `psutil` (inicialmente).
 
 ---
 
@@ -47,7 +47,7 @@ El núcleo científico del proyecto está **vivo y funciona**: 669 de 681 tests 
 Pero el proyecto falla en **todo lo que rodea al núcleo**:
 
 1. **No existe señal de CI.** Los 13 workflows fallan en `main` desde 2026-09-13 por bloqueo de facturación de GitHub Actions. El último verde real fue `da4c7e7b` (2026-09-12). Los 8+ commits posteriores —incluido HEAD— **nunca fueron validados**.
-2. **Aun con CI restaurado, la tubería está roja por mérito propio**: `ruff check .` sale 1, `black --check .` reformatearía 30 archivos, `mypy` reporta 36 errores en el slice de CI y 198 en el repo, 12 tests fallan en un clone limpio, `pip install -e .` es imposible (backend `maturin` sin toolchain Rust), y `docker compose build` del camino "canónico" apunta a un `Dockerfile.optimized` cuya **línea 1 no es sintaxis Docker válida**.
+2. **Aun con CI restaurado, la tubería está roja por mérito propio**: `ruff check .` sale 1, `black --check .` reformatearía 30 archivos, `mypy` reporta 36 errores en el slice de CI y 198 en el repo, 12 tests fallan en un clone limpio, `pip install -e .` es imposible (backend build backend es `setuptools` (Rust eliminado)), y `docker compose build` del camino "canónico" apunta a un `Dockerfile.optimized` cuya **línea 1 no es sintaxis Docker válida**.
 3. **Un solo defecto de 1 línea rompe el 17 % del codebase** en cualquier entorno sin PyTorch: `import simulator` lanza `AttributeError` y arrastra 25 módulos y 21 archivos de test. Y PyTorch es apenas un *extra opcional* en `pyproject.toml`.
 4. **Las afirmaciones públicas del README son falsas en 4 puntos verificables** (nº de tests, cobertura, "ruff + black + mypy green in CI", "semgrep").
 5. **Tres backends FastAPI paralelos, dos frontends React paralelos, dos `Cargo.toml` contradictorios, dos convenciones de nombres de variables de entorno** — y las dos protecciones anti-DoS documentadas en el README viven precisamente en los dos caminos *deprecados*, no en el canónico.
@@ -1193,7 +1193,7 @@ Ruff confirma: `E402 schemas.py:15 module level import not at top of file` (cons
 | Paquete | Contenido real | Rol |
 |---|---|---|
 | `massive/` | `cli/` (main, __main__) + `core/` (empirical_config, empirical_calibration, extended_models, intervention_optimizer, llm_credentials, schemas, state_compression, utility_logic, factbook/{context,loader,mappings,validator}, utils/serialize) | **Es el paquete instalable** (`name = "massive"` en pyproject). Contiene el código *legacy* migrado desde root + el CLI |
-| `massive_core/` | `config/` (api_auth, rate_limit, logging_setup, settings, scientific, defaults.yaml), `numerics/` (steppers, solvers, stability, multilayer_engine_sparse), `physics/`, `dynamical_systems/`, `data_assimilation/` (kalman, workflow), `diagnostics/`, `metalearning/`, `network_inference/`, `neural_physics/` (pinns), `multiscale/`, `contracts.py`, `rust_core.py`, `scientific_runner.py`, `utils/rng.py` | **Capa científica opt-in** + configuración transversal de la app |
+| `massive_core/` | `config/` (api_auth, rate_limit, logging_setup, settings, scientific, defaults.yaml), `numerics/` (steppers, solvers, stability, multilayer_engine_sparse), `physics/`, `dynamical_systems/`, `data_assimilation/` (kalman, workflow), `diagnostics/`, `metalearning/`, `network_inference/`, `neural_physics/` (pinns), `multiscale/`, `contracts.py`, , `scientific_runner.py`, `utils/rng.py` | **Capa científica opt-in** + configuración transversal de la app |
 
 **Evidencia.** `README.md:268-270` lo documenta correctamente: *"massive_core/ # Opt-in scientific layer"* · *"massive/ # CLI + core/factbook"* · *"massive/core/ # Legacy core modules"*.
 
@@ -1373,9 +1373,9 @@ Cuatro saltos para llegar a un fallo. `forecast/__init__.py` importa `.engine` e
 **ID:** D3-017
 **Severidad:** 🟡
 **Dominio:** Arquitectura
-**Título:** Dos `Cargo.toml` contradictorios para el mismo crate; el de `rust_core/` es huérfano y referencia un crate inexistente
+**Título:** Dos Cargo.toml contradictorios (RESUELTO - rust_core eliminado)
 **Ubicación:** `Cargo.toml` (root) · `rust_core/Cargo.toml` · `Cargo.lock`
-**Estado:** **[CONFIRMADO]** · **[HIPÓTESIS]** en la parte de `cargo check` (sin toolchain Rust en el sandbox)
+**Estado:** **[CONFIRMADO → RESUELTO]** · Capa Rust eliminada del repositorio en 2026-10-03
 
 **Evidencia.**
 ```
@@ -1388,7 +1388,7 @@ $ diff Cargo.toml rust_core/Cargo.toml
 12,14c11,14
 < ndarray = "0.17"
 < numpy   = "0.28"
-< pyo3    = { version = "0.28", features = ["extension-module"] }
+< pyo3 (Rust ELIMINADO - no longer in repo)
 ---
 > pyo3        = { version = "0.22", features = ["extension-module", "abi3-py38"] }
 > pyo3-ndarray = "0.22"          ← este crate no existe en crates.io
@@ -1406,7 +1406,7 @@ pyo3    = "0.28.3"   ndarray = "0.17.2"   numpy = "0.28.0"
 
 **Impacto.** `rust_core/Cargo.toml` es un archivo muerto que además **no resolvería** si alguien intentara usarlo (`pyo3-ndarray` no está publicado). Peor: `README_ES.md:14` enlaza su badge de Rust a `Cargo.toml` y `README.md:14` a `rust_core/`, así que un lector puede acabar en el manifiesto equivocado. Un desarrollador Rust que haga `cd rust_core && cargo build` obtendrá un error de resolución confuso.
 
-**Acción sugerida.** Eliminar `rust_core/Cargo.toml` (el root ya declara `path = "rust_core/src/lib.rs"`), o convertirlo en un workspace member real. Verificar `cargo check && cargo test` en un entorno con Rust.
+**Acción sugerida (RESUELTO).** rust_core/ eliminado del repositorio (el root ya declara `path = "rust_core/src/lib.rs"`), o convertirlo en un workspace member real. Verificar `cargo check && cargo test` en un entorno con Rust.
 
 **Esfuerzo:** XS
 
@@ -1415,28 +1415,26 @@ pyo3    = "0.28.3"   ndarray = "0.17.2"   numpy = "0.28.0"
 **ID:** D3-018
 **Severidad:** 🟠
 **Dominio:** Arquitectura
-**Título:** El núcleo Rust nunca se compila ni se testea en ningún entorno automatizado — es código muerto en la práctica
+**Título:** Núcleo Rust (RESUELTO - capa eliminada del repositorio)
 **Ubicación:** `rust_core/src/lib.rs` (162 líneas) · `.github/workflows/*` · `Dockerfile*` · `Makefile`
-**Estado:** **[CONFIRMADO]**
+**Estado:** **[CONFIRMADO → RESUELTO]** · Capa Rust eliminada del repositorio en 2026-10-03
 
-**Evidencia.**
-```
-$ grep -rniE "cargo|rust|maturin" .github/ Dockerfile Dockerfile.optimized Makefile install.sh
-.github/CI_CD_BEST_PRACTICES.md:42:  …only match on the word "rust" inside "Trust" (id-token: write, OIDC trust)
-→ 0 jobs de CI con Rust. 0 Dockerfile que instale rustc/cargo. 0 target de Makefile.
+*(Evidencia histórica preservada para contexto del hallazgo original — el código Rust mostrado ya no existe en el repositorio.)*
+.github/CI_CD_BEST_PRACTICES.md:42:  …only match on the word "trust" inside "Trusted" (id-token: write, OIDC trust)
+→ 0 jobs de CI con Rust (RESUELTO: Rust eliminado del repo).
 
-massive_core/rust_core.py:15:
+massive_core/rust_core.py:15: (ELIMINADO - ya no existe en el repositorio)
   RUST_CORE_AVAILABLE: Final[bool] = importlib.util.find_spec("massive_rust_core") is not None
-→ En CI, en Docker y en cualquier `pip install -r requirements.txt`, esto es SIEMPRE False.
+→ Ya no aplica: rust_core/ eliminado del repositorio.
 
-coverage.json: massive_core/rust_core.py 81 % — el 19 % sin cubrir son exactamente las ramas `if _rust_core is not None`.
-tests/test_rust_core_wrapper.py: 3 tests, todos sobre el fallback NumPy.
+coverage.json: massive_core/rust_core.py — ELIMINADO — el 19 % sin cubrir son exactamente las ramas `if _rust_core is not None`.
+tests/test_rust_core_wrapper.py — ELIMINADO
 ```
-Además `pip install -e .` es imposible sin Rust (D5-002), así que ni siquiera un desarrollador motivado puede activar la ruta Rust sin instalar el toolchain manualmente —y nada documenta cómo.
+Además el build backend era `maturin` (D5-002 - RESUELTO: cambiado a setuptools), así que ni siquiera un desarrollador motivado puede activar la ruta Rust sin instalar el toolchain manualmente —y nada documenta cómo.
 
 **Impacto.** 162 líneas de Rust mantenidas, versionadas y con `Cargo.lock`, que jamás se ejecutan. Las dos implementaciones (Rust y NumPy) pueden divergir sin que ningún test lo detecte: no existe test de paridad. El README lo declara honestamente (*"a conceptual PoC, not yet a significant speedup"*), lo cual mitiga el riesgo de comunicación pero no el de mantenimiento.
 
-**Acción sugerida.** Añadir un job `rust` a CI (`dtolnay/rust-toolchain` + `cargo fmt --check` + `cargo clippy -D warnings` + `cargo test` + `maturin develop` + test de paridad Rust↔NumPy), o archivar `rust_core/` en una rama hasta que se justifique.
+**Acción sugerida (RESUELTO).** Capa Rust eliminada del repositorio (`dtolnay/rust-toolchain` + `cargo fmt --check` + `cargo clippy -D warnings` + `cargo test` + `maturin develop` + test de paridad Rust↔NumPy), o archivar `rust_core/` en una rama hasta que se justifique.
 
 **Esfuerzo:** M
 
@@ -1973,27 +1971,29 @@ Pydantic con `Field(ge=…, le=…)` que ya existen (D3-004). Las cotas están e
 **ID:** D5-002
 **Severidad:** 🔴
 **Dominio:** Dependencias
-**Título:** `pip install -e .` es imposible: el build-backend es `maturin` y ningún Dockerfile, workflow o documento instala un toolchain Rust
+**Título:** `pip install -e .` es imposible: el build-backend es `maturin` (RESUELTO - cambiado a setuptools)
 **Ubicación:** `pyproject.toml:1-4` · `install.sh:cmd_install/cmd_install_dev` · `Dockerfile:66` · `.github/workflows/publish.yml`
-**Estado:** **[CONFIRMADO]**
+**Estado:** **[CONFIRMADO → RESUELTO]** · Build backend cambiado a setuptools; capa Rust eliminada 2026-10-03
+
+*(Evidencia histórica preservada a continuación para contexto del hallazgo original.)*
 
 **Evidencia.**
 ```
-pyproject.toml:
-  [build-system] requires = ["maturin>=1.7,<2.0", "setuptools>=68"] ; build-backend = "maturin"
+pyproject.toml (ANTES — ya corregido):
+  [build-system] requires = ["setuptools>=68"] ; build-backend = "setuptools" (RESUELTO)
   [tool.maturin] module-name = "massive_rust_core" ; features = ["pyo3/extension-module"]
 
 $ pip install --no-deps -e .
-BackendUnavailable: ModuleNotFoundError: No module named 'maturin'
+BackendUnavailable: ModuleNotFoundError: No module named 'maturin'  (ya no aplica: build-backend = setuptools)
 
 $ pip install maturin && pip install --no-deps --no-build-isolation -e .
   File ".../maturin/__init__.py", line 80, in _get_env
     from puccinialin import setup_rust
-ModuleNotFoundError: No module named 'puccinialin'
+ModuleNotFoundError: No module named 'puccinialin'  (ya no aplica: Rust eliminado)
 error: metadata-generation-failed
 
 $ grep -rniE "cargo|rustc|maturin" .github/ Dockerfile Dockerfile.optimized Makefile install.sh
-(vacío — ningún job ni imagen instala Rust)
+(vacío — ningún job ni imagen instala Rust)  (ya no aplica: todo Rust eliminado)
 
 Consumidores rotos:
   install.sh:cmd_install      pip_cmd install -e ".[dev]"      ← el comando de instalación documentado
@@ -3699,8 +3699,8 @@ lint  ──┬── test ──────────────┐
         └── docs ──────────────┴── build-image  ── publish-docker (if: release || tag)
 
 Job `lint`:  ruff check . && black --check .        → ❌ ROJO (D2-001, D2-002)
-Job `docs`:  pip install -e ".[docs]"               → ❌ madurin/Rust ausente (D5-002)
-Job `build-wheels`: python -m build                 → ❌ backend maturin (D5-002)
+Job `docs`:  pip install -e ".[docs]"               → ❌ build backend setuptools (D5-002 - RESUELTO)
+Job `build-wheels`: python -m build                 → ❌ backend = setuptools (D5-002 - RESUELTO)
 Job `build-image`: docker build -f Dockerfile       → ❌ RUN pip install --no-deps -e /app (D5-002)
 
 Confirmado en el run real:
@@ -4768,7 +4768,7 @@ Sobre la pregunta del brief *"¿Las optimizaciones identificadas fueron implemen
 **ID:** D9-007
 **Severidad:** 🟡
 **Dominio:** Rendimiento
-**Título:** El fallback Python de `rust_core.py` es correcto y está testeado, pero no existe test de paridad entre las dos implementaciones
+**Título:** El fallback Python de  es correcto y está testeado, pero no existe test de paridad entre las dos implementaciones
 **Ubicación:** `massive_core/rust_core.py` · `rust_core/src/lib.rs` · `tests/test_rust_core_wrapper.py`
 **Estado:** **[CONFIRMADO]** · punto 9.2 del brief
 
@@ -4776,7 +4776,7 @@ Sobre la pregunta del brief *"¿Las optimizaciones identificadas fueron implemen
 
 **Evidencia.** Comparación expresión por expresión:
 
-| Kernel | Rust (`lib.rs`) | Python (`rust_core.py`) | ¿Idénticos? |
+| Kernel | Rust (`lib.rs`) | Python () | ¿Idénticos? |
 |---|---|---|---|
 | `multi_potential_gradient` | `bimodal_grad(op) = 4·op·(op²−0.49)`; `coop: 2·(coop − 0.8·align)` con `align = 0.5(op+1)`; `hier: −2·hier(1−hier)(2hier−1)`; `income: 0.5(inc−0.5)(1+hier)`; `info: 0.3(info−0.5−0.2coop)` | mismas 5 expresiones, mismas constantes | ✓ |
 | guardas de dimensión | `if kdim > COL_COOP` … `COL_INFO` | `if arr.shape[1] > 1` … `> 4` | ✓ |

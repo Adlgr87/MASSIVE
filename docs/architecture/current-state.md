@@ -11,8 +11,7 @@
 Plataforma híbrida de simulación de dinámicas sociales (opinión, polarización,
 energía social, forecast, optimización inversa de intervenciones) con:
 
-- Núcleo científico Python (numpy/scipy/networkx) + aceleración Rust **opcional**
-  (`massive_rust_core` vía pyo3/maturin).
+- Núcleo científico Python (numpy/scipy/networkx).
 - Dos superficies HTTP: `backend/app/` (**canónica**, `/v1/*`) y `api.py`
   (**legacy**, `/api/*`, usada por `frontend/`).
 - Una UI: `frontend/` (React 18 + Vite + TS), servida como estáticos por el
@@ -69,7 +68,7 @@ flowchart LR
     subgraph Core
         C1["massive_core/ (numerics, physics, config, assimilation…)"]
         C2["massive/ (cli, core/factbook, empirical)"]
-        C3["rust_core/ → massive_rust_core (opcional)"]
+        C3["ground_truth/ (Tier 1 microdata parquet)"]
     end
 
     FE -->|"axios /api/*"| API_legacy
@@ -141,4 +140,3 @@ Las relaciones entre variables del entorno y parámetros del motor están
   `adapters*`, `monitoring*` + módulos raíz como `py-modules` (la lista
   coincide con los archivos existentes; verificado 2026-09-22).
 - CLI: `massive-cli = massive.cli.main:main`.
-- Rust: construido aparte con maturin (`rust_core/`), nunca requerido.

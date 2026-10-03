@@ -66,6 +66,6 @@ repro fixtures, profile_hotspot, deprecation warnings on root wrappers.
 ## Deferred / owner-side
 
 - Full Stability* file consolidation (high risk)
-- Profile-driven deep perf / full multilayer Langevin Rust port
+- Profundidad de rendimiento: profiling + optimización NumPy/SciPy
 - MutaLambda nested layout / benches (owner-side)
 - Hard CI coverage ≥30% gate (informational snapshot in CI)

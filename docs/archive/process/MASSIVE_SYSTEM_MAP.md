@@ -153,9 +153,6 @@
 │  ├── install.sh         — install, run, docker, test, benchmark, docs, clean      │
 │  └── mkdocs.yml                                                                   │
 │                                                                                   │
-│  Rust core                                                                    │
-│  ├── rust_core/src/  — aceleración numérica (active_mask_step)                    │
-│  └── massive_core/rust_core.py — wrapper FFI                                      │
 └──────────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -545,7 +542,6 @@ tests/
 ├── test_pvu_runner.py           — pipeline benchmarks
 ├── test_rng_reproducibility.py
 ├── test_runner_wiring.py
-├── test_rust_core_wrapper.py
 ├── test_scientific_*.py         — runner + reportes
 ├── test_services_layer.py       — simulation_service
 ├── test_simulator.py

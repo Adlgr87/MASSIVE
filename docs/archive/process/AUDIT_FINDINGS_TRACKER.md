@@ -50,8 +50,8 @@
 | D3-014 | 🟡 MEDIUM | `monitoring/` está referenciado por el README pero no conectado a nada | W3 | W3-T03 | PENDIENTE | - |
 | D3-015 | 🟢 PRESERVE | `adapters/mutalambda/` está bien diseñado: thin, sin dependencia dura, con manifiesto declarativo | W0 | W0-T01 | GUARDRAIL | - |
 | D3-016 | 🟡 MEDIUM | La cadena de imports del adapter es frágil: `adapters → forecast → simulator → cfc_router` | W5 | W5-T02 | PENDIENTE | - |
-| D3-017 | 🟡 MEDIUM | Dos `Cargo.toml` contradictorios para el mismo crate; el de `rust_core/` es huérfano y referencia un crate inexistente | W3 | W3-T02 | PENDIENTE | - |
-| D3-018 | 🟠 HIGH | El núcleo Rust nunca se compila ni se testea en ningún entorno automatizado — es código muerto en la práctica | W3 | W3-T02 | PENDIENTE | [#112](https://github.com/Adlgr87/MASSIVE/issues/112) |
+| D3-017 | 🟢 RESOLVED | Dos `Cargo.toml` contradictorios para el mismo crate; el de `rust_core/` es huérfano y referencia un crate inexistente | W3 | W3-T02 | RESUELTO | Capa Rust eliminada del repositorio |
+| D3-018 | 🟢 RESOLVED | El núcleo Rust nunca se compila ni se testea en ningún entorno automatizado — es código muerto en la práctica | W3 | W3-T02 | RESUELTO | Capa Rust eliminada del repositorio |
 | D3-019 | 🟡 MEDIUM | `scripts/gen_ts_types.py` no tiene interfaz CLI: `--dry-run` y `--stdout` se ignoran en silencio y el script escribe el archivo | W2 | W2-T08 | PENDIENTE | - |
 | D3-020 | 🟢 PRESERVE | Los tipos TypeScript de `frontend/` están efectivamente sincronizados con los DTOs Pydantic | W0 | W0-T01 | GUARDRAIL | - |
 | D4-001 | 🔴 CRITICAL | 12 de 681 tests fallan en un clone limpio: requieren pesos `.pt` que no están en el repositorio | W1 | W1-T09 | PENDIENTE | [#113](https://github.com/Adlgr87/MASSIVE/issues/113) |
@@ -69,7 +69,7 @@
 | D4-013 | 🟢 PRESERVE | Suite predominantemente de integración real: ratio de mocks bajo y sólo 2 skips en 666 tests | W0 | W0-T01 | GUARDRAIL | - |
 | D4-014 | 🟡 MEDIUM | Mezcla de `unittest.TestCase` y pytest en los mismos archivos; 230 asserts estilo unittest | W1 | W1-T10 | PENDIENTE | - |
 | D5-001 | 🔴 CRITICAL | El backend canónico no impone ningún límite a `pasos`, `n_agents` ni `max_intentos` — las protecciones anti-DoS documentadas sólo existen en los caminos deprecados | W2 | W2-T01 | PENDIENTE | [#119](https://github.com/Adlgr87/MASSIVE/issues/119) |
-| D5-002 | 🔴 CRITICAL | `pip install -e .` es imposible: el build-backend es `maturin` y ningún Dockerfile, workflow o documento instala un toolchain Rust | W3 | W3-T01 | PENDIENTE | [#120](https://github.com/Adlgr87/MASSIVE/issues/120) |
+| D5-002 | 🟢 RESOLVED | `pip install -e .` es imposible: el build-backend es `maturin` | W3 | W3-T01 | RESUELTO | Build backend cambiado a setuptools, Rust eliminado |
 | D5-003 | 🟠 HIGH | 0 de 30 dependencias pinneadas y no existe lockfile de Python | W2 | W2-T10 | PENDIENTE | [#121](https://github.com/Adlgr87/MASSIVE/issues/121) |
 | D5-004 | 🟠 HIGH | `requirements.txt` y `pyproject.toml` declaran conjuntos de dependencias distintos y con especificadores distintos | W2 | W2-T10 | PENDIENTE | [#122](https://github.com/Adlgr87/MASSIVE/issues/122) |
 | D5-005 | 🟠 HIGH | 6 paquetes importados por el código no están declarados en ninguna parte (+ `httpx` para tests) | W1 | W1-T03 | PENDIENTE | [#123](https://github.com/Adlgr87/MASSIVE/issues/123) |
@@ -119,7 +119,7 @@
 | D7-006 | 🟠 HIGH | El type checking no puede fallar CI: `|| true` en `lint.yml` y `continue-on-error` en `typecheck.yml` — y hoy hay un error real que se reporta como éxito | W2 | W2-T06 | PENDIENTE | [#142](https://github.com/Adlgr87/MASSIVE/issues/142) |
 | D7-007 | 🟠 HIGH | `massive-ui-ng/infra/.github/workflows/ui-ng.yml` es un workflow muerto con rutas incorrectas para su propia ubicación | W5 | W5-T01 | PENDIENTE | [#143](https://github.com/Adlgr87/MASSIVE/issues/143) |
 | D7-008 | 🟠 HIGH | `publish.yml` encadena 10 jobs detrás de un gate de lint que está rojo y de dos jobs que requieren un toolchain que nadie instala | W3 | W3-T04 | PENDIENTE | [#144](https://github.com/Adlgr87/MASSIVE/issues/144) |
-| D7-009 | 🟡 MEDIUM | Ningún workflow, Dockerfile o target de Make construye o testa el crate Rust | W3 | W3-T02 | PENDIENTE | - |
+| D7-009 | 🟢 RESOLVED | Ningún workflow, Dockerfile o target de Make construye o testa el crate Rust | W3 | W3-T02 | RESUELTO | Capa Rust eliminada del repositorio |
 | D7-010 | 🟡 MEDIUM | `pvu-validation.yml` no se dispara en push a `main` | W2 | W2-T09 | PENDIENTE | - |
 | D7-011 | 🟡 MEDIUM | `main_massive.yml` despliega a Azure Web App: objetivo de despliegue huérfano, CRLF, y `python-version: '3.x'` | W3 | W3-T03 | PENDIENTE | - |
 | D7-012 | 🟡 MEDIUM | Clave de API estática y débil en los smoke tests de CI | W2 | W2-T09 | PENDIENTE | - |
@@ -149,7 +149,7 @@
 | D9-004 | 🟠 HIGH | `energy_engine.py` computa y descarta 6 valores en el cálculo del paisaje — incluido un coeficiente de Gini | W2 | W2-T07 | PENDIENTE | [#151](https://github.com/Adlgr87/MASSIVE/issues/151) |
 | D9-005 | 🟠 HIGH | La tabla de escalabilidad del README no es reproducible desde nada que exista en el repositorio | W6 | W6-T01 | PENDIENTE | [#152](https://github.com/Adlgr87/MASSIVE/issues/152) |
 | D9-006 | 🟡 MEDIUM | `profiling_results/` no existe; el material de profiling está disperso en 3 sitios sin conexión con CI | W6 | W6-T01 | PENDIENTE | - |
-| D9-007 | 🟡 MEDIUM | El fallback Python de `rust_core.py` es correcto y está testeado, pero no existe test de paridad entre las dos implementaciones | W3 | W3-T02 | PENDIENTE | - |
+| D9-007 | 🟢 RESOLVED | El fallback Python de `rust_core.py` es correcto y está testeado, pero no existe test de paridad entre las dos implementaciones | W3 | W3-T02 | RESUELTO | Capa Rust eliminada, no existe rust_core.py |
 | D9-008 | 🟡 MEDIUM | `multilayer_engine_sparse.py` (789 líneas) duplica `multilayer_engine.py` (1 025 líneas) y está exento de typing | W6 | W6-T03 | PENDIENTE | - |
 | D9-009 | 🟡 MEDIUM | La narrativa de "uint8-quantized" no explica el footprint real: la extrapolación naive queda 88× por debajo de lo declarado | W6 | W6-T01 | PENDIENTE | - |
 | D9-010 | 🟡 MEDIUM | El historial de simulación se acumula en memoria sin política de streaming ni checkpointing documentado | W6 | W6-T03 | PENDIENTE | - |

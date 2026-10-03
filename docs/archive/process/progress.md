@@ -25,5 +25,5 @@ See `docs/architecture/sensitive_zones.md` before editing core engines.
 ## Owner-side remaining
 
 - MutaLambda nested `tests/` / `benchmarks/` layout
-- Optional deep Rust migration of full multilayer Langevin (profile first)
+- Optimización profunda con profiling (NumPy/SciPy/Numba)
 - Coverage hard gate 30% in CI once baseline is stable on 3.11 runners

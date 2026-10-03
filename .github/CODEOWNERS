@@ -41,7 +41,3 @@ docker-compose*.yml        @Adlgr87
 # Documentation
 docs/                      @Adlgr87
 *.md                       @Adlgr87
-
-# Infrastructure / Rust core
-rust_core/                 @Adlgr87
-Cargo.toml                 @Adlgr87

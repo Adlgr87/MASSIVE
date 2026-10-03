@@ -38,8 +38,8 @@ workflows (`REMEDIATION_STATUS.md`, `OPTIMIZATION_STATUS.md`).
 | B14 | Optional rotating file logging | **Done** |
 | B15 | CI mypy job (non-blocking) | **Done** (`.github/workflows/typecheck.yml`) |
 | B16 | Profile hotspot script | **Done** (`scripts/profile_hotspot.py`) |
-| B17 | Rust full multilayer Langevin | **Deferred** (profile first; see `docs/rust_core_plan_ES.md`) |
-| B18 | Do not Rust-migrate EnKF/MPS/networks yet | **Rejected** as work item (policy holds) |
+| B17 | Rust full multilayer Langevin | **Rejected** (Rust layer deleted from repo) |
+| B18 | Do not Rust-migrate EnKF/MPS/networks yet | **Rejected** (policy holds; Rust layer deleted) |
 | B19 | MutaLambda nested tests/benchmarks | **Owner** |
 | B20 | Factbook local dumps gitignore | **Done** |
 
