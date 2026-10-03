@@ -14,9 +14,14 @@
   "is_synthetic": false,
   "data_type": "empirical_estimated",
   "data_confidence": "medium-high",
-  "data_notes": "Polarization values estimated from published surveys and research. Values normalized to [0,1] where 0=consensus, 0.5=moderate division, 1.0=max polarization. For SIR-type cases, P represents protest participation rate rather than polarization.",
+  "data_notes": "P represents consensus_cascade_index (units: index). Series reconstructed from published research sources (empirical_estimated). Observation operator H: 1 - std(opinion) / 1.0. At Tier 1 (< 500 observations), only aggregate parameters can be calibrated against this case; see docs/validation/PROMPT_CALIBRACION_EQUIPO_AGENTES.md.",
   "network_type": "watts_strogatz",
   "n_timesteps": 14,
   "pvu_level_target": "bronze",
-  "cluster_id": "consensus_cascade"
+  "cluster_id": "consensus_cascade",
+  "target_variable": "consensus_cascade_index",
+  "target_units": "index",
+  "observation_operator": "1 - std(opinion) / 1.0",
+  "observation_operator_description": "Consensus cascade index: P rises as consensus builds toward impeachment, then declines as issue resolves. Observation operator H: 1 - std(opinion_dimension) (higher consensus = lower variance).",
+  "n_observations": 14
 }

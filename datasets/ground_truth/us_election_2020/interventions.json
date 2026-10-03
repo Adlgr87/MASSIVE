@@ -1,0 +1,20 @@
+[
+  {
+    "date": "2020-W14",
+    "label": "Convention season",
+    "type": "polarization",
+    "description": "Democratic and Republican national conventions energize respective bases"
+  },
+  {
+    "date": "2020-W32",
+    "label": "Early voting and mail-in ballot debates",
+    "type": "polarization",
+    "description": "Controversy over mail-in voting drives partisan sorting"
+  },
+  {
+    "date": "2020-W36",
+    "label": "Election day and aftermath",
+    "type": "polarization",
+    "description": "Election day and the post-election vote counting period"
+  }
+]

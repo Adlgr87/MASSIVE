@@ -1,0 +1,87 @@
+# ── PVU pre-registration template ────────────────────────────────────────────
+# Copy to configs/calibrated/pre_registration/prereg_<case_id>.yaml
+# before running each backtest.  Seal (write) BEFORE executing the
+# simulation so the protocol is cryptographically auditable.
+
+version: "1.0.0"
+registration_type: "pre_registration"
+protocol: "PVU-BS"  # Pre-registered Validation Using Backtesting
+
+case_id: "REPLACE_ME"  # e.g. brexit_referendum_2016
+
+# ── Scientific hypothesis ───────────────────────────────────────────────────
+hypothesis:
+  primary: >
+    The calibrated MASSIVE physics parameters (σ, ε, λ) produce a
+    polarization trajectory that matches the observed historical data
+    within pre-registered thresholds.
+  null: >
+    Simulated trajectory deviates from observed data beyond threshold
+    levels (model misspecification).
+  alternative: >
+    Simulated trajectory matches observed data; model captures the
+    essential dynamics of public opinion evolution.
+
+# ── Data sources ────────────────────────────────────────────────────────────
+data_sources:
+  ground_truth_dir: "datasets/ground_truth/{case_id}"
+  files:
+    - timeseries.csv       # observed P trajectory
+    - meta.json            # scenario type, cultural profile, dates
+    - interventions.json   # intervention events (date, label, type)
+
+# ── Simulation configuration ────────────────────────────────────────────────
+simulation:
+  engine: "massive.core.physics_calibration.simulate_opinion_dynamics"
+  parameters:
+    sigma: "{params.sigma}"
+    epsilon: "{params.epsilon}"
+    lambda_social: "{params.lambda_social}"
+    attractor_position: "derived from peak observed P * 0.95"
+    eta: 0.1
+    n_agents: 100
+  interventions:
+    inference: "direction inferred from scenario_type and event dates"
+    pattern:
+      polarization_spike: "push before peak, compress after peak"
+      polarization_escalation: "continuous push throughout campaign"
+      consensus_cascade: "buildup then rapid convergence"
+
+# ── Pre-registered metrics and thresholds ─────────────────────────────────
+metrics:
+  - name: wasserstein
+    description: "Wasserstein-1 distance on P trajectory"
+    threshold_op: "<="
+    threshold_value: 0.15
+  - name: kl_divergence
+    description: "Symmetric KL (Gaussian approx on P trajectory)"
+    threshold_op: "<="
+    threshold_value: 0.3
+  - name: dtw_rmse
+    description: "Dynamic Time Warping RMSE"
+    threshold_op: "<="
+    threshold_value: 0.1
+  - name: direction_error
+    description: "Fraction of wrong-direction steps"
+    threshold_op: "<="
+    threshold_value: 0.1
+  - name: coverage_90ci
+    description: "Fraction of observed in 90% CI"
+    threshold_op: ">="
+    threshold_value: 0.85
+
+# ── Gates ───────────────────────────────────────────────────────────────────
+gates:
+  G1: "Pre-registration file sealed and data integrity verified"
+  G2: "Simulation runs from day-0 conditions (no mid-run assimilation)"
+  G3: "All metrics pass thresholds simultaneously"
+  G4: "90% CI coverage ≥ 0.85"
+
+# ── Seal ────────────────────────────────────────────────────────────────────
+seal:
+  algorithm: "SHA-256"
+  status: "pending"  # Set to "sealed" after pre-registration is written
+  sealed_at: "REPLACE_ME"  # ISO-8601 UTC timestamp
+  # The seal_hash below is populated by the backtester when the PR file
+  # is written, linking the pre-registration to the data integrity record.
+  seal_hash: "REPLACE_ME"

@@ -1,0 +1,13 @@
+{
+  "case_id": "brexit_referendum_2016",
+  "event_name": "UK European Union membership referendum",
+  "date": "2016-06-23",
+  "scenario_type": "polarization_spike",
+  "cultural_profile": "mixed",
+  "geography": "United Kingdom",
+  "description": "Brexit referendum campaign produced a sharp spike in opinion polarization peaking on referendum day, followed by a partial convergence.",
+  "peak_step": 7,
+  "peak_p": 0.62,
+  "final_p": 0.52,
+  "attractor_position": 0.7
+}

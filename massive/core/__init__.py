@@ -1,10 +1,16 @@
 """massive.core — canonical home for MASSIVE domain modules.
 
-Includes Factbook integration for CIA World Factbook data.
+Includes Factbook integration for CIA World Factbook data,
+convergence certification, and intervention optimisation.
 """
 
 # Core utility functions
 # Factbook integration
+from massive.core.convergence_certifier import (
+    ConvergenceCertificate,
+    DeterministicPlanner,
+    certify_strategy,
+)
 from massive.core.factbook import (
     COUNTRY_MAPPINGS,
     DEMOGRAPHIC_FIELDS,
@@ -38,6 +44,10 @@ __all__ = [
     "create_economic_aware_optimizer",
     "estimate_intervention_cost",
     "get_intervention_feasibility",
+    # Convergence certification (Layer 3)
+    "ConvergenceCertificate",
+    "DeterministicPlanner",
+    "certify_strategy",
     # Factbook integration
     "FactbookContext",
     "FactbookDataLoader",

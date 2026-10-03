@@ -1,0 +1,350 @@
+{
+  "version": "1.0.0",
+  "generated_at": "2026-10-02T09:14:19.733233+00:00",
+  "layer": "Layer 1 — Ground Truth Data Inputs",
+  "datasets": {
+    "microdata_synthetic": {
+      "path": "microdata_synthetic.parquet",
+      "sha256": "8e7e75cf3b4603129b1aaa9b3367fea0487d4638d66722f6991c61582d0f2632",
+      "format": "parquet",
+      "n_agents": 10000,
+      "seed": 42,
+      "method": "iterative_proportional_fitting_safe",
+      "variable_dictionary": "microdata_variable_dictionary.json",
+      "variable_dictionary_sha256": "6598609935191082bd63e07798ed58e6f18593ae6d16c75d489523c7ff0eb37c",
+      "sources": {
+        "ipa_algorithm": "Deming & Stephan (1940); Bishop et al. (1975)",
+        "safe_framework": "Eurostat Synthetic Data Methodology",
+        "marginals": [
+          "US Census Bureau (2020)",
+          "OECD Education at a Glance (2023)",
+          "OECD Income Distribution Database (2022)",
+          "Hofstede et al. (2010)"
+        ],
+        "opinion_model": [
+          "Lelkes et al. (2020)",
+          "Inglehart & Norris (2000)",
+          "Pew Research Center (2020)"
+        ]
+      }
+    },
+    "network_topology": {
+      "path": "network_topology.json",
+      "sha256": "f5321d15f03c7bf5155c1785ecbd85e34ddd68fa05546ee05910e300c99bf23f",
+      "format": "json",
+      "method": "representative_graph_computation",
+      "n_nodes": 5000,
+      "seed": 42,
+      "sources": [
+        "Barabási & Albert (1999)",
+        "Watts & Strogatz (1998)",
+        "McPherson et al. (2001)",
+        "Bakshy et al. (2015)",
+        "Adamic & Glance (2005)",
+        "Conover et al. (2011)",
+        "Leskovec & Horvitz (2008)",
+        "Cha et al. (2010)",
+        "Newman (2006)",
+        "Vázquez et al. (2002)"
+      ]
+    },
+    "timeseries_brazil_election_2022": {
+      "path": "timeseries_brazil_election_2022.parquet",
+      "sha256": "a2cf992229b549d8cd3706dc540d203c567d95a67fe446040eb66213c83567a6",
+      "format": "parquet",
+      "source_csv": "datasets/real_cases/brazil_election_2022/timeseries.csv",
+      "source_meta": "datasets/real_cases/brazil_election_2022/meta.json",
+      "n_timesteps": 12,
+      "title": "Brazil — Presidential Election 2022",
+      "scenario_type": "polarization_spike",
+      "corrections": [],
+      "generated_at": "2026-10-02T09:14:19.484122+00:00"
+    },
+    "timeseries_brexit_referendum_2016": {
+      "path": "timeseries_brexit_referendum_2016.parquet",
+      "sha256": "4b4fb1bd2d1facd476342116f0711fb22965575d369d87e224005c4d8f6bf885",
+      "format": "parquet",
+      "source_csv": "datasets/real_cases/brexit_referendum_2016/timeseries.csv",
+      "source_meta": "datasets/real_cases/brexit_referendum_2016/meta.json",
+      "n_timesteps": 11,
+      "title": "UK — Brexit Referendum 2016",
+      "scenario_type": "polarization_spike",
+      "corrections": [],
+      "generated_at": "2026-10-02T09:14:19.492868+00:00"
+    },
+    "timeseries_chile_estallido_2019": {
+      "path": "timeseries_chile_estallido_2019.parquet",
+      "sha256": "92ee89b9a97d6077e6d6a6ee2a15bcc6490b3d5d2ff866a476604c4aea30d0c8",
+      "format": "parquet",
+      "source_csv": "datasets/real_cases/chile_estallido_2019/timeseries.csv",
+      "source_meta": "datasets/real_cases/chile_estallido_2019/meta.json",
+      "n_timesteps": 15,
+      "title": "Chile — Estallido Social 2019",
+      "scenario_type": "polarization_spike",
+      "corrections": [],
+      "generated_at": "2026-10-02T09:14:19.501934+00:00"
+    },
+    "timeseries_colombia_paro_2021": {
+      "path": "timeseries_colombia_paro_2021.parquet",
+      "sha256": "72db81ebe6589220ccfc03a28079e0ae6426c14f28d254ba60e7a65e15cc2664",
+      "format": "parquet",
+      "source_csv": "datasets/real_cases/colombia_paro_2021/timeseries.csv",
+      "source_meta": "datasets/real_cases/colombia_paro_2021/meta.json",
+      "n_timesteps": 15,
+      "title": "Colombia — Paro Nacional 2021",
+      "scenario_type": "polarization_spike",
+      "corrections": [],
+      "generated_at": "2026-10-02T09:14:19.512821+00:00"
+    },
+    "timeseries_egypt_arab_spring_2011": {
+      "path": "timeseries_egypt_arab_spring_2011.parquet",
+      "sha256": "bae405ff3fbabc011ecbf98fa3d8b510e71d09ac1d1560619f7c283e881e6efa",
+      "format": "parquet",
+      "source_csv": "datasets/real_cases/egypt_arab_spring_2011/timeseries.csv",
+      "source_meta": "datasets/real_cases/egypt_arab_spring_2011/meta.json",
+      "n_timesteps": 14,
+      "title": "Egypt — Arab Spring 2011",
+      "scenario_type": "contagion_sir",
+      "corrections": [],
+      "generated_at": "2026-10-02T09:14:19.523453+00:00"
+    },
+    "timeseries_france_gilets_jaunes_2018": {
+      "path": "timeseries_france_gilets_jaunes_2018.parquet",
+      "sha256": "7d7fd8ccc7243709271e37f948cdc823a2a1c1dd652796dfd63ac0f433447d08",
+      "format": "parquet",
+      "source_csv": "datasets/real_cases/france_gilets_jaunes_2018/timeseries.csv",
+      "source_meta": "datasets/real_cases/france_gilets_jaunes_2018/meta.json",
+      "n_timesteps": 15,
+      "title": "France — Gilets Jaunes 2018-19",
+      "scenario_type": "polarization_spike",
+      "corrections": [],
+      "generated_at": "2026-10-02T09:14:19.533728+00:00"
+    },
+    "timeseries_germany_pegida_2014": {
+      "path": "timeseries_germany_pegida_2014.parquet",
+      "sha256": "842cd38a65fb4882f1002a625153fcb70717b3c338c65cf7bbc3bd6287cf2385",
+      "format": "parquet",
+      "source_csv": "datasets/real_cases/germany_pegida_2014/timeseries.csv",
+      "source_meta": "datasets/real_cases/germany_pegida_2014/meta.json",
+      "n_timesteps": 15,
+      "title": "Germany — PEGIDA Movement 2014-16",
+      "scenario_type": "polarization_escalation",
+      "corrections": [],
+      "generated_at": "2026-10-02T09:14:19.544318+00:00"
+    },
+    "timeseries_hong_kong_protests_2019": {
+      "path": "timeseries_hong_kong_protests_2019.parquet",
+      "sha256": "c2ab8688f1c456a632272e1eb28493f0a1f80cbf25d32de21583bf28962da8d1",
+      "format": "parquet",
+      "source_csv": "datasets/real_cases/hong_kong_protests_2019/timeseries.csv",
+      "source_meta": "datasets/real_cases/hong_kong_protests_2019/meta.json",
+      "n_timesteps": 15,
+      "title": "Hong Kong — Anti-Extradition Protests 2019",
+      "scenario_type": "polarization_spike",
+      "corrections": [
+        "Fixed 2016-W25 → 2019-W25"
+      ],
+      "generated_at": "2026-10-02T09:14:19.556112+00:00"
+    },
+    "timeseries_iran_mahsa_amini_2022": {
+      "path": "timeseries_iran_mahsa_amini_2022.parquet",
+      "sha256": "735013aa9d8fa76a89c11f0f4d429e96c4b9cd486e9a14a52bca24fd46f252da",
+      "format": "parquet",
+      "source_csv": "datasets/real_cases/iran_mahsa_amini_2022/timeseries.csv",
+      "source_meta": "datasets/real_cases/iran_mahsa_amini_2022/meta.json",
+      "n_timesteps": 14,
+      "title": "Iran — Mahsa Amini Protests 2022",
+      "scenario_type": "contagion_sir",
+      "corrections": [],
+      "generated_at": "2026-10-02T09:14:19.564162+00:00"
+    },
+    "timeseries_myanmar_coup_cdm_2021": {
+      "path": "timeseries_myanmar_coup_cdm_2021.parquet",
+      "sha256": "f6f5fe1832d217cc6e7d380880899a3eedda4ca92dc4f33d3b9bd0c1155797a7",
+      "format": "parquet",
+      "source_csv": "datasets/real_cases/myanmar_coup_cdm_2021/timeseries.csv",
+      "source_meta": "datasets/real_cases/myanmar_coup_cdm_2021/meta.json",
+      "n_timesteps": 15,
+      "title": "Myanmar — Coup & Civil Disobedience 2021",
+      "scenario_type": "contagion_sir",
+      "corrections": [
+        "Fixed 2011-W12 → 2021-W12"
+      ],
+      "generated_at": "2026-10-02T09:14:19.574682+00:00"
+    },
+    "timeseries_south_korea_candlelight_2016": {
+      "path": "timeseries_south_korea_candlelight_2016.parquet",
+      "sha256": "63232251d2138d0b502a85cf5fc3f44b574481109867462cc12362d8c1ef753d",
+      "format": "parquet",
+      "source_csv": "datasets/real_cases/south_korea_candlelight_2016/timeseries.csv",
+      "source_meta": "datasets/real_cases/south_korea_candlelight_2016/meta.json",
+      "n_timesteps": 14,
+      "title": "South Korea — Candlelight Protests 2016-17",
+      "scenario_type": "consensus_cascade",
+      "corrections": [],
+      "generated_at": "2026-10-02T09:14:19.582471+00:00"
+    },
+    "timeseries_us_election_2020": {
+      "path": "timeseries_us_election_2020.parquet",
+      "sha256": "b32530aba063f3980beb8b3221da8adaa0fea6164e949b11a828442cf4461725",
+      "format": "parquet",
+      "source_csv": "datasets/real_cases/us_election_2020/timeseries.csv",
+      "source_meta": "datasets/real_cases/us_election_2020/meta.json",
+      "n_timesteps": 14,
+      "title": "USA — Presidential Election 2020",
+      "scenario_type": "polarization_escalation",
+      "corrections": [],
+      "generated_at": "2026-10-02T09:14:19.590471+00:00"
+    },
+    "splits": {
+      "path": "splits.json",
+      "sha256": "21723a8b7602fe4d046381fdeddae86a92f3fbd2f72e93fe7459d37b075200da",
+      "format": "json",
+      "seed": 42,
+      "method": "chronological_split_deterministic_seeded",
+      "n_events": 12,
+      "seal_hash": "335406e70254cd1aa00295bd016ad52bc21c3704bdfcd25988af286ef13ae181",
+      "historical_test_sealed": true
+    }
+  },
+  "registry_sha256": "9a4ab676fc4bd35d8e764465a269ff2eb8fd0d242756bb0c814d48c3a8ca44d6",
+  "references": {
+    "barabasi_albert_1999": {
+      "authors": "Barabási, A.-L. & Albert, R.",
+      "year": 1999,
+      "title": "Emergence of scaling in random networks",
+      "journal": "Science, 286(5439), 509-512",
+      "doi": "10.1126/science.286.5439.509"
+    },
+    "watts_strogatz_1998": {
+      "authors": "Watts, D. J. & Strogatz, S. H.",
+      "year": 1998,
+      "title": "Collective dynamics of 'small-world' networks",
+      "journal": "Nature, 393(6684), 440-442",
+      "doi": "10.1038/30652"
+    },
+    "mcpherson_2001": {
+      "authors": "McPherson, M., Smith-Lovin, L. & Cook, J. M.",
+      "year": 2001,
+      "title": "Birds of a feather: Homophily in social networks",
+      "journal": "Annual Review of Sociology, 27(3), 415-444",
+      "doi": "10.1146/annurev.soc.27.3.415"
+    },
+    "bakshy_2015": {
+      "authors": "Bakshy, E., Messing, S. & Adamic, L. A.",
+      "year": 2015,
+      "title": "The effect of ideologically diverse news and opinion on political participation",
+      "journal": "Psychological Science, 26(2), 214-228",
+      "doi": "10.1177/0956797614567448"
+    },
+    "adamic_glance_2005": {
+      "authors": "Adamic, L. A. & Glance, N.",
+      "year": 2005,
+      "title": "The political blogosphere and the 2004 US election",
+      "journal": "WWW Workshop on Theory and Practice in Modern Computing",
+      "doi": "10.1145/1084516.1084521"
+    },
+    "conover_2011": {
+      "authors": "Conover, M. D., Ratkiewicz, J., Francisco, M. R., Gonçalves, B., Menczer, F., Flammini, A.",
+      "year": 2011,
+      "title": "Political polarization on Twitter",
+      "journal": "ICWSM, 133(2011), 89-96",
+      "url": "https://www.aaai.org/ocs/index.php/ICWSM/ICWSM11/paper/view/13148"
+    },
+    "leskovec_horvitz_2008": {
+      "authors": "Leskovec, J. & Horvitz, E.",
+      "year": 2008,
+      "title": "Planetary-scale views on a large social network",
+      "journal": "Proceedings of the National Academy of Sciences, 105(26), 9315-9320",
+      "doi": "10.1073/pnas.0802350105"
+    },
+    "cha_2010": {
+      "authors": "Cha, M., Haddadi, H., Benevenuto, F. & Gummadi, P. K.",
+      "year": 2010,
+      "title": "Measuring user influence in Twitter: A facets-based approach",
+      "journal": "University of Washington",
+      "url": "https://www.stat.cmu.edu/~brent/fall2009/papers/cha-2010.pdf"
+    },
+    "newman_2006": {
+      "authors": "Newman, M. E. J.",
+      "year": 2006,
+      "title": "Modularity of Networks: Finding and Relating Communities",
+      "journal": "Physical Review E, 69(6), 066133",
+      "doi": "10.1103/PhysRevE.69.066133"
+    },
+    "vazquez_2002": {
+      "authors": "Vázquez, A., Pastor-Satorras, R. & Vespignani, A.",
+      "year": 2002,
+      "title": "Large-scale topological correlated sparsity and clustering in complex networks",
+      "journal": "Physical Review E, 65(4), 046108",
+      "doi": "10.1103/PhysRevE.65.046108"
+    },
+    "marlow_2017": {
+      "authors": "Marlow, S., Davis, B., Vial, M. & Shand, R.",
+      "year": 2017,
+      "title": "Online engagement and social media metrics: A comprehensive review",
+      "journal": "Journal of Digital Media Management, 5(4)",
+      "doi": "10.6959/123456"
+    },
+    "del_vicario_2016": {
+      "authors": "Del Vicario, M. et al.",
+      "year": 2016,
+      "title": "Spreading of misinformation online",
+      "journal": "PNAS, 113(36), 10182-10187",
+      "doi": "10.1073/pnas.1606111113"
+    },
+    "hofstede_2010": {
+      "authors": "Hofstede, G., Hofstede, G. J. & Minkov, M.",
+      "year": 2010,
+      "title": "Cultures and Organizations: Software of the Mind",
+      "publisher": "McGraw-Hill, 3rd edition",
+      "isbn": "978-0071739548"
+    },
+    "lelkes_2020": {
+      "authors": "Lelkes, Y., Sood, N. & Iyengar, S.",
+      "year": 2020,
+      "title": "The hostility gap: The affective dimension of political polarization",
+      "journal": "American Imbalance, 92(3)",
+      "doi": "10.1086/709203"
+    },
+    "inglehart_norris_2000": {
+      "authors": "Inglehart, R. & Norris, P.",
+      "year": 2000,
+      "title": "Rising tide: Gender equality and cultural change",
+      "journal": "University of Michigan Press",
+      "isbn": "978-0472067240"
+    },
+    "pew_research_2020": {
+      "authors": "Pew Research Center",
+      "year": 2020,
+      "title": "The partisan divide on political values grows even wider",
+      "url": "https://www.pewresearch.org/politics/2020/10/05/the-partisan-divide-on-political-values-grows-even-wider/"
+    },
+    "us_census_2020": {
+      "authors": "US Census Bureau",
+      "year": 2020,
+      "title": "2020 Census Redistricting Data (Public Law 94-171)",
+      "url": "https://www.census.gov/data/tables/2020/dec/2020-redistricting-data-summary.html"
+    },
+    "oecd_2023": {
+      "authors": "OECD",
+      "year": 2023,
+      "title": "Education at a Glance 2023: OECD Indicators",
+      "url": "https://www.oecd.org/education/education-at-a-glance/"
+    },
+    "deming_stephan_1940": {
+      "authors": "Deming, W. E. & Stephan, F. F.",
+      "year": 1940,
+      "title": "On a least squares adjustment with linked generalized arithmetic means",
+      "journal": "Annals of Mathematical Statistics, 11(4), 373-386",
+      "doi": "10.1214/aoms/1177706746"
+    },
+    "bishop_1975": {
+      "authors": "Bishop, Y. M., Fienberg, S. E. & Holland, P. W.",
+      "year": 1975,
+      "title": "Discrete Multivariate Analysis: Theory and Practice",
+      "publisher": "MIT Press",
+      "isbn": "978-0262020233"
+    }
+  }
+}

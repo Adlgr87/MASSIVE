@@ -14,9 +14,14 @@
   "is_synthetic": false,
   "data_type": "empirical_estimated",
   "data_confidence": "medium-high",
-  "data_notes": "Polarization values estimated from published surveys and research. Values normalized to [0,1] where 0=consensus, 0.5=moderate division, 1.0=max polarization. For SIR-type cases, P represents protest participation rate rather than polarization.",
+  "data_notes": "P represents leave_vote_share (units: share). Series reconstructed from published research sources (empirical_estimated). Observation operator H: mean(opinion > 0). At Tier 1 (< 500 observations), only aggregate parameters can be calibrated against this case; see docs/validation/PROMPT_CALIBRACION_EQUIPO_AGENTES.md.",
   "network_type": "watts_strogatz",
   "n_timesteps": 11,
   "pvu_level_target": "bronze",
-  "cluster_id": "polarization_spike"
+  "cluster_id": "polarization_spike",
+  "target_variable": "leave_vote_share",
+  "target_units": "share",
+  "observation_operator": "mean(opinion > 0)",
+  "observation_operator_description": "Leave vote share: P represents the fraction of population with opinion > 0 (Leave = +1, Remain = −1 in bipolar encoding). Observation operator H: fraction of agents with opinion > 0.",
+  "n_observations": 11
 }

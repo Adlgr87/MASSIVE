@@ -35,3 +35,4 @@ psutil>=5.9.0
 # Domain extras
 nashpy>=0.0.43
 pgmpy>=1.1.0
+pyarrow>=14.0

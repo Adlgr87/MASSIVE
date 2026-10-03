@@ -1,0 +1,1 @@
+"""MASSIVE model artifacts package."""

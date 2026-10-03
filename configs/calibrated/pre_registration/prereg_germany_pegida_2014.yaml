@@ -1,0 +1,54 @@
+calibrated_params:
+  epsilon: 0.2525
+  lambda_social: 0.521
+  sigma: 0.1001
+case_id: germany_pegida_2014
+cultural_profile: anglosaxon
+data_integrity: germany_pegida_2014
+ensemble_size: 20
+gates:
+  G1: Pre-registration sealed before simulation
+  G2: Simulation runs from day-0 conditions only
+  G3: All metrics below thresholds
+  G4: "90% CI coverage \u2265 coverage_min"
+hypothesis: "The calibrated MASSIVE physics parameters (\u03C3, \u03B5, \u03BB) will\
+  \ produce a polarization trajectory that matches the observed historical data within\
+  \ pre-registered thresholds."
+hypothesis_null: Simulated trajectory deviates from observed data beyond threshold
+  levels (model misspecification).
+metrics:
+- description: Wasserstein-1 distance on final opinion distribution
+  direction: lower_is_better
+  name: wasserstein
+  threshold: "\u2264 0.15"
+- description: Symmetric KL divergence (J-divergence)
+  direction: lower_is_better
+  name: kl_divergence
+  threshold: "\u2264 0.3"
+- description: Dynamic Time Warping RMSE
+  direction: lower_is_better
+  name: dtw_rmse
+  threshold: "\u2264 0.1"
+- description: Fraction of direction-misprediction steps
+  direction: lower_is_better
+  name: direction_error
+  threshold: "\u2264 0.1"
+- description: Fraction of observed values in 90% CI
+  direction: higher_is_better
+  name: coverage_90ci
+  threshold: "\u2265 0.85"
+n_agents: 80
+n_timesteps: 15
+registered_at: '2026-10-02T23:21:59.039779+00:00'
+scenario_type: polarization_escalation
+seal:
+  algorithm: SHA-256
+  status: verified
+seed: 42
+thresholds:
+  coverage_min: 0.85
+  direction_error_max: 0.1
+  dtw_rmse_max: 0.1
+  kl_div_max: 0.3
+  wasserstein_max: 0.15
+version: 1.0.0
