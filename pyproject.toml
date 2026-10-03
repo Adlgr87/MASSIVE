@@ -60,10 +60,7 @@ Documentation = "https://adlgr87.github.io/MASSIVE/"
 Repository = "https://github.com/Adlgr87/MASSIVE"
 Issues = "https://github.com/Adlgr87/MASSIVE/issues"
 
-# The Rust extension (massive_rust_core) is built separately via maturin
-# in the dedicated CI job (rust.yml) — see W3-T02. It is intentionally NOT
-# part of this setuptools wheel so `pip install -e .` works without a Rust
-# toolchain.
+# Pure Python build — no native extensions, no Rust toolchain required.
 
 [tool.setuptools.packages.find]
 where = ["."]

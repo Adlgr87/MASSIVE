@@ -60,7 +60,7 @@ def main() -> int:
     print(stream.getvalue())
     print(
         "Hint: prefer optimizing pure array loops that dominate cumulative time; "
-        "see docs/rust_core_plan_ES.md before proposing Rust ports."
+        "propose Numba/Numba-CUDA kernels or sparse SciPy optimizations."
     )
     return 0
 

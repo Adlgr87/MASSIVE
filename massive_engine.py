@@ -44,7 +44,6 @@ from typing import Any
 import numpy as np
 from scipy import sparse
 
-from massive_core.rust_core import active_mask_step
 from metrics.unified_metrics import calculate_polarization
 
 log = logging.getLogger(__name__)
@@ -415,7 +414,8 @@ class ActiveSet:
             csr = adj.tocsr()
             self._active = active_mask_step_sparse(x_prev, x_new, csr, self._threshold)
         else:
-            self._active = active_mask_step(x_prev, x_new, np.asarray(adj), self._threshold)
+            adj_dense = np.asarray(adj)
+            self._active = active_mask_step_sparse(x_prev, x_new, sparse.csr_matrix(adj_dense), self._threshold)
 
         # Kill-switch for event-driven deadlock (Devil's Advocate Finding 9):
         # if ALL agents are asleep and no neighbor-reactivation fired, force a
