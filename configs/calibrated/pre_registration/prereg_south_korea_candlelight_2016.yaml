@@ -39,7 +39,7 @@ metrics:
   threshold: "\u2265 0.85"
 n_agents: 30
 n_timesteps: 14
-registered_at: '2026-10-03T00:09:59.507245+00:00'
+registered_at: '2026-10-03T00:12:38.155246+00:00'
 scenario_type: consensus_cascade
 seal:
   algorithm: SHA-256

@@ -76,9 +76,7 @@ except ImportError:  # pragma: no cover — fallback when energy_engine not impo
             energy += rep["strength"] * _gaussian(x, rep["position"])
         return energy
 
-    def random_network(
-        n_agents: int, connectivity: float = 0.3, seed: int = 42
-    ) -> np.ndarray:
+    def random_network(n_agents: int, connectivity: float = 0.3, seed: int = 42) -> np.ndarray:
         """Fallback random symmetric adjacency matrix."""
         rng = np.random.default_rng(seed)
         upper = rng.random((n_agents, n_agents)) < connectivity
@@ -114,9 +112,9 @@ except ImportError:  # pragma: no cover
 
 DEFAULT_ETA: float = 0.01
 DEFAULT_N_STEPS: int = 50
-SPECTRAL_RADIUS_THRESHOLD: float = 1.0   # < 1.0 means stable
-GRADIENT_NORM_THRESHOLD: float = 0.05    # → 0 means attractor reached
-SIGMA: float = 0.3                       # Gaussian width (matches energy_engine)
+SPECTRAL_RADIUS_THRESHOLD: float = 1.0  # < 1.0 means stable
+GRADIENT_NORM_THRESHOLD: float = 0.05  # → 0 means attractor reached
+SIGMA: float = 0.3  # Gaussian width (matches energy_engine)
 
 
 # ── Dataclass ──────────────────────────────────────────────────────────────
@@ -268,9 +266,7 @@ def _compute_gradient_norm(
     Returns:
         L2 norm of ``∇U`` evaluated at each agent's final opinion.
     """
-    grads = np.array(
-        [_landscape_gradient(float(x), attractors, repellers) for x in state]
-    )
+    grads = np.array([_landscape_gradient(float(x), attractors, repellers) for x in state])
     return float(np.linalg.norm(grads))
 
 
@@ -504,15 +500,11 @@ class DeterministicPlanner:
 
             # Attractor at goal — strength scaled by empirical attractor_depth
             attractor_str = 1.0 + 2.0 * attractor_depth
-            attractors.append(
-                {"position": goal_pos, "strength": attractor_str}
-            )
+            attractors.append({"position": goal_pos, "strength": attractor_str})
 
             # Repeller at current position — strength scaled by repeller param
             rep_str = 0.5 + repeller_strength_param
-            repellers.append(
-                {"position": curr_pos, "strength": rep_str}
-            )
+            repellers.append({"position": curr_pos, "strength": rep_str})
 
             # Additional repeller at the opposite extreme to prevent
             # flip-through instability (Bovet & Makse, 2015)
