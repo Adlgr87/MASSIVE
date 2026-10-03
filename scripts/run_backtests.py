@@ -9,6 +9,7 @@ Usage:
     python scripts/run_backtests.py --cases 3          # quick test (3 cases)
     python scripts/run_backtests.py --cases brexit_referendum_2016,egypt_arab_spring_2011,us_election_2020
 """
+
 from __future__ import annotations
 
 import argparse

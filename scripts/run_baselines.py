@@ -15,6 +15,7 @@ Usage:
     python scripts/run_baselines.py                     # writes reports/baselines_12cases.json
     python scripts/run_baselines.py --cases 3           # only first 3 cases (quick test)
 """
+
 from __future__ import annotations
 
 import argparse
