@@ -1,3 +1,8 @@
+# Historical audit patch — ARCHIVED
+# Note (2026-10-03): All Rust-related findings in this patch have been RESOLVED.
+# The Rust layer (rust_core/) was completely removed from the repository.
+# Build backend changed from maturin to setuptools.
+# This patch file is preserved for audit history only and is NOT applied.
 diff --git a/AUDIT_REMEDIATION_WORKFLOW.md b/AUDIT_REMEDIATION_WORKFLOW.md
 new file mode 100644
 index 0000000..c014e1c

@@ -6,6 +6,8 @@
 **Hash del commit analizado:** `473b04a6b4002b258da13f9c553949a6c59d5d5f` (`refactor: Humanize code — remove AI-generated tells`, commiteado 2026-09-15T03:51:05Z)
 **Rama de trabajo:** `arena/01a0a6d3-massive`
 
+
+> ⚠️ **UPDATE (2026-10-03):** Hallazgos D3-017, D3-018, D5-002, D7-009, D9-007 relacionados con Rust han sido **RESUELTOS**. La capa Rust (`rust_core/`) fue completamente eliminada del repositorio. El build backend cambió de `maturin` a `setuptools`. No existen referencias a Rust, Cargo, pyo3 o maturin en el código.
 > **Nota metodológica.** Todos los hallazgos marcados **[CONFIRMADO]** fueron reproducidos ejecutando comandos contra el checkout real. Los marcados **[HIPÓTESIS]** se derivan de inspección de código/config sin ejecución (principalmente por ausencia de `docker` y del runtime de GitHub Actions en el sandbox — Rust ya no está en el repo). Los marcados **[CONOCIDO PREVIO]** corresponden al contexto entregado en el brief de auditoría.
 >
 > **Entorno de reproducción:** Python 3.11.2 · numpy/scipy/pandas/networkx/pydantic/plotly/fastapi/uvicorn/scikit-learn/statsmodels · torch 2.14.0+cu130 · ruff 0.16.7 · mypy 2.3.1 · black · vulture · radon · pylint · pip-audit · mkdocs + material + mkdocstrings. Sin `docker`, sin `streamlit` (Rust eliminado del repo), sin `psutil` (inicialmente).

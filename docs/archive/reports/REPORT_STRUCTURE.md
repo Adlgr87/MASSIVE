@@ -70,7 +70,6 @@ MASSIVE/
 │   ├── physics/                      # Hydrodynamics, perturbation theory, stat mech
 │   ├── utils/                        # RNG helpers, serialization
 │   ├── contracts.py                  # LLM contract validation
-│   ├── rust_core.py                  # PyO3 Rust kernel wrapper
 │   └── scientific_runner.py          # Scientific opt-in simulation runner
 │
 ├── massive/                          # CLI + core module namespace
@@ -240,10 +239,6 @@ MASSIVE/
 │   ├── core/                         # Agent, game, influence, orchestrator
 │   └── utils/                        # Metrics, forer
 │
-├── rust_core/                        # Optional PyO3 Rust kernels (PoC)
-│   ├── Cargo.toml
-│   └── src/lib.rs
-│
 ├── app/                              # (Empty — placeholder)
 │
 ├── ─── Root-level engine modules ───
@@ -370,7 +365,7 @@ MASSIVE/
 | Path | Estado |
 |------|--------|
 | `app/` | Directorio vacío (solo `__pycache__`) |
-| `target/` | Build artifacts de Rust (ignorable) |
+| `target/` | Build artifacts (ignorable) |
 
 ### Duplicados de módulos
 | Módulo duplicado | Ubicación 1 | Ubicación 2 |

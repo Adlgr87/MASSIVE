@@ -2,7 +2,7 @@
 """Profile-guided hotspot helper (B16).
 
 Runs a short multilayer + energy workload under ``cProfile`` and prints the
-top cumulative functions. Use before proposing micro-optimizations or Rust
+top cumulative functions. Use before proposing micro-optimizations
 ports.
 
 Usage:

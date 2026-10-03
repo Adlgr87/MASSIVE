@@ -2206,7 +2206,7 @@ class IntegratedSimulator:
             if n_jumps > 0:
                 dx_jump[jump_occurred] = self._sample_levy_jump_magnitudes(n_jumps)
 
-        # Langevin opinion update (vectorized numpy fallback for removed Rust kernel)
+        # Langevin opinion update (vectorized numpy)
         # dX = drift * dt + diffusion * dW + jumps
         agents[:, 0] = np.clip(
             agents[:, 0] + drift_vector * self.dt + self.diffusion_sigma * dW + dx_jump,
