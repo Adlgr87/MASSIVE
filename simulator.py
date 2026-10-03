@@ -2209,10 +2209,7 @@ class IntegratedSimulator:
         # Langevin opinion update (vectorized numpy fallback for removed Rust kernel)
         # dX = drift * dt + diffusion * dW + jumps
         agents[:, 0] = np.clip(
-            agents[:, 0]
-            + drift_vector * self.dt
-            + self.diffusion_sigma * dW
-            + dx_jump,
+            agents[:, 0] + drift_vector * self.dt + self.diffusion_sigma * dW + dx_jump,
             -1.0,
             1.0,
         )

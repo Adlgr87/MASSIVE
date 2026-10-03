@@ -237,11 +237,105 @@ metric — the ~27 % *RMSE* reduction (the primary scientific metric) is detaile
 
 ---
 
+## 🎯 Tier 1 Calibration Pipeline
+
+**Capacity Tier 1** (< 500 observations): baselines + aggregate physics parameters
+with strong priors only. Neural correctors and per-segment/per-edge parameters are
+**forbidden** by protocol — only 169 observations across 12 historical cases exist,
+which is insufficient for retraining neural networks.
+
+### Pipeline components
+
+| Component | Description | Where |
+|---|---|---|
+| **G0 baselines** | 6 baselines × 12 cases via walk-forward CV | `scripts/run_baselines.py` → `reports/baselines_12cases.json` |
+| **ABC-SMC calibration** | ABC-SMC on 3 aggregate params (σ, ε, λ) | `massive/core/abcsbi.py` |
+| **PVU backtests** | 12-case day-0 backtests through G1–G4 gates | `scripts/run_backtests.py` → `reports/backtest_results.json` |
+| **Convergence certifier** | Deterministic planning certificate | `massive/core/convergence_certifier.py` |
+| **Data provenance** | Hash-verified dataset registry, sealed train/test splits | `massive/core/data_provenance.py`, `ground_truth/` |
+
+### Calibrated parameters (Tier 1)
+
+```yaml
+sigma: 0.1001          # diffusion coefficient
+epsilon: 0.2525        # external noise injection
+lambda_social: 0.521   # social coupling strength
+```
+
+### Baseline results (169 observations, 12 historical cases)
+
+| Baseline | Mean MAE | Mean RMSE |
+|---|---|---|
+| **persistence** (best) | **0.0482** | 0.0482 |
+| mean_reverting | 0.0816 | 0.0816 |
+| moving_average | 0.1068 | 0.1068 |
+| train_mean | 0.1223 | 0.1223 |
+| linear | 0.1274 | 0.1274 |
+| seasonal_naive | 0.1440 | 0.1440 |
+
+Any model that does not beat **persistence** (MAE=0.0482) is **not published**.
+
+### PVU backtest results (G3 + G4 gates)
+
+| Case | Wasserstein | 90% CI coverage | G3 | G4 | Status |
+|---|---|---|---|---|---|
+| us_election_2020 | 0.0331 | 0.929 | ✅ | ✅ | **Published** |
+| brazil_election_2022 | 0.0554 | 0.417 | ❌ | ❌ | Fails G4 coverage |
+| brexit_referendum_2016 | 0.0339 | 0.636 | ❌ | ❌ | Fails G4 coverage |
+| chile_estallido_2019 | 0.0796 | 0.267 | ❌ | ❌ | Fails G4 coverage |
+| colombia_paro_2021 | 0.0538 | 0.467 | ❌ | ❌ | Fails G4 coverage |
+| egypt_arab_spring_2011 | 0.0906 | 0.214 | ❌ | ❌ | Fails G4 coverage |
+| france_gilets_jaunes_2018 | 0.0479 | 0.400 | ❌ | ❌ | Fails G4 coverage |
+| germany_pegida_2014 | 0.0866 | 0.200 | ❌ | ❌ | Fails G4 coverage |
+| hong_kong_protests_2019 | 0.1236 | 0.200 | ❌ | ❌ | Fails G4 coverage |
+| iran_mahsa_amini_2022 | 0.0721 | 0.214 | ❌ | ❌ | Fails G4 coverage |
+| myanmar_coup_cdm_2021 | 0.0522 | 0.200 | ❌ | ❌ | Fails G4 coverage |
+| south_korea_candlelight_2016 | 0.0513 | 0.357 | ❌ | ❌ | Fails G4 coverage |
+
+**1/12 cases pass all PVU gates (G3+G4)** at Tier 1 — US 2020 is the only case
+clearing all thresholds. This is expected: with 170 observations there is nothing
+to retrain, so only aggregate parameters with strong priors are calibrated.
+
+### CfC neural corrector — disqualified
+
+The Closed-form Continuous-time (CfC) neural corrector was evaluated via walk-forward
+validation and **disqualified**:
+
+- CfC RMSE = 0.03763
+- Persistence RMSE = 0.00457
+- **CfC is 8.2× worse** than persistence — fails the *"Any motor that does not beat
+  persistence is not published"* arena rule.
+
+**Arena rule**: *"quien calibra no valida"* (ABC calibrator ≠ backtest validator).
+Calibration (W3-T02) and validation (PVU) are separate roles with sealed splits.
+
+### Run the pipeline
+
+```bash
+# Validate dataset integrity (12/12 cases pass)
+python scripts/validate_dataset.py              # exit 0
+
+# G0: run all baselines
+python scripts/run_baselines.py
+
+# G4: run backtests with calibrated params
+python scripts/run_backtests.py
+
+# Validate CfC disqualification
+python scripts/validate_cfc_walkforward.py
+```
+
+Full methodology and gate thresholds: [`CALIBRATION_REPORT.md`](CALIBRATION_REPORT.md).
+
+---
+
+
+
 ## 🧪 Quality & production posture
 
 | Signal | Status |
 |---|---|
-| Test suite | **679 tests, ~32 s** — `pytest tests/`  |
+| Test suite | **887 tests** — `pytest tests/` (calibration, backtesting, ground-truth, physics)  |
 | Coverage | 68 % branch (scope: engines + services + backend) — `make test-cov` |
 | Static quality | ruff + black + mypy (gradual slice) green in CI |
 | CI | 11 CI workflows per PR: lint, types, core/scientific/api/full suites, frontend build+lint, Docker compose health, TS-type sync, secret scan, PVU benchmark |
@@ -279,11 +373,14 @@ MASSIVE/
 ├── frontend/             # React 18 + Vite + TS SPA (typed DTOs generated from Python)
 ├── configs/llm_contract/ # Machine-readable MASSIVE↔LLM contract (v1.1.0)
 ├── datasets/pvu_cases/   # Offline validation cases (pre-registered)
+├── datasets/ground_truth/# Tier 1 microdata (parquet) + sealed splits
+├── ground_truth/         # Layer 1 package: microdata loaders, network topology, sealed splits
+├── configs/calibrated/   # Tier 1 physics params (v1.0.0) + backtest thresholds + pre-registration
 ├── benchmarks/           # PVU-BS runner + scientific benchmarks
-├── scripts/              # Backup automation, security audit, TS type generator
+├── scripts/              # Backup automation, security audit, TS type generator, calibration pipeline
 ├── docs/                 # MkDocs site + production-readiness suite
 ├── monitoring/           # Prometheus alert rules + Grafana dashboard spec
-└── tests/                # 679 tests: unit, integration, contract, security, reproducibility
+└── tests/                # 887 tests: unit, integration, contract, security, calibration, backtesting, ground-truth
 ```
 
 ---
@@ -298,6 +395,7 @@ MASSIVE/
 | Architecture — current state (verified map) | [`docs/architecture/current-state.md`](docs/architecture/current-state.md) |
 | Architecture — target state & open decisions | [`docs/architecture/target-state.md`](docs/architecture/target-state.md) |
 | Production-readiness audit & risk matrix | [`docs/production-readiness-audit.md`](docs/production-readiness-audit.md) |
+| Tier 1 Calibration Report | [`CALIBRATION_REPORT.md`](CALIBRATION_REPORT.md) |
 | Observability & Security | [`docs/OBSERVABILITY_AND_SECURITY.md`](docs/OBSERVABILITY_AND_SECURITY.md) |
 | Backup & Restore | [`docs/backup_restore.md`](docs/backup_restore.md) |
 | Disaster Recovery Plan | [`docs/disaster_recovery_plan.md`](docs/disaster_recovery_plan.md) |
