@@ -1,0 +1,5118 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="MASSIVE — Hybrid social dynamics simulator. Numerical core + LLM as regime selector.">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>WORKFLOW DE REMEDIACIÓN — MASSIVE - MASSIVE Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#workflow-de-remediacion-massive" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="MASSIVE Documentation" class="md-header__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MASSIVE Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              WORKFLOW DE REMEDIACIÓN — MASSIVE
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="MASSIVE Documentation" class="md-nav__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    MASSIVE Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../factbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Factbook Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM Interface
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    LLM Interface
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../MASSIVE_LLM_INTERFACE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface spec
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LLM_PROMPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompt templates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Readiness
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Production Readiness
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../production-readiness-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Audit & Risk Matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/current-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (current)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/target-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (target)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/PRODUCTION_ARCHITECTURE_SPEC/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Architecture Spec
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/safety_protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_7" id="__nav_5_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runbooks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Runbooks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/local-development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/incidents/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Incidents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/threat-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/secrets-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secrets & Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OBSERVABILITY_AND_SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability & Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backup_restore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup & Restore
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../disaster_recovery_plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disaster Recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DOCKER/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ENV_VARS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Environment Variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NAMING_CONVENTIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NAMING_CONVENTIONS.md
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation (PVU-BS)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Validation (PVU-BS)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/PVU_MASSIVE_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/PVU_MASSIVE_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocolo (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/preregistration_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registration (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/preregistration_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registro (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/validation_report_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report template (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/validation_report_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plantilla de reporte (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cards/BENCHMARK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Card
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cards/REPRODUCIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reproducibility Card
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Testing
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../testing/test-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Test Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../performance/baseline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Baseline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../performance_report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-convenciones-de-este-documento" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. CONVENCIONES DE ESTE DOCUMENTO
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-precondicion-externa" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. PRECONDICIÓN EXTERNA
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-grafo-de-dependencias-y-ruta-critica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. GRAFO DE DEPENDENCIAS Y RUTA CRÍTICA
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-wave-0-harness-y-gobernanza" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. WAVE 0 — Harness y gobernanza
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. WAVE 0 — Harness y gobernanza">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#w0-t01-harness-de-verificacion-unificado-linea-base" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W0-T01 · Harness de verificación unificado + línea base
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#w0-t02-gobernanza-minima-del-repositorio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W0-T02 · Gobernanza mínima del repositorio
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#w0-t03-registro-trazable-de-los-148-hallazgos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W0-T03 · Registro trazable de los 148 hallazgos
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-wave-1-desbloqueo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. WAVE 1 · DESBLOQUEO
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. WAVE 1 · DESBLOQUEO">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#track-a-runtime-e-imports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Track A — Runtime e imports
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Track A — Runtime e imports">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#w1-t01-atributos-de-fallback-del-router-cfc-import-de-extended_models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W1-T01 · Atributos de fallback del router CfC + import de extended_models
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#w1-t02-decision-y-cierre-sobre-el-fallback-numpy-de-cfc_engine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W1-T02 · Decisión y cierre sobre el fallback NumPy de cfc_engine
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#w1-t03-dependencias-faltantes-de-test-y-de-benchmark" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W1-T03 · Dependencias faltantes de test y de benchmark
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#track-b-build-docker-e-higiene-del-arbol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Track B — Build, Docker e higiene del árbol
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Track B — Build, Docker e higiene del árbol">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#w1-t04-dockerfiles-y-compose-sintaxis-y-ruta-canonica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W1-T04 · Dockerfiles y compose: sintaxis y ruta canónica
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#w1-t05-higiene-de-artefactos-ignore-efectivo-binarios-dockerignore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W1-T05 · Higiene de artefactos: ignore efectivo, binarios, .dockerignore
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#track-c-lint-y-tipos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Track C — Lint y tipos
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Track C — Lint y tipos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#w1-t06-ruff-y-black-a-cero" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W1-T06 · Ruff y black a cero
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#w1-t07-mypy-ejecutable-configuracion-unica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W1-T07 · mypy . ejecutable + configuración única
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#track-d-documentacion-de-bajo-coste" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Track D — Documentación de bajo coste
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Track D — Documentación de bajo coste">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#w1-t08-correcciones-documentales-puntuales-y-metadata-del-repo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W1-T08 · Correcciones documentales puntuales y metadata del repo
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#track-e-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Track E — Tests
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Track E — Tests">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#w1-t09-los-12-tests-fallantes-pesos-cfc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W1-T09 · Los 12 tests fallantes: pesos CfC
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#w1-t10-unificacion-de-la-suite-y-fixtures-reales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W1-T10 · Unificación de la suite y fixtures reales
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-wave-2-camino-canonico-seguro-y-verificable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. WAVE 2 · CAMINO CANÓNICO SEGURO Y VERIFICABLE
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. WAVE 2 · CAMINO CANÓNICO SEGURO Y VERIFICABLE">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#track-a-contrato-de-la-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Track A — Contrato de la API
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Track A — Contrato de la API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#w2-t01-dtos-pydantic-como-cuerpos-de-request-cotas-anti-dos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W2-T01 · DTOs Pydantic como cuerpos de request + cotas anti-DoS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#w2-t02-endurecimiento-de-la-superficie-http" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W2-T02 · Endurecimiento de la superficie HTTP
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#w2-t03-nginx-headers-y-modelo-de-contenedor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W2-T03 · nginx, headers y modelo de contenedor
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#track-b-fiabilidad-del-runtime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Track B — Fiabilidad del runtime
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Track B — Fiabilidad del runtime">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#w2-t04-cache_manager-ttl-clave-versionada-concurrencia-y-observabilidad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W2-T04 · cache_manager: TTL, clave versionada, concurrencia y observabilidad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#w2-t05-excepciones-observables-logging-centralizado-y-side-effects-de-import" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W2-T05 · Excepciones observables, logging centralizado y side-effects de import
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#track-c-tipos-y-rendimiento-del-motor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Track C — Tipos y rendimiento del motor
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Track C — Tipos y rendimiento del motor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#w2-t06-cero-errores-en-el-slice-de-mypy-y-retirada-de-las-valvulas-de-escape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W2-T06 · Cero errores en el slice de mypy y retirada de las válvulas de escape
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#w2-t07-las-6-variables-descartadas-de-energy_enginepy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W2-T07 · Las 6 variables descartadas de energy_engine.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#w2-t08-urls-centralizadas-interfaz-cli-del-generador-de-tipos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W2-T08 · URLs centralizadas + interfaz CLI del generador de tipos
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#track-d-workflows-y-dependencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Track D — Workflows y dependencias
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Track D — Workflows y dependencias">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#w2-t09-correccion-de-los-workflows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W2-T09 · Corrección de los workflows
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#w2-t10-fuentes-de-verdad-de-dependencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W2-T10 · Fuentes de verdad de dependencias
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-wave-3-build-empaquetado-y-despliegue" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. WAVE 3 · BUILD, EMPAQUETADO Y DESPLIEGUE
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. WAVE 3 · BUILD, EMPAQUETADO Y DESPLIEGUE">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#w3-t01-backend-de-build-y-empaquetado-real" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W3-T01 · Backend de build y empaquetado real
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#w3-t02-capa-rust-removida-del-repositorio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W3-T02 · Capa Rust removida del repositorio
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#w3-t03-un-camino-de-despliegue-documentado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W3-T03 · Un camino de despliegue documentado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#w3-t04-versionado-unico-primer-release-y-pipeline-de-publicacion-alcanzable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W3-T04 · Versionado único, primer release y pipeline de publicación alcanzable
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#w3-t05-job-clean-clone-y-matriz-de-dependencias-minimas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W3-T05 · Job clean-clone y matriz de dependencias mínimas
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-wave-4-verdad-documental-y-primera-impresion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. WAVE 4 · VERDAD DOCUMENTAL Y PRIMERA IMPRESIÓN
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. WAVE 4 · VERDAD DOCUMENTAL Y PRIMERA IMPRESIÓN">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#w4-t01-readme-generado-desde-ci" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W4-T01 · README generado desde CI
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#w4-t02-vaciado-de-la-raiz-markdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W4-T02 · Vaciado de la raíz: Markdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#w4-t03-reconciliacion-documento-arbol" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W4-T03 · Reconciliación documento ↔ árbol
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#w4-t04-navegabilidad-de-la-documentacion-instrucciones-para-agentes-unificadas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W4-T04 · Navegabilidad de la documentación + instrucciones para agentes unificadas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#w4-t05-nomenclatura-de-producto-y-superficie-http-versionada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W4-T05 · Nomenclatura de producto y superficie HTTP versionada
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-wave-5-consolidacion-arquitectonica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. WAVE 5 · CONSOLIDACIÓN ARQUITECTÓNICA
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. WAVE 5 · CONSOLIDACIÓN ARQUITECTÓNICA">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#w5-t01-decision-y-ejecucion-sobre-los-backends-y-frontends-duplicados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W5-T01 · Decisión y ejecución sobre los backends y frontends duplicados
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#w5-t02-reorganizacion-modular-root-paquetes-y-split-de-los-engines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W5-T02 · Reorganización modular: root → paquetes, y split de los engines
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#w5-t03-codigo-duplicado-y-codigo-muerto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W5-T03 · Código duplicado y código muerto
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#w5-t04-shims-uniformes-nomenclatura-de-identificadores-y-complejidad-alta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W5-T04 · Shims uniformes, nomenclatura de identificadores y complejidad alta
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#w5-t05-cobertura-y-calidad-de-la-suite" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W5-T05 · Cobertura y calidad de la suite
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#w5-t06-cabos-sueltos-de-superficie-publica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W5-T06 · Cabos sueltos de superficie pública
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-wave-6-rendimiento-evidencia-cientifica-y-cierre" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. WAVE 6 · RENDIMIENTO, EVIDENCIA CIENTÍFICA Y CIERRE
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="9. WAVE 6 · RENDIMIENTO, EVIDENCIA CIENTÍFICA Y CIERRE">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#w6-t01-evidencia-de-escalabilidad-reproducible" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W6-T01 · Evidencia de escalabilidad reproducible
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#w6-t02-validacion-pvu-sobre-los-casos-reales-y-con-baselines-convergentes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W6-T02 · Validación PVU sobre los casos reales y con baselines convergentes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#w6-t03-paridad-de-implementaciones-y-deuda-de-rendimiento-restante" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W6-T03 · Paridad de implementaciones y deuda de rendimiento restante
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#w6-t04-cierre-de-deuda-de-tipos-adopcion-de-reglas-y-senal-social" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        W6-T04 · Cierre de deuda de tipos, adopción de reglas y señal social
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-matriz-de-cobertura-hallazgo-tarea" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. MATRIZ DE COBERTURA HALLAZGO → TAREA
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-patrones-sistemicos-tarea-que-los-ataca" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. PATRONES SISTÉMICOS → TAREA QUE LOS ATACA
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-resumen-de-ejecucion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. RESUMEN DE EJECUCIÓN
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="workflow-de-remediacion-massive">WORKFLOW DE REMEDIACIÓN — MASSIVE</h1>
+<p><strong>Derivado de:</strong> <code>AUDIT_REPORT_2026-09-15.md</code> (148 hallazgos, commit <code>473b04a6</code>)
+<strong>Fecha:</strong> 2026-09-15
+<strong>Formato:</strong> plan de ejecución por olas, listo para asignar a un equipo de agentes pre-configurado</p>
+<hr />
+<h2 id="0-convenciones-de-este-documento">0. CONVENCIONES DE ESTE DOCUMENTO</h2>
+<p>Cada tarea se identifica con <code>W{ola}-T{nn}</code> y declara cinco campos:</p>
+<table>
+<thead>
+<tr>
+<th>Campo</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td>IDs del reporte de auditoría que la tarea cierra (o avanza)</td>
+</tr>
+<tr>
+<td><strong>Resultado esperado</strong></td>
+<td>El estado del repositorio al terminar — no el procedimiento</td>
+</tr>
+<tr>
+<td><strong>Criterio de aceptación</strong></td>
+<td>Comandos ejecutables y su salida esperada. Si el comando no pasa, la tarea no está hecha</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td>IDs de tareas que deben estar cerradas antes de empezar</td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>XS · S · M · L · XL (mismo criterio que el reporte)</td>
+</tr>
+</tbody>
+</table>
+<p>Reglas globales que aplican a <strong>todas</strong> las tareas:</p>
+<ul>
+<li><strong>G-1 · No regresión de los 17 hallazgos 🟢.</strong> Los activos <code>D1-007</code> <code>D1-010</code> <code>D2-007</code> <code>D2-015</code> <code>D3-015</code> <code>D3-020</code> <code>D4-013</code> <code>D5-017</code> <code>D5-018</code> <code>D6-018</code> <code>D6-019</code> <code>D7-017</code> <code>D7-018</code> <code>D8-008</code> <code>D8-009</code> <code>D8-012</code> <code>D9-011</code> deben seguir cumpliéndose al cierre de cada ola. El gate <code>make verify</code> de <code>W0-T01</code> los incluye.</li>
+<li><strong>G-2 · Un commit por tarea</strong>, con el ID de tarea y los IDs de hallazgo en el mensaje (<code>fix(W1-T01): init CfC fallback attrs [D1-001 D1-003]</code>).</li>
+<li><strong>G-3 · Ninguna tarea introduce superficie nueva</strong> (módulo, endpoint, workflow, documento, paquete) salvo que el resultado esperado lo requiera explícitamente. Es el correctivo del Patrón 9 del reporte.</li>
+<li><strong>G-4 · Los criterios de aceptación se ejecutan desde la raíz del repo</strong>, en un venv con <code>pip install -r requirements.txt</code> y nada más, salvo que la tarea diga lo contrario.</li>
+<li><strong>G-5 · Cuando una tarea declare una decisión binaria</strong> (p. ej. <code>D5-008</code>: torch duro vs. fallback real), la decisión se registra en <code>docs/architecture/CANONICAL_SOURCES.md</code> antes de ejecutar, y se cita el ID del hallazgo.</li>
+<li><strong>G-6 · Orden dentro de la ola:</strong> los tracks son paralelizables entre sí; dentro de un track las tareas son secuenciales.</li>
+</ul>
+<hr />
+<h2 id="1-precondicion-externa">1. PRECONDICIÓN EXTERNA</h2>
+<p><strong>PE-1 · Restaurar la ejecución de GitHub Actions.</strong> Los 13 workflows fallan por bloqueo de facturación (<code>D7-001</code>). Ninguna tarea de este plan depende de que PE-1 esté resuelta — todas incluyen verificación local — pero <strong>las olas 3, 4 y 5 no pueden declararse cerradas</strong> sin al menos un run completo verde en <code>main</code>. PE-1 está fuera del alcance del código.</p>
+<p><strong>PE-2 · Decisión sobre el nombre de distribución en PyPI.</strong> <code>pyproject.toml</code> publica <code>massive</code>. Verificar disponibilidad antes de <code>W3-T01</code>; si está tomado, la decisión de renombrado entra en <code>W3-T01</code> y afecta a <code>D8-002</code>.</p>
+<hr />
+<h2 id="2-grafo-de-dependencias-y-ruta-critica">2. GRAFO DE DEPENDENCIAS Y RUTA CRÍTICA</h2>
+<pre><code>                         ┌──────────────────────────── WAVE 0 ────────────────────────────┐
+                         │  W0-T01 harness+baseline   W0-T02 gobernanza   W0-T03 registro │
+                         └───────────────┬──────────────────────┬─────────────────────────┘
+                                         │ (todas las olas)     │
+        ┌────────────────────────────────┼──────────────────────┼───────────────────────────────┐
+        │                                ▼                      ▼                               │
+        │  ┌───────────────────────── WAVE 1 · DESBLOQUEO (10 tareas, 5 tracks paralelos) ─────┐│
+        │  │  A  W1-T01 ─► W1-T02 ─► W1-T03          B  W1-T04 ─► W1-T05                       ││
+        │  │  C  W1-T06 ─► W1-T07                    D  W1-T08                                 ││
+        │  │  E  W1-T09 ─► W1-T10                                                              ││
+        │  └──────┬──────────────────────────┬──────────────────────────────────────────────────┘│
+        │         │                          │                                                   │
+        │         ▼                          ▼                                                   │
+        │  ┌──── WAVE 2 · CANÓNICO (10 tareas, 4 tracks paralelos) ────┐                         │
+        │  │  A  W2-T01 ─► W2-T02 ─► W2-T03                            │                         │
+        │  │  B  W2-T04 ─► W2-T05                                      │                         │
+        │  │  C  W2-T06 ─► W2-T07 ─► W2-T08                            │                         │
+        │  │  D  W2-T09 ─► W2-T10                                      │                         │
+        │  └──────┬────────────────────────────────────────────────────┘                         │
+        │         │                                                                              │
+        │         ▼                                                                              │
+        │  ┌──── WAVE 3 · BUILD Y DESPLIEGUE (5 tareas) ────┐                                     │
+        │  │  W3-T01 ─► W3-T04          W3-T02   W3-T03     │                                     │
+        │  │  W3-T05 (gate agregado, requiere W1+W2+W3-T01..04)                                   │
+        │  └──────┬─────────────────────────────────────────┘                                     │
+        │         │                                                                              │
+        │         ├───────────────► ┌── WAVE 4 · VERDAD DOCUMENTAL (5 tareas, paralelas) ──┐      │
+        │         │                 │  W4-T01 ─► W4-T05 · W4-T02 ─► W4-T04 · W4-T03        │      │
+        │         │                 └──────────────────────┬───────────────────────────────┘      │
+        │         │                                        │                                      │
+        │         └───────────────► ┌── WAVE 5 · CONSOLIDACIÓN (6 tareas, secuencial en track) ─┐ │
+        │                           │  W5-T01 ─► W5-T02 ─► W5-T04                               │ │
+        │                           │  W5-T03 ─► W5-T05     W5-T06                               │ │
+        │                           └──────────────────────┬────────────────────────────────────┘ │
+        │                                                  │                                      │
+        │                                                  ▼                                      │
+        │                           ┌── WAVE 6 · RENDIMIENTO Y CIENCIA (4 tareas) ──┐             │
+        │                           │  W6-T01 · W6-T02 · W6-T03 · W6-T04 (cierre)   │             │
+        │                           └───────────────────────────────────────────────┘             │
+        └─────────────────────────────────────────────────────────────────────────────────────────┘
+
+RUTA CRÍTICA (la cadena más larga que determina la duración total):
+  W0-T01 → W1-T01 → W1-T02 → W1-T03 → W2-T01 → W2-T02 → W3-T01 → W3-T04 → W5-T01 → W5-T02 → W6-T04
+
+Ancho máximo de paralelismo:
+  Wave 0 → 3 pistas   Wave 1 → 5 pistas (10 tareas)   Wave 2 → 4 pistas (10 tareas)
+  Wave 3 → 4 pistas   Wave 4 → 3 pistas              Wave 5 → 2 pistas   Wave 6 → 3 pistas
+</code></pre>
+<p><strong>Por qué este orden.</strong> Tres restricciones de precedencia dominan:</p>
+<ol>
+<li><strong><code>W1-T01</code> precede a casi todo.</strong> Mientras <code>import simulator</code> falle sin torch, no se puede ejecutar el job <code>core</code> de CI, no se puede medir cobertura de forma estable, y 21 archivos de test no se recolectan. Es una corrección de una línea con el mayor radio de desbloqueo del plan.</li>
+<li><strong><code>W2-T01</code> (DTOs cableados) precede a <code>W2-T02</code> (seguridad HTTP) y a <code>W3-T01</code> (empaquetado).</strong> Las cotas anti-DoS de <code>D5-001</code> se implementan <em>como</em> DTOs; sin ellos, cada endpoint habría que protegerlo a mano y se repetiría el Patrón 5.</li>
+<li><strong><code>W5-T01</code> (decisión massive-ui-ng) precede a <code>W5-T02</code> (split de módulos).</strong> No tiene sentido reorganizar la raíz mientras exista un tercer backend cuyo destino está sin decidir; se moverían archivos dos veces.</li>
+</ol>
+<p><strong>Lo que puede empezar en cualquier momento</strong> (sin dependencias): <code>W0-T02</code>, <code>W0-T03</code>, <code>W1-T04</code>, <code>W1-T05</code>, <code>W1-T06</code>, <code>W1-T08</code>, <code>W4-T02</code>, <code>W4-T03</code>, <code>W6-T02</code>.</p>
+<hr />
+<h2 id="3-wave-0-harness-y-gobernanza">3. WAVE 0 — Harness y gobernanza</h2>
+<p>Objetivo de la ola: que exista un comando único que mida el estado del repo, y que los 148 hallazgos sean trabajo seguible. Sin esta ola no hay forma de saber si las olas siguientes convergen — que es exactamente el fallo del Patrón 3.</p>
+<hr />
+<h3 id="w0-t01-harness-de-verificacion-unificado-linea-base">W0-T01 · Harness de verificación unificado + línea base</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D7-001</code> (gate local mientras Actions esté bloqueado) · <code>D7-018</code> · <code>D7-019</code></td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>S</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> Un target <code>make verify</code> ejecuta, en orden y con salida resumida por etapa: ruff, black --check, mypy-slice, pytest con cobertura, regeneración de tipos TS con diff, <code>mkdocs build --strict</code>, y el set de guardarraíles G-1. Existe <code>make verify-baseline</code> que escribe <code>reports/audit_baseline.json</code> con las cifras medidas (nº tests, passed, failed, coverage %, ruff count, black count, mypy count, LOC, entradas root). El archivo de línea base con los valores del commit <code>473b04a6</code> está commiteado. <code>make help</code> lista ambos targets. <code>CONTRIBUTING.md</code> documenta <code>make verify</code> como requisito pre-push.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">make help | grep -E &quot;verify|verify-baseline&quot;          # → 2 líneas
+make verify-baseline &amp;&amp; test -f reports/audit_baseline.json &amp;&amp; echo OK
+python -c &quot;import json,sys; d=json.load(open('reports/audit_baseline.json'));
+assert set(d) &gt;= {'tests_total','tests_passed','tests_failed','coverage_pct','ruff_issues','black_files','mypy_errors'};
+print('baseline keys OK:', sorted(d))&quot;
+make verify ; echo &quot;exit=$?&quot;                          # → rojo hoy; es la línea base, no un fallo de la tarea
+</code></pre>
+<p>Adicional: el bloque de guardarraíles G-1 dentro de <code>make verify</code> ejecuta al menos</p>
+<pre><code class="language-bash">python -m mkdocs build --strict                                    # D6-018
+python -c &quot;import ast,sys; [ast.parse(open(f).read(),f) for f in __import__('glob').glob('**/*.py',recursive=True) if '.venv' not in f]&quot;   # D1-010
+grep -rq &quot;except:&quot; --include=&quot;*.py&quot; . &amp;&amp; exit 1 || true            # D2-007
+python scripts/todo_triage.py                                      # D2-015
+pip-audit -r requirements.txt --no-deps                            # D5-017
+python scripts/gen_ts_types.py &amp;&amp; git diff --exit-code frontend/src/types/api.generated.ts   # D3-020
+python - &lt;&lt;'PY'                                                    # D8-008 / D8-009 smoke
+from simulator import simular, resumen_historial
+h = simular({'opinion':0.5,'propaganda':0.7,'confianza':0.4,'opinion_grupo_a':0.72,
+             'opinion_grupo_b':0.28,'pertenencia_grupo':0.65}, pasos=30, verbose=False)
+assert resumen_historial(h)['pasos'] == 30
+PY
+</code></pre>
+<hr />
+<h3 id="w0-t02-gobernanza-minima-del-repositorio">W0-T02 · Gobernanza mínima del repositorio</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D5-024</code> · <code>D8-006</code></td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>S</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> Existen <code>.github/ISSUE_TEMPLATE/{bug_report.yml, feature_request.yml, documentation.yml}</code> como formularios estructurados; <code>SECURITY.md</code> en root con canal de reporte privado y referencia a <code>docs/security/threat-model.md</code>; <code>.github/CODEOWNERS</code>; <code>.github/dependabot.yml</code> cubriendo <code>pip</code>, <code>npm</code> (ambos frontends) y <code>github-actions</code>. Labels creados en el repo: <code>severity:critical</code>, <code>severity:high</code>, <code>severity:medium</code>, <code>area:engines</code>, <code>area:backend</code>, <code>area:frontend</code>, <code>area:docs</code>, <code>area:ci</code>, <code>area:security</code>, <code>area:packaging</code>, <code>area:perf</code>, <code>debt</code>, <code>good first issue</code>, <code>help wanted</code>.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">for f in .github/ISSUE_TEMPLATE/bug_report.yml .github/ISSUE_TEMPLATE/feature_request.yml \
+         .github/ISSUE_TEMPLATE/documentation.yml SECURITY.md .github/CODEOWNERS .github/dependabot.yml; do
+  test -f &quot;$f&quot; &amp;&amp; echo &quot;OK   $f&quot; || echo &quot;MISS $f&quot;; done          # → 6 × OK
+python -c &quot;import yaml,glob; [yaml.safe_load(open(f)) for f in
+  glob.glob('.github/ISSUE_TEMPLATE/*.yml')+['.github/dependabot.yml']]; print('YAML OK')&quot;
+gh label list --limit 100 | grep -cE &quot;severity:|area:|debt|good first issue|help wanted&quot;   # → ≥ 14
+grep -c &quot;threat-model&quot; SECURITY.md                                                          # → ≥ 1
+</code></pre>
+<hr />
+<h3 id="w0-t03-registro-trazable-de-los-148-hallazgos">W0-T03 · Registro trazable de los 148 hallazgos</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D1-007</code> (registro como RESUELTO) · <code>D8-012</code> (registro como RESUELTO) · habilita el seguimiento de los 146 restantes</td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>S</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W0-T02</code> (labels)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> Un archivo <code>docs/AUDIT_FINDINGS_TRACKER.md</code> con las 148 filas del reporte (ID · severidad · título · ola · tarea · estado · issue), y un issue de GitHub por cada hallazgo 🔴 y 🟠 (62 issues) etiquetado con su <code>severity:</code> y <code>area:</code> y con el ID del hallazgo en el título. Los 17 hallazgos 🟢 aparecen en el tracker con estado <code>GUARDRAIL</code> y sin issue. Los items ya resueltos (<code>D1-007</code>, <code>D8-012</code>, y la parte de <code>D5-018</code> relativa a <code>test-zapier.txt</code>) se marcan <code>RESUELTO</code> con la evidencia del reporte.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">grep -cE &quot;^\| D[1-9]-[0-9]{3} \|&quot; docs/AUDIT_FINDINGS_TRACKER.md    # → 148
+grep -c &quot;RESUELTO&quot; docs/AUDIT_FINDINGS_TRACKER.md                   # → ≥ 3
+grep -c &quot;GUARDRAIL&quot; docs/AUDIT_FINDINGS_TRACKER.md                  # → 17
+gh issue list --label &quot;severity:critical&quot; --state open --limit 100 --json number | python -c \
+  &quot;import json,sys; print(len(json.load(sys.stdin)))&quot;               # → 17
+gh issue list --label &quot;severity:high&quot; --state open --limit 100 --json number | python -c \
+  &quot;import json,sys; print(len(json.load(sys.stdin)))&quot;               # → 45
+</code></pre>
+<hr />
+<h2 id="4-wave-1-desbloqueo">4. WAVE 1 · DESBLOQUEO</h2>
+<p>Objetivo de la ola: que <code>pip install -r requirements.txt &amp;&amp; pytest tests/</code> funcione en un clone limpio, que <code>ruff</code>/<code>black</code> salgan 0, y que los artefactos de runtime dejen de estar versionados. Al cerrar esta ola, el repo pasa de "no se puede verificar" a "se puede verificar y está rojo en puntos concretos".</p>
+<p><strong>Gate de cierre de ola W1:</strong></p>
+<pre><code class="language-bash">python -c &quot;import simulator&quot;                                  # sin torch → exit 0
+python -m pytest tests/ --collect-only -q 2&gt;&amp;1 | tail -1      # → &quot;681 tests collected&quot;
+python -m pytest tests/ -q 2&gt;&amp;1 | tail -1                     # → &quot;0 failed&quot;
+ruff check . ; echo $?                                        # → 0
+black --check . ; echo $?                                     # → 0
+mypy . --ignore-missing-imports 2&gt;&amp;1 | tail -1                # → NO &quot;Duplicate module named&quot;
+docker build -f Dockerfile.optimized . 2&gt;&amp;1 | head -1         # → NO &quot;unknown instruction&quot;
+git status --porcelain | grep -cE &quot;\.pt$|\.db$|repomix-output&quot; # → 0
+</code></pre>
+<hr />
+<h3 id="track-a-runtime-e-imports">Track A — Runtime e imports</h3>
+<h4 id="w1-t01-atributos-de-fallback-del-router-cfc-import-de-extended_models">W1-T01 · Atributos de fallback del router CfC + import de <code>extended_models</code></h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D1-001</code> · <code>D1-003</code> · cierra <code>D4-010</code> · habilita <code>D1-004</code>, <code>D1-009</code></td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>XS</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W0-T01</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> <code>CfCRouter</code> inicializa <code>_lambda_corrector</code> y <code>_landscape_corrector</code> a <code>None</code> en <code>__init__</code>, de modo que <code>status</code> es evaluable con o sin torch. <code>simulator.py</code> importa las tres reglas desde su ubicación canónica <code>massive.core.extended_models</code>, y su rama <code>except</code> registra un warning (paridad con las ramas TDA y LangChain). <code>EXTENDED_MODELS_AVAILABLE</code> es <code>True</code> en un entorno normal.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">PYTHONPATH=/tmp/notorch python -c &quot;import simulator; print('OK')&quot;      # → OK   (torch bloqueado)
+PYTHONPATH=/tmp/notorch python -c &quot;import cfc_router;
+print(cfc_router.CfCRouter.get().status)&quot;                              # → dict con 6 claves, todas False
+python -c &quot;import simulator; assert simulator.EXTENDED_MODELS_AVAILABLE is True; print('OK')&quot;
+python -c &quot;from extended_models import regla_bayesiana&quot; 2&gt;&amp;1 | head -1  # → sigue fallando, ES ESPERADO
+                                                                        #   (el shim lo crea W5-T04)
+python -m pytest tests/test_cfc_router.py tests/test_cfc_engine.py -q 2&gt;&amp;1 | tail -1   # → 0 failed
+PYTHONPATH=/tmp/notorch python -m pytest tests/test_cfc_router.py -q 2&gt;&amp;1 | tail -1    # → 0 failed
+</code></pre>
+<h4 id="w1-t02-decision-y-cierre-sobre-el-fallback-numpy-de-cfc_engine">W1-T02 · Decisión y cierre sobre el fallback NumPy de <code>cfc_engine</code></h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D1-002</code> · <code>D5-008</code> (decisión binaria)</td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>S (opción A) · L (opción B)</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W1-T01</code> · <code>G-5</code> (decisión registrada)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> <strong>Decisión A</strong> (torch como dependencia dura): <code>torch</code> pasa a <code>[project] dependencies</code> y a <code>requirements.txt</code>; se elimina el bloque <code>torch = None</code> / <code>nn</code> falso y el warning que promete un fallback inexistente; los docstrings de <code>cfc_router.py</code> y <code>cfc_engine.py</code> dejan de afirmar "fallback transparente NumPy"; <code>pytest.yml</code> instala torch en los 4 jobs; <code>massive_core/neural_physics/pinns.py</code> deja de ser el único módulo con <code>import torch</code> desnudo sin documentación. <strong>Decisión B</strong> (fallback real): <code>from __future__ import annotations</code> + anotaciones cualificadas + una implementación NumPy de <code>CfCCell</code>/<code>CfCLambdaCorrector</code>/<code>CfCLandscapeModulator</code> con test de paridad contra la rama torch. Cualquiera de las dos: el mensaje de warning describe con exactitud lo que el código hace.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash"># Decisión A:
+python -c &quot;import tomllib;d=tomllib.load(open('pyproject.toml','rb'));
+assert any('torch' in x for x in d['project']['dependencies']); print('torch es dependencia base')&quot;
+grep -c &quot;implementación NumPy fallback&quot; cfc_engine.py cfc_router.py       # → 0 0
+grep -c &quot;fallback transparente&quot; cfc_router.py                             # → 0
+PYTHONPATH=/tmp/notorch python -c &quot;import simulator&quot; 2&gt;&amp;1 | head -1       # → ImportError claro, NO AttributeError
+python -c &quot;
+import importlib.util as u
+assert all(u.find_spec(m) for m in ['torch']); print('OK')&quot;
+# Ambas decisiones:
+python -m pytest tests/ -q 2&gt;&amp;1 | tail -1                                 # → 0 failed
+make verify 2&gt;&amp;1 | grep -E &quot;ruff|black&quot;                                   # → sin regresión vs. baseline
+</code></pre>
+<h4 id="w1-t03-dependencias-faltantes-de-test-y-de-benchmark">W1-T03 · Dependencias faltantes de test y de benchmark</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D4-006</code> · <code>D5-005</code> · cierra <code>D1-004</code></td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>S</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W1-T02</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> <code>httpx</code> y <code>psutil</code> declarados donde corresponde (un <code>requirements-dev.txt</code> o el extra <code>dev</code> de pyproject, y <code>psutil</code> además en <code>requirements.txt</code> por ser import duro de <code>benchmark_scalability.py</code>). Extras nuevos en <code>pyproject.toml</code> para las capacidades opcionales: <code>gpu = ["cupy"]</code>, <code>tda = ["ripser","persim"]</code>, <code>clustering = ["hdbscan"]</code>, <code>social = ["tweepy","praw"]</code>. Los 4 jobs de <code>pytest.yml</code> comparten un único paso de instalación (composite action o archivo de requisitos común) en lugar de cuatro listas divergentes.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">python -c &quot;import benchmark_scalability; print('OK')&quot;                     # → OK
+python -m pytest tests/ --collect-only -q 2&gt;&amp;1 | tail -1                  # → 681 tests collected, 0 errors
+python -m pytest tests/test_api_security.py tests/test_backend_observability.py \
+  tests/test_llm_endpoint.py -q 2&gt;&amp;1 | tail -1                            # → recolecta y corre
+python - &lt;&lt;'PY'
+import tomllib; d=tomllib.load(open('pyproject.toml','rb'))['project']['optional-dependencies']
+assert {'gpu','tda','clustering','social'} &lt;= set(d), sorted(d); print('extras OK:', sorted(d))
+PY
+diff &lt;(grep -oE &quot;pip install .*&quot; .github/workflows/pytest.yml | sort -u) /dev/null | head -1
+python -c &quot;import yaml;s=open('.github/workflows/pytest.yml').read();
+assert s.count('numpy&gt;=1.26')&lt;=1; print('instalación de deps unificada')&quot;
+</code></pre>
+<hr />
+<h3 id="track-b-build-docker-e-higiene-del-arbol">Track B — Build, Docker e higiene del árbol</h3>
+<h4 id="w1-t04-dockerfiles-y-compose-sintaxis-y-ruta-canonica">W1-T04 · Dockerfiles y compose: sintaxis y ruta canónica</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D7-004</code> · <code>D1-011</code> · avanza <code>D7-005</code></td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>S</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> No queda ningún archivo de build con una línea que no sea sintaxis válida. El bucle de referencias cruzadas (<code>docker-compose.yml</code> → <code>single.yml</code> → <code>Dockerfile.optimized</code> → <code>Dockerfile</code>) se rompe: una sola pareja compose+Dockerfile es canónica y la otra está eliminada o movida a <code>docs/examples/</code> con banner. <code>README.md</code> y <code>README_ES.md</code> nombran explícitamente el camino canónico.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">head -1 Dockerfile.optimized 2&gt;/dev/null | grep -qE &quot;^#&quot; &amp;&amp; echo &quot;comentado OK&quot; || \
+  test ! -f Dockerfile.optimized &amp;&amp; echo &quot;eliminado OK&quot;
+docker compose -f docker-compose.yml config -q &amp;&amp; echo &quot;compose OK&quot;
+grep -cE &quot;docker-compose|Dockerfile&quot; README.md                            # → ≥ 1 (camino documentado)
+grep -c &quot;LEGACY&quot; docker-compose.yml docker-compose.single.yml 2&gt;/dev/null  # → 0 (o solo existe uno)
+</code></pre>
+<h4 id="w1-t05-higiene-de-artefactos-ignore-efectivo-binarios-dockerignore">W1-T05 · Higiene de artefactos: ignore efectivo, binarios, <code>.dockerignore</code></h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D5-019</code> · <code>D5-020</code> · <code>D5-021</code> · <code>D5-022</code> · <code>D7-020</code> · <code>D8-012</code></td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>S</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> <code>.gitignore</code> corrige <code>repomack</code> → <code>repomix</code> y su comentario de sección. Las reglas de ignore y el contenido trackeado dejan de contradecirse: o los <code>.pt</code> y los <code>reports/*.json</code> se declaran evidencia versionada (y se retiran las reglas que los prohíben) o se des-trackean y se mueven a LFS/artifacts. <code>data/ui_ng/runs.db</code> deja de estar trackeado. <code>.gitattributes</code> declara binarios <code>.pt .pth .npz .png .jpg .db .sqlite</code>. <code>.dockerignore</code> incluye los pesos CfC necesarios en la imagen, excluye <code>docs/ .github/ experiments/ reports/ site/ *.md massive-ui-ng/frontend/node_modules/</code>, y corrige el glob final <code>*.env.*\.backup</code>.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">grep -n &quot;repomix-output&quot; .gitignore                                       # → presente
+grep -n &quot;repomack&quot; .gitignore                                             # → ausente
+git ls-files | grep -cE &quot;\.db$|\.sqlite$&quot;                                 # → 0
+git check-ignore -v repomix-output.xml                                    # → coincide con la regla
+grep -cE &quot;^\*\.(pt|pth|npz|png|jpg|db|sqlite) binary&quot; .gitattributes      # → ≥ 1
+python -c &quot;
+lines=open('.dockerignore').read().split('\n')
+assert not any(l.strip().startswith('models/') for l in lines), 'models/ sigue excluido'
+assert any('massive-ui-ng/frontend/node_modules' in l for l in lines)
+assert not any(l.strip().endswith('\\\\.backup') for l in lines)
+print('.dockerignore OK')&quot;
+docker build -f Dockerfile -t massive-audit . &amp;&amp; \
+  docker run --rm massive-audit python -c &quot;
+from pathlib import Path; assert (Path('models/cfc_calibrated/cfc_residual.pt')).exists(), 'sin pesos'
+print('pesos CfC presentes en la imagen')&quot;
+</code></pre>
+<hr />
+<h3 id="track-c-lint-y-tipos">Track C — Lint y tipos</h3>
+<h4 id="w1-t06-ruff-y-black-a-cero">W1-T06 · Ruff y black a cero</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D2-001</code> · <code>D2-002</code> · <code>D2-017</code> (parcial: habilitar <code>FAST</code>, <code>RUF013</code>)</td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>S</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> <code>ruff check .</code> y <code>black --check .</code> salen 0 sobre todo el repo, incluido <code>massive-ui-ng/</code>. Los <code>from __future__</code> vuelven a la primera línea en los 4 archivos afectados; los 6 <code>F841</code> de <code>energy_engine.py</code> quedan resueltos (por <code>W2-T07</code>, no con <code>noqa</code>); las dependencias FastAPI sin anotar (<code>FAST002</code>, 14) y los <code>Optional</code> implícitos (<code>RUF013</code>, 5) están corregidos. <code>black</code> y <code>ruff</code> quedan pinneados a versión exacta.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">ruff check . ; echo &quot;ruff=$?&quot;                                             # → 0
+black --check . ; echo &quot;black=$?&quot;                                         # → 0
+ruff check . --select F841 ; echo $?                                      # → 0 (sin noqa añadidos)
+grep -c &quot;noqa&quot; energy_engine.py                                           # → 0 nuevos
+ruff check . --select FAST002,RUF013 ; echo $?                            # → 0
+python -c &quot;
+import re;s=open('pyproject.toml').read()+open('requirements-dev.txt').read() if __import__('os').path.exists('requirements-dev.txt') else open('pyproject.toml').read()
+assert re.search(r'black[=&gt;&lt;=~!]*=?\d+\.\d+\.\d+', s) or 'black==' in s; print('black pinneado')&quot;
+git diff --stat HEAD~1 -- '*.py' | tail -1                                # → sin cambios de comportamiento
+make verify 2&gt;&amp;1 | grep -E &quot;tests_passed&quot;                                 # → sin regresión vs. baseline
+</code></pre>
+<h4 id="w1-t07-mypy-ejecutable-configuracion-unica">W1-T07 · <code>mypy .</code> ejecutable + configuración única</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D2-004</code> · <code>D7-014</code> (parcial)</td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>XS</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> <code>mypy .</code> ya no aborta por <code>Duplicate module named "backend"</code>: la configuración declara exclusiones para <code>massive-ui-ng/</code>, <code>frontend/</code>, <code>node_modules/</code>, <code>site/</code>, <code>dist/</code>, <code>build/</code>. La configuración de mypy vive en un solo archivo. El opt-out de <code>multilayer_engine_sparse</code> lleva asociado un número de issue.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">mypy . --ignore-missing-imports 2&gt;&amp;1 | grep -c &quot;Duplicate module&quot;          # → 0
+mypy . --ignore-missing-imports 2&gt;&amp;1 | tail -1                             # → &quot;Found N errors&quot; (N medible)
+test ! -f mypy.ini -o ! -f pyproject.toml || \
+  python -c &quot;import tomllib;print('tool.mypy' in tomllib.load(open('pyproject.toml','rb')).get('tool',{}))&quot;
+grep -cE &quot;multilayer_engine_sparse&quot; pyproject.toml mypy.ini 2&gt;/dev/null
+grep -nE &quot;#.*issue|#.*[0-9]{2}&quot; pyproject.toml mypy.ini 2&gt;/dev/null | grep -i sparse   # → presente
+</code></pre>
+<hr />
+<h3 id="track-d-documentacion-de-bajo-coste">Track D — Documentación de bajo coste</h3>
+<h4 id="w1-t08-correcciones-documentales-puntuales-y-metadata-del-repo">W1-T08 · Correcciones documentales puntuales y metadata del repo</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D6-006</code> · <code>D6-013</code> · <code>D6-016</code> · <code>D6-017</code> · <code>D8-003</code> · <code>D8-004</code></td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>S</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> Las fechas imposibles de los tres reportes de root están corregidas o los reportes llevan banner <code>&gt; ⚠️ HISTÓRICO — describe el commit {sha} del {fecha}</code>. El comando de MkDocs del README usa un puerto que no colisiona con la API. <code>.github/Agent_Copilot2</code> es <code>.github/agents/repo-surgeon.agent.md</code> con frontmatter YAML parseable. <code>.github/agents/my-agent.agent.md</code> está renombrado según su <code>name:</code> y sin el code fence envolvente. <code>LICENSE</code> es el texto canónico de Apache-2.0 con el aviso de copyright en el <code>APPENDIX</code>, y el año es coherente con la historia del proyecto. Los topics del repo no incluyen <code>streamlit</code> ni <code>scaleable</code>, e incluyen al menos 10 de los topics sugeridos en <code>D8-004</code>; la descripción expande el acrónimo.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">grep -cE &quot;Fecha: 2025|Fecha:\*\* 2025|\*\*Fecha:\*\* 2025&quot; REPORT_*.md     # → 0, o cada uno con banner HISTÓRICO
+grep -c &quot;HISTÓRICO&quot; REPORT_BUGS.md REPORT_OPTIMIZATION.md REPORT_STRUCTURE.md
+grep -nE &quot;mkdocs serve&quot; README.md README_ES.md | grep -vc &quot;:8000&quot;          # → ≥ 1 (puerto distinto)
+python -c &quot;
+import yaml,glob
+for f in glob.glob('.github/agents/*.agent.md'):
+    t=open(f).read().lstrip()
+    assert t.startswith('---'), f
+    fm=t.split('---')[1]; yaml.safe_load(fm); print('frontmatter OK:', f)
+assert len(glob.glob('.github/agents/*.agent.md'))&gt;=2&quot;
+test ! -f .github/Agent_Copilot2 &amp;&amp; echo &quot;renombrado OK&quot;
+gh repo view --json licenseInfo --jq '.licenseInfo.key'                    # → apache-2.0
+gh repo view --json repositoryTopics --jq '[.repositoryTopics[].name] |
+  (index(.,&quot;streamlit&quot;)==null and index(.,&quot;scaleable&quot;)==null)'              # → true
+gh repo view --json repositoryTopics --jq '.repositoryTopics | length'      # → ≥ 13
+</code></pre>
+<hr />
+<h3 id="track-e-tests">Track E — Tests</h3>
+<h4 id="w1-t09-los-12-tests-fallantes-pesos-cfc">W1-T09 · Los 12 tests fallantes: pesos CfC</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D4-001</code></td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>M</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W0-T01</code> · <code>G-5</code> (decisión registrada) · <code>W1-T05</code> (si se opta por LFS)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> <code>pytest tests/</code> sale con 0 fallos en un clone limpio. Una de las tres rutas, decidida y registrada: <strong>(a)</strong> los tres pesos (<code>cfc_lambda_corrector.pt</code>, <code>cfc_landscape.pt</code>, <code>cfc_temperature.pt</code>) se publican vía Git LFS con <code>.gitattributes</code> configurado y <code>models/cfc_calibrated/</code> completo; <strong>(b)</strong> los 12 tests se convierten en <code>skipif(not _path.exists())</code> con un fixture de descarga documentado y un contador de skips visible en el resumen; <strong>(c)</strong> los pesos se regeneran en CI a partir de <code>train_cfc_*.py</code> sobre <code>datasets/</code>. La afirmación del README sobre la reducción de error del ~50 % en Brexit queda respaldada por la ruta elegida o se retira.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">rm -rf .venv-clean &amp;&amp; python -m venv .venv-clean &amp;&amp; . .venv-clean/bin/activate
+pip install -q -r requirements.txt &amp;&amp; python -m pytest tests/ -q 2&gt;&amp;1 | tail -1   # → &quot;0 failed&quot;
+# ruta (a):
+git lfs ls-files | grep -c &quot;models/cfc_calibrated&quot;                       # → ≥ 3
+python -m pytest tests/test_cfc_lambda_integration.py tests/test_cfc_landscape_integration.py \
+  tests/test_brexit_calibration.py -q 2&gt;&amp;1 | tail -1                     # → 12 passed
+# ruta (b):
+python -m pytest tests/ -q -rs 2&gt;&amp;1 | grep -c SKIPPED                    # → ≥ 12, y el resumen los lista
+grep -c &quot;50 %&quot; README.md README_ES.md                                    # → 0, o respaldado por un reporte commiteado
+</code></pre>
+<h4 id="w1-t10-unificacion-de-la-suite-y-fixtures-reales">W1-T10 · Unificación de la suite y fixtures reales</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D4-007</code> · <code>D4-008</code> · <code>D4-009</code> · <code>D4-014</code> (parcial)</td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>S</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W1-T09</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> Existe <code>tests/conftest.py</code> con: <code>sys.path</code> explícito, fixture autouse que resetea <code>CfCRouter._instance</code> entre tests, fixture que aísla <code>MASSIVE_ENV</code>, y fixture que redirige los archivos creados por efectos colaterales de import a <code>tmp_path</code>. Los 2 archivos de <code>massive-ui-ng/tests/</code> están dentro de <code>testpaths</code> o movidos a <code>tests/</code>. <code>tests/test_cfc_engine.py::test_import_no_crash_without_torch</code> ejercita de verdad el camino sin torch (subprocess con <code>torch</code> bloqueado) y pasa en ambas configuraciones. <code>addopts</code> ya no desactiva un plugin inexistente.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">test -f tests/conftest.py &amp;&amp; grep -cE &quot;@pytest.fixture&quot; tests/conftest.py     # → ≥ 3
+python -c &quot;import tomllib;p=tomllib.load(open('pyproject.toml','rb'));
+o=p['tool']['pytest']['ini_options'];
+assert 'libtmux' not in o.get('addopts',''); print('addopts OK:', o['addopts'])&quot;
+python -m pytest tests/ -q -p no:randomly 2&gt;&amp;1 | tail -1                      # → 0 failed
+python -m pytest tests/ -q 2&gt;&amp;1 | tail -1                                     # → mismo resultado (sin orden-dependencia)
+python -m pytest tests/test_cfc_engine.py::TestCfCEngineImport -q 2&gt;&amp;1 | tail -1
+PYTHONPATH=/tmp/notorch python -m pytest tests/test_cfc_engine.py::TestCfCEngineImport -q 2&gt;&amp;1 | tail -1
+                                                                                # → ambos pasan
+ls -A | grep -cE &quot;massive_run.log|landscapes_cache.db&quot;                          # → 0 tras correr la suite
+</code></pre>
+<hr />
+<h2 id="5-wave-2-camino-canonico-seguro-y-verificable">5. WAVE 2 · CAMINO CANÓNICO SEGURO Y VERIFICABLE</h2>
+<p>Objetivo de la ola: que la superficie HTTP canónica valide lo que declara, que los fallos sean observables en lugar de silenciosos, y que los gates de CI dejen de tener válvulas de escape. Al cierre, <code>D5-001</code> (el hallazgo de seguridad más grave) está cerrado y <code>typecheck.yml</code> puede fallar.</p>
+<p><strong>Gate de cierre de ola W2:</strong></p>
+<pre><code class="language-bash">curl -s -o /dev/null -w &quot;%{http_code}&quot; -X POST localhost:8000/v1/simulate \
+  -H &quot;X-API-Key: $K&quot; -H &quot;Content-Type: application/json&quot; -d '{&quot;pasos&quot;: 99999999}'   # → 422
+curl -s -o /dev/null -w &quot;%{http_code}&quot; localhost:8000/metrics                        # → 401 (o 200 solo desde CIDR interno)
+MASSIVE_ENV=production uvicorn backend.app.main:app &amp; sleep 3
+curl -s -o /dev/null -w &quot;%{http_code}&quot; -X POST localhost:8000/v1/simulate \
+  -H &quot;X-API-Key: dev-secret-key&quot; -d '{}'                                             # → 401/503
+python scripts/typecheck_slice.py ; echo $?                                          # → 0
+grep -c &quot;|| true&quot; .github/workflows/lint.yml                                         # → 0
+grep -c &quot;continue-on-error&quot; .github/workflows/typecheck.yml                          # → 0
+grep -rn &quot;except Exception&quot; --include=&quot;*.py&quot; backend services massive_core | \
+  grep -c &quot;pass$&quot;                                                                    # → 0
+</code></pre>
+<hr />
+<h3 id="track-a-contrato-de-la-api">Track A — Contrato de la API</h3>
+<h4 id="w2-t01-dtos-pydantic-como-cuerpos-de-request-cotas-anti-dos">W2-T01 · DTOs Pydantic como cuerpos de request + cotas anti-DoS</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D3-004</code> · <code>D5-001</code> · avanza <code>D4-004</code>, <code>D2-003</code></td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>M</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W1-T06</code> (para no mezclar diffs de formato)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> Los 6 routers canónicos tipan su cuerpo de request con modelos Pydantic (<code>extra="forbid"</code> + <code>Field(ge=…, le=…)</code>) en lugar de <code>dict[str, Any]</code>. Las cotas son explícitas y están en un solo sitio: <code>pasos ≤ 10 000</code>, <code>n_agents ≤ 200 000</code>, <code>max_intentos ≤ 10</code>, y las que correspondan a <code>forecast</code>, <code>benchmark</code>, <code>energy</code>, <code>architect</code>. <code>/openapi.json</code> publica esquemas reales por endpoint. El README describe cotas que existen en el camino que recomienda. Existen tests de contrato por router: payload válido → 200 con esquema; campo fuera de rango → 422; campo desconocido → 422; sin <code>X-API-Key</code> → 401.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">grep -rc &quot;payload: dict\[str, Any\]&quot; backend/app/routers/*.py | grep -v &quot;:0&quot;   # → vacío
+python - &lt;&lt;'PY'
+import json, urllib.request
+spec = json.load(urllib.request.urlopen(&quot;http://127.0.0.1:8000/openapi.json&quot;))
+bodies = [p[m].get(&quot;requestBody&quot;, {}) for p in spec[&quot;paths&quot;].values() for m in p if m in (&quot;post&quot;,&quot;put&quot;)]
+withschema = [b for b in bodies if b.get(&quot;content&quot;, {}).get(&quot;application/json&quot;, {}).get(&quot;schema&quot;, {}).get(&quot;$ref&quot;)]
+assert len(withschema) &gt;= 6, f&quot;solo {len(withschema)} endpoints con esquema&quot;
+print(f&quot;{len(withschema)} endpoints con DTO cableado&quot;)
+PY
+for body in '{&quot;pasos&quot;:99999999}' '{&quot;n_agents&quot;:99999999}' '{&quot;max_intentos&quot;:999}' '{&quot;campo_inventado&quot;:1}'; do
+  code=$(curl -s -o /dev/null -w &quot;%{http_code}&quot; -X POST localhost:8000/v1/simulate \
+    -H &quot;X-API-Key: $K&quot; -H &quot;Content-Type: application/json&quot; -d &quot;$body&quot;); echo &quot;$body → $code&quot;; done
+                                                                                 # → 422 en los 4
+python -m pytest tests/test_api_contract.py -q 2&gt;&amp;1 | tail -1                    # → 0 failed
+python scripts/typecheck_slice.py 2&gt;&amp;1 | grep -c &quot;call-arg&quot;                      # → reducción vs. baseline
+</code></pre>
+<h4 id="w2-t02-endurecimiento-de-la-superficie-http">W2-T02 · Endurecimiento de la superficie HTTP</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D5-009</code> · <code>D5-010</code> · <code>D5-013</code> · <code>D5-023</code></td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>M</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W2-T01</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> <code>/metrics</code> requiere autenticación o está restringido por red. <code>MASSIVE_ENV</code> sin definir resuelve a un valor fail-closed (no a <code>development</code>); el fallback <code>dev-secret-key</code> exige una segunda variable explícita. <code>.env.example</code> deja de proponer <code>MASSIVE_ALLOWED_HOSTS=*</code> y el middleware valida el header <code>Host</code>. <code>/docs</code>, <code>/redoc</code> y <code>/openapi.json</code> se deshabilitan cuando el entorno es producción. <code>gitleaks.toml</code> sustituye <code>stopwords</code> genéricos por <code>regexes</code> anclados y <code>paths</code> acotados.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">curl -s -o /dev/null -w &quot;%{http_code}&quot; localhost:8000/metrics                    # → 401 (o 200 solo desde CIDR interno)
+env -u MASSIVE_ENV -u MASSIVE_API_KEY uvicorn backend.app.main:app &amp; sleep 3
+curl -s -o /dev/null -w &quot;%{http_code}&quot; -X POST localhost:8000/v1/simulate \
+  -H &quot;X-API-Key: dev-secret-key&quot; -d '{&quot;pasos&quot;:5}'                                # → 401/503, NO 200
+grep -n &quot;MASSIVE_ALLOWED_HOSTS&quot; .env.example | grep -vc &quot;\*&quot;                     # → ≥ 1
+python -c &quot;
+from massive_core.config.api_auth import is_dev_env
+assert is_dev_env(None) is False, 'unset sigue siendo development'
+print('fail-closed OK')&quot;
+python - &lt;&lt;'PY'
+import tomllib, sys
+try: cfg = tomllib.load(open(&quot;gitleaks.toml&quot;,&quot;rb&quot;))
+except Exception: cfg = None
+txt = open(&quot;gitleaks.toml&quot;).read()
+assert txt.count(&quot;stopwords&quot;) &lt;= 1, txt.count(&quot;stopwords&quot;)
+print(&quot;allowlist endurecida&quot;)
+PY
+python -m pytest tests/test_api_security.py -q 2&gt;&amp;1 | tail -1                    # → 0 failed
+</code></pre>
+<h4 id="w2-t03-nginx-headers-y-modelo-de-contenedor">W2-T03 · nginx, headers y modelo de contenedor</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D5-014</code> · <code>D5-015</code> · <code>D7-016</code></td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>M</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W2-T02</code> · <code>W1-T04</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> Los headers de seguridad se aplican también a las respuestas de assets estáticos (include compartido o repetición del bloque en cada <code>location</code>). La CSP no usa <code>'unsafe-inline'</code> en <code>script-src</code>; <code>connect-src</code> enumera los proveedores reales; se añade <code>server_tokens off</code> y <code>Permissions-Policy</code>; se retira <code>X-XSS-Protection</code>. El contenedor tiene un único modelo de procesos coherente: o dos contenedores (nginx + api) en el compose, o supervisord sin directivas <code>user=root</code> inefectivas y con el mecanismo de bind :80 documentado. Una sola definición de healthcheck (<code>/health</code>).</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">docker compose up -d &amp;&amp; sleep 10
+for p in / /assets/app.js /health /metrics; do
+  echo &quot;== $p&quot;; curl -sI &quot;localhost$p&quot; | grep -iE &quot;content-security-policy|x-content-type|strict-transport&quot; | wc -l
+done                                                        # → ≥ 3 en TODAS las rutas, incluido /assets
+curl -sI localhost/ | grep -ci &quot;x-xss-protection&quot;           # → 0
+curl -sI localhost/ | grep -ci &quot;server: nginx/&quot;             # → 0 (server_tokens off)
+grep -c &quot;unsafe-inline&quot; nginx.conf                          # → ≤ 1 (solo style-src, si aplica)
+grep -c &quot;user=root&quot; supervisord.conf                        # → 0 (o dos contenedores en compose)
+grep -c &quot;healthcheck&quot; Dockerfile docker-compose.yml | awk -F: '{s+=$2} END{print s}'   # → definición única
+</code></pre>
+<hr />
+<h3 id="track-b-fiabilidad-del-runtime">Track B — Fiabilidad del runtime</h3>
+<h4 id="w2-t04-cache_manager-ttl-clave-versionada-concurrencia-y-observabilidad">W2-T04 · <code>cache_manager</code>: TTL, clave versionada, concurrencia y observabilidad</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D9-001</code> · <code>D9-002</code> · <code>D9-003</code> · <code>D2-008</code> (el <code>print</code> de <code>cache_manager.py:36</code>)</td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>M</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W1-T06</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> El cache tiene TTL configurable por env y lo aplica en la lectura (<code>created_at</code> deja de ser una columna muerta). La capa en memoria tiene límite de tamaño con política de desalojo. La clave usa un hash no-MD5 de ancho completo e incluye un <code>CACHE_SCHEMA_VERSION</code> más un fingerprint de los pesos CfC y de <code>MASSIVE_RUNTIME_PARAMS</code>. Las operaciones sobre memoria y SQLite están bajo lock. Los cuatro <code>except Exception</code> registran warning con <code>exc_info</code> e incrementan un contador expuesto en <code>/metrics</code>; <code>clear()</code> es transaccional. El docstring de la clase describe con exactitud las garantías reales.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">grep -c &quot;created_at&quot; cache_manager.py                                    # → ≥ 2 (definición + lectura)
+grep -cE &quot;md5&quot; cache_manager.py                                          # → 0
+grep -cE &quot;Lock\(|lock\b&quot; cache_manager.py                                # → ≥ 2
+grep -cE &quot;except Exception:\s*$&quot; -A1 cache_manager.py | grep -c &quot;pass&quot;   # → 0
+grep -cE &quot;print\(&quot; cache_manager.py                                      # → 0
+python - &lt;&lt;'PY'
+import time, os
+os.environ[&quot;MASSIVE_CACHE_TTL_SECONDS&quot;] = &quot;1&quot;
+import cache_manager
+c = cache_manager.LandscapeCache(db_path=&quot;:memory:&quot;)
+c.set(&quot;objetivo de prueba&quot;, {&quot;a&quot;: 1}); assert c.get(&quot;objetivo de prueba&quot;) == {&quot;a&quot;: 1}
+time.sleep(1.5); assert c.get(&quot;objetivo de prueba&quot;) is None, &quot;el TTL no expira&quot;
+print(&quot;TTL OK&quot;)
+k1 = c._key(&quot;mismo objetivo&quot;); os.environ[&quot;MASSIVE_RUNTIME_PARAMS&quot;] = &quot;cambiado&quot;
+assert c._key(&quot;mismo objetivo&quot;) != k1 or &quot;CACHE_SCHEMA_VERSION&quot; in open(&quot;cache_manager.py&quot;).read()
+print(&quot;clave versionada OK&quot;)
+PY
+python - &lt;&lt;'PY'
+import threading, cache_manager
+c = cache_manager.LandscapeCache(db_path=&quot;:memory:&quot;)
+errs = []
+def w(i):
+    try:
+        for j in range(200): c.set(f&quot;goal-{i}-{j}&quot;, {&quot;i&quot;: i, &quot;j&quot;: j}); c.get(f&quot;goal-{i}-{j}&quot;)
+    except Exception as e: errs.append(e)
+ts = [threading.Thread(target=w, args=(i,)) for i in range(8)]
+[t.start() for t in ts]; [t.join() for t in ts]
+assert not errs, errs[:3]; print(&quot;concurrencia sin errores:&quot;, len(errs))
+PY
+curl -s localhost:8000/metrics | grep -c &quot;cache_&quot;                        # → ≥ 1 (hits/misses/errors)
+</code></pre>
+<h4 id="w2-t05-excepciones-observables-logging-centralizado-y-side-effects-de-import">W2-T05 · Excepciones observables, logging centralizado y side-effects de import</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D2-005</code> · <code>D1-008</code> · <code>D2-009</code> · <code>D2-010</code></td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>M</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W1-T06</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> Ningún handler <code>except Exception</code> del código de librería (<code>backend/</code>, <code>services/</code>, <code>massive/</code>, <code>massive_core/</code>, módulos root) termina en <code>pass</code>/<code>continue</code> sin registrar. Ningún módulo de librería llama a <code>logging.basicConfig</code>; los dos de <code>tests/</code> tampoco. Todos los loggers de librería usan <code>getLogger(__name__)</code> y la jerarquía se configura desde <code>massive_core/config/logging_setup.py</code>. Importar cualquier módulo no crea archivos en el CWD: <code>massive_run.log</code> y <code>landscapes_cache.db</code> pasan a rutas configurables con default fuera del CWD.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">python - &lt;&lt;'PY'
+import ast, glob, sys
+bad = []
+for f in glob.glob(&quot;**/*.py&quot;, recursive=True):
+    if any(x in f for x in (&quot;.venv&quot;,&quot;node_modules&quot;,&quot;site/&quot;,&quot;/tests/&quot;,&quot;experiments/&quot;,&quot;scripts/&quot;)): continue
+    try: t = ast.parse(open(f).read(), f)
+    except SyntaxError: continue
+    for n in ast.walk(t):
+        if isinstance(n, ast.ExceptHandler) and n.body and all(
+              isinstance(s, ast.Pass) or (isinstance(s, ast.Continue)) for s in n.body):
+            bad.append(f&quot;{f}:{n.lineno}&quot;)
+assert not bad, bad; print(&quot;0 excepciones silenciadas en librería&quot;)
+PY
+grep -rn &quot;logging.basicConfig&quot; --include=&quot;*.py&quot; backend services massive massive_core *.py tests | \
+  grep -vcE &quot;logging_setup.py|cli/main.py|__main__|benchmarks/runner.py|benchmark_scalability.py|train_cfc|cfc_trainer.py&quot;   # → 0
+grep -rhn &quot;getLogger(&quot; --include=&quot;*.py&quot; backend services massive massive_core *.py | \
+  grep -vc &quot;__name__&quot;                                                          # → 0
+python - &lt;&lt;'PY'
+import os, glob, subprocess, tempfile, sys
+before = set(glob.glob(&quot;*&quot;))
+subprocess.run([sys.executable, &quot;-c&quot;, &quot;import simulator&quot;], check=True, cwd=os.getcwd())
+new = set(glob.glob(&quot;*&quot;)) - before
+assert not new, f&quot;import creó: {new}&quot;; print(&quot;import sin side-effects en CWD&quot;)
+PY
+python -m pytest tests/ -q 2&gt;&amp;1 | tail -1                                      # → 0 failed
+</code></pre>
+<hr />
+<h3 id="track-c-tipos-y-rendimiento-del-motor">Track C — Tipos y rendimiento del motor</h3>
+<h4 id="w2-t06-cero-errores-en-el-slice-de-mypy-y-retirada-de-las-valvulas-de-escape">W2-T06 · Cero errores en el slice de mypy y retirada de las válvulas de escape</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D7-006</code> · <code>D2-003</code> (los 36 del slice) · avanza <code>D7-002</code></td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>M</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W1-T07</code> · <code>W2-T01</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> <code>scripts/typecheck_slice.py</code> sale 0. <code>services/llm_orchestrator.py:479</code> ya no asigna un <code>ForecastResult</code> a una variable <code>dict[str, Any]</code> (el <code>hasattr(result, "model_dump")</code> defensivo deja de ser necesario). <code>lint.yml</code> pierde el <code>|| true</code> y <code>typecheck.yml</code> pierde el <code>continue-on-error: true</code>; ambos jobs pueden fallar y de hecho fallan si se introduce un error. El badge de MyPy del README refleja un check bloqueante.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">python scripts/typecheck_slice.py ; echo &quot;slice=$?&quot;                          # → 0
+mypy --config-file pyproject.toml massive/ backend/ services/ massive_core/ 2&gt;&amp;1 | tail -1   # → Success
+grep -c &quot;|| true&quot; .github/workflows/lint.yml                                 # → 0
+grep -c &quot;continue-on-error&quot; .github/workflows/typecheck.yml                  # → 0
+grep -n &quot;hasattr(result&quot; services/llm_orchestrator.py                        # → ausente
+# prueba de que el gate muerde:
+cp services/llm_orchestrator.py /tmp/bk &amp;&amp; \
+  printf '\ndef _probe(x: int) -&gt; str:\n    return x\n' &gt;&gt; services/llm_orchestrator.py &amp;&amp; \
+  python scripts/typecheck_slice.py ; rc=$? ; cp /tmp/bk services/llm_orchestrator.py ; \
+  echo &quot;gate detecta error inyectado: rc=$rc&quot;                                # → rc=1
+</code></pre>
+<h4 id="w2-t07-las-6-variables-descartadas-de-energy_enginepy">W2-T07 · Las 6 variables descartadas de <code>energy_engine.py</code></h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D9-004</code> · <code>D2-006</code></td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>M</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W1-T06</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> Cada una de las 6 variables (<code>sigma2</code>, <code>att_positions</code>, <code>att_strengths</code>, <code>rep_positions</code>, <code>rep_strengths</code>, <code>gini</code>) está cableada a la dinámica o eliminada, con la decisión documentada. Si <code>gini</code> alimenta el acoplamiento reactivo descrito en <code>MASSIVE_REACTIVE_COHERENCE_PLAN.md</code>, el test correspondiente pasa. El coste por paso del motor no aumenta.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">ruff check energy_engine.py --select F841 ; echo $?                          # → 0
+grep -nE &quot;gini&quot; energy_engine.py | head -5                                   # → cableado o eliminado, no asignado-y-olvidado
+python -m pytest tests/test_cfc_lambda_integration.py -q -k reactive 2&gt;&amp;1 | tail -1   # → passed (si aplica la hipótesis de coherencia)
+python - &lt;&lt;'PY'
+import time, numpy as np
+from energy_engine import SocialEnergyEngine
+e = SocialEnergyEngine(n_agents=2000, seed=42)
+t = time.perf_counter(); e.step(50); dt = time.perf_counter() - t
+print(f&quot;2k agents × 50 steps: {dt:.2f}s&quot;)
+assert dt &lt; 30, dt
+PY
+</code></pre>
+<h4 id="w2-t08-urls-centralizadas-interfaz-cli-del-generador-de-tipos">W2-T08 · URLs centralizadas + interfaz CLI del generador de tipos</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D2-016</code> · <code>D3-019</code> · protege <code>D3-020</code></td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>S</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W1-T06</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> Las URLs base de proveedores LLM viven en <code>massive_core/config/settings.py</code> y todos los consumidores (incluido <code>interpreter_layer.py:222</code>) leen de ahí o de su variable de entorno. <code>scripts/gen_ts_types.py</code> tiene <code>argparse</code> con <code>--dry-run</code> (compara sin escribir, exit 1 si hay diff), <code>--stdout</code>, <code>--out PATH</code> y <code>--check</code>. <code>validate_ts_types.yml</code> usa <code>--check</code>. El fork roto de <code>massive-ui-ng/infra/scripts/</code> queda eliminado o reparado (según lo que decida <code>W5-T01</code>).</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">grep -n &quot;localhost:11434&quot; interpreter_layer.py | grep -vc getenv              # → 0
+python - &lt;&lt;'PY'
+import re
+n = 0
+for f in [&quot;interpreter_layer.py&quot;,&quot;langchain_workflows.py&quot;,&quot;massive-ui-ng/backend/app/llm_chat.py&quot;]:
+    try: t = open(f).read()
+    except FileNotFoundError: continue
+    for m in re.finditer(r'&quot;https?://[^&quot;]+&quot;', t):
+        if &quot;localhost&quot; in m.group() or &quot;127.0.0.1&quot; in m.group(): n += 1
+print(&quot;hardcodes localhost en .py de librería:&quot;, n); assert n == 0
+PY
+cp frontend/src/types/api.generated.ts /tmp/orig
+python scripts/gen_ts_types.py --dry-run ; echo &quot;dry-run=$?&quot;                  # → 0 y el archivo intacto
+diff -q /tmp/orig frontend/src/types/api.generated.ts &amp;&amp; echo &quot;no escribió&quot;
+python scripts/gen_ts_types.py --stdout | head -3 | grep -qE &quot;^//|^import|^export&quot; &amp;&amp; echo &quot;stdout OK&quot;
+python scripts/gen_ts_types.py --check ; echo &quot;check=$?&quot;                      # → 0
+grep -n &quot;gen_ts_types.py --check&quot; .github/workflows/validate_ts_types.yml     # → presente
+</code></pre>
+<hr />
+<h3 id="track-d-workflows-y-dependencias">Track D — Workflows y dependencias</h3>
+<h4 id="w2-t09-correccion-de-los-workflows">W2-T09 · Corrección de los workflows</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D7-003</code> · <code>D7-010</code> · <code>D7-012</code> · <code>D7-013</code></td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>M</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W1-T02</code> · <code>W1-T03</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> Los 4 jobs de <code>pytest.yml</code> instalan el mismo conjunto de dependencias y ninguno corre tests cuyas dependencias no instala. <code>pvu-validation.yml</code> se dispara también en push a <code>main</code> (o por schedule semanal). Los smoke tests de CI generan la clave de API en el step en lugar de usar un valor fijo. <code>secret_scan.yml</code> se divide en escaneo incremental (por push) y escaneo de historial completo (programado), con <code>paths-ignore</code>.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">python - &lt;&lt;'PY'
+import yaml
+w = yaml.safe_load(open(&quot;.github/workflows/pytest.yml&quot;))
+installs = [s.get(&quot;run&quot;,&quot;&quot;) for j in w[&quot;jobs&quot;].values() for s in j[&quot;steps&quot;] if &quot;pip install&quot; in s.get(&quot;run&quot;,&quot;&quot;)]
+print(f&quot;{len(installs)} pasos de instalación&quot;)
+core = [i for i in installs if &quot;test_simulator&quot; in i or True]
+w2 = yaml.safe_load(open(&quot;.github/workflows/pvu-validation.yml&quot;))
+assert &quot;push&quot; in (w2.get(&quot;on&quot;) or w2.get(True)), w2.get(&quot;on&quot;)
+print(&quot;pvu-validation corre en push OK&quot;)
+PY
+grep -c &quot;ci-test-key&quot; .github/workflows/*.yml                                 # → 0
+grep -cE &quot;openssl rand|secrets\.&quot; .github/workflows/docker-e2e.yml            # → ≥ 1
+grep -c &quot;fetch-depth: 0&quot; .github/workflows/secret_scan.yml                    # → solo en el job programado
+grep -c &quot;schedule&quot; .github/workflows/secret_scan.yml                          # → ≥ 1
+python - &lt;&lt;'PY'
+import yaml, glob
+for f in glob.glob(&quot;.github/workflows/*.yml&quot;): yaml.safe_load(open(f))
+print(&quot;13/13 YAML válidos&quot;)
+PY
+</code></pre>
+<h4 id="w2-t10-fuentes-de-verdad-de-dependencias">W2-T10 · Fuentes de verdad de dependencias</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D5-003</code> · <code>D5-004</code> · <code>D5-006</code> · <code>D5-007</code> · <code>D5-011</code> · <code>D5-012</code></td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>M</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W1-T02</code> · <code>W1-T03</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> Una sola fuente de verdad: <code>pyproject.toml</code>. <code>requirements.txt</code> se genera a partir de él (o desaparece). Existe lockfile commiteado por extra/plataforma y <code>uv.lock</code> sale del <code>.gitignore</code>. <code>streamlit</code> y <code>torchdiffeq</code> eliminados si siguen sin imports. <code>pytest</code>, <code>mkdocs*</code> y el resto de herramientas de dev/docs fuera del requirements de runtime. Los especificadores de versión son idénticos en ambas declaraciones. <code>.env.example</code> sin claves duplicadas y con una única convención de nombrado documentada; <code>.env.local.example</code> eliminado o con precedencia explícita y los dos compose actualizados en consecuencia.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">python - &lt;&lt;'PY'
+import re, tomllib, os
+req = {l.split(&quot;&gt;=&quot;)[0].split(&quot;==&quot;)[0].split(&quot;&lt;&quot;)[0].strip().lower().replace(&quot;_&quot;,&quot;-&quot;)
+       for l in open(&quot;requirements.txt&quot;) if l.strip() and not l.startswith(&quot;#&quot;)}
+p = tomllib.load(open(&quot;pyproject.toml&quot;,&quot;rb&quot;))[&quot;project&quot;]
+declared = {re.split(r&quot;[&gt;&lt;=~!\[]&quot;, d)[0].strip().lower().replace(&quot;_&quot;,&quot;-&quot;) for d in p[&quot;dependencies&quot;]}
+for extra in p.get(&quot;optional-dependencies&quot;, {}).values():
+    declared |= {re.split(r&quot;[&gt;&lt;=~!\[]&quot;, d)[0].strip().lower().replace(&quot;_&quot;,&quot;-&quot;) for d in extra}
+print(&quot;en requirements y no declarado:&quot;, sorted(req - declared))
+print(&quot;streamlit presente:&quot;, &quot;streamlit&quot; in req | declared)
+print(&quot;torchdiffeq presente:&quot;, &quot;torchdiffeq&quot; in req | declared)
+print(&quot;pytest en runtime:&quot;, &quot;pytest&quot; in {re.split(r'[&gt;&lt;=~!\\[]',d)[0] for d in p['dependencies']})
+assert &quot;streamlit&quot; not in (req | declared)
+PY
+ls *.lock uv.lock requirements*.lock 2&gt;/dev/null | head -3                     # → existe al menos uno
+grep -c &quot;^uv.lock$&quot; .gitignore                                                 # → 0
+git check-ignore -v uv.lock ; echo &quot;no ignorado=$?&quot;                            # → exit ≠ 0
+grep -c &quot;mkdocs&quot; requirements.txt                                              # → 0 (o requirements-dev.txt)
+grep -c &quot;OLLAMA_HOST&quot; .env.example                                             # → 1
+grep -cE &quot;^(LLM_MODEL|MASSIVE_LLM_MODEL)=&quot; .env.example                        # → 1 (una convención)
+pip-audit -r requirements.txt --no-deps                                        # → No known vulnerabilities
+python -c &quot;import simulator, backend.app.main; print('import OK tras cambio de deps')&quot;
+</code></pre>
+<hr />
+<h2 id="6-wave-3-build-empaquetado-y-despliegue">6. WAVE 3 · BUILD, EMPAQUETADO Y DESPLIEGUE</h2>
+<p>Objetivo de la ola: que el proyecto se pueda instalar, empaquetar, contenerizar y publicar. Al cierre, <code>pip install -e .</code> funciona, el wheel es importable, y <code>publish.yml</code> es alcanzable.</p>
+<p><strong>Gate de cierre de ola W3:</strong></p>
+<pre><code class="language-bash">python -m venv /tmp/w3 &amp;&amp; . /tmp/w3/bin/activate
+pip install -e &quot;.[full]&quot;                                    # → exit 0
+python -c &quot;import massive, massive.cli.main, backend.app.main, metrics.unified_metrics; print('OK')&quot;
+massive-cli --help                                          # → exit 0
+python -m build &amp;&amp; pip install dist/*.whl &amp;&amp; \
+  python -c &quot;from massive.core.empirical_calibration import *; from metrics.unified_metrics import *; print('wheel OK')&quot;
+docker compose build &amp;&amp; docker compose up -d &amp;&amp; sleep 10 &amp;&amp; \
+  curl -sf localhost/health &amp;&amp; curl -sf localhost:8000/health
+gh api repos/Adlgr87/MASSIVE/tags --jq 'length'             # → ≥ 1
+</code></pre>
+<hr />
+<h4 id="w3-t01-backend-de-build-y-empaquetado-real">W3-T01 · Backend de build y empaquetado real</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D5-002</code> · <code>D3-001</code> · <code>D8-002</code> (nombre de distribución)</td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>L</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W2-T10</code> · <code>PE-2</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> <code>pip install -e .</code> funciona sin toolchain Rust (capa Rust eliminada del repo). <code>packages.find</code> incluye todo lo que los módulos incluidos consumen: los 31 módulos root declarados vía <code>py-modules</code>, más <code>metrics*</code>, <code>adapters*</code> y <code>monitoring*</code> — o bien la migración a <code>massive/core/</code> está lo bastante avanzada como para que el <code>include</code> actual sea correcto. Un wheel construido e instalado en un venv limpio importa sin <code>ModuleNotFoundError</code>. <code>install.sh install</code> y <code>install.sh install-dev</code> completan. El nombre de distribución en PyPI está verificado como disponible.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">python -m venv /tmp/w3t01 &amp;&amp; . /tmp/w3t01/bin/activate &amp;&amp; pip install -q -U pip
+pip install -e &quot;.[dev]&quot; ; echo &quot;editable=$?&quot;                                  # → 0
+python -c &quot;import tomllib;p=tomllib.load(open('pyproject.toml','rb'));
+print(p['build-system']['build-backend'])&quot;                                    # → setuptools
+python -m build 2&gt;&amp;1 | tail -2                                                # → Successfully built …whl …tar.gz
+pip install -q dist/*.whl &amp;&amp; python - &lt;&lt;'PY'
+import importlib
+for m in [&quot;massive&quot;,&quot;massive.cli.main&quot;,&quot;massive.core.empirical_calibration&quot;,
+          &quot;massive.core.extended_models&quot;,&quot;metrics.unified_metrics&quot;,
+          &quot;backend.app.main&quot;,&quot;services.simulation_service&quot;,&quot;forecast&quot;]:
+    importlib.import_module(m); print(&quot;OK&quot;, m)
+PY
+bash install.sh install ; echo &quot;install.sh=$?&quot;                                # → 0
+grep -A5 &quot;packages.find&quot; pyproject.toml | grep -cE &quot;metrics|adapters&quot;          # → ≥ 1 (o py-modules con los 31)
+pip index versions massive 2&gt;&amp;1 | head -1                                      # → decisión de nombre registrada
+</code></pre>
+<h4 id="w3-t02-capa-rust-removida-del-repositorio">W3-T02 · Capa Rust removida del repositorio</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Estado</strong></td>
+<td>COMPLETADO — capa Rust eliminada</td>
+</tr>
+<tr>
+<td><strong>Acción</strong></td>
+<td><code>rust_core/</code> directory removed entirely. No Cargo.toml, no maturin, no pyo3.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado.</strong> La capa Rust ha sido removida del repositorio. Los motores usan exclusivamente numpy/scipy como backend computacional. No existe <code>massive_core/rust_core.py</code> ni <code>massive_rust_core</code>. No hay dependencia de toolchain Rust ni maturin en CI.</p>
+<h4 id="w3-t03-un-camino-de-despliegue-documentado">W3-T03 · Un camino de despliegue documentado</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D7-015</code> · <code>D7-005</code> (cierre) · <code>D3-014</code> · <code>D7-011</code></td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>M</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W1-T04</code> · <code>W2-T03</code> · <code>W3-T01</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> Una tabla en README y README_ES con <strong>una</strong> opción por caso de uso (dev local · producción · observabilidad) y los archivos restantes eliminados o movidos a <code>docs/examples/</code> con banner. <code>main_massive.yml</code> (Azure) eliminado o documentado como destino real con <code>python-version</code> fijada. <code>monitoring/</code> conectado a un <code>docker-compose.observability.yml</code> opcional con prometheus y grafana montándolo, o marcado explícitamente como reference-only. <code>docs/DOCKER.md</code> está en el nav de MkDocs. El Makefile tiene targets <code>docker</code>, <code>docker-observability</code> y <code>docs</code>.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">grep -cE &quot;docker|Docker&quot; README.md                                             # → ≥ 3
+find . -maxdepth 1 -name &quot;docker-compose*.yml&quot; -o -maxdepth 1 -name &quot;Dockerfile*&quot; | wc -l   # → ≤ 2
+docker compose config -q &amp;&amp; echo &quot;canónico OK&quot;
+test ! -f .github/workflows/main_massive.yml -o \
+  grep -cE &quot;python-version: '3.x'&quot; .github/workflows/main_massive.yml          # → 0
+(test -f docker-compose.observability.yml &amp;&amp; docker compose -f docker-compose.observability.yml config -q \
+  &amp;&amp; echo &quot;observabilidad cableada&quot;) || grep -c &quot;reference-only&quot; README.md     # → una de las dos
+python -c &quot;import yaml;n=yaml.safe_load(open('mkdocs.yml'))['nav'];
+import json;assert 'DOCKER.md' in json.dumps(n); print('DOCKER.md en nav')&quot;
+make help | grep -cE &quot;^docker|^docs&quot;                                           # → ≥ 2
+</code></pre>
+<h4 id="w3-t04-versionado-unico-primer-release-y-pipeline-de-publicacion-alcanzable">W3-T04 · Versionado único, primer release y pipeline de publicación alcanzable</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D6-012</code> · <code>D8-002</code> · <code>D7-008</code> · <code>D5-016</code></td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>M</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W3-T01</code> · <code>W2-T06</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> Una única versión en todo el repo, leída desde un único punto (<code>massive/__init__.py:__version__</code>) y consumida por <code>pyproject.toml</code>, <code>FastAPI(version=…)</code>, ambos <code>package.json</code>, el manifiesto del adapter y <code>GET /version</code>. <code>CHANGELOG.md</code> con una sola sección <code>[Unreleased]</code> y versiones SemVer ordenadas. Tag <code>vX.Y.Z</code> y release de GitHub creados, con notas generadas desde el CHANGELOG. <code>deploy_hf_spaces.yml</code> no embebe el token en la URL del remoto ni hardcodea el usuario. Trusted Publishing de PyPI configurado para el environment <code>pypi-publish</code>.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">python -c &quot;import massive; print(massive.__version__)&quot;
+python - &lt;&lt;'PY'
+import json, re, tomllib, massive
+v = massive.__version__
+assert tomllib.load(open(&quot;pyproject.toml&quot;,&quot;rb&quot;))[&quot;project&quot;][&quot;version&quot;] == v
+assert re.search(rf'version=&quot;{re.escape(v)}&quot;', open(&quot;backend/app/main.py&quot;).read())
+assert json.load(open(&quot;frontend/package.json&quot;))[&quot;version&quot;] == v
+print(&quot;versión única:&quot;, v)
+PY
+curl -s localhost:8000/version | python -c &quot;import json,sys;print(json.load(sys.stdin)['version'])&quot;
+grep -c &quot;^## \[Unreleased\]&quot; CHANGELOG.md                                      # → 1
+grep -cE &quot;^## \[v?[0-9]+\.[0-9]+&quot; CHANGELOG.md                                 # → ≥ 1
+gh api repos/Adlgr87/MASSIVE/tags --jq '.[0].name'                             # → vX.Y.Z
+gh api repos/Adlgr87/MASSIVE/releases --jq '.[0].tag_name'                     # → igual
+grep -cE &quot;https://[^ ]*:\\\$HF_TOKEN@&quot; .github/workflows/deploy_hf_spaces.yml   # → 0
+gh secret list --env pypi-publish 2&gt;/dev/null | head -2                        # → OIDC configurado
+</code></pre>
+<h4 id="w3-t05-job-clean-clone-y-matriz-de-dependencias-minimas">W3-T05 · Job <code>clean-clone</code> y matriz de dependencias mínimas</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D7-002</code> (cierre agregado) · <code>D1-004</code> · <code>D1-009</code> · Patrón 6 del reporte</td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>M</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W1-*</code> · <code>W2-*</code> · <code>W3-T01</code> · <code>W3-T03</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> Un workflow <code>clean-clone.yml</code> que, desde un checkout sin caché: crea un venv, instala <strong>sólo</strong> <code>requirements.txt</code>, verifica que importan <code>simulator</code>, <code>backend.app.main</code>, <code>massive.cli.main</code> y <code>metrics.unified_metrics</code>, ejecuta <code>pytest tests/ -q</code>, construye la imagen Docker y verifica dentro del contenedor que los pesos CfC están presentes y que <code>CfCRouter.get().status</code> reporta lo esperado. Un segundo job con la matriz de dependencias mínimas (sin <code>torch</code>, sin <code>cupy</code>, sin extras) que verifica que el sistema arranca en modo degradado y lo declara. <code>tests/test_import_smoke.py</code> parametrizado sobre los 146 módulos, ejecutado en ambas matrices.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">test -f .github/workflows/clean-clone.yml &amp;&amp; python -c &quot;import yaml;yaml.safe_load(open('.github/workflows/clean-clone.yml'));print('OK')&quot;
+test -f tests/test_import_smoke.py &amp;&amp; python -m pytest tests/test_import_smoke.py -q 2&gt;&amp;1 | tail -1   # → 146 passed
+PYTHONPATH=/tmp/notorch python -m pytest tests/test_import_smoke.py -q -rs 2&gt;&amp;1 | tail -2              # → pasado con skips documentados
+rm -rf /tmp/cc &amp;&amp; python -m venv /tmp/cc &amp;&amp; . /tmp/cc/bin/activate &amp;&amp; \
+  pip install -q -r requirements.txt &amp;&amp; \
+  python -c &quot;import simulator, backend.app.main, massive.cli.main, metrics.unified_metrics; print('clean-clone OK')&quot; &amp;&amp; \
+  python -m pytest tests/ -q 2&gt;&amp;1 | tail -1                                                            # → 0 failed
+docker compose build &amp;&amp; docker run --rm massive-audit python -c &quot;
+from cfc_router import CfCRouter; s=CfCRouter.get().status; print(s)
+from pathlib import Path; assert Path('models/cfc_calibrated/cfc_residual.pt').exists()&quot;
+</code></pre>
+<hr />
+<h2 id="7-wave-4-verdad-documental-y-primera-impresion">7. WAVE 4 · VERDAD DOCUMENTAL Y PRIMERA IMPRESIÓN</h2>
+<p>Objetivo de la ola: que todo lo que el repo afirma de sí mismo sea cierto y verificable automáticamente, y que la raíz deje de ser una pared de archivos. Esta ola puede ejecutarse en paralelo con la 3 (no comparten archivos), salvo <code>W4-T01</code> que necesita las cifras reales de <code>W3-T05</code>.</p>
+<p><strong>Gate de cierre de ola W4:</strong></p>
+<pre><code class="language-bash">ls -A | wc -l                                             # → ≤ 45 (desde 106)
+ls *.md | wc -l                                           # → ≤ 8 (desde 21)
+python scripts/check_docs_refs.py 2&gt;&amp;1 | tail -1          # → 0 rutas inexistentes (o todas en docs/archive/)
+grep -rc &quot;/home/&quot; --include=&quot;*.md&quot; . | grep -v &quot;:0&quot; | wc -l   # → 0
+python -m mkdocs build --strict &amp;&amp; echo OK                # → 0 warnings
+python -c &quot;import yaml,json;n=json.dumps(yaml.safe_load(open('mkdocs.yml'))['nav']);
+import glob;orph=[f for f in glob.glob('docs/**/*.md',recursive=True) if f.split('docs/',1)[1] not in n];
+print('huérfanos:',len(orph))&quot;                            # → ≤ 5
+</code></pre>
+<hr />
+<h4 id="w4-t01-readme-generado-desde-ci">W4-T01 · README generado desde CI</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D6-001</code> · <code>D6-002</code> · <code>D6-014</code> · <code>D8-005</code> · <code>D8-010</code></td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>M</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W3-T05</code> (para las cifras reales)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> Las cifras del README (nº de tests, passed/failed, cobertura, estado de ruff/black/mypy, recuento de endpoints, árbol de layout) se generan desde un artifact de CI entre marcadores <code>&lt;!-- QUALITY:START --&gt;</code>/<code>&lt;!-- QUALITY:END --&gt;</code>, y un job exige diff vacío. Toda mención a herramientas que no están en CI (<code>semgrep</code>) está retirada o la herramienta está añadida. Los badges reflejan checks bloqueantes reales; se añade coverage, docs, code-style y release. La tabla frontier y el árbol de layout reconocen explícitamente los módulos legacy en migración. <code>README.md</code> y <code>README_ES.md</code> comparten las cifras generadas y un check compara sus encabezados de sección. La discrepancia <code>Python 3.11+</code> ↔ <code>requires-python</code> está resuelta.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">python - &lt;&lt;'PY'
+import re, json, subprocess
+r = open(&quot;README.md&quot;).read(); e = open(&quot;README_ES.md&quot;).read()
+m = re.search(r&quot;&lt;!-- QUALITY:START --&gt;(.*?)&lt;!-- QUALITY:END --&gt;&quot;, r, re.S)
+assert m, &quot;sin marcadores de calidad generada&quot;
+q = json.load(open(&quot;reports/audit_baseline.json&quot;))
+out = subprocess.run([&quot;python&quot;,&quot;-m&quot;,&quot;pytest&quot;,&quot;tests/&quot;,&quot;-q&quot;,&quot;--co&quot;],capture_output=True,text=True).stdout
+n = int(re.search(r&quot;(\d+) tests? collected&quot;, out).group(1))
+assert str(n) in m.group(1), f&quot;el README no dice {n}&quot;
+print(&quot;README sincronizado con la medición:&quot;, n, &quot;tests&quot;)
+heads_en = re.findall(r&quot;^##\s+(.+)$&quot;, r, re.M); heads_es = re.findall(r&quot;^##\s+(.+)$&quot;, e, re.M)
+assert len(heads_en) == len(heads_es), (len(heads_en), len(heads_es))
+print(&quot;estructura EN/ES paralela:&quot;, len(heads_en), &quot;secciones&quot;)
+PY
+grep -ci &quot;semgrep&quot; README.md README_ES.md                                   # → 0 (o semgrep en CI)
+grep -cE &quot;679 tests|530 tests|68 %&quot; README.md README_ES.md                  # → 0
+python -c &quot;import tomllib,re;p=tomllib.load(open('pyproject.toml','rb'));
+rp=p['project']['requires-python'];b=open('README.md').read();
+assert re.search(r'Python-'+rp.replace('&gt;=','').replace('.','') , b) or rp.replace('&gt;=','') in b, rp
+print('requires-python', rp, 'coherente con el badge')&quot;
+python scripts/gen_readme_quality.py --check ; echo $?                      # → 0
+curl -s localhost:8000/openapi.json | python -c &quot;
+import json,sys;s=json.load(sys.stdin)['paths'];print(len([p for p in s if p.startswith('/v1/')]),'endpoints /v1')&quot;
+grep -oE &quot;[0-9]+ v1 endpoints&quot; README.md                                    # → coincide
+</code></pre>
+<h4 id="w4-t02-vaciado-de-la-raiz-markdown">W4-T02 · Vaciado de la raíz: Markdown</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D6-003</code> · <code>D8-001</code> (parcial)</td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>S</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W0-T03</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> La raíz conserva sólo <code>README.md</code>, <code>README_ES.md</code>, <code>CHANGELOG.md</code>, <code>LICENSE</code>, <code>CONTRIBUTING.md</code>, <code>CODE_OF_CONDUCT.md</code>, un único archivo de instrucciones para agentes y <code>repomix-instruction.md</code> (que <code>repomix.config.json</code> necesita en root). Los 5 <code>REPORT_*.md</code> van a <code>docs/archive/reports/</code>; los 4 de arquitectura/planes a <code>docs/architecture/</code> o <code>docs/plans/</code>; los 2 de operaciones a <code>docs/operations/</code>; <code>calibration_log.md</code> y <code>progress.md</code> a <code>docs/research/</code>. Cada documento movido a <code>docs/archive/</code> lleva el banner <code>&gt; ⚠️ HISTÓRICO</code>. <code>CONTRIBUTING.md</code> establece la regla "ningún <code>.md</code> de planning en root". Las referencias internas a las rutas movidas están actualizadas.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">ls *.md | sort                                                                  # → ≤ 8 archivos
+ls *.md | wc -l
+test -d docs/archive/reports &amp;&amp; ls docs/archive/reports | wc -l                 # → 5
+grep -rc &quot;REPORT_OPTIMIZATION.md\|MASSIVE_SYSTEM_MAP.md&quot; --include=&quot;*.md&quot; . | grep -v &quot;:0&quot; | \
+  xargs -r grep -l &quot;docs/archive\|docs/architecture&quot; &gt;/dev/null &amp;&amp; echo &quot;refs actualizadas&quot;
+grep -l &quot;HISTÓRICO&quot; docs/archive/reports/*.md | wc -l                           # → 5
+grep -c &quot;planning en root\|no .*\.md.* en root\|ningún.*root&quot; CONTRIBUTING.md    # → ≥ 1
+python -m mkdocs build --strict &amp;&amp; echo &quot;strict OK&quot;
+python scripts/check_docs_refs.py 2&gt;&amp;1 | tail -1                                # → 0 nuevas roturas
+</code></pre>
+<h4 id="w4-t03-reconciliacion-documento-arbol">W4-T03 · Reconciliación documento ↔ árbol</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D6-004</code> · <code>D6-005</code> · <code>D6-007</code> · <code>D6-008</code> · <code>D6-010</code> · <code>D6-011</code> · <code>D6-018</code> (linkcheck)</td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>L</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W4-T02</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> Un script <code>scripts/check_docs_refs.py</code> que extrae referencias a rutas de todos los <code>.md</code> y falla si alguna no existe (excluyendo <code>docs/archive/</code>). Las 186 rutas inexistentes están corregidas, o su documento está en <code>docs/archive/</code> con banner. Cero ocurrencias de <code>/home/</code>, <code>/Users/</code> o <code>C:\</code> en archivos trackeados, con check de CI. <code>MASSIVE_SYSTEM_MAP.md</code> regenerado desde el árbol real (o reducido a componentes + directorios estables). <code>REPORT_OPTIMIZATION.md</code> archivado con banner y su premisa Numba marcada como obsoleta. <code>docs/README_ES.md</code> deja de ser un stub de 5 líneas (o el nav apunta a la traducción real). Los 11 módulos de librería sin docstring lo tienen. MkDocs incorpora un link-checker.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">python scripts/check_docs_refs.py ; echo &quot;refs=$?&quot;                              # → 0
+python scripts/check_docs_refs.py 2&gt;&amp;1 | tail -1                                # → &quot;0 rutas inexistentes&quot;
+grep -rn &quot;/home/\|/Users/&quot; --include=&quot;*.md&quot; . | grep -vc &quot;docs/archive/&quot;        # → 0
+grep -c &quot;check_docs_refs&quot; .github/workflows/*.yml | grep -v &quot;:0&quot;                # → ≥ 1
+python - &lt;&lt;'PY'
+import ast, glob
+missing = []
+for f in glob.glob(&quot;**/*.py&quot;, recursive=True):
+    if any(x in f for x in (&quot;.venv&quot;,&quot;node_modules&quot;,&quot;site/&quot;,&quot;tests/&quot;,&quot;/test_&quot;)): continue
+    try: t = ast.parse(open(f).read(), f)
+    except SyntaxError: continue
+    if ast.get_docstring(t) is None: missing.append(f)
+assert not missing, missing; print(&quot;0 módulos de librería sin docstring&quot;)
+PY
+wc -l docs/README_ES.md                                                          # → &gt; 50, o nav corregido
+grep -c &quot;Numba\|numba&quot; REPORT_OPTIMIZATION.md docs/archive/reports/REPORT_OPTIMIZATION.md 2&gt;/dev/null
+                                                                                    # → 0, o con banner HISTÓRICO
+grep -c &quot;streamlit\|8501\|test_mamba_engine\|micro_ui&quot; MASSIVE_SYSTEM_MAP.md docs/**/MASSIVE_SYSTEM_MAP.md 2&gt;/dev/null  # → 0
+python -m mkdocs build --strict 2&gt;&amp;1 | grep -ciE &quot;warning|error&quot;                 # → 0
+grep -cE &quot;linkcheck|htmlproofer&quot; mkdocs.yml                                       # → ≥ 1
+</code></pre>
+<h4 id="w4-t04-navegabilidad-de-la-documentacion-instrucciones-para-agentes-unificadas">W4-T04 · Navegabilidad de la documentación + instrucciones para agentes unificadas</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D6-009</code> · <code>D6-015</code></td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>S</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W4-T02</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> Los 35 documentos huérfanos están en el nav de MkDocs bajo secciones coherentes (<code>Operations</code>, <code>Architecture → Domain maps</code>, <code>Reference</code>, <code>Validation</code>, <code>Archive</code>), o explícitamente excluidos con justificación. Un único archivo de instrucciones para agentes, con secciones internas; los demás archivos apuntan a él. Las definiciones de agentes están en <code>.github/agents/*.agent.md</code> correctamente formateadas y con nombres que coinciden con su <code>name:</code>.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">python - &lt;&lt;'PY'
+import yaml, json, glob
+nav = json.dumps(yaml.safe_load(open(&quot;mkdocs.yml&quot;))[&quot;nav&quot;])
+orph = [f for f in glob.glob(&quot;docs/**/*.md&quot;, recursive=True) if f.split(&quot;docs/&quot;,1)[1] not in nav]
+print(f&quot;huérfanos: {len(orph)}&quot;); assert len(orph) &lt;= 5, orph
+PY
+python -m mkdocs build --strict &amp;&amp; ls site/architecture/ | wc -l                # → ≥ 19
+find . -maxdepth 1 -name &quot;AGENTS.md&quot; -o -maxdepth 1 -name &quot;CLAUDE.md&quot; | wc -l   # → 1
+python - &lt;&lt;'PY'
+import yaml, glob
+fs = sorted(glob.glob(&quot;.github/agents/*.agent.md&quot;))
+assert len(fs) &gt;= 2, fs
+for f in fs:
+    t = open(f).read().lstrip(); assert t.startswith(&quot;---&quot;), f
+    name = yaml.safe_load(t.split(&quot;---&quot;)[1])[&quot;name&quot;]
+    print(f&quot;{f} → {name}&quot;)
+PY
+grep -c &quot;AGENTS.md&quot; CLAUDE.md repomix-instruction.md 2&gt;/dev/null | head -3      # → referencian el único archivo
+</code></pre>
+<h4 id="w4-t05-nomenclatura-de-producto-y-superficie-http-versionada">W4-T05 · Nomenclatura de producto y superficie HTTP versionada</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D8-011</code> · <code>D3-011</code></td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>S</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W4-T01</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> El nombre de servicio expuesto (<code>/health</code>, título de OpenAPI, <code>container_name</code>) es coherente con el nombre del producto. Los archivos con nombre de generación anterior están renombrados con shim, o la decisión de conservarlos está registrada en <code>docs/architecture/CANONICAL_SOURCES.md</code>. Los alias <code>/api/v1/*</code> emiten header <code>Deprecation</code> y/o <code>Sunset</code> con fecha, y <code>docs/architecture/backward_compatibility_aliases.md</code> está en el nav y documenta la retirada.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">curl -s localhost:8000/health | python -c &quot;import json,sys;print(json.load(sys.stdin)['service'])&quot;   # → &quot;MASSIVE …&quot;, sin &quot;UIL&quot;
+curl -s localhost:8000/openapi.json | python -c &quot;import json,sys;print(json.load(sys.stdin)['info']['title'])&quot;
+grep -c &quot;massive-uil&quot; docker-compose.yml                                        # → 0
+find . -name &quot;*UIL*&quot; -not -path &quot;./.git/*&quot; -not -path &quot;*/node_modules/*&quot; | wc -l # → 0, o registrado en CANONICAL_SOURCES
+curl -sI -X POST localhost:8000/api/v1/simulate -H &quot;X-API-Key: $K&quot; | grep -icE &quot;deprecation|sunset&quot;  # → ≥ 1
+python -c &quot;import yaml,json;n=json.dumps(yaml.safe_load(open('mkdocs.yml'))['nav']);
+assert 'backward_compatibility_aliases.md' in n; print('en nav')&quot;
+test -f docs/architecture/CANONICAL_SOURCES.md &amp;&amp; grep -c &quot;UIL\|api.py&quot; docs/architecture/CANONICAL_SOURCES.md   # → ≥ 2
+</code></pre>
+<hr />
+<h2 id="8-wave-5-consolidacion-arquitectonica">8. WAVE 5 · CONSOLIDACIÓN ARQUITECTÓNICA</h2>
+<p>Objetivo de la ola: cerrar el Patrón 1 y el Patrón 4 — una sola instancia por categoría, con autoridad declarada. Es la ola de mayor tamaño y la única con tareas XL. <strong>No debe empezar antes de que W1–W3 estén verdes</strong>, porque mover módulos sin CI verde garantiza regresiones no detectadas.</p>
+<p><strong>Gate de cierre de ola W5:</strong></p>
+<pre><code class="language-bash">ls *.py | wc -l                                            # → ≤ 8 (desde 31)
+ls -A | wc -l                                              # → ≤ 20 (desde 106)
+find . -maxdepth 2 -type d -name backend | wc -l           # → 1
+find . -maxdepth 2 -type d -name frontend -not -path &quot;*/node_modules/*&quot; | wc -l   # → 1
+find . -type d -name utils -not -path &quot;*/node_modules/*&quot; | wc -l                  # → 1
+wc -l $(find . -name &quot;*.py&quot; -not -path &quot;./.venv/*&quot; -not -path &quot;*/node_modules/*&quot;) | \
+  sort -rn | head -6                                       # → ningún archivo &gt; 800 líneas
+mypy . 2&gt;&amp;1 | tail -1                                      # → no aborta
+make verify                                                # → verde
+python -m pytest tests/ -q 2&gt;&amp;1 | tail -1                  # → 0 failed
+</code></pre>
+<hr />
+<h4 id="w5-t01-decision-y-ejecucion-sobre-los-backends-y-frontends-duplicados">W5-T01 · Decisión y ejecución sobre los backends y frontends duplicados</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D3-002</code> · <code>D3-003</code> · <code>D3-005</code> · <code>D7-007</code></td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>XL</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W2-T01</code> · <code>W2-T02</code> · <code>W3-T05</code> · <code>G-5</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> <code>docs/architecture/CANONICAL_SOURCES.md</code> existe y declara, por categoría, la instancia canónica, el estado de las demás y su fecha de retirada. Tras la decisión: <strong>un</strong> paquete <code>backend</code> en el árbol (sin colisión de namespace, <code>mypy .</code> no aborta), <strong>un</strong> frontend (con lint, typecheck y build en CI), <code>api.py</code> congelado con shim o eliminado con sus consumidores migrados, y <code>massive-ui-ng/</code> promovido o archivado — con su workflow activado y correcto si se promueve. Los 825 líneas duplicadas del <code>.jsx</code> existen una sola vez. Los 39 errores mypy del subproyecto excluido quedan dentro del scope analizado o el subproyecto deja de existir.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">test -f docs/architecture/CANONICAL_SOURCES.md &amp;&amp; \
+  grep -cE &quot;^\| *(backend|frontend|Dockerfile|compose|Cargo|gen_ts_types|env example|utils|metrics|agentes|docs perf|despliegue|tests)&quot; \
+  docs/architecture/CANONICAL_SOURCES.md                                      # → ≥ 12 categorías
+python -c &quot;import yaml,json;n=json.dumps(yaml.safe_load(open('mkdocs.yml'))['nav']);
+assert 'CANONICAL_SOURCES.md' in n; print('en nav')&quot;
+grep -c &quot;CANONICAL_SOURCES&quot; CONTRIBUTING.md AGENTS.md                          # → ≥ 1 en cada uno
+find . -type d -name backend -not -path &quot;*/node_modules/*&quot; -not -path &quot;./.git/*&quot; | wc -l    # → 1
+mypy . --ignore-missing-imports 2&gt;&amp;1 | grep -c &quot;Duplicate module&quot;              # → 0
+find . -name &quot;MASSIVE_UIL_demo.jsx&quot; -o -name &quot;*UIL*.jsx&quot; | wc -l               # → ≤ 1
+ls -d massive-ui-ng 2&gt;/dev/null &amp;&amp; \
+  (test -f .github/workflows/ui-ng.yml &amp;&amp; grep -c &quot;massive-ui-ng&quot; .github/workflows/ui-ng.yml)   # → ≥ 3 si se conserva
+find . -maxdepth 2 -type d -name frontend -not -path &quot;*/node_modules/*&quot; | wc -l # → 1
+npm --prefix frontend run lint &amp;&amp; npm --prefix frontend run build              # → exit 0
+</code></pre>
+<h4 id="w5-t02-reorganizacion-modular-root-paquetes-y-split-de-los-engines">W5-T02 · Reorganización modular: root → paquetes, y split de los engines</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D3-006</code> · <code>D3-007</code> · <code>D3-008</code> · <code>D3-010</code> · <code>D3-012</code> · <code>D3-016</code></td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>XL</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W5-T01</code> · <code>W3-T01</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> Los 31 módulos root están dentro de paquetes (<code>massive/core/engines/</code>, <code>massive/cfc/</code>, <code>services/</code>, <code>massive_core/</code>), con shims de re-export en root durante el periodo de transición declarado en <code>CANONICAL_SOURCES.md</code>. <code>simulator.py</code> está dividido por responsabilidad y ninguna versión del archivo supera ~800 líneas. Un único paquete <code>utils/</code>. <code>massive_core/config/</code> (configuración de aplicación) separado de la capa científica. <code>micro_schemas.py</code> dentro de <code>micro_massive/</code>. Las dos implementaciones de métricas micro/unificadas fusionadas. <code>forecast/__init__.py</code> perezoso y <code>DEFAULT_CONFIG</code> en un módulo sin dependencias, de modo que <code>adapters.mutalambda</code> ya no arrastra el motor de simulación. El árbol de layout del README coincide con el real.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">ls *.py | sort                                                                  # → sólo shims + entrypoints declarados
+ls *.py | wc -l                                                                 # → ≤ 8
+wc -l simulator.py massive/core/engines/*.py 2&gt;/dev/null | sort -rn | head -3   # → ninguno &gt; 800
+find . -type d -name utils -not -path &quot;*/node_modules/*&quot; -not -path &quot;./.git/*&quot; | wc -l   # → 1
+python - &lt;&lt;'PY'
+import sys, subprocess
+# adapters ya no debe arrastrar simulator
+out = subprocess.run([sys.executable,&quot;-c&quot;,
+  &quot;import sys; import adapters.mutalambda.massive_target as m; &quot;
+  &quot;print('simulator' in sys.modules, 'cfc_router' in sys.modules)&quot;],
+  capture_output=True, text=True)
+print(out.stdout.strip(), out.stderr[-200:])
+assert out.stdout.strip() == &quot;False False&quot;, &quot;la cadena frágil persiste&quot;
+PY
+python -c &quot;from massive.core.engines import simular, resumen_historial; print('nueva ruta OK')&quot;
+python -c &quot;from simulator import simular; print('shim OK')&quot;
+python -m pytest tests/ -q 2&gt;&amp;1 | tail -1                                       # → 0 failed
+python -m build &amp;&amp; pip install dist/*.whl &amp;&amp; python -c &quot;import massive; print('wheel OK')&quot;
+grep -cE &quot;massive/core/engines|massive/cfc&quot; README.md                           # → ≥ 1 (layout actualizado)
+</code></pre>
+<h4 id="w5-t03-codigo-duplicado-y-codigo-muerto">W5-T03 · Código duplicado y código muerto</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D2-012</code> · <code>D2-013</code> · <code>D4-003</code> (parcial)</td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>L</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W5-T02</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> Un único entrenador CfC parametrizado en lugar de tres clones (<code>cfc_trainer.py</code> es el superviviente y tiene tests). Cada hallazgo de vulture al 80 % resuelto. Los módulos sin consumidores (<code>social_connectors.py</code>, <code>simulator.simular_multiples_dask</code>, <code>programmatic_architect.design_intervention</code>, los métodos muertos de <code>massive_core/physics/</code>) están cableados a un consumidor real, o eliminados junto con sus dependencias declaradas (<code>tweepy</code>, <code>praw</code>) y su documentación. El bloque duplicado de configuración CORS entre <code>api.py</code> y <code>backend/app/main.py</code> está factorizado.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">pylint . --disable=all --enable=R0801 2&gt;&amp;1 | grep -c &quot;duplicate-code&quot;           # → 0 (o solo bloques justificados)
+ls train_cfc_*.py 2&gt;/dev/null | wc -l                                          # → 0, o shims declarados
+python -m pytest tests/test_cfc_trainer.py -q 2&gt;&amp;1 | tail -1                    # → 0 failed
+vulture . --min-confidence 80 | wc -l                                          # → 0
+python - &lt;&lt;'PY'
+import subprocess
+out = subprocess.run([&quot;vulture&quot;,&quot;.&quot;,&quot;--min-confidence&quot;,&quot;60&quot;],capture_output=True,text=True).stdout
+n = len([l for l in out.splitlines() if l.strip()])
+print(&quot;vulture@60:&quot;, n, &quot;(baseline 311)&quot;); assert n &lt; 150
+PY
+test -f social_connectors.py -o ! grep -rq &quot;tweepy\|praw&quot; requirements.txt pyproject.toml &amp;&amp; echo &quot;coherente&quot;
+grep -rc &quot;TwitterConnector\|RedditConnector&quot; --include=&quot;*.py&quot; . | grep -v &quot;:0&quot; | wc -l   # → 0, o con consumidor real
+python -m pytest tests/ -q 2&gt;&amp;1 | tail -1                                       # → 0 failed
+</code></pre>
+<h4 id="w5-t04-shims-uniformes-nomenclatura-de-identificadores-y-complejidad-alta">W5-T04 · Shims uniformes, nomenclatura de identificadores y complejidad alta</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D3-009</code> · <code>D2-014</code> · <code>D2-011</code></td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>L</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W5-T02</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> Un único patrón de shim deprecado aplicado a todos (docstring <code>.. deprecated::</code> + re-export + warning filtrable + fecha de retirada en <code>CANONICAL_SOURCES.md</code>); el shim de <code>extended_models</code> existe o su importador está corregido; el docstring contradictorio de <code>schemas.py</code> dice una sola cosa. Un alias canónico por concepto en la frontera de entrada del router CfC, con la tabla de mapeo español↔inglés en <code>docs/NAMING_CONVENTIONS.md</code>; <code>_STATE_KEYS</code> ya no contiene dos sinónimos. <code>_dispatch</code> (F-50) convertido en tabla de dispatch y <code>build_narrative</code> (F-57) dividido por sección narrativa; ningún bloque por encima de E.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">python -c &quot;from extended_models import regla_bayesiana, regla_nash, regla_sir; print('shim OK')&quot;
+python - &lt;&lt;'PY'
+import glob, re
+pats = {}
+for f in [&quot;empirical_config.py&quot;,&quot;empirical_calibration.py&quot;,&quot;llm_credentials.py&quot;,&quot;state_compression.py&quot;,&quot;schemas.py&quot;,&quot;extended_models.py&quot;]:
+    try: t = open(f).read()
+    except FileNotFoundError: continue
+    pats[f] = (&quot;deprecated::&quot; in t, &quot;warnings.warn&quot; in t, &quot;re-export&quot; in t.lower())
+assert len(set(pats.values())) == 1, pats
+print(&quot;patrón de shim uniforme:&quot;, pats)
+PY
+python -W error::DeprecationWarning -c &quot;import schemas&quot; 2&gt;&amp;1 | head -1           # → warning controlado, no explosión
+python -c &quot;
+from cfc_router import CfCRouter
+k = CfCRouter._STATE_KEYS
+assert not ('confianza' in k and 'trust' in k), k
+print('_STATE_KEYS sin sinónimos:', k)&quot;
+grep -cE &quot;^\| *(confianza|polarizacion|ruido|homofilia|pertenencia)&quot; docs/NAMING_CONVENTIONS.md   # → ≥ 5
+radon cc . -s -n E | grep -cE &quot;^massive|^backend|^services&quot;                      # → 0 bloques E o F
+radon cc services/llm_orchestrator.py -s -n C | grep -c &quot;_dispatch&quot;              # → 0 (o ≤ C)
+python -m pytest tests/ -q 2&gt;&amp;1 | tail -1                                        # → 0 failed
+</code></pre>
+<h4 id="w5-t05-cobertura-y-calidad-de-la-suite">W5-T05 · Cobertura y calidad de la suite</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D4-002</code> · <code>D4-004</code> (cierre) · <code>D4-005</code></td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>L</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W5-T02</code> · <code>W2-T01</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> Los 5 routers canónicos por encima del 80 % de cobertura con tests de contrato. Los 140 tests sin aserción asertan una propiedad nombrada. <code>fail_under</code> subido a la cobertura real menos 2 puntos, con política de ratchet documentada (+2 por release hasta 75 %). El scope de cobertura definido en un único sitio y consumido por CI sin enumeración manual de targets. La cifra del README generada desde CI (ya en <code>W4-T01</code>) coincide.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">python -m pytest tests/ -q --cov --cov-report=json:cov.json 2&gt;&amp;1 | tail -2
+python - &lt;&lt;'PY'
+import json
+c = json.load(open(&quot;cov.json&quot;))
+routers = {k: v[&quot;summary&quot;][&quot;percent_covered&quot;] for k, v in c[&quot;files&quot;].items() if &quot;backend/app/routers&quot; in k}
+print({k.split(&quot;/&quot;)[-1]: round(v,1) for k,v in routers.items()})
+assert all(v &gt;= 80 for v in routers.values()), routers
+PY
+python - &lt;&lt;'PY'
+import ast, glob
+noassert = []
+for f in glob.glob(&quot;tests/**/*.py&quot;, recursive=True):
+    t = ast.parse(open(f).read(), f)
+    for n in t.body:
+        if isinstance(n,(ast.FunctionDef,ast.AsyncFunctionDef)) and n.name.startswith(&quot;test_&quot;):
+            has = any(isinstance(x,ast.Assert) or
+                      (isinstance(x,ast.Expr) and isinstance(x.value,ast.Call) and
+                       isinstance(x.value.func,ast.Attribute) and
+                       x.value.func.attr in (&quot;assertEqual&quot;,&quot;assertTrue&quot;,&quot;assertFalse&quot;,&quot;assertRaises&quot;,
+                                             &quot;assertIsNotNone&quot;,&quot;assertAlmostEqual&quot;,&quot;assertIn&quot;,&quot;raises&quot;,&quot;fails&quot;))
+                      for x in ast.walk(n))
+            if not has: noassert.append(f&quot;{f}:{n.lineno}:{n.name}&quot;)
+print(f&quot;tests sin aserción: {len(noassert)} (baseline 140)&quot;)
+assert len(noassert) == 0, noassert[:10]
+PY
+python -c &quot;import tomllib;p=tomllib.load(open('pyproject.toml','rb'))['tool']['coverage']['report'];
+assert p['fail_under'] &gt;= 57, p['fail_under']; print('fail_under =', p['fail_under'])&quot;
+grep -cE &quot;ratchet&quot; CONTRIBUTING.md docs/testing/*.md 2&gt;/dev/null | grep -v &quot;:0&quot;  # → política documentada
+grep -c &quot;\-\-cov=&quot; .github/workflows/pytest.yml                                 # → 0 (scope único en pyproject)
+</code></pre>
+<h4 id="w5-t06-cabos-sueltos-de-superficie-publica">W5-T06 · Cabos sueltos de superficie pública</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D1-005</code> · <code>D1-006</code> · <code>D3-013</code> · <code>D7-019</code></td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>M</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W5-T02</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> Decisión registrada sobre Mamba/SSM: restaurado como baseline con tests, o eliminado de toda la documentación y del material de producto. <code>streamlit</code> fuera de <code>requirements.txt</code>, topic retirado, y las 22 referencias a <code>app.py</code> corregidas o archivadas; <code>PLAN_INTEGRACION_UI_NG.md</code> archivado con banner. <code>massive-cli</code> con tests (help, corrida mínima, salida JSON, códigos de error) y cobertura ≥ 80 %; el target <code>cli-verify</code> del Makefile implementado y funcionando. <code>addopts</code> sin referencias a plugins inexistentes.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">grep -rci &quot;mamba&quot; --include=&quot;*.md&quot; . | grep -v &quot;:0&quot; | wc -l                    # → 0, o el baseline existe
+test -f tests/test_mamba_engine.py -o ! grep -rq &quot;test_mamba_engine&quot; --include=&quot;*.md&quot; .
+grep -c &quot;streamlit&quot; requirements.txt pyproject.toml                             # → 0 0
+gh repo view --json repositoryTopics --jq '[.repositoryTopics[].name]|index(.)' 2&gt;/dev/null
+gh repo view --json repositoryTopics --jq '[.repositoryTopics[].name] | index(&quot;streamlit&quot;)'   # → null
+grep -rl &quot;app\.py&quot; --include=&quot;*.md&quot; . | grep -vc &quot;docs/archive/&quot;                # → 0
+python -m pytest tests/test_cli.py -q 2&gt;&amp;1 | tail -1                            # → 0 failed
+python -c &quot;import json;c=json.load(open('cov.json'));
+v=[x['summary']['percent_covered'] for k,x in c['files'].items() if 'massive/cli/main' in k][0];
+assert v&gt;=80, v; print('cli coverage', round(v,1))&quot;
+make cli-verify ; echo &quot;cli-verify=$?&quot;                                          # → 0
+</code></pre>
+<hr />
+<h2 id="9-wave-6-rendimiento-evidencia-cientifica-y-cierre">9. WAVE 6 · RENDIMIENTO, EVIDENCIA CIENTÍFICA Y CIERRE</h2>
+<p>Objetivo de la ola: que las afirmaciones de rendimiento y de validación científica sean reproducibles desde el repo, y cerrar la deuda de tipos y de complejidad restante. Al cierre, el proyecto puede sostener públicamente lo que declara.</p>
+<p><strong>Gate de cierre de ola W6 (gate final del plan):</strong></p>
+<pre><code class="language-bash">make verify                                                     # → verde en todas las etapas
+ls -A | wc -l                                                   # → ≤ 20
+ls *.py | wc -l                                                 # → ≤ 8
+python -m pytest tests/ -q 2&gt;&amp;1 | tail -1                       # → 0 failed
+python -m pytest --cov -q 2&gt;&amp;1 | grep &quot;Total coverage&quot;          # → ≥ 70 %
+mypy . 2&gt;&amp;1 | tail -1                                           # → Success (o &lt; 20 errores documentados)
+ruff check . &amp;&amp; black --check .                                 # → 0 0
+test -f reports/scalability/metrics.json &amp;&amp; echo OK
+python -m benchmarks.runner --cases datasets/real_cases --offline --out /tmp/pvu --seed 42 ; echo $?   # → 0
+gh api repos/Adlgr87/MASSIVE/actions/runs?per_page=1 --jq '.workflow_runs[0].conclusion'             # → success
+</code></pre>
+<hr />
+<h4 id="w6-t01-evidencia-de-escalabilidad-reproducible">W6-T01 · Evidencia de escalabilidad reproducible</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D9-005</code> · <code>D9-009</code> · <code>D9-006</code></td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>L</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W1-T03</code> · <code>W5-T02</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> <code>reports/scalability/{metrics.json, report.md}</code> commiteado, con metadata completa (<code>fecha</code>, <code>commit_sha</code>, <code>cpu_model</code>, <code>ram_gb</code>, <code>python_version</code>, <code>numpy_version</code>, <code>comando exacto</code>) y las cifras que respaldan la tabla del README. Dos tiers: tier CI (1K y 10K agentes) con baseline commiteado y tolerancia de ±20 %, ejecutado por un workflow; tier manual (<code>workflow_dispatch</code>) para 1M y 100M. <code>scripts/profile_hotspot.py</code> accesible vía <code>make profile</code>, escribiendo en <code>reports/profiling/</code> (gitignored). La documentación de rendimiento consolidada en <code>docs/performance/baseline.md</code> (en el nav); los documentos contradictorios archivados con banner. Las afirmaciones del README sobre memoria y cuantización describen exactamente lo que la evidencia soporta, incluido el comportamiento escalonado.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">test -f reports/scalability/metrics.json &amp;&amp; python - &lt;&lt;'PY'
+import json
+d = json.load(open(&quot;reports/scalability/metrics.json&quot;))
+req = {&quot;generated_at&quot;,&quot;commit_sha&quot;,&quot;cpu_model&quot;,&quot;ram_gb&quot;,&quot;python_version&quot;,&quot;numpy_version&quot;,&quot;command&quot;,&quot;results&quot;}
+assert req &lt;= set(d), sorted(req - set(d))
+print(&quot;metadata completa:&quot;, sorted(d))
+PY
+python benchmark_scalability.py --agents 1000 --steps 100 --json 2&gt;&amp;1 | tail -3   # → ejecuta y produce JSON
+grep -c &quot;reports/scalability&quot; README.md                                            # → ≥ 1 (citado)
+grep -cE &quot;near-constant|uint8-quantized&quot; README.md README_ES.md                    # → reformulado o respaldado
+test -f .github/workflows/scale-regression.yml -o \
+  grep -rc &quot;benchmark_scalability&quot; .github/workflows/*.yml | grep -v &quot;:0&quot;          # → ≥ 1
+make profile &amp;&amp; ls reports/profiling/ | wc -l                                      # → ≥ 1
+git check-ignore -v reports/profiling/                                             # → ignorado
+python -c &quot;import yaml,json;n=json.dumps(yaml.safe_load(open('mkdocs.yml'))['nav']);
+assert 'performance/baseline.md' in n; print('baseline en nav')&quot;
+grep -c &quot;HISTÓRICO&quot; REPORT_OPTIMIZATION.md docs/archive/reports/REPORT_OPTIMIZATION.md 2&gt;/dev/null  # → ≥ 1
+</code></pre>
+<h4 id="w6-t02-validacion-pvu-sobre-los-casos-reales-y-con-baselines-convergentes">W6-T02 · Validación PVU sobre los casos reales y con baselines convergentes</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D4-011</code> · <code>D4-012</code></td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>M</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W0-T01</code> (puede empezar en paralelo con cualquier ola)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> El comando por defecto de benchmark (README, Makefile, <code>pvu-validation.yml</code>, <code>publish.yml</code>) apunta a los 12 casos reales de <code>datasets/real_cases/</code>, o ejecuta ambos conjuntos y publica los dos resultados. <code>metrics.json</code> incluye por baseline un campo <code>converged</code> derivado de <code>mle_retvals</code>, y el runner distingue con código de salida distinto de 0 el caso "un baseline no convergió". El resultado de los 12 casos reales está commiteado en <code>reports/pvu_real_validation/</code> y citado desde el README. Si MASSIVE no supera al mejor baseline en el conjunto real, la tabla del README lo dice.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">PYTHONHASHSEED=42 python -m benchmarks.runner --cases datasets/real_cases --offline \
+  --out /tmp/pvu_real --seed 42 ; echo &quot;exit=$?&quot;                                 # → 0, y 12 casos evaluados
+python - &lt;&lt;'PY'
+import json, glob
+fs = glob.glob(&quot;/tmp/pvu_real/**/metrics.json&quot;, recursive=True)
+assert len(fs) &gt;= 10, len(fs)
+d = json.load(open(fs[0]))
+def walk(o):
+    if isinstance(o, dict):
+        if &quot;converged&quot; in o: yield o
+        for v in o.values(): yield from walk(v)
+    elif isinstance(o, list):
+        for v in o: yield from walk(v)
+conv = list(walk(d)); assert conv, &quot;sin campo converged&quot;
+print(f&quot;{len(fs)} casos · campo converged presente en {len(conv)} baselines&quot;)
+PY
+grep -cE &quot;datasets/real_cases&quot; Makefile .github/workflows/pvu-validation.yml \
+  .github/workflows/publish.yml README.md | grep -v &quot;:0&quot; | wc -l                 # → ≥ 3
+test -d reports/pvu_real_validation &amp;&amp; ls reports/pvu_real_validation | wc -l     # → ≥ 2
+grep -c &quot;reports/pvu_real_validation&quot; README.md                                  # → ≥ 1
+grep -cE &quot;N ≥ 10|N &gt;= 10|12 casos|12 real&quot; README.md                             # → ≥ 1
+# el runner debe poder fallar:
+python - &lt;&lt;'PY'
+import subprocess, sys
+r = subprocess.run([sys.executable,&quot;-m&quot;,&quot;benchmarks.runner&quot;,&quot;--cases&quot;,&quot;datasets/pvu_cases&quot;,
+                    &quot;--offline&quot;,&quot;--out&quot;,&quot;/tmp/pvu_neg&quot;,&quot;--seed&quot;,&quot;42&quot;,&quot;--strict-convergence&quot;],
+                   capture_output=True, text=True)
+print(&quot;exit con --strict-convergence:&quot;, r.returncode)
+PY
+</code></pre>
+<h4 id="w6-t03-paridad-de-implementaciones-y-deuda-de-rendimiento-restante">W6-T03 · Paridad de implementaciones y deuda de rendimiento restante</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D9-008</code> · <code>D9-010</code> · <code>D9-011</code></td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>L</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W5-T02</code> · <code>W3-T02</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> Test de paridad denso↔disperso sobre el mismo seed y la misma entrada, con tolerancia documentada; cobertura de <code>multilayer_engine_sparse.py</code> al nivel de la variante densa; el opt-out de mypy eliminado o con issue y fecha. Decisión registrada sobre el historial en memoria: o <code>PERF-01</code> lo resuelve y está documentado en <code>docs/performance/baseline.md</code>, o <code>state_compression.compress_agent_states</code> está cableado en el bucle de historial con flag de configuración y test de round-trip. El atributo muerto <code>_layers_csr</code> eliminado o usado. <code>radon cc --average</code> incorporado a <code>make verify</code> como check informativo con umbral de no-regresión sobre el baseline. El loop O(N²) de <code>network_inference/reconstruct.py</code> resuelto o explícitamente acotado por configuración con documentación del límite.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">python -m pytest tests/test_sparse_parity.py -q 2&gt;&amp;1 | tail -1                   # → 0 failed
+python -c &quot;import json;c=json.load(open('cov.json'));
+v=[x['summary']['percent_covered'] for k,x in c['files'].items() if 'multilayer_engine_sparse' in k][0];
+d=[x['summary']['percent_covered'] for k,x in c['files'].items() if k.endswith('multilayer_engine.py')][0];
+print(f'sparse {v:.1f} vs densa {d:.1f}'); assert v &gt;= d - 10, (v,d)&quot;
+grep -c &quot;multilayer_engine_sparse&quot; pyproject.toml mypy.ini 2&gt;/dev/null            # → 0, o con issue+fecha
+grep -rc &quot;compress_agent_states&quot; --include=&quot;*.py&quot; . | grep -v &quot;state_compression&quot; | grep -v &quot;:0&quot; | wc -l   # → ≥ 1
+python - &lt;&lt;'PY'
+import numpy as np, tempfile, os
+from massive.core.state_compression import compress_agent_states, decompress_agent_states
+x = np.random.default_rng(0).uniform(-1,1,(500,6))
+c = compress_agent_states(x, max_bond_dim=32)
+r = decompress_agent_states(c)
+print(&quot;round-trip shape&quot;, r.shape, &quot;explained_variance ok&quot;)
+assert r.shape[1] == x.shape[1]
+PY
+grep -c &quot;_layers_csr&quot; massive_engine.py                                          # → 0, o con consumidor
+make verify 2&gt;&amp;1 | grep -i &quot;radon&quot;                                               # → presente
+python -c &quot;import subprocess;o=subprocess.run(['radon','cc','.','-s','-n','B','--average'],
+  capture_output=True,text=True).stdout; print(o.strip().splitlines()[-1])&quot;      # → ≤ B (9.6)
+python -m pytest tests/ -q 2&gt;&amp;1 | tail -1                                        # → 0 failed
+</code></pre>
+<h4 id="w6-t04-cierre-de-deuda-de-tipos-adopcion-de-reglas-y-senal-social">W6-T04 · Cierre de deuda de tipos, adopción de reglas y señal social</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hallazgos</strong></td>
+<td><code>D2-003</code> (repo-wide) · <code>D7-014</code> (cierre) · <code>D8-007</code> · <code>D4-013</code> (preservar) · <code>D2-017</code> (cierre)</td>
+</tr>
+<tr>
+<td><strong>Tamaño</strong></td>
+<td>L</td>
+</tr>
+<tr>
+<td><strong>Depende de</strong></td>
+<td><code>W5-T01</code> · <code>W5-T02</code> · <code>W5-T05</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Resultado esperado.</strong> mypy repo-wide por debajo de 20 errores, con los restantes listados y con issue asignado. <code>check_untyped_defs = True</code> global, sin opt-outs sin fecha. <code>strict = True</code> en los paquetes del slice científico. Reglas <code>PT</code>, <code>RUF</code> y <code>FAST</code> habilitadas en el <code>select</code> de ruff, con los 230 <code>PT009</code> y los 16 <code>PT018</code> migrados a asserts de pytest. <code>CITATION.cff</code> y una sección "Citing MASSIVE" en el README. Al menos un release publicado con notas (ya en <code>W3-T04</code>). Los 148 hallazgos del reporte cerrados o con issue abierto y etiquetado <code>debt</code>.</p>
+<p><strong>Criterio de aceptación.</strong></p>
+<pre><code class="language-bash">mypy . --ignore-missing-imports 2&gt;&amp;1 | tail -1                                  # → &lt; 20 errores
+mypy . --ignore-missing-imports 2&gt;&amp;1 | grep -oE &quot;\[[a-z-]+\]$&quot; | sort | uniq -c | sort -rn | head -5
+python -c &quot;import tomllib;m=tomllib.load(open('pyproject.toml','rb'))['tool']['mypy'];
+assert m.get('check_untyped_defs') is True; assert m.get('strict') is True or 'overrides' in m; print(m)&quot;
+ruff check . --select PT,RUF,FAST ; echo $?                                     # → 0
+ruff check . --select PT009 | wc -l                                             # → 0
+test -f CITATION.cff &amp;&amp; python -c &quot;import yaml;d=yaml.safe_load(open('CITATION.cff'));
+assert {'title','authors','version'} &lt;= set(d); print('CITATION.cff OK', d['version'])&quot;
+grep -c &quot;Citing MASSIVE\|CITATION.cff&quot; README.md                                # → ≥ 1
+python - &lt;&lt;'PY'
+import re
+rows = re.findall(r&quot;^\| (D\d-\d{3}) \|.*\| (\S+) \|$&quot;, open(&quot;docs/AUDIT_FINDINGS_TRACKER.md&quot;,&quot;rb&quot;).read().decode(), re.M)
+open_ids = [i for i,s in rows if s.upper() not in (&quot;CERRADO&quot;,&quot;RESUELTO&quot;,&quot;GUARDRAIL&quot;,&quot;WONTFIX&quot;)]
+print(f&quot;{len(rows)} filas · {len(open_ids)} abiertas&quot;)
+assert len(rows) == 148, len(rows)
+PY
+gh issue list --label debt --state open --limit 200 --json number | \
+  python -c &quot;import json,sys;print(len(json.load(sys.stdin)),'issues de deuda abiertos y etiquetados')&quot;
+python -m pytest tests/ -q 2&gt;&amp;1 | tail -1                                       # → 0 failed (D4-013 preservado)
+make verify                                                                     # → verde
+</code></pre>
+<hr />
+<h2 id="10-matriz-de-cobertura-hallazgo-tarea">10. MATRIZ DE COBERTURA HALLAZGO → TAREA</h2>
+<p>Los 148 hallazgos del reporte, asignados. <code>✓</code> = la tarea lo cierra; <code>→</code> = la tarea lo avanza y otra lo cierra; <code>G</code> = guardarraíl (no requiere acción; se verifica en <code>W0-T01</code>).</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Tarea</th>
+<th></th>
+<th>ID</th>
+<th>Tarea</th>
+<th></th>
+<th>ID</th>
+<th>Tarea</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D1-001</td>
+<td>W1-T01 ✓</td>
+<td>D4-001</td>
+<td>W1-T09 ✓</td>
+<td>D7-001</td>
+<td>W0-T01 → PE-1 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D1-002</td>
+<td>W1-T02 ✓</td>
+<td>D4-002</td>
+<td>W5-T05 ✓</td>
+<td>D7-002</td>
+<td>W3-T05 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D1-003</td>
+<td>W1-T01 ✓</td>
+<td>D4-003</td>
+<td>W5-T03 → W5-T06 ✓</td>
+<td>D7-003</td>
+<td>W2-T09 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D1-004</td>
+<td>W1-T03 ✓ · W3-T05 →</td>
+<td>D4-004</td>
+<td>W2-T01 → W5-T05 ✓</td>
+<td>D7-004</td>
+<td>W1-T04 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D1-005</td>
+<td>W5-T06 ✓</td>
+<td>D4-005</td>
+<td>W5-T05 ✓</td>
+<td>D7-005</td>
+<td>W1-T04 → W3-T03 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D1-006</td>
+<td>W5-T06 ✓</td>
+<td>D4-006</td>
+<td>W1-T03 ✓</td>
+<td>D7-006</td>
+<td>W2-T06 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D1-007</td>
+<td>W0-T03 G</td>
+<td>D4-007</td>
+<td>W1-T10 ✓</td>
+<td>D7-007</td>
+<td>W5-T01 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D1-008</td>
+<td>W2-T05 ✓</td>
+<td>D4-008</td>
+<td>W1-T10 ✓</td>
+<td>D7-008</td>
+<td>W3-T04 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D1-009</td>
+<td>W3-T05 ✓</td>
+<td>D4-009</td>
+<td>W1-T10 ✓</td>
+<td>D7-009</td>
+<td>W3-T02 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D1-010</td>
+<td>W0-T01 G</td>
+<td>D4-010</td>
+<td>W1-T01 ✓</td>
+<td>D7-010</td>
+<td>W2-T09 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D1-011</td>
+<td>W1-T04 ✓</td>
+<td>D4-011</td>
+<td>W6-T02 ✓</td>
+<td>D7-011</td>
+<td>W3-T03 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D2-001</td>
+<td>W1-T06 ✓</td>
+<td>D4-012</td>
+<td>W6-T02 ✓</td>
+<td>D7-012</td>
+<td>W2-T09 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D2-002</td>
+<td>W1-T06 ✓</td>
+<td>D4-013</td>
+<td>W0-T01 G</td>
+<td>D7-013</td>
+<td>W2-T09 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D2-003</td>
+<td>W2-T06 → W6-T04 ✓</td>
+<td>D4-014</td>
+<td>W1-T10 ✓</td>
+<td>D7-014</td>
+<td>W1-T07 → W6-T04 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D2-004</td>
+<td>W1-T07 ✓</td>
+<td>D5-001</td>
+<td>W2-T01 ✓</td>
+<td>D7-015</td>
+<td>W3-T03 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D2-005</td>
+<td>W2-T05 ✓</td>
+<td>D5-002</td>
+<td>W3-T01 ✓</td>
+<td>D7-016</td>
+<td>W2-T03 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D2-006</td>
+<td>W2-T07 ✓</td>
+<td>D5-003</td>
+<td>W2-T10 ✓</td>
+<td>D7-017</td>
+<td>W0-T01 G</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D2-007</td>
+<td>W0-T01 G</td>
+<td>D5-004</td>
+<td>W2-T10 ✓</td>
+<td>D7-018</td>
+<td>W0-T01 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D2-008</td>
+<td>W2-T04 ✓ · W2-T05 →</td>
+<td>D5-005</td>
+<td>W1-T03 ✓</td>
+<td>D7-019</td>
+<td>W5-T06 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D2-009</td>
+<td>W2-T05 ✓</td>
+<td>D5-006</td>
+<td>W2-T10 ✓</td>
+<td>D7-020</td>
+<td>W1-T05 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D2-010</td>
+<td>W2-T05 ✓</td>
+<td>D5-007</td>
+<td>W2-T10 ✓</td>
+<td>D8-001</td>
+<td>W4-T02 → W5-T02 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D2-011</td>
+<td>W5-T04 ✓</td>
+<td>D5-008</td>
+<td>W1-T02 ✓</td>
+<td>D8-002</td>
+<td>W3-T01 → W3-T04 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D2-012</td>
+<td>W5-T03 ✓</td>
+<td>D5-009</td>
+<td>W2-T02 ✓</td>
+<td>D8-003</td>
+<td>W1-T08 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D2-013</td>
+<td>W5-T03 ✓</td>
+<td>D5-010</td>
+<td>W2-T02 ✓</td>
+<td>D8-004</td>
+<td>W1-T08 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D2-014</td>
+<td>W5-T04 ✓</td>
+<td>D5-011</td>
+<td>W2-T10 ✓</td>
+<td>D8-005</td>
+<td>W4-T01 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D2-015</td>
+<td>W0-T01 G</td>
+<td>D5-012</td>
+<td>W2-T10 ✓</td>
+<td>D8-006</td>
+<td>W0-T02 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D2-016</td>
+<td>W2-T08 ✓</td>
+<td>D5-013</td>
+<td>W2-T02 ✓</td>
+<td>D8-007</td>
+<td>W6-T04 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D2-017</td>
+<td>W1-T06 → W6-T04 ✓</td>
+<td>D5-014</td>
+<td>W2-T03 ✓</td>
+<td>D8-008</td>
+<td>W0-T01 G</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D3-001</td>
+<td>W3-T01 ✓</td>
+<td>D5-015</td>
+<td>W2-T03 ✓</td>
+<td>D8-009</td>
+<td>W0-T01 G</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D3-002</td>
+<td>W5-T01 ✓</td>
+<td>D5-016</td>
+<td>W3-T04 ✓</td>
+<td>D8-010</td>
+<td>W4-T01 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D3-003</td>
+<td>W5-T01 ✓</td>
+<td>D5-017</td>
+<td>W0-T01 G</td>
+<td>D8-011</td>
+<td>W4-T05 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D3-004</td>
+<td>W2-T01 ✓</td>
+<td>D5-018</td>
+<td>W0-T01 G · W0-T03</td>
+<td>D8-012</td>
+<td>W1-T05 ✓ · W0-T03</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D3-005</td>
+<td>W5-T01 ✓</td>
+<td>D5-019</td>
+<td>W1-T05 ✓</td>
+<td>D9-001</td>
+<td>W2-T04 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D3-006</td>
+<td>W5-T02 ✓</td>
+<td>D5-020</td>
+<td>W1-T05 ✓</td>
+<td>D9-002</td>
+<td>W2-T04 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D3-007</td>
+<td>W5-T02 ✓</td>
+<td>D5-021</td>
+<td>W1-T05 ✓</td>
+<td>D9-003</td>
+<td>W2-T04 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D3-008</td>
+<td>W5-T02 ✓</td>
+<td>D5-022</td>
+<td>W1-T05 ✓</td>
+<td>D9-004</td>
+<td>W2-T07 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D3-009</td>
+<td>W5-T04 ✓</td>
+<td>D5-023</td>
+<td>W2-T02 ✓</td>
+<td>D9-005</td>
+<td>W6-T01 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D3-010</td>
+<td>W5-T02 ✓</td>
+<td>D5-024</td>
+<td>W0-T02 ✓</td>
+<td>D9-006</td>
+<td>W6-T01 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D3-011</td>
+<td>W4-T05 ✓</td>
+<td>D6-001</td>
+<td>W4-T01 ✓</td>
+<td>D9-007</td>
+<td>W3-T02 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D3-012</td>
+<td>W5-T02 ✓</td>
+<td>D6-002</td>
+<td>W4-T01 ✓</td>
+<td>D9-008</td>
+<td>W6-T03 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D3-013</td>
+<td>W5-T06 ✓</td>
+<td>D6-003</td>
+<td>W4-T02 ✓</td>
+<td>D9-009</td>
+<td>W6-T01 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D3-014</td>
+<td>W3-T03 ✓</td>
+<td>D6-004</td>
+<td>W4-T03 ✓</td>
+<td>D9-010</td>
+<td>W6-T03 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D3-015</td>
+<td>W0-T01 G</td>
+<td>D6-005</td>
+<td>W4-T03 ✓</td>
+<td>D9-011</td>
+<td>W6-T03 ✓</td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D3-016</td>
+<td>W5-T02 ✓</td>
+<td>D6-006</td>
+<td>W1-T08 ✓</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D3-017</td>
+<td>W3-T02 ✓</td>
+<td>D6-007</td>
+<td>W4-T03 ✓ · W6-T01 →</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D3-018</td>
+<td>W3-T02 ✓</td>
+<td>D6-008</td>
+<td>W4-T03 ✓</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D3-019</td>
+<td>W2-T08 ✓</td>
+<td>D6-009</td>
+<td>W4-T04 ✓</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td>D3-020</td>
+<td>W0-T01 G · W2-T08</td>
+<td>D6-010</td>
+<td>W4-T03 ✓</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>D6-011</td>
+<td>W4-T03 ✓</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>D6-012</td>
+<td>W3-T04 ✓</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>D6-013</td>
+<td>W1-T08 ✓</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>D6-014</td>
+<td>W4-T01 ✓</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>D6-015</td>
+<td>W4-T04 ✓</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>D6-016</td>
+<td>W1-T08 ✓</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>D6-017</td>
+<td>W1-T08 ✓</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>D6-018</td>
+<td>W0-T01 G · W4-T03 →</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>D6-019</td>
+<td>W0-T01 G</td>
+<td></td>
+<td></td>
+<td></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Verificación de cobertura:</strong> 148 IDs del reporte · 0 sin asignar · 43 tareas declaradas y 43 citadas. De los 17 hallazgos 🟢, 14 son guardarraíles puros (ninguna acción, sólo verificación en <code>W0-T01</code>) y 3 tienen acción residual asociada (<code>D7-018</code> → targets nuevos de Makefile, <code>D8-012</code> → corrección del typo de <code>.gitignore</code>, <code>D9-011</code> → check informativo de <code>radon</code>). Los 131 restantes tienen tarea de cierre.</p>
+<hr />
+<h2 id="11-patrones-sistemicos-tarea-que-los-ataca">11. PATRONES SISTÉMICOS → TAREA QUE LOS ATACA</h2>
+<p>Cada patrón de la sección 5 del reporte tiene una tarea cuyo resultado esperado lo desactiva estructuralmente, no sólo en sus síntomas:</p>
+<table>
+<thead>
+<tr>
+<th>Patrón</th>
+<th>Tarea estructural</th>
+<th>Mecanismo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 · Migraciones a mitad</td>
+<td><code>W5-T01</code> + <code>W5-T02</code> + <code>W4-T05</code></td>
+<td><code>CANONICAL_SOURCES.md</code> con fecha de retirada por shim; "hecho" incluye eliminar el estado anterior</td>
+</tr>
+<tr>
+<td>2 · Docs no reconciliadas</td>
+<td><code>W4-T01</code> + <code>W4-T03</code></td>
+<td>Documentación derivada generada por script con gate de diff vacío; link-checker; tiers viva/histórica</td>
+</tr>
+<tr>
+<td>3 · Señal incapacitada</td>
+<td><code>W0-T01</code> + <code>W2-T06</code> + <code>W5-T05</code> + <code>W6-T04</code></td>
+<td><code>make verify</code> único; retirada de <code>\|\| true</code> y <code>continue-on-error</code>; ratchet de cobertura y de mypy</td>
+</tr>
+<tr>
+<td>4 · Puntos de entrada múltiples</td>
+<td><code>W5-T01</code></td>
+<td>Un canónico por categoría, declarado y enlazado desde <code>CONTRIBUTING.md</code> y <code>AGENTS.md</code></td>
+</tr>
+<tr>
+<td>5 · Contratos no aplicados</td>
+<td><code>W2-T01</code> + <code>W2-T04</code> + <code>W4-T01</code></td>
+<td>DTOs como cuerpos de request; docstring→test; cifras del README generadas</td>
+</tr>
+<tr>
+<td>6 · Camino feliz vs. degradación</td>
+<td><code>W3-T05</code></td>
+<td>Job <code>clean-clone</code> + matriz de dependencias mínimas + smoke del smoke en el contenedor</td>
+</tr>
+<tr>
+<td>7 · Artefactos de runtime</td>
+<td><code>W1-T05</code> + <code>W2-T05</code></td>
+<td><code>.gitignore</code>/<code>.gitattributes</code> efectivos; cero side-effects de import; check anti-rutas personales</td>
+</tr>
+<tr>
+<td>8 · Escala afirmada, no medida</td>
+<td><code>W6-T01</code> + <code>W6-T02</code></td>
+<td>Baselines commiteados con metadata; tier CI + tier manual; casos reales por defecto</td>
+</tr>
+<tr>
+<td>9 · Complejidad &gt; verificación</td>
+<td><code>W5-T06</code> + <code>G-3</code> + <code>W6-T04</code></td>
+<td>Regla de no añadir superficie sin verificación; tracker de los 148 con presupuesto de deuda</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="12-resumen-de-ejecucion">12. RESUMEN DE EJECUCIÓN</h2>
+<table>
+<thead>
+<tr>
+<th>Ola</th>
+<th>Tareas</th>
+<th>Ancho paralelo</th>
+<th>Bloqueante para</th>
+<th>Cierre requiere</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>W0</strong> Harness y gobernanza</td>
+<td>3</td>
+<td>3 pistas</td>
+<td>todas las olas</td>
+<td><code>make verify</code> existe y mide</td>
+</tr>
+<tr>
+<td><strong>W1</strong> Desbloqueo</td>
+<td>10</td>
+<td>5 pistas</td>
+<td>W2, W3</td>
+<td>clone limpio: import + pytest 0 failed + ruff/black 0</td>
+</tr>
+<tr>
+<td><strong>W2</strong> Camino canónico</td>
+<td>10</td>
+<td>4 pistas</td>
+<td>W3, W5</td>
+<td>DTOs con cotas, <code>/metrics</code> protegido, typecheck puede fallar</td>
+</tr>
+<tr>
+<td><strong>W3</strong> Build y despliegue</td>
+<td>5</td>
+<td>4 pistas</td>
+<td>W5</td>
+<td><code>pip install -e .</code> OK, wheel importable, imagen verificada, tag creado</td>
+</tr>
+<tr>
+<td><strong>W4</strong> Verdad documental</td>
+<td>5</td>
+<td>3 pistas</td>
+<td>— (paralela a W3)</td>
+<td>0 refs rotas, README generado, ≤ 8 <code>.md</code> en root</td>
+</tr>
+<tr>
+<td><strong>W5</strong> Consolidación</td>
+<td>6</td>
+<td>2 pistas</td>
+<td>W6</td>
+<td>1 backend, 1 frontend, ≤ 8 <code>.py</code> en root, ≤ 20 entradas root</td>
+</tr>
+<tr>
+<td><strong>W6</strong> Rendimiento y cierre</td>
+<td>4</td>
+<td>3 pistas</td>
+<td>—</td>
+<td>evidencia reproducible commiteada, mypy &lt; 20, gate final verde</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>43 tareas</strong></td>
+<td>máx. 5 pistas</td>
+<td></td>
+<td><strong>148 hallazgos cubiertos</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Puntos de no retorno</strong> (decisiones que condicionan todo lo posterior y deben tomarse al inicio de su ola, registradas en <code>CANONICAL_SOURCES.md</code> según <code>G-5</code>):</p>
+<ol>
+<li><code>W1-T02</code> — torch duro (A) o fallback NumPy real (B). Afecta a <code>pytest.yml</code>, al wheel, al Dockerfile y a 25 módulos.</li>
+<li><code>W1-T09</code> — pesos CfC vía LFS (a), skips con descarga (b) o regeneración en CI (c). Afecta a la afirmación del README sobre Brexit.</li>
+<li><code>W3-T01</code> — backend de build y nombre de distribución en PyPI. Afecta a toda la cadena de publicación.</li>
+<li><code>W5-T01</code> — qué backend y qué frontend sobreviven. Afecta a <code>W5-T02</code>, <code>W5-T04</code> y a todo el trabajo posterior de módulos.</li>
+</ol>
+<p><strong>Condición de éxito del plan completo:</strong> el gate final de la sección 9 verde en <code>main</code>, en un run real de GitHub Actions, sobre un clone limpio, con los 148 hallazgos en estado <code>CERRADO</code>, <code>RESUELTO</code>, <code>GUARDRAIL</code> o <code>WONTFIX</code> justificado en <code>docs/AUDIT_FINDINGS_TRACKER.md</code>.</p>
+<hr />
+<p><em>Fin del workflow. 43 tareas · 7 olas · 148 hallazgos asignados · 0 huérfanos.</em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.expand", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

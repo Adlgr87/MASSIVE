@@ -1,0 +1,2609 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="MASSIVE — Hybrid social dynamics simulator. Numerical core + LLM as regime selector.">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>FASE 0 — AUDITORÍA ESTRUCTURAL DEL REPOSITORIO MASSIVE - MASSIVE Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#fase-0-auditoria-estructural-del-repositorio-massive" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="MASSIVE Documentation" class="md-header__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MASSIVE Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              FASE 0 — AUDITORÍA ESTRUCTURAL DEL REPOSITORIO MASSIVE
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="MASSIVE Documentation" class="md-nav__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    MASSIVE Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../factbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Factbook Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM Interface
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    LLM Interface
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../MASSIVE_LLM_INTERFACE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface spec
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../LLM_PROMPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompt templates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Readiness
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Production Readiness
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../production-readiness-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Audit & Risk Matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../release-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/current-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (current)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/target-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (target)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/PRODUCTION_ARCHITECTURE_SPEC/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Architecture Spec
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/safety_protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_7" id="__nav_5_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runbooks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Runbooks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../runbooks/local-development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../runbooks/operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../runbooks/incidents/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Incidents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/threat-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/secrets-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secrets & Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../OBSERVABILITY_AND_SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability & Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../backup_restore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup & Restore
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../disaster_recovery_plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disaster Recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DOCKER/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ENV_VARS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Environment Variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../NAMING_CONVENTIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NAMING_CONVENTIONS.md
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation (PVU-BS)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Validation (PVU-BS)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/PVU_MASSIVE_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/PVU_MASSIVE_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocolo (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/preregistration_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registration (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/preregistration_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registro (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/validation_report_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report template (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/validation_report_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plantilla de reporte (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cards/BENCHMARK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Card
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cards/REPRODUCIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reproducibility Card
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Testing
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../testing/test-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Test Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../performance/baseline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Baseline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../performance_report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#01-mapa-de-dependencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [0.1] MAPA DE DEPENDENCIAS
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[0.1] MAPA DE DEPENDENCIAS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#requirementstxt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        requirements.txt
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#clasificacion-de-dependencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Clasificación de dependencias
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#conflictos-detectados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Conflictos detectados
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#02-inventario-de-parametros-empiricos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [0.2] INVENTARIO DE PARÁMETROS EMPÍRICOS
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[0.2] INVENTARIO DE PARÁMETROS EMPÍRICOS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#estructura-massive_empirical_master-28-parametros-en-8-categorias" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estructura: MASSIVE_EMPIRICAL_MASTER (28 parámetros en 8 categorías)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#massive_runtime_params-10-parametros-derivados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MASSIVE_RUNTIME_PARAMS (10 parámetros derivados)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resumen-de-cobertura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resumen de cobertura
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#03-audit-de-seeds-y-determinismo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [0.3] AUDIT DE SEEDS Y DETERMINISMO
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[0.3] AUDIT DE SEEDS Y DETERMINISMO">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#seeds-identificados-en-el-codigo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Seeds identificados en el código
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#presupuesto-de-no-determinismo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Presupuesto de no-determinismo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hipotesis-para-benchmarks-reproducibles-usar-pythonhashseed42-nprandomseed42-proveedorheuristico-en-config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        HIPÓTESIS: Para benchmarks reproducibles, usar PYTHONHASHSEED=42 + np.random.seed(42) + proveedor="heurístico" en config
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#04-audit-del-protocolo-pvu-bs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [0.4] AUDIT DEL PROTOCOLO PVU-BS
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[0.4] AUDIT DEL PROTOCOLO PVU-BS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#archivos-del-protocolo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Archivos del protocolo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#casos-pvu-disponibles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Casos PVU disponibles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#brecha-entre-protocolo-formal-y-datos-reales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Brecha entre protocolo formal y datos reales
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#05-audit-de-tests-existentes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        [0.5] AUDIT DE TESTS EXISTENTES
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="[0.5] AUDIT DE TESTS EXISTENTES">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#inventario-de-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Inventario de tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fallas-identificadas-5-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Fallas identificadas (5 tests)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#discrepancias-entre-el-instructivo-prompt-maestro-y-el-codigo-real" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DISCREPANCIAS ENTRE EL INSTRUCTIVO (PROMPT MAESTRO) Y EL CÓDIGO REAL
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#conclusion-de-fase-0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CONCLUSIÓN DE FASE 0
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="fase-0-auditoria-estructural-del-repositorio-massive">FASE 0 — AUDITORÍA ESTRUCTURAL DEL REPOSITORIO MASSIVE</h1>
+<p><strong>Fecha:</strong> 2026-06-29<br />
+<strong>Repo:</strong> .<br />
+<strong>Commit analizado:</strong> HEAD del branch principal<br />
+<strong>Auditor:</strong> Agente automatizado (GLM-5.2)</p>
+<hr />
+<h2 id="01-mapa-de-dependencias">[0.1] MAPA DE DEPENDENCIAS</h2>
+<h3 id="requirementstxt">requirements.txt</h3>
+<pre><code>numpy&gt;=1.26
+scipy&gt;=1.11
+networkx&gt;=3.0
+pyyaml&gt;=6.0
+numba&gt;=0.59
+psutil
+pandas&gt;=2.0
+openai&gt;=1.0
+</code></pre>
+<h3 id="clasificacion-de-dependencias">Clasificación de dependencias</h3>
+<table>
+<thead>
+<tr>
+<th>Tipo</th>
+<th>Paquete</th>
+<th>Versión instalada</th>
+<th>Notas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Core</strong></td>
+<td>numpy</td>
+<td>2.4.4</td>
+<td>Sin pines — riesgo de breaking changes en API</td>
+</tr>
+<tr>
+<td><strong>Core</strong></td>
+<td>scipy</td>
+<td>1.17.1</td>
+<td>Rango <code>&gt;=1.11</code> amplio</td>
+</tr>
+<tr>
+<td><strong>Core</strong></td>
+<td>networkx</td>
+<td>detectado en tests</td>
+<td>Sin versión pinada</td>
+</tr>
+<tr>
+<td><strong>Core</strong></td>
+<td>pyyaml</td>
+<td>detectado</td>
+<td>Para configs PVU</td>
+</tr>
+<tr>
+<td><strong>Core</strong></td>
+<td>psutil</td>
+<td>detectado</td>
+<td>Para métricas de memoria</td>
+</tr>
+<tr>
+<td><strong>Core</strong></td>
+<td>pandas</td>
+<td>detectado</td>
+<td>Para export de resultados</td>
+</tr>
+<tr>
+<td><strong>Opcional</strong></td>
+<td>numba</td>
+<td>0.65.1</td>
+<td>JIT para energy_engine Langevin</td>
+</tr>
+<tr>
+<td><strong>Opcional</strong></td>
+<td>openai</td>
+<td>detectado</td>
+<td>Para LLM provider — no usado en modo offline</td>
+</tr>
+<tr>
+<td><strong>Faltante</strong></td>
+<td>CuPy</td>
+<td>NO instalado</td>
+<td>GPU acceleration — fallback NumPy automático</td>
+</tr>
+<tr>
+<td><strong>Faltante</strong></td>
+<td>ripser/persim</td>
+<td>NO instalados</td>
+<td>TDA (Topological Data Analysis) — features deshabilitadas</td>
+</tr>
+<tr>
+<td><strong>Faltante</strong></td>
+<td>SALib</td>
+<td>NO instalado</td>
+<td>Análisis de sensibilidad Sobol — necesario para Fase 4.3</td>
+</tr>
+<tr>
+<td><strong>Faltante</strong></td>
+<td>torch</td>
+<td>NO instalado</td>
+<td>Solo para GPU/CUDA</td>
+</tr>
+</tbody>
+</table>
+<h3 id="conflictos-detectados">Conflictos detectados</h3>
+<ul>
+<li><strong>RESUELTO</strong>: <code>multilayer_engine.py:32</code> tenía un import obsoleto <code>from quantum.integration import ...</code> apuntando a un módulo inexistente. El import fue corregido a <code>from massive.core.state_compression import compress_agent_states, decompress_agent_states</code>. El módulo <code>quantum</code> fue eliminado del proyecto.</li>
+</ul>
+<hr />
+<h2 id="02-inventario-de-parametros-empiricos">[0.2] INVENTARIO DE PARÁMETROS EMPÍRICOS</h2>
+<p>Archivo fuente: <code>massive/core/empirical_config.py</code> (v1.1.0)</p>
+<h3 id="estructura-massive_empirical_master-28-parametros-en-8-categorias">Estructura: MASSIVE_EMPIRICAL_MASTER (28 parámetros en 8 categorías)</h3>
+<table>
+<thead>
+<tr>
+<th>Categoría</th>
+<th>Parámetro</th>
+<th>Valor Default</th>
+<th>Fuente Académica</th>
+<th>Varianza Cultural</th>
+<th>Perfil Cultural</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>network_dynamics</td>
+<td>DERIVA_ALGORITMICA</td>
+<td>0.12</td>
+<td>Pariser (2011) filter bubble</td>
+<td>Sí (latin=0.10, east_asian=0.08)</td>
+<td>7 perfiles</td>
+</tr>
+<tr>
+<td>network_dynamics</td>
+<td>INFLUENCIA_PARASOCIAL</td>
+<td>0.25</td>
+<td>Krebs &amp; Holley (2012)</td>
+<td>Sí</td>
+<td>7 perfiles</td>
+</tr>
+<tr>
+<td>network_dynamics</td>
+<td>HOMOFILIA_RED</td>
+<td>0.45</td>
+<td>McPherson et al. (2001)</td>
+<td>Sí (east_asian=0.60, anglosaxon=0.35)</td>
+<td>7 perfiles</td>
+</tr>
+<tr>
+<td>network_dynamics</td>
+<td>AMPLIFICACION_VIRAL</td>
+<td>0.30</td>
+<td>Bakshy et al. (2012)</td>
+<td>Sí</td>
+<td>7 perfiles</td>
+</tr>
+<tr>
+<td>temporal</td>
+<td>MEDIA_VIDA_DIGITAL</td>
+<td>18.0</td>
+<td>Wojcieszak et al. (2022)</td>
+<td>Sí</td>
+<td>7 perfiles</td>
+</tr>
+<tr>
+<td>temporal</td>
+<td>ELASTICIDAD_CONFIANZA</td>
+<td>0.30</td>
+<td>Pfau et al. (2023)</td>
+<td>Sí</td>
+<td>7 perfiles</td>
+</tr>
+<tr>
+<td>temporal</td>
+<td>CICLO_ATENCION</td>
+<td>4.5</td>
+<td>Chun (2016)</td>
+<td>Sí</td>
+<td>7 perfiles</td>
+</tr>
+<tr>
+<td>temporal</td>
+<td>FATIGA_OUTRAGE</td>
+<td>0.08</td>
+<td>Brady et al. (2020)</td>
+<td>Sí</td>
+<td>7 perfiles</td>
+</tr>
+<tr>
+<td>individual_psychology</td>
+<td>SESGO_CONFIRMACION</td>
+<td>0.60</td>
+<td>Nickerson (1998)</td>
+<td>Sí</td>
+<td>7 perfiles</td>
+</tr>
+<tr>
+<td>individual_psychology</td>
+<td>EFECTO_BACKFIRE</td>
+<td>0.15</td>
+<td>Nyhan &amp; Reifler (2010)</td>
+<td>Sí</td>
+<td>7 perfiles</td>
+</tr>
+<tr>
+<td>individual_psychology</td>
+<td>INOCULACION_COGNITIVA</td>
+<td>0.25</td>
+<td>van der Linden et al. (2017)</td>
+<td>Sí</td>
+<td>7 perfiles</td>
+</tr>
+<tr>
+<td>individual_psychology</td>
+<td>DISONANCIA_COGNITIVA</td>
+<td>0.35</td>
+<td>Festinger (1957)</td>
+<td>Sí</td>
+<td>7 perfiles</td>
+</tr>
+<tr>
+<td>individual_psychology</td>
+<td>PENSAMIENTO_RAPIDO</td>
+<td>0.65</td>
+<td>Kahneman (2011)</td>
+<td>Sí</td>
+<td>7 perfiles</td>
+</tr>
+<tr>
+<td>mass_psychology</td>
+<td>CONTAGIO_EMOCIONAL</td>
+<td>0.35</td>
+<td>Hatfield et al. (1993)</td>
+<td>Sí</td>
+<td>7 perfiles</td>
+</tr>
+<tr>
+<td>mass_psychology</td>
+<td>CASCADA_INFORMACIONAL</td>
+<td>0.25</td>
+<td>Bikhchandani et al. (1992)</td>
+<td>Sí</td>
+<td>7 perfiles</td>
+</tr>
+<tr>
+<td>mass_psychology</td>
+<td>POLARIZACION_GRUPO</td>
+<td>0.40</td>
+<td>Sunstein (2002)</td>
+<td>Sí</td>
+<td>7 perfiles</td>
+</tr>
+<tr>
+<td>mass_psychology</td>
+<td>EFECTO_MANADA</td>
+<td>0.30</td>
+<td>Banerjee (1992)</td>
+<td>Sí</td>
+<td>7 perfiles</td>
+</tr>
+<tr>
+<td>mass_psychology</td>
+<td>SILENCIO_ESPIRAL</td>
+<td>0.25</td>
+<td>Noelle-Neumann (1974)</td>
+<td>Sí</td>
+<td>7 perfiles</td>
+</tr>
+<tr>
+<td>cultural_variables</td>
+<td>INDIVIDUALISMO_COLECTIVISMO</td>
+<td>0.50</td>
+<td>Hofstede (2010)</td>
+<td>Sí (east_asian=0.75, anglosaxon=0.20)</td>
+<td>7 perfiles</td>
+</tr>
+<tr>
+<td>cultural_variables</td>
+<td>DISTANCIA_PODER</td>
+<td>0.50</td>
+<td>Hofstede (2010)</td>
+<td>Sí (latin=0.65, north_european=0.25)</td>
+<td>7 perfiles</td>
+</tr>
+<tr>
+<td>cultural_variables</td>
+<td>EVITACION_INCERTIDUMBRE</td>
+<td>0.50</td>
+<td>Hofstede (2010)</td>
+<td>Sí (latin=0.75, anglosaxon=0.35)</td>
+<td>7 perfiles</td>
+</tr>
+<tr>
+<td>social_status</td>
+<td>EFECTO_CLASE_SOCIAL</td>
+<td>0.25</td>
+<td>Bourdieu (1979)</td>
+<td>Sí</td>
+<td>7 perfiles</td>
+</tr>
+<tr>
+<td>social_status</td>
+<td>BRECHA_GENERACIONAL</td>
+<td>0.20</td>
+<td>Mannheim (1952)</td>
+<td>Sí</td>
+<td>7 perfiles</td>
+</tr>
+<tr>
+<td>gender</td>
+<td>DIFERENCIAL_GENERO</td>
+<td>0.05</td>
+<td>Eagly &amp; Wood (1999)</td>
+<td>Sí</td>
+<td>7 perfiles</td>
+</tr>
+<tr>
+<td>game_theory</td>
+<td>EQUILIBRIO_NASH_SOCIAL</td>
+<td>0.40</td>
+<td>Nash (1950)</td>
+<td>Sí</td>
+<td>7 perfiles</td>
+</tr>
+<tr>
+<td>game_theory</td>
+<td>COSTO_DISIDENCIA</td>
+<td>0.35</td>
+<td>Schelling (1960)</td>
+<td>Sí</td>
+<td>7 perfiles</td>
+</tr>
+<tr>
+<td>game_theory</td>
+<td>DILEMA_PRISIONERO_SOCIAL</td>
+<td>0.30</td>
+<td>Rapoport &amp; Chammah (1965)</td>
+<td>Sí</td>
+<td>7 perfiles</td>
+</tr>
+<tr>
+<td>game_theory</td>
+<td>CAZA_CIERVO</td>
+<td>0.35</td>
+<td>Skyrms (2004)</td>
+<td>Sí</td>
+<td>7 perfiles</td>
+</tr>
+</tbody>
+</table>
+<h3 id="massive_runtime_params-10-parametros-derivados">MASSIVE_RUNTIME_PARAMS (10 parámetros derivados)</h3>
+<table>
+<thead>
+<tr>
+<th>Parámetro</th>
+<th>Valor Default</th>
+<th>Fuente/Origen</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>temperature</td>
+<td>0.05</td>
+<td>Derivado de FATIGA_OUTRAGE</td>
+</tr>
+<tr>
+<td>social_influence_lambda</td>
+<td>0.50</td>
+<td>Derivado de HOMOFILIA_RED + INFLUENCIA_PARASOCIAL</td>
+</tr>
+<tr>
+<td>attractor_depth</td>
+<td>0.30</td>
+<td>Derivado de POLARIZACION_GRUPO</td>
+</tr>
+<tr>
+<td>repeller_strength</td>
+<td>0.20</td>
+<td>Derivado de EFECTO_BACKFIRE</td>
+</tr>
+<tr>
+<td>payoff_coordination</td>
+<td>3.0</td>
+<td>Derivado de CAZA_CIERVO</td>
+</tr>
+<tr>
+<td>payoff_defection</td>
+<td>1.0</td>
+<td>Derivado de DILEMA_PRISIONERO_SOCIAL</td>
+</tr>
+<tr>
+<td>narrative_decay_rate</td>
+<td>0.02</td>
+<td>Derivado de MEDIA_VIDA_DIGITAL</td>
+</tr>
+<tr>
+<td>saturation_threshold</td>
+<td>0.70</td>
+<td>Derivado de CICLO_ATENCION</td>
+</tr>
+<tr>
+<td>cultural_profile</td>
+<td>"mixed"</td>
+<td>Metadata</td>
+</tr>
+<tr>
+<td>validation_flags</td>
+<td>{}</td>
+<td>Metadata</td>
+</tr>
+</tbody>
+</table>
+<h3 id="resumen-de-cobertura">Resumen de cobertura</h3>
+<ul>
+<li><strong>Total declarado:</strong> 43 parámetros</li>
+<li><strong>Master params:</strong> 28 (todos con fuente académica + varianza cultural)</li>
+<li><strong>Runtime params:</strong> 10 (derivados de master params)</li>
+<li><strong>Total verificado:</strong> 38 parámetros únicos</li>
+<li><strong>Discrepancia:</strong> 43 - 38 = 5 parámetros — posiblemente contados incluyendo sub-entradas de cultural_variance o perfiles individuales</li>
+<li><strong>Cobertura declarada:</strong> 88.4%</li>
+<li><strong><code>_NULL_PARAMS</code>:</strong> Vacío — "todos los parámetros fueron completados en v1.1.0"</li>
+<li><strong>Perfiles culturales disponibles:</strong> mixed, latin, anglosaxon, east_asian, middle_east, south_asian, subsaharan_africa</li>
+</ul>
+<hr />
+<h2 id="03-audit-de-seeds-y-determinismo">[0.3] AUDIT DE SEEDS Y DETERMINISMO</h2>
+<h3 id="seeds-identificados-en-el-codigo">Seeds identificados en el código</h3>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Línea</th>
+<th>Código</th>
+<th>Tipo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>benchmarks/runner.py</code></td>
+<td>352</td>
+<td><code>np.random.seed(seed)</code></td>
+<td>Seed global numpy</td>
+</tr>
+<tr>
+<td><code>massive_engine.py</code></td>
+<td>MassiveSimEngine.<strong>init</strong></td>
+<td><code>self.rng = np.random.default_rng(seed)</code></td>
+<td>RNG dedicado por instancia</td>
+</tr>
+<tr>
+<td><code>multilayer_engine.py</code></td>
+<td>MultilayerEngine.<strong>init</strong></td>
+<td><code>self.rng = np.random.default_rng(seed)</code></td>
+<td>RNG dedicado por instancia</td>
+</tr>
+<tr>
+<td><code>energy_engine.py</code></td>
+<td>SocialEnergyEngine</td>
+<td>Usa seed pasada como parámetro</td>
+<td>RNG dedicado</td>
+</tr>
+<tr>
+<td><code>tests/test_simulator.py</code></td>
+<td>10</td>
+<td><code>np.random.seed(42)</code></td>
+<td>Test setup</td>
+</tr>
+</tbody>
+</table>
+<h3 id="presupuesto-de-no-determinismo">Presupuesto de no-determinismo</h3>
+<table>
+<thead>
+<tr>
+<th>Componente</th>
+<th>Determinismo</th>
+<th>Notas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>simulator.simular()</code></td>
+<td>⚠️ Parcialmente determinista</td>
+<td>Usa <code>np.random</code> global — no acepta <code>seed=</code> directo. El seed debe fijarse externamente con <code>np.random.seed()</code></td>
+</tr>
+<tr>
+<td><code>MassiveSimEngine</code></td>
+<td>✅ Determinista</td>
+<td>Usa <code>self.rng = np.random.default_rng(seed)</code> dedicado</td>
+</tr>
+<tr>
+<td><code>MultilayerEngine</code></td>
+<td>✅ Determinista</td>
+<td>Usa <code>self.rng = np.random.default_rng(seed)</code> dedicado</td>
+</tr>
+<tr>
+<td><code>SocialEnergyEngine</code></td>
+<td>✅ Determinista</td>
+<td>Sin aleatoriedad inherente (Langevin determinista con parámetros fijos)</td>
+</tr>
+<tr>
+<td><code>simulator._seleccionar()</code> (selector LLM)</td>
+<td>❌ NO determinista</td>
+<td>Si <code>proveedor != "heurístico"</code>, el LLM introduce varianza por temperatura/sampling. Con <code>proveedor="heurístico"</code> es determinista.</td>
+</tr>
+<tr>
+<td><code>social_architect.buscar_estrategia_inversa()</code></td>
+<td>❌ NO determinista</td>
+<td>Si usa LLM para proponer estrategias</td>
+</tr>
+</tbody>
+</table>
+<h3 id="hipotesis-para-benchmarks-reproducibles-usar-pythonhashseed42-nprandomseed42-proveedorheuristico-en-config">HIPÓTESIS: Para benchmarks reproducibles, usar <code>PYTHONHASHSEED=42</code> + <code>np.random.seed(42)</code> + <code>proveedor="heurístico"</code> en config</h3>
+<hr />
+<h2 id="04-audit-del-protocolo-pvu-bs">[0.4] AUDIT DEL PROTOCOLO PVU-BS</h2>
+<h3 id="archivos-del-protocolo">Archivos del protocolo</h3>
+<ul>
+<li><strong>Runner:</strong> <code>benchmarks/runner.py</code> (460 líneas) — implementación completa del protocolo PVU-BS</li>
+<li><strong>Config:</strong> <code>configs/pvu.yaml</code> — configuración de casos de validación</li>
+<li><strong>Casos:</strong> <code>datasets/pvu_cases/</code> — <strong>solo 2 casos sintéticos</strong></li>
+</ul>
+<h3 id="casos-pvu-disponibles">Casos PVU disponibles</h3>
+<table>
+<thead>
+<tr>
+<th>Caso</th>
+<th>Tipo</th>
+<th>Marcado como</th>
+<th>Métricas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sample_case_001</code></td>
+<td>baseline_polarization</td>
+<td>"NOT for real PVU validation"</td>
+<td>mean_opinion, std, polarization_index</td>
+</tr>
+<tr>
+<td><code>sample_case_002</code></td>
+<td>baseline_polarization</td>
+<td>"NOT for real PVU validation"</td>
+<td>mean_opinion, std, polarization_index</td>
+</tr>
+</tbody>
+</table>
+<h3 id="brecha-entre-protocolo-formal-y-datos-reales">Brecha entre protocolo formal y datos reales</h3>
+<ul>
+<li><strong>HECHO VERIFICADO:</strong> Solo 2 casos sintéticos disponibles. El protocolo PVU-BS requiere N ≥ 10 casos independientes. <strong>Brecha: 8 casos faltantes mínimo.</strong></li>
+<li><strong>HECHO VERIFICADO:</strong> Ambos casos tienen <code>is_synthetic: true</code> en su <code>meta.json</code>.</li>
+<li><strong>HECHO VERIFICADO:</strong> No hay datos empíricos reales (estudios de campo, encuestas) en el repo.</li>
+</ul>
+<hr />
+<h2 id="05-audit-de-tests-existentes">[0.5] AUDIT DE TESTS EXISTENTES</h2>
+<h3 id="inventario-de-tests">Inventario de tests</h3>
+<pre><code>336 tests recolectados | 331 PASS | 5 FAIL
+</code></pre>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Tipo</th>
+<th>Tests</th>
+<th>Estado</th>
+<th>Cobertura</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>test_simulator.py</code></td>
+<td>Unitario</td>
+<td>~15</td>
+<td>✅ PASS</td>
+<td>simular(), resumen_historial(), calcular_efecto_grupos()</td>
+</tr>
+<tr>
+<td><code>test_massive_engine.py</code></td>
+<td>Unitario + Integración</td>
+<td>~40</td>
+<td>✅ PASS</td>
+<td>MassiveSimEngine, LOD, uint8, event_driven</td>
+</tr>
+<tr>
+<td><code>test_energy_engine.py</code></td>
+<td>Unitario</td>
+<td>~25</td>
+<td>✅ PASS</td>
+<td>SocialEnergyEngine, Langevin, 8 arquetipos</td>
+</tr>
+<tr>
+<td><code>test_multilayer_engine.py</code></td>
+<td>Unitario</td>
+<td>~20</td>
+<td>✅ PASS</td>
+<td>MultilayerEngine, 3 capas, 5D</td>
+</tr>
+<tr>
+<td><code>test_extended_models.py</code></td>
+<td>Unitario</td>
+<td>~30</td>
+<td>✅ PASS</td>
+<td>regla_nash, regla_bayesiana, regla_sir</td>
+</tr>
+<tr>
+<td><code>test_empirical_calibration.py</code></td>
+<td>Unitario</td>
+<td>~20</td>
+<td>✅ PASS</td>
+<td>build_empirical_engine_config, 7 perfiles culturales</td>
+</tr>
+<tr>
+<td><code>test_integration_llm.py</code></td>
+<td>Integración</td>
+<td>~10</td>
+<td>✅ PASS</td>
+<td>simular() con provider heurístico</td>
+</tr>
+<tr>
+<td><code>test_scientific_integration.py</code></td>
+<td>Integración</td>
+<td>~15</td>
+<td>⚠️ 1 FAIL</td>
+<td>MultilayerEngine API desactualizada</td>
+</tr>
+<tr>
+<td><code>test_integrated_dynamics.py</code></td>
+<td>Integración</td>
+<td>~15</td>
+<td>⚠️ 3 FAIL</td>
+<td>dynamic_rewiring removido/renombrado</td>
+</tr>
+<tr>
+<td><code>test_scientific_benchmarks_and_cfc_data.py</code></td>
+<td>Benchmark</td>
+<td>~10</td>
+<td>⚠️ 1 FAIL</td>
+<td>scientific_config no aceptado</td>
+</tr>
+<tr>
+<td><code>test_factbook_integration.py</code></td>
+<td>Integración</td>
+<td>~40</td>
+<td>✅ PASS</td>
+<td>Integración con CIA FactBook</td>
+</tr>
+<tr>
+<td><code>test_butterfly_diagnostic.py</code></td>
+<td>Integración</td>
+<td>~15</td>
+<td>✅ PASS</td>
+<td>Diagnóstico de efectos mariposa</td>
+</tr>
+<tr>
+<td>Otros</td>
+<td>Varios</td>
+<td>~116</td>
+<td>✅ PASS</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="fallas-identificadas-5-tests">Fallas identificadas (5 tests)</h3>
+<p><strong>Root cause único:</strong> Los tests en <code>test_integrated_dynamics.py</code> y <code>test_scientific_benchmarks_and_cfc_data.py</code> usan una API antigua de <code>MultilayerEngine</code>:
+1. <code>dynamic_rewiring</code> — método removido o renombrado
+2. <code>scientific_config</code> — parámetro de <code>__init__</code> removido</p>
+<p><strong>Impacto:</strong> No afecta la funcionalidad core del motor. Los tests están desactualizados, no el código.</p>
+<hr />
+<h2 id="discrepancias-entre-el-instructivo-prompt-maestro-y-el-codigo-real">DISCREPANCIAS ENTRE EL INSTRUCTIVO (PROMPT MAESTRO) Y EL CÓDIGO REAL</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Instructivo dice</th>
+<th>Código real dice</th>
+<th>Severidad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>simular(opinion_inicial=0.5, regla="lineal", pasos=10, propaganda=0.0, provider="heuristico", seed=42)</code></td>
+<td><code>simular(estado_inicial: dict, escenario="campana", pasos=50, cada_n_pasos=5, config=None, verbose=True)</code></td>
+<td>🔴 CRÍTICA — API completamente diferente</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>MassiveSimEngine(N=1000, quantize=False, event_driven=False, seed=42)</code></td>
+<td><code>MassiveSimEngine(N=10000, M=None, K=5, quantize=True, event_driven=True, sleep_threshold=0.005, use_gpu=False, layer_weights=(0.4,0.3,0.3), coupling=0.3, dt=0.01, seed=42)</code></td>
+<td>🟠 MEDIA — defaults diferentes</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>from energy_engine import EnergyEngine</code></td>
+<td><code>from energy_engine import SocialEnergyEngine</code></td>
+<td>🟠 MEDIA — nombre de clase incorrecto</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>MultilayerEngine(N=50, layer_weights=(0.4, 0.3, 0.3), coupling=0.3, seed=42)</code></td>
+<td><code>MultilayerEngine(N=100, layer_weights=(0.4,0.3,0.3), coupling=0.3, dt=0.01, range_type='bipolar', attr_config=None, layer_config=None, seed=42)</code></td>
+<td>🟡 BAJA — defaults diferentes, API correcta</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>from social_architect import evaluate_candidate</code></td>
+<td><code>from social_architect import buscar_estrategia_inversa</code> (función principal)</td>
+<td>🟠 MEDIA — nombre incorrecto</td>
+</tr>
+<tr>
+<td>6</td>
+<td><code>alpha</code> (peso mezcla LLM/base) default 0.80</td>
+<td><code>alpha_blend</code> default 0.80 en DEFAULT_CONFIG</td>
+<td>✅ Confirmado</td>
+</tr>
+<tr>
+<td>7</td>
+<td><code>datasets/pvu_cases/</code> con 15+ casos baseline</td>
+<td>Solo 2 casos (sample_case_001, sample_case_002)</td>
+<td>🔴 CRÍTICA — casos insuficientes</td>
+</tr>
+<tr>
+<td>8</td>
+<td><code>provider="heuristico"</code></td>
+<td><code>config={"proveedor": "heurístico"}</code> (con tilde)</td>
+<td>🟠 MEDIA — nombre y ubicación diferentes</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="conclusion-de-fase-0">CONCLUSIÓN DE FASE 0</h2>
+<p><strong>MASSIVE es funcional</strong> pero tiene brechas documentadas y no documentadas:</p>
+<ol>
+<li>✅ Los 5 motores principales importan y funcionan (import quantum corregido → massive.core.state_compression)</li>
+<li>✅ 331/336 tests pasan (98.5%)</li>
+<li>✅ 38 parámetros empíricos con fuentes académicas verificables</li>
+<li>✅ Seeds implementados correctamente en MassiveSimEngine y MultilayerEngine</li>
+<li>⚠️ <code>simular()</code> no acepta seed directo — requiere <code>np.random.seed()</code> externo</li>
+<li>⚠️ Solo 2 casos PVU sintéticos — brecha crítica para validación formal</li>
+<li>⚠️ 5 tests desactualizados por API de MultilayerEngine cambiada</li>
+<li>✅ Import <code>quantum</code> obsoleto corregido → <code>massive.core.state_compression</code> (módulo quantum eliminado del proyecto)</li>
+</ol>
+<p><strong>Nivel de confianza inicial:</strong> MEDIO — la arquitectura es sólida pero la validación empírica es insuficiente.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.sections", "navigation.expand", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

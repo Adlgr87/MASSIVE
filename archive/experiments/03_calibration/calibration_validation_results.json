@@ -1,0 +1,42 @@
+[
+  {
+    "test": "Perfiles culturales \u2014 diversidad de par\u00e1metros",
+    "status": "PASS",
+    "detail": "7 perfiles producen configs diferentes"
+  },
+  {
+    "test": "Direcci\u00f3n cultural \u2014 homofilia_tasa (east_asian \u2260 anglosaxon)",
+    "status": "PASS",
+    "detail": "east_asian=0.075, anglosaxon=0.09"
+  },
+  {
+    "test": "Direcci\u00f3n cultural \u2014 distancia_poder (latin \u2260 anglosaxon)",
+    "status": "WARN",
+    "detail": "latin={} == anglosaxon={}"
+  },
+  {
+    "test": "Trayectorias por perfil cultural \u2014 divergencia",
+    "status": "PASS",
+    "detail": "range de opiniones finales: 0.2236 (0.3302 a 0.5539)"
+  },
+  {
+    "test": "Cross-validation par\u00e1metros cr\u00edticos (0/10)",
+    "status": "FAIL",
+    "detail": "Solo 0% verificados"
+  },
+  {
+    "test": "Escenario A \u2014 Polarizaci\u00f3n (bimodal)",
+    "status": "PASS",
+    "detail": "20/20 runs (100%) con polarizaci\u00f3n"
+  },
+  {
+    "test": "Escenario B \u2014 Consenso (Centola)",
+    "status": "PASS",
+    "detail": "20/20 runs (100%) con opinion>0.7"
+  },
+  {
+    "test": "Escenario C \u2014 Contagio SIR (peak 25-50, R>0.6)",
+    "status": "PASS",
+    "detail": "20/20 runs (100%) cumplen criterio"
+  }
+]

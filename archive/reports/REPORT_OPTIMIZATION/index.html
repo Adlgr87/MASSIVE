@@ -1,0 +1,2450 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="MASSIVE — Hybrid social dynamics simulator. Numerical core + LLM as regime selector.">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Reporte de Optimización — MASSIVE - MASSIVE Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#reporte-de-optimizacion-massive" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="MASSIVE Documentation" class="md-header__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MASSIVE Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Reporte de Optimización — MASSIVE
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="MASSIVE Documentation" class="md-nav__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    MASSIVE Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../factbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Factbook Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM Interface
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    LLM Interface
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../MASSIVE_LLM_INTERFACE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface spec
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../LLM_PROMPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompt templates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Readiness
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Production Readiness
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../production-readiness-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Audit & Risk Matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../release-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/current-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (current)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/target-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (target)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/PRODUCTION_ARCHITECTURE_SPEC/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Architecture Spec
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/safety_protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_7" id="__nav_5_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runbooks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Runbooks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../runbooks/local-development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../runbooks/operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../runbooks/incidents/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Incidents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/threat-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/secrets-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secrets & Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../OBSERVABILITY_AND_SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability & Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../backup_restore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup & Restore
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../disaster_recovery_plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disaster Recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DOCKER/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ENV_VARS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Environment Variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../NAMING_CONVENTIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NAMING_CONVENTIONS.md
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation (PVU-BS)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Validation (PVU-BS)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/PVU_MASSIVE_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/PVU_MASSIVE_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocolo (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/preregistration_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registration (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/preregistration_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registro (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/validation_report_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report template (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/validation_report_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plantilla de reporte (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cards/BENCHMARK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Card
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cards/REPRODUCIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reproducibility Card
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Testing
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../testing/test-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Test Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../performance/baseline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Baseline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../performance_report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Executive Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-performance-bottlenecks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Performance Bottlenecks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Performance Bottlenecks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#critico-energyengine-python-fallback-path-10-slowdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CRÍTICO — EnergyEngine: Python fallback path (10× slowdown)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alto-network-inference-on2-nested-loops" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ALTO — Network Inference: O(N²) nested loops
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alto-multilayerengine-dense-kernel" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ALTO — MultilayerEngine dense kernel
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medio-massiveengine-event-driven-overhead" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MEDIO — MassiveEngine: Event-driven overhead
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medio-simulation-history-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MEDIO — Simulation history memory
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-async-issues" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Async Issues
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-memory-improvements" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Memory Improvements
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-code-quality" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Code Quality
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-benchmark-insights-based-on-docsperformance_reportmd" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Benchmark Insights (based on docs/performance_report.md)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Benchmark Insights (based on docs/performance_report.md)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hallazgos-del-benchmark-existente" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hallazgos del benchmark existente:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#proyecciones-de-escala-del-reporte" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Proyecciones de escala (del reporte):
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recomendaciones-de-benchmark" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recomendaciones de benchmark:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-prioridades-de-mejora" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Prioridades de Mejora
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Prioridades de Mejora">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#critical-product-blocker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🔴 Critical (Product blocker)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#high-significant-improvement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟠 High (Significant improvement)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#medium-quality-moderate-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟡 Medium (Quality + moderate performance)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#low-nice-to-have" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🟢 Low (Nice to have)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-trade-offs-considerados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Trade-offs Considerados
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-quick-wins-1-hora-cada-uno" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Quick Wins ( &lt; 1 hora cada uno)
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="reporte-de-optimizacion-massive">Reporte de Optimización — MASSIVE</h1>
+<blockquote>
+<p>⚠️ HISTÓRICO — describe el commit 2b70984 del 14 de septiembre de 2026. No refleja main actual.</p>
+</blockquote>
+<p><strong>Fecha:</strong> 2026-09-14<br />
+<strong>Analista:</strong> Performance Engineer (Agnes)<br />
+<strong>Alcance:</strong> Código Python core (engines, services, routers)<br />
+<strong>Método:</strong> Análisis estático + revisión de benchmarks existentes</p>
+<hr />
+<h2 id="executive-summary">Executive Summary</h2>
+<p>El proyecto MASSIVE tiene <strong>tres problemas de rendimiento críticos</strong> que limitan su escalabilidad en producción:</p>
+<ol>
+<li><strong>Engine Python fallback sin Numba</strong> — 10× más lento que la ruta JIT compilada</li>
+<li><strong>Network inference con loops O(N²)</strong> — inusable para N &gt; 100 agentes</li>
+<li><strong>Historial de estado completo en memoria</strong> — O(steps × N × K) bytes acumulados</li>
+</ol>
+<p>Adicionalmente hay <strong>issues de async</strong> y <strong>lotes de llamadas síncronas</strong> que bloquean el event loop en producción.</p>
+<hr />
+<h2 id="1-performance-bottlenecks">1. Performance Bottlenecks</h2>
+<h3 id="critico-energyengine-python-fallback-path-10-slowdown">CRÍTICO — EnergyEngine: Python fallback path (10× slowdown)</h3>
+<table>
+<thead>
+<tr>
+<th>Ubicación</th>
+<th>Problema</th>
+<th>Impacto</th>
+<th>Recomendación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>energy_engine.py:498-507</code></td>
+<td>Bucle Python sin JIT cuando <code>NUMBA_AVAILABLE=False</code></td>
+<td><strong>10× más lento</strong> que ruta JIT; bloquea event loop en requests concurrentes</td>
+<td>Instalar numba como dependencia obligatoria en <code>[full]</code>; agregar warning en docs de deploy</td>
+</tr>
+<tr>
+<td><code>energy_engine.py:443-455</code></td>
+<td>Creación de arrays temporales <code>[a["position"] for a in attractors]</code> en cada paso</td>
+<td>CPU wasted en allocation por paso; N attractors×steps allocs</td>
+<td>Extraer arrays una vez en <code>__init__</code> o cache them si son estables</td>
+</tr>
+<tr>
+<td><code>energy_engine.py:459-467</code></td>
+<td>Drift function con loop Python <code>for i in range(n)</code></td>
+<td>Usado por scientific stepper; same 10× penalty que fallback</td>
+<td>Migrate <code>_landscape_gradient</code> a versión vectorizada numpy o JIT</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Fix propuesto (drift vectorizado):</strong></p>
+<pre><code class="language-python"># Replace the Python loop in drift() with:
+att_positions = np.array([a[&quot;position&quot;] for a in attractors], dtype=np.float64)
+att_strengths = np.array([a[&quot;strength&quot;] for a in attractors], dtype=np.float64)
+rep_positions = np.array([r[&quot;position&quot;] for r in repellers], dtype=np.float64)
+rep_strengths = np.array([r[&quot;strength&quot;] for r in repellers], dtype=np.float64)
+sigma2 = _SIGMA ** 2
+
+# Vectorized gradient computation (no Python loop)
+diff_att = current[:, None] - att_positions[None, :]  # (n, n_att)
+grad_att = att_strengths[None, :] * diff_att / sigma2 * np.exp(-diff_att**2 / (2 * sigma2))
+grad = grad_att.sum(axis=1)
+
+diff_rep = current[:, None] - rep_positions[None, :]
+grad_rep = rep_strengths[None, :] * diff_rep / sigma2 * np.exp(-diff_rep**2 / (2 * sigma2))
+grad -= grad_rep.sum(axis=1)
+</code></pre>
+<h3 id="alto-network-inference-on2-nested-loops">ALTO — Network Inference: O(N²) nested loops</h3>
+<table>
+<thead>
+<tr>
+<th>Ubicación</th>
+<th>Problema</th>
+<th>Impacto</th>
+<th>Recomendación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>massive_core/network_inference/reconstruct.py:169-174</code></td>
+<td><code>reconstruct_transfer_entropy</code>: nested loop O(N²)</td>
+<td><strong>O(N²×T)</strong> where T=entropy calc time; N=100 → 10K calls; N=1000 → 1M calls</td>
+<td>Parallelize con <code>joblib.Parallel</code>; pre-compute discretized arrays; limit to top-k candidates</td>
+</tr>
+<tr>
+<td><code>massive_core/network_inference/reconstruct.py:200-205</code></td>
+<td><code>reconstruct_granger_causality</code>: nested loop O(N²)</td>
+<td>Same scaling issue; each call runs OLS regression</td>
+<td>Vectorize lag matrices; use <code>np.linalg.lstsq</code> on batched design matrices</td>
+</tr>
+<tr>
+<td><code>massive_core/network_inference/reconstruct.py:227-234</code></td>
+<td><code>_conditional_mutual_information</code>: Python <code>list.count</code> in loop</td>
+<td>O(T³) where T=unique triples; very slow for high-entropy data</td>
+<td>Pre-compute joint histograms with <code>np.histogramdd</code>; replace count with array lookup</td>
+</tr>
+</tbody>
+</table>
+<h3 id="alto-multilayerengine-dense-kernel">ALTO — MultilayerEngine dense kernel</h3>
+<table>
+<thead>
+<tr>
+<th>Ubicación</th>
+<th>Problema</th>
+<th>Impacto</th>
+<th>Recomendación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>multilayer_engine.py:362-368</code></td>
+<td>Triple nested loop in <code>_multilayer_langevin_step_core</code>: <code>for ell → for i → for j</code></td>
+<td>O(L×N²) per step; Numba cannot optimize due to Python list access</td>
+<td>Replace inner <code>for j</code> with matrix multiply: <code>layers_flat[ell] @ x_vec[:, COL_OPINION]</code> (already available in sparse path)</td>
+</tr>
+<tr>
+<td><code>multilayer_engine.py:392-425</code></td>
+<td>Sparse path exists but is NOT used by default</td>
+<td>Dense kernel runs even for sparse graphs (Watts-Strogatz, Barabási-Albert)</td>
+<td>Auto-detect sparsity: if <code>nnz / (N*N) &lt; 0.1</code>, dispatch to sparse core automatically</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Fix propuesto (auto-sparse dispatch):</strong></p>
+<pre><code class="language-python">def multilayer_langevin_step(..., layers_flat, ...):
+    # ... existing setup ...
+
+    # Auto-detect if sparse path is beneficial
+    if isinstance(layers_flat, np.ndarray) and layers_flat.ndim == 3:
+        density = np.count_nonzero(layers_flat) / layers_flat.size
+        if density &lt; 0.1:  # Sparse graph — use CSR path
+            layers_sparse = [sparse.csr_matrix(layers_flat[i]) for i in range(layers_flat.shape[0])]
+            return _multilayer_langevin_step_core_sparse(...)
+
+    # Existing dense path...
+</code></pre>
+<h3 id="medio-massiveengine-event-driven-overhead">MEDIO — MassiveEngine: Event-driven overhead</h3>
+<table>
+<thead>
+<tr>
+<th>Ubicación</th>
+<th>Problema</th>
+<th>Impacto</th>
+<th>Recomendación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>massive_engine.py:917-920</code></td>
+<td><code>combine_layers_csr()</code> + per-layer CSR conversion at init</td>
+<td>O(M³) memory for dense + O(M³) for CSR; doubles adjacency memory</td>
+<td>Keep only CSR; drop dense <code>_layers_flat</code> when <code>event_driven=True</code></td>
+</tr>
+<tr>
+<td><code>massive_engine.py:1012</code></td>
+<td><code>x_prev = self._x.copy()</code> every step</td>
+<td>O(M×K) allocation per step</td>
+<td>Use double-buffering: swap pointers instead of copying</td>
+</tr>
+<tr>
+<td><code>massive_engine.py:1059-1062</code></td>
+<td>Quantize → dequantize round-trip every step when <code>quantize=True</code></td>
+<td>Unnecessary float64↔uint8 conversion; adds ~20% overhead</td>
+<td>Only quantize for history storage, not for computation</td>
+</tr>
+</tbody>
+</table>
+<h3 id="medio-simulation-history-memory">MEDIO — Simulation history memory</h3>
+<table>
+<thead>
+<tr>
+<th>Ubicación</th>
+<th>Problema</th>
+<th>Impacto</th>
+<th>Recomendación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>multilayer_engine.py:793</code></td>
+<td><code>self._history.append(self.x.copy())</code> every step</td>
+<td>O(steps × N × K × 8) bytes; N=10K, steps=365 → <strong>~1.8 GB</strong></td>
+<td>Default <code>store_history=False</code>; add <code>max_history_points</code> param with downsampling</td>
+</tr>
+<tr>
+<td><code>multilayer_engine.py:901-907</code></td>
+<td><code>trajectories_by_attribute</code> iterates full history</td>
+<td>Memory + CPU double penalty</td>
+<td>Compute on-the-fly during <code>run()</code> when attribute grouping requested</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="2-async-issues">2. Async Issues</h2>
+<table>
+<thead>
+<tr>
+<th>Código</th>
+<th>Problema</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>multilayer_engine.py:577</code></td>
+<td><code>requests.post(...)</code> in <code>_create_drift_function</code> path — sync HTTP in potentially async context</td>
+<td>Wrap with <code>asyncio.to_thread()</code> or use <code>httpx.AsyncClient</code></td>
+</tr>
+<tr>
+<td><code>simulator.py:1292,1316</code></td>
+<td><code>requests.post(...)</code> for LLM calls inside simulation loop</td>
+<td>Move LLM calls outside hot path; batch or cache responses</td>
+</tr>
+<tr>
+<td><code>programmatic_architect.py:204,222</code></td>
+<td><code>requests.post(...)</code> in architect search loop</td>
+<td>Same — batch LLM calls; add timeout + retry with exponential backoff</td>
+</tr>
+<tr>
+<td><code>backend/app/routers/sim.py:42</code></td>
+<td><code>run_scalar_simulation()</code> called directly in async handler — blocks event loop</td>
+<td>Wrap with <code>await asyncio.to_thread(run_scalar_simulation, ...)</code></td>
+</tr>
+<tr>
+<td><code>backend/app/routers/engine.py:26-58</code></td>
+<td>Same issue — energy/architect routes call sync functions directly</td>
+<td>Already uses <code>asyncio.to_thread</code> in some places; verify all paths</td>
+</tr>
+<tr>
+<td><code>backend/app/routers/llm.py:115</code></td>
+<td><code>run_llm_simulation()</code> called directly in async handler</td>
+<td>Wrap with <code>await asyncio.to_thread(run_llm_simulation, ...)</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Patrón general detectado:</strong> Los routers async llaman a funciones síncronas sin thread-pool offloading. Esto bloquea el event loop de FastAPI, haciendo que requests concurrentes se serialicen efectivamente.</p>
+<p><strong>Fix recomendado (aplicar a todos los routers):</strong></p>
+<pre><code class="language-python"># In backend/app/routers/sim.py
+import asyncio
+
+@router.post(&quot;&quot;, dependencies=[...])
+async def v1_simulate(request: Request, payload: dict[str, Any]) -&gt; dict[str, Any]:
+    # ... validation ...
+    result = await asyncio.to_thread(
+        run_scalar_simulation,
+        estado_inicial=payload.get(&quot;estado_inicial&quot;),
+        escenario=payload.get(&quot;escenario&quot;, &quot;campana&quot;),
+        pasos=int(payload.get(&quot;pasos&quot;, 50)),
+        config=payload.get(&quot;config&quot;),
+        verbose=bool(payload.get(&quot;verbose&quot;, False)),
+    )
+    return result
+</code></pre>
+<hr />
+<h2 id="3-memory-improvements">3. Memory Improvements</h2>
+<table>
+<thead>
+<tr>
+<th>Código</th>
+<th>Problema</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>energy_engine.py:443-455</code></td>
+<td>Re-create <code>att_positions</code>, <code>att_strengths</code> arrays every <code>step()</code> call</td>
+<td>Compute once in <code>__init__</code> or when attractors/repellers change</td>
+</tr>
+<tr>
+<td><code>massive_engine.py:1140</code></td>
+<td><code>history_bytes = len(_opinion_history) * 8 + ...</code> — unbounded list growth</td>
+<td>Cap history to last N points; use <code>collections.deque(maxlen=N)</code></td>
+</tr>
+<tr>
+<td><code>multilayer_engine.py:716</code></td>
+<td><code>self._history: list[np.ndarray]</code> — stores full (N,K) copies</td>
+<td>Store only opinion column summaries; keep full state in MPS-compressed form</td>
+</tr>
+<tr>
+<td><code>forecast/engine.py:179</code></td>
+<td><code>noise = rng.normal(..., size=(n_runs, steps_horizon))</code> — allocates (200, 365) float64</td>
+<td>Use <code>float32</code> for noise (sufficient precision); reduces from 584KB to 292KB</td>
+</tr>
+<tr>
+<td><code>massive_core/network_inference/reconstruct.py:221-224</code></td>
+<td><code>list(zip(...))</code> creates Python tuples for entropy calc</td>
+<td>Use <code>np.unique</code> with <code>return_counts=True</code> on flattened integer arrays</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-code-quality">4. Code Quality</h2>
+<table>
+<thead>
+<tr>
+<th>Módulo</th>
+<th>Problema</th>
+<th>Suggested</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>simulator.py</code> (2457 líneas)</td>
+<td>Función más larga del proyecto; mezcla lógica de negocio, LLM, redes, visualización</td>
+<td>Split into: <code>simulator/core.py</code>, <code>simulator/llm.py</code>, <code>simulator/network.py</code></td>
+</tr>
+<tr>
+<td><code>services/llm_orchestrator.py</code> (868 líneas)</td>
+<td><code>_dispatch()</code> tiene 10+ if/elif branches; hard to extend</td>
+<td>Replace with strategy pattern + registry dict; add <code>@register_motor("energy_engine")</code> decorator</td>
+</tr>
+<tr>
+<td><code>massive_core/network_inference/reconstruct.py</code></td>
+<td><code>_conditional_mutual_information</code> usa <code>list.count()</code> — O(n²) por triple</td>
+<td>Replace with <code>np.histogramdd</code> + array indexing</td>
+</tr>
+<tr>
+<td><code>energy_engine.py</code></td>
+<td><code>_ews_fallback_multiplier</code> recomputes flags check on every call</td>
+<td>Cache computed multiplier; invalidate only when flags change</td>
+</tr>
+<tr>
+<td><code>benchmark_scalability.py</code></td>
+<td>Hardcoded population sizes; no config file support</td>
+<td>Add YAML/TOML config for benchmark parameters</td>
+</tr>
+<tr>
+<td><code>cfc_engine.py</code>, <code>cfc_router.py</code>, <code>cfc_trainer.py</code></td>
+<td>Three separate files for related functionality</td>
+<td>Consider consolidating into <code>cfc/</code> package with <code>__init__.py</code> exports</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-benchmark-insights-based-on-docsperformance_reportmd">5. Benchmark Insights (based on <code>docs/performance_report.md</code>)</h2>
+<h3 id="hallazgos-del-benchmark-existente">Hallazgos del benchmark existente:</h3>
+<table>
+<thead>
+<tr>
+<th>Engine</th>
+<th>Max Tested</th>
+<th>Throughput</th>
+<th>Bottleneck</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EnergyEngine</td>
+<td>10K (incomplete)</td>
+<td>60K ag/s</td>
+<td><strong>Numba no instalado</strong> — fallback Python ~10× más lento</td>
+</tr>
+<tr>
+<td>MultilayerEngine</td>
+<td>10K</td>
+<td>55K ag/s</td>
+<td>O(N²) memory — OOM above 10K</td>
+</tr>
+<tr>
+<td>MassiveEngine (LOD)</td>
+<td>100M</td>
+<td>68.7M ag/s</td>
+<td>✅ Optimizado; único engine escalable</td>
+</tr>
+</tbody>
+</table>
+<h3 id="proyecciones-de-escala-del-reporte">Proyecciones de escala (del reporte):</h3>
+<table>
+<thead>
+<tr>
+<th>Escenario</th>
+<th>Engine</th>
+<th>Time</th>
+<th>RAM</th>
+<th>Viabilidad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>8B agents (Earth)</td>
+<td>MassiveEngine LOD</td>
+<td>~1.5h</td>
+<td>0.65 TB</td>
+<td>✅ Factible</td>
+</tr>
+<tr>
+<td>8B agents</td>
+<td>EnergyEngine</td>
+<td>~48h</td>
+<td>1.3 TB</td>
+<td>⚠️ Requiere distributed</td>
+</tr>
+<tr>
+<td>8B agents</td>
+<td>MultilayerEngine</td>
+<td>~367 días</td>
+<td>5,450 TB</td>
+<td>❌ Infeasible</td>
+</tr>
+</tbody>
+</table>
+<h3 id="recomendaciones-de-benchmark">Recomendaciones de benchmark:</h3>
+<ol>
+<li><strong>Instalar Numba</strong> — El benchmark parcial muestra que EnergyEngine sería competitive con JIT</li>
+<li><strong>Agregar benchmark de network inference</strong> — <code>reconstruct_transfer_entropy</code> para N=100, 500, 1000</li>
+<li><strong>Benchmark de async concurrency</strong> — Medir throughput de API con 10, 50, 100 concurrent requests</li>
+<li><strong>Memory profiling</strong> — <code>tracemalloc</code> durante <code>run(steps=365)</code> con N=10K para cuantificar historial overhead</li>
+</ol>
+<hr />
+<h2 id="6-prioridades-de-mejora">6. Prioridades de Mejora</h2>
+<h3 id="critical-product-blocker">🔴 Critical (Product blocker)</h3>
+<ol>
+<li><strong>Instalar Numba</strong> (<code>pip install numba</code>)</li>
+<li>Impacto: 10× speedup en EnergyEngine y MultilayerEngine</li>
+<li>Costo: 5 minutos de install; 0 código change needed (JIT kernels already written)</li>
+<li>
+<p>Add to <code>requirements.txt</code> or <code>[project.dependencies]</code> in <code>pyproject.toml</code></p>
+</li>
+<li>
+<p><strong>Fix async→sync blocking en routers</strong></p>
+</li>
+<li>Impacto: Concurrent requests no más bloquean el event loop</li>
+<li>Costo: ~30 minutos; wrap 5 funciones con <code>asyncio.to_thread</code></li>
+<li>Archivos: <code>sim.py</code>, <code>engine.py</code>, <code>llm.py</code></li>
+</ol>
+<h3 id="high-significant-improvement">🟠 High (Significant improvement)</h3>
+<ol>
+<li><strong>Vectorizar drift function en EnergyEngine</strong></li>
+<li>Impacto: Elimina Python loop en scientific stepper path</li>
+<li>Costo: ~2 horas de development + testing</li>
+<li>
+<p>Archivo: <code>energy_engine.py:459-467</code></p>
+</li>
+<li>
+<p><strong>Parallelize network inference</strong></p>
+</li>
+<li>Impacto: O(N²) → O(N²/p) donde p=workers; N=1000 pasa de minutos a segundos</li>
+<li>Costo: ~4 horas; usar <code>joblib</code> o <code>concurrent.futures</code></li>
+<li>
+<p>Archivos: <code>massive_core/network_inference/reconstruct.py</code></p>
+</li>
+<li>
+<p><strong>Auto-sparse dispatch en MultilayerEngine</strong></p>
+</li>
+<li>Impacto: Redes sparse (Watts-Strogatz, Barabási) corren en camino O(L·N·k) vs O(L·N²)</li>
+<li>Costo: ~1 hora; detection + dispatch logic</li>
+<li>Archivo: <code>multilayer_engine.py:428-497</code></li>
+</ol>
+<h3 id="medium-quality-moderate-performance">🟡 Medium (Quality + moderate performance)</h3>
+<ol>
+<li><strong>Cap simulation history memory</strong></li>
+<li>Impacto: Reduce pico de memoria de O(steps×N×K) a O(cap×N×K)</li>
+<li>Costo: ~1 hora; add <code>max_history</code> param</li>
+<li>
+<p>Archivos: <code>multilayer_engine.py</code>, <code>massive_engine.py</code></p>
+</li>
+<li>
+<p><strong>Optimize active set initialization</strong></p>
+</li>
+<li>Impacto: Reduce init time for large M; save 50% adjacency memory</li>
+<li>Costo: ~2 horas; refactor <code>MassiveSimEngine.__init__</code></li>
+<li>
+<p>Archivo: <code>massive_engine.py:904-920</code></p>
+</li>
+<li>
+<p><strong>Refactor llm_orchestrator dispatch</strong></p>
+</li>
+<li>Impacto: Más mantenible; fácil agregar nuevos motores</li>
+<li>Costo: ~4 horas; strategy pattern + registry</li>
+<li>Archivo: <code>services/llm_orchestrator.py:292-533</code></li>
+</ol>
+<h3 id="low-nice-to-have">🟢 Low (Nice to have)</h3>
+<ol>
+<li><strong>Float32 for forecast Monte Carlo noise</strong></li>
+<li>Impacto: 50% memory reduction in noise buffer</li>
+<li>Costo: 10 minutos</li>
+<li>
+<p>Archivo: <code>forecast/engine.py:179</code></p>
+</li>
+<li>
+<p><strong>Cache attractor/repeller arrays in EnergyEngine</strong></p>
+<ul>
+<li>Impacto: Elimina allocations por paso</li>
+<li>Costo: 30 minutos</li>
+<li>Archivo: <code>energy_engine.py:443-455</code></li>
+</ul>
+</li>
+</ol>
+<hr />
+<h2 id="7-trade-offs-considerados">7. Trade-offs Considerados</h2>
+<table>
+<thead>
+<tr>
+<th>Decisión</th>
+<th>Readability</th>
+<th>Performance</th>
+<th>Risk</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Numba obligatorio</td>
+<td>↔</td>
+<td>↑↑↑</td>
+<td>Bajo — kernels ya escritos</td>
+</tr>
+<tr>
+<td>Async→sync wrapping</td>
+<td>↓ (más boilerplate)</td>
+<td>↑↑↑</td>
+<td>Medio — necesita testing de concurrencia</td>
+</tr>
+<tr>
+<td>Vectorizar drift</td>
+<td>↑ (código más limpio)</td>
+<td>↑↑</td>
+<td>Bajo — matemática identical</td>
+</tr>
+<tr>
+<td>Parallel inference</td>
+<td>↓ (más complejidad)</td>
+<td>↑↑</td>
+<td>Medio — resultados pueden variar por orden</td>
+</tr>
+<tr>
+<td>History capping</td>
+<td>↔</td>
+<td>↑↑</td>
+<td>Bajo — info se pierde pero aggregates permanecen</td>
+</tr>
+<tr>
+<td>Auto-sparse dispatch</td>
+<td>↔</td>
+<td>↑↑</td>
+<td>Bajo — fallback a dense si detection falla</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="8-quick-wins-1-hora-cada-uno">8. Quick Wins ( &lt; 1 hora cada uno)</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Cambio</th>
+<th>Archivo</th>
+<th>Líneas</th>
+<th>Impacto estimado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Q1</td>
+<td><code>pip install numba</code></td>
+<td><code>requirements.txt</code></td>
+<td>+1</td>
+<td>10× EnergyEngine speedup</td>
+</tr>
+<tr>
+<td>Q2</td>
+<td>Wrap <code>run_scalar_simulation</code> con <code>asyncio.to_thread</code></td>
+<td><code>backend/app/routers/sim.py</code></td>
+<td>+3</td>
+<td>No more event loop blocking</td>
+</tr>
+<tr>
+<td>Q3</td>
+<td>Float32 noise in forecast</td>
+<td><code>forecast/engine.py:179</code></td>
+<td>1</td>
+<td>50% memory reduction</td>
+</tr>
+<tr>
+<td>Q4</td>
+<td>Cap <code>_opinion_history</code> con deque</td>
+<td><code>massive_engine.py:937</code></td>
+<td>+2</td>
+<td>Bounded memory growth</td>
+</tr>
+<tr>
+<td>Q5</td>
+<td>Cache <code>sigma2 = _SIGMA**2</code> as module constant</td>
+<td><code>energy_engine.py</code></td>
+<td>0</td>
+<td>Micro-optimization</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><em>Report generated by Performance Engineer agent. All line references are to the codebase as of 2025-07-24.</em></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.sections", "navigation.expand", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

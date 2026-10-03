@@ -1,0 +1,2704 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="MASSIVE — Hybrid social dynamics simulator. Numerical core + LLM as regime selector.">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>MASSIVE - Estructura de Archivos - MASSIVE Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#massive-estructura-de-archivos" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="MASSIVE Documentation" class="md-header__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MASSIVE Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              MASSIVE - Estructura de Archivos
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="MASSIVE Documentation" class="md-nav__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    MASSIVE Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../factbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Factbook Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM Interface
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    LLM Interface
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../MASSIVE_LLM_INTERFACE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface spec
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../LLM_PROMPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompt templates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Readiness
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Production Readiness
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../production-readiness-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Audit & Risk Matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../release-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/current-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (current)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/target-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (target)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/PRODUCTION_ARCHITECTURE_SPEC/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Architecture Spec
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/safety_protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_7" id="__nav_5_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runbooks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Runbooks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../runbooks/local-development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../runbooks/operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../runbooks/incidents/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Incidents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/threat-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/secrets-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secrets & Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../OBSERVABILITY_AND_SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability & Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../backup_restore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup & Restore
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../disaster_recovery_plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disaster Recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DOCKER/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ENV_VARS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Environment Variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../NAMING_CONVENTIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NAMING_CONVENTIONS.md
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation (PVU-BS)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Validation (PVU-BS)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/PVU_MASSIVE_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/PVU_MASSIVE_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocolo (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/preregistration_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registration (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/preregistration_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registro (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/validation_report_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report template (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/validation_report_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plantilla de reporte (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cards/BENCHMARK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Card
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cards/REPRODUCIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reproducibility Card
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Testing
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../testing/test-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Test Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../performance/baseline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Baseline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../performance_report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#resumen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resumen
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mapa-de-directorios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mapa de Directorios
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#endpoints-api-vs-implementacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Endpoints API vs Implementación
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Endpoints API vs Implementación">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#endpoints-implementados-en-backendapprouters-v1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Endpoints Implementados en backend/app/routers/ (v1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#endpoints-legacy-en-apipy-deprecated-warning-header" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Endpoints Legacy en api.py (deprecated, warning header)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#endpoints-documentados-vs-implementados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Endpoints Documentados vs Implementados
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#archivos-obsoletos-detectados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Archivos Obsoletos Detectados
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Archivos Obsoletos Detectados">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#backups-en-raiz-del-proyecto-deben-eliminarse" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backups en raíz del proyecto (deben eliminarse)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#legacy-monolitico" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Legacy monolítico
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#directorios-vaciosinutilizados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Directorios vacíos/inutilizados
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#duplicados-de-modulos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Duplicados de módulos
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#correcciones-necesarias-en-readme" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Correcciones Necesarias en README
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Correcciones Necesarias en README">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#discrepancias-detectadas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discrepancias detectadas
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#correcciones-sugeridas-para-readme" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Correcciones sugeridas para README
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#mappings-de-importacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Mappings de Importación
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Mappings de Importación">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#services__init__py-superficie-publica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        services/__init__.py — Superficie pública
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backendappmodels__init__-re-exports-dtos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        backend.app.models.__init__ — Re-exports DTOs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#massive_core__init__py-re-exports" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        massive_core/__init__.py — Re-exports
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#coverage-gaps-detectados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coverage Gaps Detectados
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#notas-de-arquitectura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notas de Arquitectura
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="massive-estructura-de-archivos">MASSIVE - Estructura de Archivos</h1>
+<blockquote>
+<p>⚠️ HISTÓRICO — describe el commit 2b70984 del 14 de septiembre de 2026. No refleja main actual.</p>
+<p>Informe generado automáticamente por análisis estructural del repositorio.
+Fecha: 2026-09-14 | Path: <code>/home/adlg/Escritorio/Proyectos/MASSIVE</code></p>
+</blockquote>
+<hr />
+<h2 id="resumen">Resumen</h2>
+<table>
+<thead>
+<tr>
+<th>Métrica</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Total archivos Python (proyecto, excl. <code>.venv</code>)</td>
+<td><strong>246</strong></td>
+</tr>
+<tr>
+<td>Archivos de test</td>
+<td><strong>59</strong></td>
+</tr>
+<tr>
+<td>Módulos principales (root-level engines)</td>
+<td><strong>7</strong></td>
+</tr>
+<tr>
+<td>Routers API v1</td>
+<td><strong>5</strong></td>
+</tr>
+<tr>
+<td>Endpoints API v1 (implementados)</td>
+<td><strong>8</strong></td>
+</tr>
+<tr>
+<td>Endpoints legacy <code>/api/*</code> (deprecated)</td>
+<td><strong>3</strong></td>
+</tr>
+<tr>
+<td>Scripts de respaldo (/backup)</td>
+<td><strong>5</strong></td>
+</tr>
+<tr>
+<td>Servicios de orquestación</td>
+<td><strong>5</strong></td>
+</tr>
+<tr>
+<td>DTOs Pydantic v2</td>
+<td><strong>5</strong> archivos, ~25 clases</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="mapa-de-directorios">Mapa de Directorios</h2>
+<pre><code>MASSIVE/
+│
+├── backend/                          # FastAPI production entrypoint
+│   └── app/
+│       ├── main.py                   # FastAPI app — incluye routers /v1/* + compat /api/v1/*
+│       ├── metrics.py                # Prometheus registry (http_requests_total, etc.)
+│       ├── security.py               # get_api_key (hmac constant-time) + rate limiter
+│       ├── settings.py               # Typed settings (pydantic BaseSettings)
+│       ├── models/                   # Pydantic v2 DTOs (extra=&quot;forbid&quot;)
+│       │   ├── __init__.py           # Namespace re-export
+│       │   ├── dto_simulation.py     # SimAgentLite, SimSnapshotMessage, SimMode, etc.
+│       │   ├── dto_forecast.py       # ForecastPoint, Feasibility, ForecastResponse
+│       │   ├── dto_architect.py      # InterventionRecord, InterventionLogEntry, ArchitectEventMessage
+│       │   ├── dto_snapshot.py       # SnapshotRecord, TimelineTick, TimelineResponse
+│       │   └── dto_llm.py            # LLMRunRequest/Response, LLMWizardRequest/Response, etc.
+│       └── routers/                  # API endpoint modules
+│           ├── sim.py                # POST /v1/simulate
+│           ├── forecast.py           # POST /v1/forecast
+│           ├── engine.py             # POST /v1/engine/energy, POST /v1/engine/architect
+│           ├── llm.py                # POST /v1/llm/run_simulation, /wizard, /extract
+│           ├── benchmark.py          # POST /v1/benchmarks
+│           └── __init__.py
+│
+├── massive_core/                     # Scientific opt-in layer
+│   ├── config/                       # API auth, rate limit, logging, settings, scientific
+│   │   ├── api_auth.py               # get_api_key implementation (hmac.compare_digest)
+│   │   ├── rate_limit.py             # RateLimitMiddleware
+│   │   ├── logging_setup.py          # Structured logging
+│   │   ├── settings.py               # AppSettings (pydantic)
+│   │   └── scientific.py             # Scientific config flags
+│   ├── data_assimilation/            # Ensemble Kalman Filter
+│   │   ├── kalman.py                 # SparseEnsembleKalmanFilter
+│   │   └── workflow.py               # Data assimilation pipeline
+│   ├── benchmarks/                   # Canonical benchmark suite
+│   ├── diagnostics/                  # Report generation
+│   ├── dynamical_systems/            # Bifurcation analysis
+│   ├── metalearning/                 # CfC regime selector + training data
+│   ├── multiscale/                   # Hierarchical time scaling
+│   ├── network_inference/            # Graph reconstruction
+│   ├── neural_physics/               # PINNs
+│   ├── numerics/                     # MultilayerEngine sparse, solvers, stability, steppers
+│   ├── physics/                      # Hydrodynamics, perturbation theory, stat mech
+│   ├── utils/                        # RNG helpers, serialization
+│   ├── contracts.py                  # LLM contract validation
+│   └── scientific_runner.py          # Scientific opt-in simulation runner
+│
+├── massive/                          # CLI + core module namespace
+│   ├── __init__.py
+│   ├── cli/                          # Click CLI entrypoint
+│   │   ├── main.py                   # massive-cli commands: simulate, scientific, benchmark, forecast, version, serve
+│   │   ├── __main__.py
+│   │   └── __init__.py
+│   └── core/                         # Legacy core modules (duplicates of root-level)
+│       ├── empirical_calibration.py
+│       ├── empirical_config.py
+│       ├── extended_models.py
+│       ├── intervention_optimizer.py
+│       ├── llm_credentials.py
+│       ├── schemas.py
+│       ├── state_compression.py
+│       ├── utility_logic.py
+│       ├── factbook/                 # Factbook data layer
+│       │   ├── context.py
+│       │   ├── loader.py
+│       │   ├── mappings.py
+│       │   └── validator.py
+│       └── utils/                    # RNG, serialization
+│
+├── services/                         # Thin service layer over core engines
+│   ├── __init__.py                   # Re-exports: run_scalar_simulation, run_multilayer_simulation,
+│   │                                  #   run_massive_sim, run_llm_simulation, factbook_service,
+│   │                                  #   forecast_service, llm_service
+│   ├── simulation_service.py         # run_scalar_simulation, run_multilayer_simulation, run_massive_sim
+│   ├── forecast_service.py           # baseline_forecast, walk_forward_evaluate
+│   ├── llm_service.py                # wizard_config, extract_config
+│   ├── llm_orchestrator.py           # classify_motor, run_llm_simulation (NL → engine dispatch)
+│   └── factbook_service.py           # Factbook augmentation for country-specific params
+│
+├── forecast/                         # Temporal risk forecasting engine
+│   ├── engine.py                     # forecast() → ForecastResult (analytical + MC)
+│   ├── temporal_config.py            # TemporalConfig (pydantic)
+│   ├── scenarios.py                  # Scenario definitions
+│   ├── targets.py                    # Event target definitions
+│   └── intervention_map.py           # Intervention-to-effect mapping
+│
+├── benchmarks/                       # PVU-BS benchmark suite
+│   ├── runner.py                     # main() — CLI + programmatic entry
+│   ├── baselines.py                  # Baseline models
+│   ├── fidelity.py                   # Fidelity checks
+│   ├── metrics.py                    # Benchmark metrics
+│   ├── io.py                         # I/O utilities
+│   ├── massive_real.py               # Real-case benchmarks
+│   ├── turning_points.py             # Turning point detection
+│   ├── walk_forward.py               # Walk-forward evaluation
+│   ├── bench_perf_f.py               # Performance benchmark functions
+│   └── butterfly_diagnostic.py       # Butterfly effect diagnostics
+│
+├── tests/                            # pytest test suite (59 archivos)
+│   ├── __init__.py
+│   ├── test_simulator.py             # simulator.py tests
+│   ├── test_energy_engine.py         # energy_engine.py tests
+│   ├── test_massive_engine.py        # massive_engine.py tests
+│   ├── test_multilayer.py            # multilayer_engine.py tests
+│   ├── test_micro.py                 # micro_engine.py tests
+│   ├── test_social_architect.py      # social_architect.py tests
+│   ├── test_forecast.py              # forecast engine tests
+│   ├── test_cfc_*.py                 # CfC engine/router/trainer tests
+│   ├── test_llm_*.py                 # LLM integration tests
+│   ├── test_scientific_*.py          # Scientific runner tests
+│   ├── test_brexit_calibration.py     # Brexit 2016 calibration
+│   ├── test_api_security.py           # Auth + rate-limit tests
+│   ├── test_backend_observability.py  # Metrics + middleware tests
+│   ├── test_dto_models.py            # Pydantic DTO validation tests
+│   └── ... (59 total)
+│
+├── scripts/                          # DevOps &amp; utility scripts
+│   ├── backup_factbook.sh            # Backup Factbook data
+│   ├── backup_models.sh              # Backup ML models
+│   ├── backup_simulations.sh         # Backup simulation results
+│   ├── verify_backup.sh              # Integrity verification
+│   ├── security_audit.sh             # Security audit helper
+│   ├── gen_ts_types.py               # Generate TypeScript types from Python DTOs
+│   ├── profile_hotspot.py            # Performance profiling
+│   ├── todo_triage.py                # Issue triage automation
+│   └── typecheck_slice.py            # Partial mypy type-checking
+│
+├── experiments/                      # One-off experiment scripts
+│   ├── 00_smoke/run_smoke_tests.py
+│   ├── 01_unit/run_invariant_tests.py
+│   ├── 02_parameter_sweep/run_parameter_sweep.py
+│   ├── 03_calibration/run_calibration.py
+│   ├── 04_benchmark/run_pvu_benchmark.py
+│   ├── 05_reproducibility/run_reproducibility.py
+│   ├── 08_enkf_delta/exp_003_enkf.py
+│   └── real_validation/generate_real_cases.py
+│
+├── adapters/                         # External adapter layer
+│   └── mutalambda/
+│       ├── __init__.py
+│       └── massive_target.py         # MutualLambda integration
+│
+├── massive-ui-ng/                    # Separate next-gen UI kit (not in root CI)
+│   ├── backend/app/
+│   │   ├── main.py                   # Standalone FastAPI for UI-NG
+│   │   ├── routers/                  # simulation, live, conversation, status
+│   │   ├── models/                   # DTOs (subset of main backend)
+│   │   ├── security.py
+│   │   ├── settings.py
+│   │   ├── metrics.py
+│   │   ├── scenario_parser.py
+│   │   ├── narrative.py
+│   │   ├── evaluation.py
+│   │   ├── run_store.py
+│   │   ├── rate_limit.py
+│   │   ├── llm_chat.py
+│   │   └── llm_prompts.py
+│   ├── tests/
+│   │   ├── test_ui_ng.py
+│   │   └── test_ui_ng_live.py
+│   └── infra/scripts/gen_ts_types.py
+│
+├── frontend/                         # React 18 + Vite + TypeScript SPA
+│   ├── src/
+│   ├── dist → ../massive-ui-ng/frontend/dist   (symlink)
+│   ├── package.json
+│   ├── vite.config.ts
+│   └── tsconfig.json
+│
+├── configs/                          # Configuration files
+│   ├── llm_contract/                 # MASSIVE-LLM contract v1.1.0
+│   │   └── massive_llm_contract.json
+│   ├── multilayer.yaml               # Multilayer engine defaults
+│   └── pvu.yaml                      # PVU benchmark config
+│
+├── datasets/                         # Validation datasets
+│   ├── pvu_cases/                    # Pre-registered offline cases
+│   └── real_cases/                   # Real-world validation cases
+│
+├── models/                           # Trained ML model artifacts
+│   └── cfc_calibrated/              # CfC residual corrector weights
+│
+├── metrics/                          # Unified metrics utilities
+│   ├── __init__.py
+│   └── unified_metrics.py
+│
+├── docs/                             # Documentation
+│   ├── api.md                        # API reference (v1 endpoints)
+│   ├── LLM_PROMPTS.md                # LLM prompt templates
+│   ├── MASSIVE_LLM_INTERFACE.md      # Full LLM interface docs
+│   ├── OBSERVABILITY_AND_SECURITY.md # Security + observability guide
+│   ├── FACTBOOK_*.md                 # Factbook integration docs
+│   ├── DOCKER.md                     # Docker deployment guide
+│   ├── ENV_VARS.md                   # Environment variables reference
+│   ├── performance_report.md         # Performance benchmark results
+│   ├── production-readiness-audit.md # Production readiness assessment
+│   ├── backup_restore.md             # Backup/restore procedures
+│   ├── disaster_recovery_plan.md     # DR plan
+│   └── architecture/                 # Architecture decision records
+│
+├── .github/workflows/                # CI/CD pipelines (13 workflows)
+│   ├── lint.yml                      # ruff + black + isort + mypy
+│   ├── pytest.yml                    # Test suite
+│   ├── benchmark.yml                 # PVU-BS benchmark (offline/LLM)
+│   ├── frontend-build.yml            # Vite build + type check
+│   ├── publish.yml                   # PyPI + GHCR publish
+│   ├── docker-e2e.yml                # Docker compose E2E
+│   ├── secret_scan.yml               # gitleaks
+│   └── ...
+│
+├── micro_massive/                    # Micro-simulation engine (small groups)
+│   ├── core/                         # Agent, game, influence, orchestrator
+│   └── utils/                        # Metrics, forer
+│
+├── app/                              # (Empty — placeholder)
+│
+├── ─── Root-level engine modules ───
+│   simulator.py                      # simular(), DEFAULT_CONFIG, resumen_historial
+│   massive_engine.py                 # MassiveSimEngine (LOD super-agent, 100M scale)
+│   multilayer_engine.py              # MultilayerEngine (5D Langevin)
+│   energy_engine.py                  # SocialEnergyEngine (Langevin SDE)
+│   energy_runner.py                  # run_energy_simulation()
+│   micro_engine.py                   # MicroEngine (bifurcation analysis)
+│   social_architect.py               # buscar_estrategia_inversa()
+│   cfc_engine.py                     # CfCResidualCorrector (liquid NN)
+│   cfc_router.py                     # CfCRouter (singleton with fallback)
+│   cfc_trainer.py                    # Training loop for CfC
+│   api.py                            # Legacy FastAPI monolith (deprecated, /api/*)
+│   schemas.py                        # Root-level Pydantic schemas
+│   energy_schemas.py                 # Energy engine input/output schemas
+│   micro_schemas.py                  # Micro engine schemas
+│   interpreter_layer.py              # NL interpreter layer
+│   langchain_workflows.py            # LangChain workflow definitions
+│   uil_adapter.py                    # UIL adapter factory
+│   gen_report.py                     # Report generation utility
+│   document_intelligence.py          # Document parsing (PDF/DOCX → config)
+│   i18n.py                           # Internationalization
+│   cache_manager.py                  # Simulation result caching
+│   brexit_calibration.py             # Brexit 2016 calibration script
+│   benchmark_scalability.py          # Scalability benchmark (1K→100M agents)
+│   train_cfc_*.py                    # CfC training scripts (lambda, landscape, temp)
+│   programmatic_architect.py         # Programmatic architect interface
+│   social_connectors.py              # Social connectivity helpers
+│   visualizations.py                 # Plotting utilities
+│
+├── pyproject.toml                    # Project metadata, deps, scripts, tool config
+├── requirements.txt                  # Flat dependency mirror
+├── install.sh                        # Unified install/run/test/lint/benchmark/clean
+├── Makefile                          # Make-based task runner
+├── Dockerfile                        # 3-stage multi-stage build
+├── docker-compose.yml                # Multi-service orchestration
+├── nginx.conf                        # Reverse proxy + SPA serving
+├── supervisord.conf                  # Process supervisor config
+├── .env.example                      # Environment variable reference
+├── .dockerignore                     # Docker build exclusions
+├── README.md                         # Main documentation (English)
+├── README_ES.md                      # Main documentation (Spanish)
+├── AGENTS.md                         # Agent memory / context file
+├── CLAUDE.md                         # Behavior guidelines
+├── PRODUCTION_ARCHITECTURE_SPEC.md   # Production architecture spec
+├── MASSIVE_SYSTEM_MAP.md             # Complete system map
+└── CHANGELOG.md                      # Version history
+</code></pre>
+<hr />
+<h2 id="endpoints-api-vs-implementacion">Endpoints API vs Implementación</h2>
+<h3 id="endpoints-implementados-en-backendapprouters-v1">Endpoints Implementados en <code>backend/app/routers/</code> (v1)</h3>
+<table>
+<thead>
+<tr>
+<th>Router</th>
+<th>Path</th>
+<th>Method</th>
+<th>Function</th>
+<th>Estado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>sim.py</code></td>
+<td><code>/v1/simulate</code></td>
+<td>POST</td>
+<td><code>v1_simulate</code></td>
+<td>✅ Activo</td>
+</tr>
+<tr>
+<td><code>forecast.py</code></td>
+<td><code>/v1/forecast</code></td>
+<td>POST</td>
+<td><code>v1_forecast</code></td>
+<td>✅ Activo</td>
+</tr>
+<tr>
+<td><code>engine.py</code></td>
+<td><code>/v1/engine/energy</code></td>
+<td>POST</td>
+<td><code>v1_energy</code></td>
+<td>✅ Activo</td>
+</tr>
+<tr>
+<td><code>engine.py</code></td>
+<td><code>/v1/engine/architect</code></td>
+<td>POST</td>
+<td><code>v1_architect</code></td>
+<td>✅ Activo</td>
+</tr>
+<tr>
+<td><code>llm.py</code></td>
+<td><code>/v1/llm/run_simulation</code></td>
+<td>POST</td>
+<td><code>v1_llm_run_simulation</code></td>
+<td>✅ Activo</td>
+</tr>
+<tr>
+<td><code>llm.py</code></td>
+<td><code>/v1/llm/wizard</code></td>
+<td>POST</td>
+<td><code>v1_llm_wizard</code></td>
+<td>✅ Activo</td>
+</tr>
+<tr>
+<td><code>llm.py</code></td>
+<td><code>/v1/llm/extract</code></td>
+<td>POST</td>
+<td><code>v1_llm_extract</code></td>
+<td>✅ Activo</td>
+</tr>
+<tr>
+<td><code>benchmark.py</code></td>
+<td><code>/v1/benchmarks</code></td>
+<td>POST</td>
+<td><code>v1_benchmarks</code></td>
+<td>✅ Activo</td>
+</tr>
+<tr>
+<td><code>main.py</code></td>
+<td><code>/</code></td>
+<td>GET</td>
+<td><code>root</code></td>
+<td>✅ Infra</td>
+</tr>
+<tr>
+<td><code>main.py</code></td>
+<td><code>/health</code></td>
+<td>GET</td>
+<td><code>health_check</code></td>
+<td>✅ Infra</td>
+</tr>
+<tr>
+<td><code>main.py</code></td>
+<td><code>/ready</code></td>
+<td>GET</td>
+<td><code>readiness_check</code></td>
+<td>✅ Infra</td>
+</tr>
+<tr>
+<td><code>main.py</code></td>
+<td><code>/version</code></td>
+<td>GET</td>
+<td><code>version_info</code></td>
+<td>✅ Infra</td>
+</tr>
+<tr>
+<td><code>main.py</code></td>
+<td><code>/metrics</code></td>
+<td>GET</td>
+<td><code>metrics</code></td>
+<td>✅ Infra</td>
+</tr>
+<tr>
+<td><code>main.py</code></td>
+<td><code>/openapi/v1.json</code></td>
+<td>GET</td>
+<td><code>openapi_v1_spec</code></td>
+<td>✅ Infra</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total endpoints v1: 8 API + 6 infra = 14</strong></p>
+<h3 id="endpoints-legacy-en-apipy-deprecated-warning-header">Endpoints Legacy en <code>api.py</code> (deprecated, warning header)</h3>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Method</th>
+<th>Estado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/api/extract</code></td>
+<td>POST</td>
+<td>⚠️ Deprecated</td>
+</tr>
+<tr>
+<td><code>/api/wizard</code></td>
+<td>POST</td>
+<td>⚠️ Deprecated</td>
+</tr>
+<tr>
+<td><code>/api/simulate-uil</code></td>
+<td>POST</td>
+<td>⚠️ Deprecated</td>
+</tr>
+<tr>
+<td><code>/api/v1/architect</code></td>
+<td>POST</td>
+<td>⚠️ Deprecated (duplicado de engine router)</td>
+</tr>
+<tr>
+<td><code>/api/v1/forecast</code></td>
+<td>POST</td>
+<td>⚠️ Deprecated (duplicado de forecast router)</td>
+</tr>
+<tr>
+<td><code>/api/v1/energy</code></td>
+<td>POST</td>
+<td>⚠️ Deprecated (duplicado de engine router)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="endpoints-documentados-vs-implementados">Endpoints Documentados vs Implementados</h3>
+<table>
+<thead>
+<tr>
+<th>Endpoint (docs/api.md)</th>
+<th>¿Implementado?</th>
+<th>Notas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>POST /v1/simulate</code></td>
+<td>✅</td>
+<td>Coincide</td>
+</tr>
+<tr>
+<td><code>POST /v1/forecast</code></td>
+<td>✅</td>
+<td>Coincide</td>
+</tr>
+<tr>
+<td><code>POST /v1/engine/energy</code></td>
+<td>✅</td>
+<td>Coincide</td>
+</tr>
+<tr>
+<td><code>POST /v1/engine/architect</code></td>
+<td>✅</td>
+<td>Coincide</td>
+</tr>
+<tr>
+<td><code>POST /v1/benchmarks</code></td>
+<td>✅</td>
+<td>Coincide</td>
+</tr>
+<tr>
+<td><code>POST /v1/llm/run_simulation</code></td>
+<td>✅</td>
+<td>Coincide</td>
+</tr>
+<tr>
+<td><code>POST /v1/llm/wizard</code></td>
+<td>✅</td>
+<td>Coincide (en código, no mencionado explícitamente en api.md)</td>
+</tr>
+<tr>
+<td><code>POST /v1/llm/extract</code></td>
+<td>✅</td>
+<td>Coincide</td>
+</tr>
+<tr>
+<td><code>GET /health</code></td>
+<td>✅</td>
+<td>Coincide</td>
+</tr>
+<tr>
+<td><code>GET /ready</code></td>
+<td>✅</td>
+<td>Coincide</td>
+</tr>
+<tr>
+<td><code>GET /version</code></td>
+<td>✅</td>
+<td>Coincide</td>
+</tr>
+<tr>
+<td><code>GET /metrics</code></td>
+<td>✅</td>
+<td>Coincide</td>
+</tr>
+<tr>
+<td><code>GET /openapi/v1.json</code></td>
+<td>✅</td>
+<td>Implementado, no listado en api.md</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="archivos-obsoletos-detectados">Archivos Obsoletos Detectados</h2>
+<h3 id="backups-en-raiz-del-proyecto-deben-eliminarse">Backups en raíz del proyecto (deben eliminarse)</h3>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Líneas</th>
+<th>Notafixed_width</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>extended_models.py.backup_1789386230</code></td>
+<td>~382</td>
+<td>Backup de refactor</td>
+</tr>
+<tr>
+<td><code>intervention_optimizer.py.backup_1789386230</code></td>
+<td>~446</td>
+<td>Backup de refactor</td>
+</tr>
+<tr>
+<td><code>state_compression.py.backup_1789386230</code></td>
+<td>~265</td>
+<td>Backup de refactor</td>
+</tr>
+<tr>
+<td><code>utility_logic.py.backup_1789386230</code></td>
+<td>~409</td>
+<td>Backup de refactor</td>
+</tr>
+<tr>
+<td><code>.env.backup</code></td>
+<td>1</td>
+<td>Credenciales potenciales</td>
+</tr>
+</tbody>
+</table>
+<h3 id="legacy-monolitico">Legacy monolítico</h3>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Uso actual</th>
+<th>Recomendación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>api.py</code></td>
+<td>Still imported by fallback in <code>install.sh</code></td>
+<td>Migrar clientes restantes a <code>/v1/*</code> y eliminar</td>
+</tr>
+</tbody>
+</table>
+<h3 id="directorios-vaciosinutilizados">Directorios vacíos/inutilizados</h3>
+<table>
+<thead>
+<tr>
+<th>Path</th>
+<th>Estado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>app/</code></td>
+<td>Directorio vacío (solo <code>__pycache__</code>)</td>
+</tr>
+<tr>
+<td><code>target/</code></td>
+<td>Build artifacts (ignorable)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="duplicados-de-modulos">Duplicados de módulos</h3>
+<table>
+<thead>
+<tr>
+<th>Módulo duplicado</th>
+<th>Ubicación 1</th>
+<th>Ubicación 2</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>empirical_calibration.py</code></td>
+<td>Raíz</td>
+<td><code>massive/core/</code></td>
+</tr>
+<tr>
+<td><code>empirical_config.py</code></td>
+<td>Raíz</td>
+<td><code>massive/core/</code></td>
+</tr>
+<tr>
+<td><code>extended_models.py</code></td>
+<td>Raíz</td>
+<td><code>massive/core/</code></td>
+</tr>
+<tr>
+<td><code>intervention_optimizer.py</code></td>
+<td>Raíz</td>
+<td><code>massive/core/</code></td>
+</tr>
+<tr>
+<td><code>llm_credentials.py</code></td>
+<td>Raíz</td>
+<td><code>massive/core/</code></td>
+</tr>
+<tr>
+<td><code>schemas.py</code></td>
+<td>Raíz</td>
+<td><code>massive/core/</code></td>
+</tr>
+<tr>
+<td><code>state_compression.py</code></td>
+<td>Raíz</td>
+<td><code>massive/core/</code></td>
+</tr>
+<tr>
+<td><code>utility_logic.py</code></td>
+<td>Raíz</td>
+<td><code>massive/core/</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="correcciones-necesarias-en-readme">Correcciones Necesarias en README</h2>
+<h3 id="discrepancias-detectadas">Discrepancias detectadas</h3>
+<ol>
+<li>
+<p><strong>Conteo de tests</strong>: El README dice "597 tests" pero se encontraron <strong>59 archivos de test</strong>. El conteo real de tests (funciones <code>test_*</code>) debe verificarse ejecutando <code>pytest --collect-only</code>.</p>
+</li>
+<li>
+<p><strong>Endpoint <code>/v1/scientific</code></strong>: El docstring de <code>engine.py</code> menciona <code>POST /v1/scientific</code> pero <strong>no existe</strong> en la implementación actual. Los únicos endpoints en <code>engine.py</code> son <code>/energy</code> y <code>/architect</code>.</p>
+</li>
+<li>
+<p><strong><code>/v1/engine/scientific</code> ausente</strong>: La referencia en <code>main.py</code> línea 157 agrupa <code>/v1/scientific</code> con <code>/v1/simulate</code> en el path_group, pero no hay router que lo implemente.</p>
+</li>
+<li>
+<p><strong>Documentación de <code>/openapi/v1.json</code></strong>: No aparece en <code>docs/api.md</code> ni en la tabla de endpoints del README, pero está implementado en <code>main.py</code>.</p>
+</li>
+<li>
+<p><strong>README menciona <code>app/</code> en el mapa</strong>: El layout del README muestra <code>backend/app/</code> correctamente, pero el directorio <code>app/</code> en raíz existe y está vacío — no debería estar en el mapa.</p>
+</li>
+<li>
+<p><strong>Symlink <code>frontend/dist</code></strong>: El README no documenta que <code>frontend/dist</code> es un symlink a <code>../massive-ui-ng/frontend/dist</code>.</p>
+</li>
+<li>
+<p><strong>Sección "HTTP API" — faltan <code>/wizard</code> y <code>/extract</code></strong>: La tabla de endpoints en README solo lista <code>/v1/llm/run_simulation</code> pero omite <code>/v1/llm/wizard</code> y <code>/v1/llm/extract</code>.</p>
+</li>
+<li>
+<p><strong><code>massive-ui-ng</code> no en CI raíz</strong>: El README dice "(not in CI root — see ARCH-02)" pero no hay referencia a ARCH-02 en la documentación disponible.</p>
+</li>
+</ol>
+<h3 id="correcciones-sugeridas-para-readme">Correcciones sugeridas para README</h3>
+<pre><code class="language-markdown"># En la tabla de endpoints HTTP API, agregar:
+| `/v1/llm/wizard` | POST | Generate simulation config from natural language |
+| `/v1/llm/extract` | POST | Extract config from uploaded document |
+| `/openapi/v1.json` | GET | Export OpenAPI v1 spec (v1 endpoints only) |
+
+# En el mapa de directorios, agregar nota sobre symlink:
+├── frontend/             # React 18 + Vite SPA
+│   └── dist → ../massive-ui-ng/frontend/dist  # symlink
+
+# Corregir conteo de tests: ejecutar pytest --collect-only para número real
+# Eliminar referencia a app/ vacío del mapa
+</code></pre>
+<hr />
+<h2 id="mappings-de-importacion">Mappings de Importación</h2>
+<h3 id="services__init__py-superficie-publica"><code>services/__init__.py</code> — Superficie pública</h3>
+<pre><code class="language-python">__all__ = [
+    &quot;run_scalar_simulation&quot;,
+    &quot;run_multilayer_simulation&quot;,
+    &quot;run_massive_sim&quot;,
+    &quot;run_llm_simulation&quot;,
+    &quot;factbook_service&quot;,
+    &quot;forecast_service&quot;,
+    &quot;llm_service&quot;,
+]
+</code></pre>
+<h3 id="backendappmodels__init__-re-exports-dtos"><code>backend.app.models.__init__</code> — Re-exports DTOs</h3>
+<pre><code class="language-python"># simulation: SimAgentLite, SimAggregateMetrics, SimulationSnapshotPayload,
+#             SimSnapshotMessage, SimEventMessage, SimMode, SimEventKind
+# snapshot:   SnapshotRecord, TimelineTick, TimelineResponse
+# forecast:   ForecastPoint, Feasibility, ForecastResponse
+# architect:  InterventionRecord, InterventionLogEntry, ArchitectEventMessage
+# llm:        LLMRunRequest, LLMRunResponse, LLMSummary, LLMResults,
+#             LLMTimelinePoint, LLMLlmHint, LLMAmbiguityResponse,
+#             LLMExtractResponse, LLMWizardRequest, LLMWizardResponse
+</code></pre>
+<h3 id="massive_core__init__py-re-exports"><code>massive_core/__init__.py</code> — Re-exports</h3>
+<pre><code class="language-python"># massive_core.config: configure_logging, get_logger, AppSettings
+# massive_core.contracts: LLMContract
+# massive_core.scientific_runner: run_scientific_simulation
+</code></pre>
+<hr />
+<h2 id="coverage-gaps-detectados">Coverage Gaps Detectados</h2>
+<table>
+<thead>
+<tr>
+<th>Módulo</th>
+<th>Tests existentes</th>
+<th>Observación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>simulator.py</code></td>
+<td><code>test_simulator.py</code></td>
+<td>Cubierto</td>
+</tr>
+<tr>
+<td><code>energy_engine.py</code></td>
+<td><code>test_energy_engine.py</code>, <code>test_energy_core.py</code></td>
+<td>Cubierto</td>
+</tr>
+<tr>
+<td><code>massive_engine.py</code></td>
+<td><code>test_massive_engine.py</code></td>
+<td>Cubierto</td>
+</tr>
+<tr>
+<td><code>multilayer_engine.py</code></td>
+<td><code>test_multilayer.py</code>, <code>test_multilayer_engine_coverage.py</code></td>
+<td>Cubierto</td>
+</tr>
+<tr>
+<td><code>micro_engine.py</code></td>
+<td><code>test_micro.py</code>, <code>test_micro_engine_coverage.py</code></td>
+<td>Cubierto</td>
+</tr>
+<tr>
+<td><code>social_architect.py</code></td>
+<td><code>test_social_architect.py</code></td>
+<td>Cubierto</td>
+</tr>
+<tr>
+<td><code>forecast/engine.py</code></td>
+<td><code>test_forecast.py</code></td>
+<td>Cubierto</td>
+</tr>
+<tr>
+<td><code>cfc_engine.py</code></td>
+<td><code>test_cfc_engine.py</code>, <code>test_cfc_router.py</code></td>
+<td>Cubierto</td>
+</tr>
+<tr>
+<td><code>services/</code></td>
+<td><code>test_services_layer.py</code></td>
+<td>Parcial</td>
+</tr>
+<tr>
+<td><code>backend/app/routers/</code></td>
+<td><code>test_api_security.py</code>, <code>test_backend_observability.py</code></td>
+<td><strong>Parcial</strong> — no hay tests unitarios por router</td>
+</tr>
+<tr>
+<td><code>benchmarks/</code></td>
+<td><code>test_pvu_runner.py</code></td>
+<td><strong>Parcial</strong> — solo runner, no sub-módulos</td>
+</tr>
+<tr>
+<td><code>massive_core/data_assimilation/</code></td>
+<td><code>test_data_assimilation_workflow.py</code></td>
+<td>Cubierto</td>
+</tr>
+<tr>
+<td><code>massive_core/numerics/</code></td>
+<td><code>test_sparse_refactor.py</code></td>
+<td><strong>Parcial</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Gap crítico</strong>: Los 5 routers (<code>sim</code>, <code>forecast</code>, <code>engine</code>, <code>llm</code>, <code>benchmark</code>) no tienen tests unitarios propios — solo <code>test_api_security.py</code> y <code>test_backend_observability.py</code> cubren auth/middleware a nivel general.</p>
+<hr />
+<h2 id="notas-de-arquitectura">Notas de Arquitectura</h2>
+<ol>
+<li>
+<p><strong>Doble superficie API</strong>: <code>api.py</code> (legacy, <code>/api/*</code>) coexiste con <code>backend/app/main.py</code> (canonical, <code>/v1/*</code>). Los legacy routes tienen middleware <code>deprecation_warning</code> que añade <code>X-API-Warn</code> header.</p>
+</li>
+<li>
+<p><strong>Compatibilidad <code>/api/v1/*</code></strong>: <code>main.py</code> registra los mismos routers bajo <code>/api/v1/*</code> como alias de compatibilidad para el frontend existente.</p>
+</li>
+<li>
+<p><strong>JIT warm-up</strong>: <code>main.py</code> ejecuta <code>_warm_jit_sync()</code> en el lifespan para pre-compilar kernels Numba y evitar latencia en la primera petición.</p>
+</li>
+<li>
+<p><strong>CLI entry-point</strong>: <code>massive-cli = "massive.cli.main:main"</code> en <code>pyproject.toml</code> expone subcomandos: <code>simulate</code>, <code>scientific</code>, <code>benchmark</code>, <code>forecast</code>, <code>version</code>, <code>serve</code>.</p>
+</li>
+<li>
+<p><strong>Docker multi-stage</strong>: 3 stages (<code>builder-py</code> → <code>builder-fe</code> → <code>runtime</code>) con supervisord corriendo como <code>appuser</code> no-root.</p>
+</li>
+<li>
+<p><strong>Massive-ui-ng es subsistema separado</strong>: Tiene su propio FastAPI, routers, tests y estructura. No está integrado en el pipeline CI principal del repositorio raíz.</p>
+</li>
+</ol>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.sections", "navigation.expand", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

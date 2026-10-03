@@ -1,0 +1,2404 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="MASSIVE — Hybrid social dynamics simulator. Numerical core + LLM as regime selector.">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Plan de Integración: massive-ui-ng-package dentro de MASSIVE - MASSIVE Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#plan-de-integracion-massive-ui-ng-package-dentro-de-massive" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="MASSIVE Documentation" class="md-header__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MASSIVE Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Plan de Integración: massive-ui-ng-package dentro de MASSIVE
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="MASSIVE Documentation" class="md-nav__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    MASSIVE Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../factbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Factbook Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM Interface
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    LLM Interface
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../MASSIVE_LLM_INTERFACE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface spec
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../LLM_PROMPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompt templates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Readiness
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Production Readiness
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../production-readiness-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Audit & Risk Matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../release-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/current-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (current)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/target-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (target)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/PRODUCTION_ARCHITECTURE_SPEC/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Architecture Spec
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/safety_protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_7" id="__nav_5_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runbooks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Runbooks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../runbooks/local-development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../runbooks/operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../runbooks/incidents/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Incidents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/threat-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/secrets-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secrets & Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../OBSERVABILITY_AND_SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability & Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../backup_restore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup & Restore
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../disaster_recovery_plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disaster Recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DOCKER/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ENV_VARS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Environment Variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../NAMING_CONVENTIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NAMING_CONVENTIONS.md
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation (PVU-BS)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Validation (PVU-BS)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/PVU_MASSIVE_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/PVU_MASSIVE_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocolo (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/preregistration_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registration (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/preregistration_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registro (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/validation_report_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report template (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/validation_report_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plantilla de reporte (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cards/BENCHMARK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Card
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cards/REPRODUCIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reproducibility Card
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Testing
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../testing/test-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Test Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../performance/baseline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Baseline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../performance_report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#contexto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Contexto
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fase-1-integrar-massive-ui-ng-package-via-git-subtree" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FASE 1: Integrar massive-ui-ng-package vía git subtree
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FASE 1: Integrar massive-ui-ng-package vía git subtree">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#11-agregar-remote-de-ui-ng" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.1 Agregar remote de UI-NG
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#12-fetch-del-remote-de-ui-ng" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.2 Fetch del remote de UI-NG
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#13-identificar-branchsha-a-integrar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.3 Identificar branch/SHA a integrar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#14-subtree-add-integrar-como-subdirectorio-massive-ui-ng" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.4 Subtree add — integrar como subdirectorio massive-ui-ng/
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#15-commit-de-referencia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.5 Commit de referencia
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#16-verificar-estructura-integrada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1.6 Verificar estructura integrada
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fase-2-resolver-colisiones-entre-backendappmodels__init__py" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FASE 2: Resolver colisiones entre backend/app/models/__init__.py
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FASE 2: Resolver colisiones entre backend/app/models/__init__.py">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-analizar-contenido-de-ui-ng" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Analizar contenido de UI-NG
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-estrategia-de-fusion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Estrategia de fusión
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2.2 Estrategia de fusión">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#221-importar-dtos-de-ui-ng-en-massive" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2.1 Importar DTOs de UI-NG en MASSIVE
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#222-resolver-conflictos-de-nombres" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2.2 Resolver conflictos de nombres
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#223-unificar-archivos-si-es-necesario" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2.3 Unificar archivos si es necesario
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-commit-de-fusion-de-modelos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Commit de fusión de modelos
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fase-3-reemplazar-streamlit-preservar-api-y-simulator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FASE 3: Reemplazar Streamlit — preservar API y simulator
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FASE 3: Reemplazar Streamlit — preservar API y simulator">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#31-eliminar-apppy-streamlit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.1 Eliminar app.py (Streamlit)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#32-eliminar-streamlit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.2 Eliminar .streamlit/
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#33-limpiar-dependencias-de-streamlit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.3 Limpiar dependencias de Streamlit
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3.3 Limpiar dependencias de Streamlit">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#requirementstxt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        requirements.txt:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pyprojecttoml" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        pyproject.toml:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#34-preservar-funcionalidad-de-apipy-y-simulatorpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.4 Preservar funcionalidad de api.py y simulator.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#35-verificar-re-exports-de-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.5 Verificar re-exports de app/
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#36-commit-de-remocion-streamlit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3.6 Commit de remoción Streamlit
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fase-4-integrar-frontend-de-ui-ng-si-aplica" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FASE 4: Integrar frontend de UI-NG (si aplica)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FASE 4: Integrar frontend de UI-NG (si aplica)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-verificar-si-ui-ng-incluye-frontend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Verificar si UI-NG incluye frontend
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-fusionar-frontend-opcional" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Fusionar frontend (opcional)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-build-del-frontend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Build del frontend
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fase-5-checkpoints-de-validacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FASE 5: Checkpoints de Validación
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FASE 5: Checkpoints de Validación">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#checkpoint-a-tests-unitarios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checkpoint A: Tests unitarios
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checkpoint-b-import-de-modelos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checkpoint B: Import de modelos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checkpoint-c-build-frontend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checkpoint C: Build frontend
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checkpoint-d-api-health" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checkpoint D: API health
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#checkpoint-e-git-status-limpio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Checkpoint E: Git status limpio
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fase-6-push-y-documentacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FASE 6: Push y Documentación
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FASE 6: Push y Documentación">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-push-de-cambios" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 Push de cambios
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-actualizar-agentsmd-repositorio-skill-memory" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Actualizar AGENTS.md (repositorio skill memory)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#comandos-resumen-ejecucion-secuencial" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comandos Resumen (Ejecución Secuencial)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#riesgos-y-mitigaciones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Riesgos y Mitigaciones
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="plan-de-integracion-massive-ui-ng-package-dentro-de-massive">Plan de Integración: massive-ui-ng-package dentro de MASSIVE</h1>
+<h2 id="contexto">Contexto</h2>
+<ul>
+<li><strong>Repo MASSIVE</strong>: <code>https://github.com/Adlgr87/MASSIVE.git</code> (token auth)</li>
+<li><strong>Remote UI-NG</strong>: <code>massive-ui-ng</code> (actualmente retorna 404 — se usarán comandos de fallback)</li>
+<li><strong>Estructura actual MASSIVE</strong>: <code>backend/app/models/</code> con 4 DTOs, <code>app.py</code> (Streamlit), <code>.streamlit/</code>, <code>requirements.txt</code> con dependencias Streamlit</li>
+</ul>
+<hr />
+<h2 id="fase-1-integrar-massive-ui-ng-package-via-git-subtree">FASE 1: Integrar <code>massive-ui-ng-package</code> vía <code>git subtree</code></h2>
+<h3 id="11-agregar-remote-de-ui-ng">1.1 Agregar remote de UI-NG</h3>
+<pre><code class="language-bash"># Desde ~
+git remote add ui-ng https://github.com/Adlgr87/massive-ui-ng.git
+</code></pre>
+<blockquote>
+<p><strong>Nota</strong>: Si el remote retorna 404, usar el comando alternativo:</p>
+</blockquote>
+<pre><code class="language-bash"># Si el repo público está disponible sin auth:
+git remote add ui-ng https://github.com/Adlgr87/massive-ui-ng.git
+# Verificar conexión:
+git ls-remote ui-ng
+</code></pre>
+<h3 id="12-fetch-del-remote-de-ui-ng">1.2 Fetch del remote de UI-NG</h3>
+<pre><code class="language-bash"># Fetch de todas las ramas y tags
+git fetch ui-ng --tags --verbose
+
+# Si falla con 404, intentar con auth token (si aplica):
+# git fetch ui-ng --tags --verbose https://TOKEN@github.com/Adlgr87/massive-ui-ng.git
+</code></pre>
+<h3 id="13-identificar-branchsha-a-integrar">1.3 Identificar branch/SHA a integrar</h3>
+<pre><code class="language-bash"># Listar ramas remotas disponibles
+git branch -r --list &quot;ui-ng/*&quot;
+
+# Supongamos que existe ui-ng/main:
+git log ui-ng/main --oneline -3
+</code></pre>
+<h3 id="14-subtree-add-integrar-como-subdirectorio-massive-ui-ng">1.4 Subtree add — integrar como subdirectorio <code>massive-ui-ng/</code></h3>
+<pre><code class="language-bash"># Opción A: Si UI-NG tiene una carpeta raíz ya definida (ej: package/ en su repo)
+# Ajustar --prefix al root real del paquete:
+git subtree add --prefix=massive-ui-ng/ ui-ng main --squash --message=&quot;feat: integrate massive-ui-ng package via subtree [SKIP CI]&quot;
+
+# Opción B: Si UI-NG contiene el paquete en una subcarpeta (ej: package/)
+# Se necesita extraer solo esa rama/subdirectorio antes del subtree add:
+# Paso 1: Crear rama local filtrada
+git checkout -b ui-ng-extract ui-ng/main -- .
+# Paso 2: Usar git filter-branch o git filter-repo para aislar package/
+# Paso 3: Subtree add con el SHA de la rama filtrada
+</code></pre>
+<h3 id="15-commit-de-referencia">1.5 Commit de referencia</h3>
+<p>El <code>git subtree add</code> anterior crea automáticamente un commit. Verificar:</p>
+<pre><code class="language-bash">git log --oneline -3
+git status
+</code></pre>
+<h3 id="16-verificar-estructura-integrada">1.6 Verificar estructura integrada</h3>
+<pre><code class="language-bash">ls -la massive-ui-ng/
+# Esperado: debe contener archivos de UI-NG, incluyendo dto_ui.py y frontend/
+find massive-ui-ng/ -name &quot;dto_ui.py&quot; -type f
+find massive-ui-ng/ -name &quot;package.json&quot; -type f
+</code></pre>
+<hr />
+<h2 id="fase-2-resolver-colisiones-entre-backendappmodels__init__py">FASE 2: Resolver colisiones entre <code>backend/app/models/__init__.py</code></h2>
+<h3 id="21-analizar-contenido-de-ui-ng">2.1 Analizar contenido de UI-NG</h3>
+<pre><code class="language-bash"># Inspeccionar archivos clave de UI-NG
+cat massive-ui-ng/backend/app/models/__init__.py
+cat massive-ui-ng/backend/app/models/dto_ui.py 2&gt;/dev/null || echo &quot;dto_ui.py no encontrado&quot;
+find massive-ui-ng/ -name &quot;*.py&quot; -path &quot;*/models/*&quot; -type f
+</code></pre>
+<h3 id="22-estrategia-de-fusion">2.2 Estrategia de fusión</h3>
+<p><strong>Escenario esperado</strong>: UI-NG extiende los 4 DTOs existentes con tipos <code>dto_ui.py</code>.</p>
+<h4 id="221-importar-dtos-de-ui-ng-en-massive">2.2.1 Importar DTOs de UI-NG en MASSIVE</h4>
+<p>Editar <code>backend/app/models/__init__.py</code> para agregar:</p>
+<pre><code class="language-python"># --- UI-NG DTOs (extienden los DTOs base de MASSIVE) ---
+try:
+    from backend.app.models.dto_ui import (
+        UIDashboardConfig,
+        UIExportRequest,
+        UITheme,
+        UIWebSocketEvent,
+        # ... otros nombres según dto_ui.py de UI-NG
+    )
+    _UI_DTO_AVAILABLE = True
+except ImportError:
+    _UI_DTO_AVAILABLE = False
+</code></pre>
+<h4 id="222-resolver-conflictos-de-nombres">2.2.2 Resolver conflictos de nombres</h4>
+<p>Si UI-NG redefine alguno de los 4 DTOs existentes (architect, forecast, simulation, snapshot):</p>
+<pre><code class="language-bash"># Generar diff para identificar colisiones
+diff -ru backend/app/models/__init__.py massive-ui-ng/backend/app/models/__init__.py
+diff -ru backend/app/models/dto_simulation.py massive-ui-ng/backend/app/models/dto_simulation.py 2&gt;/dev/null
+</code></pre>
+<p><strong>Decisión</strong>: Si hay colisión en <code>__init__.py</code>:
+- <strong>Prioridad 1</strong>: Mantener los DTOs de MASSIVE como base (architect, forecast, simulation, snapshot).
+- <strong>Prioridad 2</strong>: Importar tipos nuevos de <code>dto_ui.py</code> con namespaces o aliases.
+- <strong>Ejemplo de fusión</strong>:</p>
+<pre><code class="language-python"># backend/app/models/__init__.py (fusión)
+from backend.app.models.dto_architect import (...)
+from backend.app.models.dto_forecast import (...)
+from backend.app.models.dto_simulation import (...)
+from backend.app.models.dto_snapshot import (...)
+
+# UI-NG extensions — prefixed to avoid collision
+try:
+    from backend.app.models.dto_ui import (
+        UIDashboardConfig as UIDashboardConfig,
+        UIExportRequest as UIExportRequest,
+        UITheme as UITheme,
+        UIWebSocketEvent as UIWebSocketEvent,
+    )
+except ImportError:
+    pass  # dto_ui no integrado todavía
+</code></pre>
+<h4 id="223-unificar-archivos-si-es-necesario">2.2.3 Unificar archivos si es necesario</h4>
+<p>Si UI-NG tiene modificaciones a <code>dto_simulation.py</code> por ejemplo:</p>
+<pre><code class="language-bash"># Comparar contenido
+diff backend/app/models/dto_simulation.py massive-ui-ng/backend/app/models/dto_simulation.py
+
+# SI hay diferencias: aplicar UI-NG como supersención si extiende, o mantener MASSIVE base
+# Si MASSIVE base ya incluye los campos de UI-NG, no cambiar nada
+</code></pre>
+<h3 id="23-commit-de-fusion-de-modelos">2.3 Commit de fusión de modelos</h3>
+<pre><code class="language-bash">git add backend/app/models/__init__.py
+git commit -m &quot;fix: merge UI-NG DTOs into backend/app/models/__init__.py
+
+- Preserve 4 base DTOs from MASSIVE (architect, forecast, simulation, snapshot)
+- Import UI-NG extensions from dto_ui.py with explicit namespace
+- Guard imports with try/except for backward compatibility&quot;
+</code></pre>
+<hr />
+<h2 id="fase-3-reemplazar-streamlit-preservar-api-y-simulator">FASE 3: Reemplazar Streamlit — preservar API y simulator</h2>
+<h3 id="31-eliminar-apppy-streamlit">3.1 Eliminar <code>app.py</code> (Streamlit)</h3>
+<pre><code class="language-bash"># Backup temporal (opcional)
+git mv app.py app.py.streamlit-backup
+
+# O eliminar directamente:
+git rm app.py
+
+# Si se quiere preservar históricamente:
+# git rm --cached app.py &amp;&amp; echo &quot;app.py&quot; &gt;&gt; .gitignore
+</code></pre>
+<h3 id="32-eliminar-streamlit">3.2 Eliminar <code>.streamlit/</code></h3>
+<pre><code class="language-bash">git rm -r .streamlit/
+</code></pre>
+<h3 id="33-limpiar-dependencias-de-streamlit">3.3 Limpiar dependencias de Streamlit</h3>
+<h4 id="requirementstxt">requirements.txt:</h4>
+<pre><code class="language-bash"># Editar requirements.txt:
+# Eliminar o comentar:
+sed -i '/^streamlit&gt;/d' requirements.txt
+sed -i '/^plotly&gt;/d' requirements.txt  # plotly es opcional, revisar uso
+
+# Verificar:
+cat requirements.txt
+</code></pre>
+<h4 id="pyprojecttoml">pyproject.toml:</h4>
+<pre><code class="language-python"># Editar [project.optional-dependencies]:
+# De: ui = [&quot;streamlit&gt;=1.35&quot;, &quot;plotly&gt;=5.18&quot;]
+# A: ui = [&quot;plotly&gt;=5.18&quot;]  # opcional, si se usa en frontend
+
+# Actualizar [project].dependencies eliminar streamlit si está listado allí
+</code></pre>
+<h3 id="34-preservar-funcionalidad-de-apipy-y-simulatorpy">3.4 Preservar funcionalidad de <code>api.py</code> y <code>simulator.py</code></h3>
+<p>Verificar que los endpoints existentes siguen funcionando:</p>
+<pre><code class="language-bash"># api.py ya expone:
+# POST /api/extract
+# POST /api/wizard
+# POST /api/simulate-uil
+# POST /api/v1/architect
+# POST /api/v1/forecast
+# POST /api/v1/energy
+# GET /health, /ready, /version, /
+
+# simulator.py contiene:
+# simular(), simular_multiples(), save_checkpoint(), load_checkpoint(), etc.
+# app/__init__.py reexporta simular y utilidades de simulator.py
+</code></pre>
+<p><strong>No hay cambios necesarios en api.py ni simulator.py</strong> — ya son endpoints FastAPI que no dependen de Streamlit.</p>
+<h3 id="35-verificar-re-exports-de-app">3.5 Verificar re-exports de <code>app/</code></h3>
+<pre><code class="language-bash"># app/__init__.py importa de simulator.py — verificar que simulator.py
+# no importe streamlit en su scope:
+grep -n &quot;import streamlit&quot; simulator.py
+# Si hay imports de streamlit en simulator.py, mover/condicionar:
+# ```python
+# try:
+#     import streamlit as st
+# except ImportError:
+#     st = None
+# ```
+</code></pre>
+<h3 id="36-commit-de-remocion-streamlit">3.6 Commit de remoción Streamlit</h3>
+<pre><code class="language-bash">git add backend/app/models/__init__.py  # ya modificado en fase 2
+# app.py y .streamlit/ ya fueron borrados con git rm
+git commit -m &quot;refactor: remove Streamlit, rely on FastAPI endpoints
+
+- Delete app.py (Streamlit UI replaced by frontend/)
+- Delete .streamlit/ config directory
+- Remove streamlit/plotly deps from requirements.txt and pyproject.toml
+- Preserve /api/* and /api/v1/* endpoints (api.py, simulator.py)
+- app/__init__.py still reexports simulator functions for backward compat&quot;
+</code></pre>
+<hr />
+<h2 id="fase-4-integrar-frontend-de-ui-ng-si-aplica">FASE 4: Integrar frontend de UI-NG (si aplica)</h2>
+<h3 id="41-verificar-si-ui-ng-incluye-frontend">4.1 Verificar si UI-NG incluye frontend</h3>
+<pre><code class="language-bash">ls -la massive-ui-ng/frontend/ 2&gt;/dev/null
+cat massive-ui-ng/frontend/package.json 2&gt;/dev/null
+</code></pre>
+<h3 id="42-fusionar-frontend-opcional">4.2 Fusionar frontend (opcional)</h3>
+<p>Si UI-NG incluye un frontend:
+- Decidir si se sobreescribe <code>frontend/</code> de MASSIVE o se integra como <code>massive-ui-ng/frontend/</code>
+- Si UI-NG frontend consume los <code>/api/v1/*</code> endpoints, enlazarlos</p>
+<h3 id="43-build-del-frontend">4.3 Build del frontend</h3>
+<pre><code class="language-bash">cd frontend/
+npm install
+npm run build
+# Verificar salida en dist/
+</code></pre>
+<hr />
+<h2 id="fase-5-checkpoints-de-validacion">FASE 5: Checkpoints de Validación</h2>
+<h3 id="checkpoint-a-tests-unitarios">Checkpoint A: Tests unitarios</h3>
+<pre><code class="language-bash"># Desde ~
+python -m pytest tests/test_dto_models.py -v
+python -m pytest tests/test_api_security.py -v
+python -m pytest tests/test_forecast.py -v
+</code></pre>
+<h3 id="checkpoint-b-import-de-modelos">Checkpoint B: Import de modelos</h3>
+<pre><code class="language-bash"># Verificar que imports funcionen
+python -c &quot;from backend.app.models import SimSnapshotMessage, UIDashboardConfig; print('OK')&quot;
+</code></pre>
+<h3 id="checkpoint-c-build-frontend">Checkpoint C: Build frontend</h3>
+<pre><code class="language-bash">cd frontend/
+npm run build 2&gt;&amp;1 | tail -5
+</code></pre>
+<h3 id="checkpoint-d-api-health">Checkpoint D: API health</h3>
+<pre><code class="language-bash"># Si uvicorn está configurado:
+python -c &quot;from backend.app.api import app; print('API import OK')&quot;
+</code></pre>
+<h3 id="checkpoint-e-git-status-limpio">Checkpoint E: Git status limpio</h3>
+<pre><code class="language-bash">git status
+git diff --stat
+</code></pre>
+<hr />
+<h2 id="fase-6-push-y-documentacion">FASE 6: Push y Documentación</h2>
+<h3 id="61-push-de-cambios">6.1 Push de cambios</h3>
+<pre><code class="language-bash">git push origin main
+</code></pre>
+<h3 id="62-actualizar-agentsmd-repositorio-skill-memory">6.2 Actualizar AGENTS.md (repositorio skill memory)</h3>
+<pre><code class="language-bash">cat &gt;&gt; AGENTS.md &lt;&lt; 'EOF'
+
+## UI-NG Integration
+
+- massive-ui-ng-package is integrated via git subtree under massive-ui-ng/
+- UI-NG DTOs (dto_ui.py) extend base DTOs; see backend/app/models/__init__.py
+- Streamlit has been removed; use frontend/ (React+Vite+TS) with /api/v1/*
+- Key endpoints: /api/extract, /api/wizard, /api/v1/architect, /api/v1/forecast
+EOF
+</code></pre>
+<hr />
+<h2 id="comandos-resumen-ejecucion-secuencial">Comandos Resumen (Ejecución Secuencial)</h2>
+<pre><code class="language-bash"># Fase 1: Subtree
+cd ~
+git remote add ui-ng https://github.com/Adlgr87/massive-ui-ng.git 2&gt;/dev/null || git remote set-url ui-ng https://github.com/Adlgr87/massive-ui-ng.git
+git fetch ui-ng --tags
+git subtree add --prefix=massive-ui-ng/ ui-ng main --squash --message=&quot;chore: integrate massive-ui-ng via subtree&quot;
+
+# Fase 2: Merge models
+# (Editar backend/app/models/__init__.py según diff)
+git add backend/app/models/__init__.py
+git commit -m &quot;fix: merge UI-NG DTOs&quot;
+
+# Fase 3: Remove Streamlit
+git rm app.py
+git rm -r .streamlit/
+sed -i '/^streamlit&gt;/d; /^plotly&gt;/d' requirements.txt
+# Editar pyproject.toml manualmente
+git add requirements.txt pyproject.toml
+git commit -m &quot;refactor: remove Streamlit, rely on FastAPI&quot;
+
+# Fase 5: Validar
+python -m pytest tests/test_dto_models.py -q
+cd frontend &amp;&amp; npm run build &amp;&amp; cd ..
+
+# Fase 6: Push
+git push origin main
+</code></pre>
+<hr />
+<h2 id="riesgos-y-mitigaciones">Riesgos y Mitigaciones</h2>
+<table>
+<thead>
+<tr>
+<th>Riesgo</th>
+<th>Mitigación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>UI-NG remote 404</td>
+<td>Usar token GitHub o fork local; el plan incluye fallback con <code>git filter-branch</code></td>
+</tr>
+<tr>
+<td>Colisión de nombres en DTOs</td>
+<td>Guardar imports base de MASSIVE con prioridad; alias en dto_ui.py</td>
+</tr>
+<tr>
+<td>simulator.py importa streamlit</td>
+<td>Verificar y condicionar imports con try/except</td>
+</tr>
+<tr>
+<td>Frontend duplicado</td>
+<td>Decidir política: sobrescribir o mantener en paralelo</td>
+</tr>
+<tr>
+<td>Tests fallidos por imports rotos</td>
+<td>Ejecutar checkpoints A-E antes de push</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>Creado por</strong>: OpenHands (openhands@all-hands.dev)<br />
+<strong>Fecha</strong>: 2026-08-16<br />
+<strong>Repo context</strong>: MASSIVE (Adlgr87/MASSIVE) + massive-ui-ng (Adlgr87/massive-ui-ng)</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.sections", "navigation.expand", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

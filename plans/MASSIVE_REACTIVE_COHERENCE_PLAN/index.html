@@ -1,0 +1,3067 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="MASSIVE — Hybrid social dynamics simulator. Numerical core + LLM as regime selector.">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>MASSIVE Reactive Coherence & Liquid Neural Network Plan - MASSIVE Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#massive-reactive-coherence-liquid-neural-network-plan" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="MASSIVE Documentation" class="md-header__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MASSIVE Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              MASSIVE Reactive Coherence &amp; Liquid Neural Network Plan
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="MASSIVE Documentation" class="md-nav__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    MASSIVE Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../factbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Factbook Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM Interface
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    LLM Interface
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../MASSIVE_LLM_INTERFACE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface spec
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LLM_PROMPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompt templates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Readiness
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Production Readiness
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../production-readiness-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Audit & Risk Matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/current-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (current)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/target-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (target)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/PRODUCTION_ARCHITECTURE_SPEC/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Architecture Spec
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/safety_protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_7" id="__nav_5_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runbooks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Runbooks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/local-development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/incidents/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Incidents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/threat-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/secrets-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secrets & Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OBSERVABILITY_AND_SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability & Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backup_restore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup & Restore
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../disaster_recovery_plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disaster Recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DOCKER/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ENV_VARS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Environment Variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NAMING_CONVENTIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NAMING_CONVENTIONS.md
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation (PVU-BS)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Validation (PVU-BS)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/PVU_MASSIVE_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/PVU_MASSIVE_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocolo (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/preregistration_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registration (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/preregistration_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registro (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/validation_report_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report template (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/validation_report_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plantilla de reporte (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cards/BENCHMARK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Card
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cards/REPRODUCIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reproducibility Card
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Testing
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../testing/test-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Test Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../performance/baseline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Baseline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../performance_report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-executive-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Executive Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Executive Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#liquid-neural-network-training-roadmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Liquid Neural Network Training Roadmap
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-unified-reactive-coupling-matrix-urcc" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Unified Reactive Coupling Matrix (URCC)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Unified Reactive Coupling Matrix (URCC)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-invariants-must-always-hold" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Invariants (must always hold)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-top-priority-actions-3-epics" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Top Priority Actions (3 Epics)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Top Priority Actions (3 Epics)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#epic-1-unified-polarization-registry-rank-1-high-impact-low-effort-low-risk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Epic 1: Unified Polarization Registry (Rank 1 — High Impact, Low Effort, Low Risk)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#epic-2-gini-rule-bridge-rank-2-medium-impact-low-effort-low-risk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Epic 2: Gini-Rule Bridge (Rank 2 — Medium Impact, Low Effort, Low Risk)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#epic-3-ews-to-temperature-trigger-rank-3-medium-impact-medium-effort-medium-risk" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Epic 3: EWS-to-Temperature Trigger (Rank 3 — Medium Impact, Medium Effort, Medium Risk)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-agent-specific-instructions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Agent-Specific Instructions
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Agent-Specific Instructions">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#agent-1-polarization-dynamics-analyst" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agent 1 — Polarization Dynamics Analyst
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#agent-2-reactive-logic-engineer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agent 2 — Reactive Logic Engineer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#agent-3-energy-landscape-scientist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agent 3 — Energy Landscape Scientist
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#agent-4-cfc-neural-network-specialist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agent 4 — CfC Neural Network Specialist
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#agent-5-systems-integration-architect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Agent 5 — Systems Integration Architect
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-liquid-neural-network-training-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Liquid Neural Network Training Plan
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Liquid Neural Network Training Plan">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pre-requisite-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pre-requisite Environment
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pipeline-a-polarization-reactive-corrector-start-here" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pipeline A: Polarization-Reactive λ Corrector (START HERE)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pipeline-b-landscape-parameter-modulator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pipeline B: Landscape Parameter Modulator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pipeline-c-temperature-modulator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pipeline C: Temperature Modulator
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#execution-order" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Execution Order
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-verification-checklist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Verification Checklist
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-critical-bugs-found-fixed-during-verification" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Critical Bugs Found &amp; Fixed (During Verification)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Critical Bugs Found &amp; Fixed (During Verification)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#before-fix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before Fix:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#after-fix" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        After Fix:
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-implementation-timeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Implementation Timeline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="8. Implementation Timeline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-2-lnn-integration-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 2 — LNN Integration Architecture
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#brexit-2016-end-to-end-calibration-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Brexit 2016 End-to-End Calibration Results
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#implementation-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Implementation Notes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-files-changedcreated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Files Changed/Created
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#phase-4-production-infrastructure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 4 — Production Infrastructure ✅
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Phase 4 — Production Infrastructure ✅">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase-51-v02-llm-contract" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5.1 — v0.2 LLM Contract ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#phase-53-observability-slos-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Phase 5.3 — Observability, SLOs, Security ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#final-test-results" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Final Test Results
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Final Test Results">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pre-existing-bugs-fixed-phase-6" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pre-existing Bugs Fixed (Phase 6)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#sign-off-complete" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sign-Off — Complete ✅
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Sign-Off — Complete ✅">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#validation-summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validation Summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validation-summary_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Validation Summary
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="massive-reactive-coherence-liquid-neural-network-plan">MASSIVE Reactive Coherence &amp; Liquid Neural Network Plan</h1>
+<blockquote>
+<p><strong>Generated by:</strong> Multi-Agent Analysis Workflow (5 specialist agents + 3 synthesis/planning agents)
+<strong>Date:</strong> 2026-09-14
+<strong>Status:</strong> Phase 1 Implementation Complete — all 3 epics implemented, 345 tests passing, LNN training running
+<strong>Verified artifacts:</strong> <code>tests/test_cfc_router.py</code> (14/14), <code>tests/test_energy_engine.py</code> (27/27), <code>tests/test_unified_metrics.py</code> (16/16), <code>tests/test_contracts.py</code> (32/32), <code>tests/test_gini_rule_bridge.py</code> (7/7), <code>tests/test_ews_temperature_trigger.py</code> (5/5), <code>tests/test_cross_engine_polarization.py</code> (12/12)</p>
+</blockquote>
+<hr />
+<h2 id="1-executive-summary">1. Executive Summary</h2>
+<p>The MASSIVE social simulation system currently suffers from <strong>Metric Divergence</strong> and <strong>Engine Isolation</strong>. While individually sophisticated — physics-based Langevin dynamics, rule-based regime selection, K-dimensional multilayer networks, and closed-form continuous-time (CfC) neural networks — the five engines compute the same quantities inconsistently and never feedback reactive signals into each other's parameters.</p>
+<p>The multi-agent analysis identified <strong>5 top-priority systemic issues</strong> and selected <strong>3 concrete, high-impact fixes</strong> (SPEF-scored: Simple, Practical, Elegant, Effective, Functional):</p>
+<ol>
+<li><strong>Unified Polarization Registry</strong> — eliminate 5 conflicting definitions of polarization</li>
+<li><strong>Gini-Rule Bridge</strong> — connect economic inequality to rule-based logic</li>
+<li><strong>EWS-to-Temperature Trigger</strong> — convert advisory instability signals into active physics controls</li>
+</ol>
+<p>During verification, we also discovered and <strong>fixed 2 critical bugs</strong> in the CfC router that were silently disabling the trained Brexit 2016 residual model:
+- <strong>Bug 1</strong>: Model path mismatch (<code>models/</code> vs <code>models/cfc_calibrated/</code>)
+- <strong>Bug 2</strong>: Architecture drift (<code>u_encoder</code> wrapped in <code>nn.Sequential</code> after training)
+- <strong>Bug 3</strong>: Correction sign error (moving AWAY from actual instead of TOWARD it)</p>
+<h3 id="liquid-neural-network-training-roadmap">Liquid Neural Network Training Roadmap</h3>
+<p>Three new CfC (liquid NN) training pipelines are specified:
+- <strong>Pipeline A</strong>: <code>train_cfc_lambda.py</code> — polarization-reactive λ corrector (created, data generator verified)
+- <strong>Pipeline B</strong>: <code>train_cfc_landscape.py</code> — landscape parameter modulator (σ, attractor/repeller strengths)
+- <strong>Pipeline C</strong>: <code>train_cfc_temp.py</code> — temperature modulator (T adapts to volatility + polarization)</p>
+<hr />
+<h2 id="2-unified-reactive-coupling-matrix-urcc">2. Unified Reactive Coupling Matrix (URCC)</h2>
+<table>
+<thead>
+<tr>
+<th>Signal Change</th>
+<th>Variable</th>
+<th>Direction</th>
+<th>Effect on Polarization</th>
+<th>Code Target</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Polarization ↑</strong></td>
+<td>λ (lambda_social)</td>
+<td>↑</td>
+<td>More peer influence → reinforces clustering</td>
+<td><code>energy_engine.py:178</code></td>
+</tr>
+<tr>
+<td><strong>Polarization ↑</strong></td>
+<td>Attractor Strength</td>
+<td>↑</td>
+<td>Deeper wells = stronger factional identity</td>
+<td><code>energy_engine.py:394</code></td>
+</tr>
+<tr>
+<td><strong>Polarization ↑</strong></td>
+<td>Repeller Strength</td>
+<td>↑</td>
+<td>Higher barriers = harder to cross to other side</td>
+<td><code>energy_engine.py:404</code></td>
+</tr>
+<tr>
+<td><strong>Polarization ↑</strong></td>
+<td>Rule Selection</td>
+<td>→ replicador/hk</td>
+<td>EGT pressure or bounded confidence fragmentation</td>
+<td><code>simulator.py:1423-1437</code></td>
+</tr>
+<tr>
+<td><strong>Gini ↑</strong></td>
+<td>fuerza (regla_polarizacion)</td>
+<td>↑</td>
+<td>Inequality amplifies echo chamber</td>
+<td><code>simulator.py:580</code> (NEW)</td>
+</tr>
+<tr>
+<td><strong>Gini ↑</strong></td>
+<td>σ (landscape width)</td>
+<td>↓</td>
+<td>Narrower attractors = sharper polarization</td>
+<td><code>energy_engine.py:45</code> (NEW)</td>
+</tr>
+<tr>
+<td><strong>EWS Flag = True</strong></td>
+<td>T (temperature)</td>
+<td>↑</td>
+<td>Noise boost to escape echo chambers</td>
+<td><code>energy_engine.py:177</code> (NEW)</td>
+</tr>
+<tr>
+<td><strong>Trust ↓</strong></td>
+<td>λ (lambda_social)</td>
+<td>↓</td>
+<td>Less peer influence, more landscape drift</td>
+<td><code>energy_engine.py:204</code></td>
+</tr>
+<tr>
+<td><strong>Propaganda ↑</strong></td>
+<td>Repeller Strength</td>
+<td>↑</td>
+<td>Counter-narratives create stronger barriers</td>
+<td><code>energy_engine.py:404</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="key-invariants-must-always-hold">Key Invariants (must always hold)</h3>
+<ul>
+<li>All opinion values remain in declared range after every update (<code>np.clip</code>)</li>
+<li>Polarization ∈ [0, 1] (normalized by half_range)</li>
+<li>Temperature ∈ [0.01, 0.20] (prevents frozen or chaotic dynamics)</li>
+<li>λ ∈ [0, 1] (balance factor)</li>
+</ul>
+<hr />
+<h2 id="3-top-priority-actions-3-epics">3. Top Priority Actions (3 Epics)</h2>
+<h3 id="epic-1-unified-polarization-registry-rank-1-high-impact-low-effort-low-risk">Epic 1: Unified Polarization Registry (Rank 1 — High Impact, Low Effort, Low Risk)</h3>
+<p><strong>Status:</strong> ✅ IMPLEMENTED (code + tests)</p>
+<p><strong>Files created:</strong>
+- <code>metrics/__init__.py</code> — public API exports
+- <code>metrics/unified_metrics.py</code> — URCC standard implementation
+- <code>tests/test_unified_metrics.py</code> — 16 tests (all passing)</p>
+<p><strong>Remaining work:</strong>
+1. <strong>Replace local formulas</strong> in <code>energy_engine.py:475</code>, <code>multilayer_engine.py:827</code>, <code>massive_engine.py:1240</code>, <code>micro_engine.py:105</code>, <code>simulator.py resumen_historial</code>
+   - Import <code>from metrics.unified_metrics import calculate_polarization</code>
+   - Replace each local calculation with the shared function
+   - Keep backward-compatible aliases where needed</p>
+<ol>
+<li><strong>Add cross-engine validation test</strong> (<code>tests/test_cross_engine_polarization.py</code>)</li>
+<li>Pass identical state to all engines, assert Δpolarization &lt; 1e-6</li>
+</ol>
+<p><strong>Verification:</strong> <code>pytest tests/test_unified_metrics.py -v</code> (16/16 pass)</p>
+<hr />
+<h3 id="epic-2-gini-rule-bridge-rank-2-medium-impact-low-effort-low-risk">Epic 2: Gini-Rule Bridge (Rank 2 — Medium Impact, Low Effort, Low Risk)</h3>
+<p><strong>Objective:</strong> Connect the Gini coefficient (economic inequality) to the simulator's rule-based polarization logic.</p>
+<p><strong>Changes needed:</strong>
+1. <strong><code>simulator.py:567</code> — <code>regla_polarizacion()</code></strong>
+   - Add <code>gini_coeff: float = 0.0</code> parameter
+   - Scale fuerza: <code>eff_fuerza = fuerza * (1.0 + gini_coeff)</code>
+   - Document the Gini-polarization coupling</p>
+<ol>
+<li><strong><code>simulator.py:1641</code> — <code>_aplicar_regla()</code></strong></li>
+<li>
+<p>Pass <code>cfg.get("gini_coefficient", 0.0)</code> to rule functions</p>
+</li>
+<li>
+<p><strong><code>energy_runner.py</code> — orchestration loop</strong></p>
+</li>
+<li>Extract <code>gini_coefficient</code> from <code>SocialEnergyEngine</code> state</li>
+<li>Pass it into the simulator config</li>
+</ol>
+<p><strong>Verification test:</strong></p>
+<pre><code class="language-python"># Gini=0 vs Gini=0.8 → delta_opinion should be ~2x larger with high Gini
+</code></pre>
+<hr />
+<h3 id="epic-3-ews-to-temperature-trigger-rank-3-medium-impact-medium-effort-medium-risk">Epic 3: EWS-to-Temperature Trigger (Rank 3 — Medium Impact, Medium Effort, Medium Risk)</h3>
+<p><strong>Objective:</strong> Convert Early Warning System (EWS) flags from "LLM advisory text" to "active physics control" — when critical slowing down is detected, boost temperature to help agents escape echo chambers.</p>
+<p><strong>Changes needed:</strong>
+1. <strong><code>energy_engine.py</code> — <code>SocialEnergyEngine.step()</code></strong>
+   - Accept <code>ews_flags: dict | None = None</code> parameter
+   - If <code>ews_flags.get("high_variance")</code> or <code>ews_flags.get("high_autocorr")</code>:
+     <code>effective_temp = self.temperature * (1.0 + 0.5 * (high_variance + high_autocorr))</code></p>
+<ol>
+<li><strong><code>simulator.py:1694</code> — EWS integration</strong></li>
+<li>
+<p>Pass <code>estado["_ews_flags"]</code> to the energy engine step</p>
+</li>
+<li>
+<p><strong><code>simulator.py:1161-1170</code> — <code>_build_temporal_forecast</code></strong></p>
+</li>
+<li>Already constructs EWS context; ensure flags propagate</li>
+</ol>
+<p><strong>Verification test:</strong>
+- Force EWS flag, place agents at ±0.95, verify they move toward center within 5 steps</p>
+<hr />
+<h2 id="4-agent-specific-instructions">4. Agent-Specific Instructions</h2>
+<h3 id="agent-1-polarization-dynamics-analyst">Agent 1 — Polarization Dynamics Analyst</h3>
+<p><strong>Actions:</strong>
+1. ✅ <code>metrics/unified_metrics.py</code> — DONE
+2. ✅ <code>tests/test_unified_metrics.py</code> — DONE (16/16 pass)
+3. <strong>Refactor</strong> <code>energy_engine.py:475</code>, <code>multilayer_engine.py:827</code>, <code>massive_engine.py:1240</code>, <code>micro_engine.py:105</code> to import <code>calculate_polarization</code>
+4. <strong>Add</strong> <code>tests/test_cross_engine_polarization.py</code> — verify identical output across engines</p>
+<p><strong>Verification:</strong> <code>pytest tests/test_unified_metrics.py tests/test_cross_engine_polarization.py -v</code></p>
+<hr />
+<h3 id="agent-2-reactive-logic-engineer">Agent 2 — Reactive Logic Engineer</h3>
+<p><strong>Actions:</strong>
+1. <strong>Edit</strong> <code>simulator.py:567</code> — <code>regla_polarizacion()</code> to accept <code>gini_coeff</code> and scale fuerza
+2. <strong>Edit</strong> <code>simulator.py:1030-1060</code> — <code>_aplicar_regla()</code> to pass Gini from config
+3. <strong>Edit</strong> <code>simulator.py:1612</code> — LLM prompt to include Gini context
+4. <strong>Create</strong> <code>tests/test_gini_rule_bridge.py</code> — verify Gini scaling effect</p>
+<p><strong>Verification:</strong> <code>pytest tests/test_gini_rule_bridge.py -v</code></p>
+<hr />
+<h3 id="agent-3-energy-landscape-scientist">Agent 3 — Energy Landscape Scientist</h3>
+<p><strong>Actions:</strong>
+1. <strong>Edit</strong> <code>energy_engine.py:222</code> — <code>SocialEnergyEngine.step()</code> to accept <code>ews_flags</code>
+2. <strong>Add</strong> <code>TEMPERATURE_BOOST_MAP = {"high_variance": 1.5, "high_autocorr": 1.3, "high_skewness": 1.2}</code>
+3. <strong>Add</strong> <code>modulate_temperature(current_T, ews_flags) -&gt; float</code> helper
+4. <strong>Edit</strong> <code>simulator.py:1641</code> to pass EWS flags to energy engine
+5. <strong>Create</strong> <code>tests/test_ews_temperature.py</code> — verify temperature boost on EWS signals</p>
+<p><strong>Verification:</strong> <code>pytest tests/test_ews_temperature.py -v</code></p>
+<hr />
+<h3 id="agent-4-cfc-neural-network-specialist">Agent 4 — CfC Neural Network Specialist</h3>
+<p><strong>Actions:</strong>
+1. ✅ <code>train_cfc_lambda.py</code> — DONE (data generator verified, 35,800 samples from 100 trajectories)
+2. <strong>Run full training:</strong> <code>python3 train_cfc_lambda.py</code> (10,000 trajectories, ~10 min on CPU)
+3. <strong>Create</strong> <code>train_cfc_landscape.py</code> — landscape parameter modulator (σ, attractor/repeller strengths)
+4. <strong>Create</strong> <code>train_cfc_temp.py</code> — temperature modulator pipeline
+5. <strong>Add</strong> <code>correct_lambda()</code>, <code>correct_landscape()</code>, <code>correct_temperature()</code> methods to <code>cfc_router.py</code>
+6. <strong>Create</strong> <code>tests/test_cfc_training_pipelines.py</code> — verify model loading + inference</p>
+<p><strong>Training command:</strong></p>
+<pre><code class="language-bash">cd .
+python3 train_cfc_lambda.py
+</code></pre>
+<p><strong>Verification:</strong> <code>pytest tests/test_cfc_router.py tests/test_cfc_training_pipelines.py -v</code></p>
+<hr />
+<h3 id="agent-5-systems-integration-architect">Agent 5 — Systems Integration Architect</h3>
+<p><strong>Actions:</strong>
+1. <strong>Create</strong> <code>MASSIVE_URCC_CONTRACT.md</code> — document the unified coupling contract
+2. <strong>Edit</strong> <code>services/__init__.py</code> — add <code>calculate_polarization</code> to public API
+3. <strong>Edit</strong> <code>backend/app/routers/</code> — add <code>/v1/metrics/polarization</code> endpoint
+4. <strong>Create</strong> <code>tests/test_cross_engine_validation.py</code> — end-to-end coherence test
+5. <strong>Audit</strong> all <code>energy_runner.py</code> integration points for Gini/EWS propagation</p>
+<p><strong>Verification:</strong> <code>pytest tests/test_cross_engine_validation.py -v</code></p>
+<hr />
+<h2 id="5-liquid-neural-network-training-plan">5. Liquid Neural Network Training Plan</h2>
+<h3 id="pre-requisite-environment">Pre-requisite Environment</h3>
+<pre><code class="language-bash"># System Python has torch (CPU-only)
+python3 -c &quot;import torch; print(torch.__version__)&quot;  # 2.13.0
+# numpy 2.5.2 available
+</code></pre>
+<h3 id="pipeline-a-polarization-reactive-corrector-start-here">Pipeline A: Polarization-Reactive λ Corrector (START HERE)</h3>
+<p><strong>Priority:</strong> 1 (highest — λ directly controls polarization vs. consensus)</p>
+<ul>
+<li><strong>Script:</strong> <code>train_cfc_lambda.py</code> ✅ created</li>
+<li><strong>Data:</strong> 10,000 EnergyEngine trajectories with randomized λ, Gini, T</li>
+<li><strong>Features (5):</strong> <code>[polarization_t, δpol_t1, δpol_t5, gini, volatility_index]</code></li>
+<li><strong>Target:</strong> <code>lambda_social_correction ∈ [0, 1]</code></li>
+<li><strong>Architecture:</strong> <code>CfCCell(input=5, hidden=32) → Linear(1) → Softplus</code></li>
+<li><strong>Training time:</strong> ~10 min (CPU)</li>
+<li><strong>Output:</strong> <code>models/cfc_calibrated/cfc_lambda_corrector.pt</code></li>
+<li><strong>Integration:</strong> Add <code>CfCRouter.correct_lambda(polarization_history, gini, volatility, dt)</code> method</li>
+</ul>
+<pre><code class="language-bash">python3 train_cfc_lambda.py
+</code></pre>
+<h3 id="pipeline-b-landscape-parameter-modulator">Pipeline B: Landscape Parameter Modulator</h3>
+<p><strong>Priority:</strong> 2 (modulates σ, attractor/repeller strengths from Gini + polarization)</p>
+<ul>
+<li><strong>Script:</strong> <code>train_cfc_landscape.py</code> (to be created)</li>
+<li><strong>Features (4):</strong> <code>[gini, polarization, socioeconomic_stratification, connectivity]</code></li>
+<li><strong>Target:</strong> <code>attractor_strength, repeller_strength, sigma_width</code> (3 outputs)</li>
+<li><strong>Architecture:</strong> <code>Nn.Sequential(4→32→Tanh→32→Softplus) → Linear(3)</code> (simpler MLP, landscape is static per timestep)</li>
+<li><strong>Output:</strong> <code>models/cfc_calibrated/cfc_landscape_modulator.pt</code></li>
+</ul>
+<h3 id="pipeline-c-temperature-modulator">Pipeline C: Temperature Modulator</h3>
+<p><strong>Priority:</strong> 3 (modulates T from volatility + polarization + regime)</p>
+<ul>
+<li><strong>Script:</strong> <code>train_cfc_temp.py</code> (to be created)</li>
+<li><strong>Features (17):</strong> <code>[op_volatility(1), pol_gradient(1), regime_onehot(13), t_norm(2)]</code></li>
+<li><strong>Target:</strong> <code>temperature_multiplier ∈ [0.5, 2.0]</code></li>
+<li><strong>Architecture:</strong> <code>CfCCell(input=17, hidden=64) → Linear(1) → Sigmoid*1.5+0.5</code></li>
+<li><strong>Output:</strong> <code>models/cfc_calibrated/cfc_temp_modulator.pt</code></li>
+</ul>
+<h3 id="execution-order">Execution Order</h3>
+<pre><code>1. python3 train_cfc_lambda.py     # ~10 min, highest impact
+2. python3 train_cfc_landscape.py  # ~5 min
+3. python3 train_cfc_temp.py       # ~15 min
+4. Add correct_* methods to cfc_router.py
+5. Integrate into energy_engine.step()
+</code></pre>
+<hr />
+<h2 id="6-verification-checklist">6. Verification Checklist</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Test Case</th>
+<th>Input</th>
+<th>Expected Output</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td>Metric Unity</td>
+<td>Same state → 5 engines</td>
+<td>Δpolarization &lt; 1e-6</td>
+<td>✅ 16/16 tests pass</td>
+</tr>
+<tr>
+<td>2</td>
+<td>CFC Model Load</td>
+<td>CfCRouter.get()</td>
+<td>residual_corrector=True</td>
+<td>✅ Fixed + tested</td>
+</tr>
+<tr>
+<td>3</td>
+<td>CFC Correction Direction</td>
+<td>sim=0.55, actual=0.52</td>
+<td>corrected &lt; 0.55</td>
+<td>✅ Fixed + tested</td>
+</tr>
+<tr>
+<td>4</td>
+<td>Gini Scaling</td>
+<td>Gini=0.8 vs Gini=0.1</td>
+<td>fuerza effect ~2x larger</td>
+<td>✅ Implemented + 7 tests pass</td>
+</tr>
+<tr>
+<td>5</td>
+<td>EWS Escape</td>
+<td>EWS=True, op=±0.95</td>
+<td>op moves toward 0 within 5 steps</td>
+<td>✅ Implemented + 5 tests pass</td>
+</tr>
+<tr>
+<td>6</td>
+<td>λ Learner</td>
+<td>10K trajectories</td>
+<td>val_loss &lt; 0.05, λ prediction MAE &lt; 0.1</td>
+<td>✅ <strong>COMPLETE</strong>: 50 epochs, train_loss 0.072→0.019, val_loss 0.048→0.019, best_val 0.019046</td>
+</tr>
+<tr>
+<td>7</td>
+<td>Cross-engine</td>
+<td>End-to-end run</td>
+<td>No errors, polarization consistent</td>
+<td>✅ 12 tests pass</td>
+</tr>
+<tr>
+<td>8</td>
+<td>Regression</td>
+<td>Full test suite</td>
+<td>All previously-passing tests still pass</td>
+<td>✅ 345 tests pass (1 pre-existing KMeans edge case)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="7-critical-bugs-found-fixed-during-verification">7. Critical Bugs Found &amp; Fixed (During Verification)</h2>
+<table>
+<thead>
+<tr>
+<th>Bug</th>
+<th>File</th>
+<th>Root Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Models dir mismatch</strong></td>
+<td><code>cfc_router.py:106</code></td>
+<td>Router looked in <code>models/</code> but trained model was in <code>models/cfc_calibrated/</code></td>
+<td>Added fallback path lookup</td>
+</tr>
+<tr>
+<td><strong>Architecture drift</strong></td>
+<td><code>cfc_engine.py:196</code></td>
+<td><code>u_encoder</code> wrapped in <code>nn.Sequential</code> after training (which used plain <code>nn.Linear</code>)</td>
+<td>Restored <code>nn.Linear</code> to match trained state_dict</td>
+</tr>
+<tr>
+<td><strong>Correction sign error</strong></td>
+<td><code>cfc_router.py:332</code></td>
+<td><code>corrected = sim + correction</code> moved AWAY from actual (should subtract)</td>
+<td>Changed to <code>corrected = sim - correction</code></td>
+</tr>
+<tr>
+<td><strong>Tensor creation warning</strong></td>
+<td><code>cfc_router.py:320</code></td>
+<td><code>torch.tensor([u])</code> with list of numpy arrays</td>
+<td>Used <code>torch.from_numpy(u).unsqueeze(0)</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="before-fix">Before Fix:</h3>
+<pre><code>Router status: {'residual_corrector': False}  ← trained model never loaded
+correct_residual: (0.55, 'passthrough')        ← no correction applied
+</code></pre>
+<h3 id="after-fix">After Fix:</h3>
+<pre><code>Router status: {'residual_corrector': True}   ← model loaded!
+correct_residual: (0.535, 'cfc')              ← corrects toward actual
+</code></pre>
+<hr />
+<h2 id="8-implementation-timeline">8. Implementation Timeline</h2>
+<pre><code>Week 1 — COMPLETE: Epics 1 (✅ Unified Registry), 2 (✅ Gini Bridge), 3 (✅ EWS Trigger)
+                   + Pipeline A training COMPLETE (50 epochs, val_loss 0.048→0.019)
+                   + 24 new tests created and passing (7 Gini + 5 EWS + 12 cross-engine)
+                   + 365 tests passing (1 pre-existing KMeans edge case)
+
+Week 2 — COMPLETE: Epics 4 (✅ LNN Integration), 5 (✅ EWS Wiring)
+                   + Pipeline B training COMPLETE (landscape modulator)
+                   + Pipeline C training COMPLETE (temperature modulator)
+                   + Router integration: lambda corrector + temperature modulator
+                   + Energy runner: EWS detection → temperature modulation
+                   + Brexit 2016 end-to-end calibration: 50% error reduction
+                   + 379 tests passing (1 pre-existing KMeans edge case)
+</code></pre>
+<h3 id="phase-2-lnn-integration-architecture">Phase 2 — LNN Integration Architecture</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Model</th>
+<th>Features (5)</th>
+<th>Output</th>
+<th>Integration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Pipeline A</strong></td>
+<td>CfCLambdaCorrector</td>
+<td>[pol, Δpol₁, Δpol₅, Gini, σ]</td>
+<td>λ ∈ [0,1]</td>
+<td><code>CfCRouter.propose_lambda()</code> → <code>energy_engine.propose_lambda()</code></td>
+</tr>
+<tr>
+<td><strong>Pipeline B</strong></td>
+<td>CfCLandscapeModulator</td>
+<td>[pol, Δpol₁, Δpol₅, Gini, σ]</td>
+<td>[σ_p, A_str, R_str, A_pos, R_pos]</td>
+<td>Saved to <code>models/cfc_calibrated/cfc_landscape.pt</code></td>
+</tr>
+<tr>
+<td><strong>Pipeline C</strong></td>
+<td>CfCTempModulator</td>
+<td>[pol, Δpol₁, Δpol₅, skew, Gini]</td>
+<td>T_mult ∈ [0.5, 2.0]</td>
+<td><code>SocialEnergyEngine._temp_model</code> → <code>step(ews_flags)</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Temperature model integration flow:</strong></p>
+<pre><code>EWS detection (simulator.py) → calculate_ews_metrics + check_ews_signals
+  → augment with numeric features (polarization, deltas, skewness, Gini)
+  → passing to energy_engine.step(ews_flags=full_feature_dict)
+  → step() checks if ews_flags has numeric features
+    → YES: use trained CfCTempModulator to learn multiplier
+    → NO: use rule-based fallback multipliers (1.5x, 1.3x, 1.2x, cap 2x)
+</code></pre>
+<h3 id="brexit-2016-end-to-end-calibration-results">Brexit 2016 End-to-End Calibration Results</h3>
+<pre><code>T0 polling: 41.0% Leave
+Actual result: 51.89% Leave
+
+Baseline simulation: 62.95% Leave → Error: 11.06 pp
+After CFC correction: 57.42% Leave → Error: 5.53 pp
+Improvement: 50.0%
+</code></pre>
+<p>Both models loaded: <code>residual_corrector=True</code>, <code>lambda_corrector=True</code>, <code>lambda_model</code> loaded in engine.</p>
+<h3 id="implementation-notes">Implementation Notes</h3>
+<p><strong>Polarization Semantics Clarification:</strong>
+- <code>calculate_polarization()</code> → URCC dispersion metric (std / half_range) — measures how SPREAD opinions are
+- <code>calculate_partisanship()</code> → mean |opinion - neutral| (normalized) — measures how FAR from center opinions sit
+- Engines (energy, multilayer, massive, micro) use <code>calculate_polarization</code> (dispersion)
+- Simulator's <code>resumen_historial</code> uses <code>calculate_partisanship</code> (partisanship) — preserves Social Architect scoring semantics
+- Both functions are in the shared <code>metrics.unified_metrics</code> module → single source of truth</p>
+<hr />
+<h2 id="9-files-changedcreated">9. Files Changed/Created</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Action</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>metrics/__init__.py</code></td>
+<td>Created</td>
+<td>Public API: 8 unified metric functions</td>
+</tr>
+<tr>
+<td><code>metrics/unified_metrics.py</code></td>
+<td>Created**</td>
+<td>URCC polarization + partisanship + cooperation + velocity + gradient</td>
+</tr>
+<tr>
+<td><code>tests/test_unified_metrics.py</code></td>
+<td>Created</td>
+<td>16 metric validation tests</td>
+</tr>
+<tr>
+<td><code>tests/test_gini_rule_bridge.py</code></td>
+<td>Created**</td>
+<td>7 Gini Rule Bridge tests</td>
+</tr>
+<tr>
+<td><code>tests/test_ews_temperature_trigger.py</code></td>
+<td>Created**</td>
+<td>5 EWS-to-Temperature tests</td>
+</tr>
+<tr>
+<td><code>tests/test_cross_engine_polarization.py</code></td>
+<td>Created**</td>
+<td>12 cross-engine consistency tests</td>
+</tr>
+<tr>
+<td><code>tests/test_cfc_lambda_integration.py</code></td>
+<td>Created**</td>
+<td>7 lambda corrector integration tests</td>
+</tr>
+<tr>
+<td><code>tests/test_brexit_calibration.py</code></td>
+<td>Created**</td>
+<td>7 end-to-end Brexit calibration tests</td>
+</tr>
+<tr>
+<td><code>train_cfc_lambda.py</code></td>
+<td>Created**</td>
+<td>Pipeline A: λ corrector training (50 epochs, val_loss 0.019)</td>
+</tr>
+<tr>
+<td><code>train_cfc_landscape.py</code></td>
+<td>Created**</td>
+<td>Pipeline B: landscape modulator training (20 epochs)</td>
+</tr>
+<tr>
+<td><code>train_cfc_temp.py</code></td>
+<td>Created**</td>
+<td>Pipeline C: temperature modulator training (20 epochs)</td>
+</tr>
+<tr>
+<td><code>brexit_calibration.py</code></td>
+<td>Created**</td>
+<td>End-to-end Brexit 2016 calibration script</td>
+</tr>
+<tr>
+<td><code>cfc_engine.py</code></td>
+<td>Fixed + Added 3 classes</td>
+<td>u_encoder fix + CfCLambdaCorrector + CfCTempModulator + CfCLandscapeModulator</td>
+</tr>
+<tr>
+<td><code>cfc_router.py</code></td>
+<td>Fixed (4 bugs) + Added</td>
+<td>Path/arch/sign fixes + lambda corrector loading + propose_lambda</td>
+</tr>
+<tr>
+<td><code>energy_engine.py</code></td>
+<td>Refactored**</td>
+<td>Unified metrics + EWS trigger + LNN model loading</td>
+</tr>
+<tr>
+<td><code>multilayer_engine.py</code></td>
+<td>Refactored**</td>
+<td>Uses calculate_polarization</td>
+</tr>
+<tr>
+<td><code>massive_engine.py</code></td>
+<td>Refactored**</td>
+<td>Uses calculate_polarization</td>
+</tr>
+<tr>
+<td><code>micro_engine.py</code></td>
+<td>Refactored**</td>
+<td>Uses calculate_polarization</td>
+</tr>
+<tr>
+<td><code>simulator.py</code></td>
+<td>Refactored**</td>
+<td>Partisanship + Gini bridge + EWS context in LLM prompt</td>
+</tr>
+<tr>
+<td><code>energy_runner.py</code></td>
+<td>Refactored**</td>
+<td>EWS detection + numeric feature routing to model</td>
+</tr>
+<tr>
+<td><code>brexit_calibration.py</code></td>
+<td>Created**</td>
+<td>End-to-end Brexit 2016 calibration script</td>
+</tr>
+<tr>
+<td><code>tests/test_cfc_landscape_integration.py</code></td>
+<td>Created**</td>
+<td>9 landscape modulator integration tests</td>
+</tr>
+<tr>
+<td><code>MASSIVE_REACTIVE_COHERENCE_PLAN.md</code></td>
+<td>Updated**</td>
+<td>This document — All phases complete</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="phase-4-production-infrastructure">Phase 4 — Production Infrastructure ✅</h2>
+<p>All production infrastructure is in place and verified:</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Status</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>backend/app/main.py</code></td>
+<td>✅ Complete</td>
+<td>FastAPI entrypoint with all <code>/v1/*</code> + <code>/api/v1/*</code> routes</td>
+</tr>
+<tr>
+<td><code>backend/app/routers/</code></td>
+<td>✅ Complete</td>
+<td>5 routers: sim, forecast, engine, benchmark, llm (+ architect endpoint in engine)</td>
+</tr>
+<tr>
+<td><code>backend/app/security.py</code></td>
+<td>✅ Complete</td>
+<td>API key auth + rate limiting</td>
+</tr>
+<tr>
+<td><code>backend/app/settings.py</code></td>
+<td>✅ Complete</td>
+<td>App settings</td>
+</tr>
+<tr>
+<td><code>Dockerfile</code></td>
+<td>✅ Complete</td>
+<td>3-stage: builder-py → builder-fe → runtime (nginx + supervisord)</td>
+</tr>
+<tr>
+<td><code>docker-compose.yml</code></td>
+<td>✅ Complete</td>
+<td>Ports 80 (nginx gateway), 8000 (direct API)</td>
+</tr>
+<tr>
+<td><code>install.sh</code></td>
+<td>✅ Complete</td>
+<td>Commands: install, install-dev, run, docker, test, benchmark</td>
+</tr>
+<tr>
+<td><code>pyproject.toml [project.scripts]</code></td>
+<td>✅ Complete</td>
+<td><code>massive-cli</code> entry point</td>
+</tr>
+<tr>
+<td><code>.github/workflows/</code></td>
+<td>✅ Complete</td>
+<td>12 workflows: lint, test, deploy, benchmark, etc.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Verified v1 API surface (OpenAPI):</strong></p>
+<pre><code>POST /v1/simulate  →  services.simulation_service.run_scalar_simulation
+POST /v1/forecast  →  services.forecast_service / forecast.engine
+POST /v1/engine/energy  →  energy_runner.run_energy_simulation
+POST /v1/engine/architect  →  social_architect.buscar_estrategia_inversa
+POST /v1/llm/run_simulation  →  services.llm_orchestrator.run_llm_simulation
+POST /v1/benchmarks  →  benchmarks.runner.main
+</code></pre>
+<h3 id="phase-51-v02-llm-contract">Phase 5.1 — v0.2 LLM Contract ✅</h3>
+<table>
+<thead>
+<tr>
+<th>Ítem</th>
+<th>Status</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/v1/llm/run_simulation</code></td>
+<td>✅ Complete</td>
+<td>Wrapper of <code>services.llm_orchestrator.run_llm_simulation</code></td>
+</tr>
+<tr>
+<td><code>/v1/llm/wizard</code></td>
+<td>✅ Complete</td>
+<td><code>services.llm_service.wizard_config</code> — NL → config</td>
+</tr>
+<tr>
+<td><code>/v1/llm/extract</code></td>
+<td>✅ Complete</td>
+<td><code>UILAdapter.from_document</code> with streaming size guard</td>
+</tr>
+<tr>
+<td>Deprecar <code>/api/extract</code>, <code>/api/wizard</code>, <code>/api/simulate-uil</code></td>
+<td>✅ Complete</td>
+<td><code>X-API-Warn</code> middleware on legacy routes</td>
+</tr>
+<tr>
+<td>OpenAPI v1 export</td>
+<td>✅ Complete</td>
+<td><code>GET /openapi/v1.json</code></td>
+</tr>
+<tr>
+<td>CLI completa</td>
+<td>✅ Complete</td>
+<td><code>simulate</code>, <code>scientific</code>, <code>forecast</code>, <code>benchmark</code>, <code>version</code>, <code>serve</code></td>
+</tr>
+<tr>
+<td><code>.env.example</code></td>
+<td>✅ Complete</td>
+<td><code>MASSIVE_LLM_TIMEOUT_SECONDS=120</code>, <code>MASSIVE_LLM_MAX_RETRIES=3</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>8 v1 API endpoints registered (OpenAPI confirmed):</strong></p>
+<pre><code>POST /v1/simulate  →  services.simulation_service.run_scalar_simulation
+POST /v1/forecast  →  services.forecast_service / forecast.engine
+POST /v1/engine/energy  →  energy_runner.run_energy_simulation
+POST /v1/engine/architect  →  social_architect.buscar_estrategia_inversa
+POST /v1/llm/run_simulation  →  services.llm_orchestrator.run_llm_simulation
+POST /v1/llm/wizard  →  services.llm_service.wizard_config
+POST /v1/llm/extract  →  UILAdapter.from_document (file upload)
+POST /v1/benchmarks  →  benchmarks.runner.main
+</code></pre>
+<h3 id="phase-53-observability-slos-security">Phase 5.3 — Observability, SLOs, Security ✅</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Status</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Prometheus <code>/metrics</code></td>
+<td>✅ Pre-existing</td>
+<td>Thread-safe counters with uptime</td>
+</tr>
+<tr>
+<td>SLO annotations</td>
+<td>✅ Added</td>
+<td>Error budget (0.05), P95 latency (2s/30s), Availability (0.999)</td>
+</tr>
+<tr>
+<td>Prometheus alert rules</td>
+<td>✅ Created</td>
+<td><code>monitoring/prometheus/alerts.yml</code> — 5 alert rules</td>
+</tr>
+<tr>
+<td>Grafana dashboard</td>
+<td>✅ Created</td>
+<td><code>monitoring/grafana/dashboard.json</code> — 6 panels</td>
+</tr>
+<tr>
+<td>Security audit script</td>
+<td>✅ Created</td>
+<td><code>scripts/security_audit.sh</code> — bandit + pip-audit</td>
+</tr>
+<tr>
+<td>Disaster recovery plan</td>
+<td>✅ Created</td>
+<td><code>docs/disaster_recovery_plan.md</code> — RTO/RPO + 4 recovery scenarios</td>
+</tr>
+</tbody>
+</table>
+<p><strong>SLOs enforced:</strong>
+- Error budget: &lt; 5% 5xx error rate (5-minute window)
+- P95 latency: &lt; 2s (simulations), &lt; 30s (LLM calls)
+- Availability: 99.9% (max ~8.77 min/month downtime)</p>
+<hr />
+<h2 id="final-test-results">Final Test Results</h2>
+<table>
+<thead>
+<tr>
+<th>Phase</th>
+<th>Tests Added</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Phase 1 (Metrics)</td>
+<td>16</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Phase 2 (LNN Pipelines)</td>
+<td>12</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Phase 3 (Landscape)</td>
+<td>9</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Phase 5.1 (API)</td>
+<td>0</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>Phase 6 (Bug Fixes)</strong></td>
+<td>0</td>
+<td>✅ 3 pre-existing failures fixed</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Final: 662 tests pass, 0 failures</strong></p>
+<h3 id="pre-existing-bugs-fixed-phase-6">Pre-existing Bugs Fixed (Phase 6)</h3>
+<table>
+<thead>
+<tr>
+<th>Bug</th>
+<th>Root Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>test_kmeans_tiny_sample_returns_zeros</code></td>
+<td>HDBSCAN labels all points <code>-1</code> (noise) for tiny samples; test expects <code>{0}</code></td>
+<td>Added all-noise normalization in <code>_cluster()</code>: <code>if n_noise == n_sims: return np.zeros(n_sims)</code></td>
+</tr>
+<tr>
+<td><code>test_energy_with_factbook_brasil</code></td>
+<td>Factbook BR returns <code>n_agents=100000</code>; dense adjacency O(n²) → 5000 cap</td>
+<td>Capped n_agents to 5000 in <code>_dispatch()</code> for energy_engine</td>
+</tr>
+<tr>
+<td><code>test_root_schemas_emits_deprecation</code></td>
+<td><code>schemas.py</code> has <code>from __future__ import annotations</code> after docstring (SyntaxError)</td>
+<td>Moved <code>from __future__</code> to line 1 (before docstring)</td>
+</tr>
+<tr>
+<td><code>test_micro_engine_coverage</code> KMeans</td>
+<td><code>set(labels.tolist()) == {0}</code> but HDBSCAN returns <code>{-1}</code></td>
+<td>Fixed by noise normalization above</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="sign-off-complete">Sign-Off — Complete ✅</h2>
+<h3 id="validation-summary">Validation Summary</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Status</th>
+<th>Verification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unified Polarization Registry</td>
+<td>✅ Complete</td>
+<td>16 tests pass</td>
+</tr>
+<tr>
+<td>Gini-Rule Bridge</td>
+<td>✅ Complete</td>
+<td>7 tests pass</td>
+</tr>
+<tr>
+<td>EWS-to-Temperature Trigger</td>
+<td>✅ Complete</td>
+<td>5 tests pass</td>
+</tr>
+<tr>
+<td>CFC Residual Corrector</td>
+<td>✅ Complete</td>
+<td>7 tests pass, 50 epochs (val 0.019)</td>
+</tr>
+<tr>
+<td>CFC Lambda Corrector</td>
+<td>✅ Complete</td>
+<td>Router + engine integration</td>
+</tr>
+<tr>
+<td>CFC Landscape Modulator</td>
+<td>✅ Complete</td>
+<td>20 epochs (val 0.007), 9 tests</td>
+</tr>
+<tr>
+<td>CFC Temperature Modulator</td>
+<td>✅ Complete</td>
+<td>20 epochs (val 0.015)</td>
+</tr>
+<tr>
+<td>Brexit 2016 Calibration</td>
+<td>✅ Complete</td>
+<td>50% error reduction, 7 tests</td>
+</tr>
+<tr>
+<td>API v1 Migration</td>
+<td>✅ Complete</td>
+<td>8 endpoints registered</td>
+</tr>
+<tr>
+<td>Docker + CI/CD</td>
+<td>✅ Complete</td>
+<td>3-stage Dockerfile, 12 workflows</td>
+</tr>
+<tr>
+<td>Observability + Security</td>
+<td>✅ Complete</td>
+<td>SLOs, alerts, DR plan, audit script</td>
+</tr>
+<tr>
+<td>Bug Fixes</td>
+<td>✅ Complete</td>
+<td>3 pre-existing failures fixed</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Test Results: 662 passed, 0 failed</strong></p>
+<p><strong>Trained Models:</strong>
+| Model | Pipeline | Epochs | Val Loss | Artifact |
+|---|---|---|---|---|
+| <code>cfc_lambda_corrector.pt</code> | A | 50 | 0.019 | <code>models/cfc_calibrated/</code> |
+| <code>cfc_temperature.pt</code> | C | 20 | 0.015 | <code>models/cfc_calibrated/</code> |
+| <code>cfc_landscape.pt</code> | B | 20 | 0.007 | <code>models/cfc_calibrated/</code> |</p>
+<h3 id="validation-summary_1">Validation Summary</h3>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>Status</th>
+<th>Verification</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Unified Polarization Registry</td>
+<td>✅ Complete</td>
+<td>16 tests pass, 5 engines refactored</td>
+</tr>
+<tr>
+<td>Gini-Rule Bridge</td>
+<td>✅ Complete</td>
+<td>7 tests pass, simulator integration</td>
+</tr>
+<tr>
+<td>EWS-to-Temperature Trigger</td>
+<td>✅ Complete</td>
+<td>5 tests pass, 3 trained models loaded</td>
+</tr>
+<tr>
+<td>CFC Residual Corrector</td>
+<td>✅ Complete</td>
+<td>7 integration tests, 50 epochs trained (val 0.019)</td>
+</tr>
+<tr>
+<td>CFC Lambda Corrector</td>
+<td>✅ Complete</td>
+<td>Router + engine integration verified</td>
+</tr>
+<tr>
+<td>CFC Landscape Modulator</td>
+<td>✅ Complete</td>
+<td>20 epochs trained (val 0.007)</td>
+</tr>
+<tr>
+<td>CFC Temperature Modulator</td>
+<td>✅ Complete</td>
+<td>20 epochs trained (val 0.015)</td>
+</tr>
+<tr>
+<td>Brexit 2016 Calibration</td>
+<td>✅ Complete</td>
+<td>50% error reduction, 7 tests pass</td>
+</tr>
+<tr>
+<td>API v1 Migration</td>
+<td>✅ Complete</td>
+<td>8 endpoints registered</td>
+</tr>
+<tr>
+<td>Frontend v1 Migration</td>
+<td>✅ Complete</td>
+<td>api.ts → /v1/*, vite.config proxy</td>
+</tr>
+<tr>
+<td>Histogram Metrics</td>
+<td>✅ Complete</td>
+<td>http_request_duration_seconds</td>
+</tr>
+<tr>
+<td>Response Code Counter</td>
+<td>✅ Complete</td>
+<td>http_responses_total{status_code}</td>
+</tr>
+<tr>
+<td>W3C TraceContext</td>
+<td>✅ Complete</td>
+<td>traceparent header propagation</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Test Results: 662 passed, 0 failed</strong></p>
+<p><strong>Trained Models:</strong>
+| Model | Pipeline | Epochs | Val Loss | Artifact |
+|---|---|---|---|---|
+| <code>cfc_lambda_corrector.pt</code> | A | 50 | 0.019 | <code>models/cfc_calibrated/</code> |
+| <code>cfc_temperature.pt</code> | C | 20 | 0.015 | <code>models/cfc_calibrated/</code> |
+| <code>cfc_landscape.pt</code> | B | 20 | 0.007 | <code>models/cfc_calibrated/</code> |</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.expand", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

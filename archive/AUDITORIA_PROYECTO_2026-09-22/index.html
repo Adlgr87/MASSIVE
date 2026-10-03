@@ -1,0 +1,2117 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="MASSIVE — Hybrid social dynamics simulator. Numerical core + LLM as regime selector.">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Auditoría integral del proyecto MASSIVE — 2026-09-22 - MASSIVE Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#auditoria-integral-del-proyecto-massive-2026-09-22" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="MASSIVE Documentation" class="md-header__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MASSIVE Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Auditoría integral del proyecto MASSIVE — 2026-09-22
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="MASSIVE Documentation" class="md-nav__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    MASSIVE Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../factbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Factbook Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM Interface
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    LLM Interface
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../MASSIVE_LLM_INTERFACE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface spec
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LLM_PROMPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompt templates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Readiness
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Production Readiness
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../production-readiness-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Audit & Risk Matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/current-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (current)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/target-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (target)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/PRODUCTION_ARCHITECTURE_SPEC/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Architecture Spec
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/safety_protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_7" id="__nav_5_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runbooks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Runbooks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/local-development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/incidents/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Incidents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/threat-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/secrets-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secrets & Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OBSERVABILITY_AND_SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability & Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backup_restore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup & Restore
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../disaster_recovery_plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disaster Recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DOCKER/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ENV_VARS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Environment Variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NAMING_CONVENTIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NAMING_CONVENTIONS.md
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation (PVU-BS)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Validation (PVU-BS)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/PVU_MASSIVE_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/PVU_MASSIVE_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocolo (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/preregistration_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registration (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/preregistration_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registro (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/validation_report_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report template (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/validation_report_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plantilla de reporte (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cards/BENCHMARK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Card
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cards/REPRODUCIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reproducibility Card
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Testing
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../testing/test-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Test Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../performance/baseline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Baseline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../performance_report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#estado-de-implementacion-actualizado-al-cierre" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚡ ESTADO DE IMPLEMENTACIÓN (actualizado al cierre)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#a-defectos-funcionales-criticos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A. DEFECTOS FUNCIONALES (críticos)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#b-estructura-duplicacion-areas-no-funcionales-basura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B. ESTRUCTURA: duplicación, áreas no funcionales, basura
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="B. ESTRUCTURA: duplicación, áreas no funcionales, basura">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#b-1-duplicacion-mayor-tres-backends-dos-frontends-dos-kits-ui" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B-1. Duplicación mayor (tres backends, dos frontends, dos kits UI)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b-2-documentacion-artefacto-trabajo-de-agentes-no-documentacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B-2. Documentación-artefacto (trabajo de agentes, no documentación)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b-3-reports-con-artefactos-de-runtime-y-de-agentes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B-3. reports/ con artefactos de runtime y de agentes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b-4-ciinfra-irrelevante-o-rota" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B-4. CI/infra irrelevante o rota
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b-5-menciones-excesivas-de-agentes-de-ia-1095-coincidencias-en-md" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B-5. Menciones excesivas de agentes de IA (~1.095 coincidencias en .md)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b-6-varios-menores" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B-6. Varios menores
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#c-lo-que-si-esta-bien-no-tocar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C. Lo que SÍ está bien (no tocar)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#plan-de-implementacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PLAN DE IMPLEMENTACIÓN
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PLAN DE IMPLEMENTACIÓN">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ola-1-bugs-funcionales-y-de-logica-sin-romper-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ola 1 — Bugs funcionales y de lógica (sin romper API)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ola-2-limpieza-de-duplicacion-y-basura-segun-respuestas-del-usuario" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ola 2 — Limpieza de duplicación y basura (según respuestas del usuario)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ola-3-reduccion-de-menciones-de-agentes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ola 3 — Reducción de menciones de agentes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ola-4-docs-profesionales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ola 4 — Docs profesionales
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ola-5-optimizacion-y-verificacion-final" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ola 5 — Optimización y verificación final
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="auditoria-integral-del-proyecto-massive-2026-09-22">Auditoría integral del proyecto MASSIVE — 2026-09-22</h1>
+<blockquote>
+<p>Informe puntual generado por el agente de Arena.ai (rama <code>arena/01a0c972-massive</code>).
+Estado del repo analizado: commit <code>9428a89</code> (main). 568 archivos, 251 Python, 117 Markdown.
+Tests al momento del análisis: 679 pasan / 0 fallan (pero hay código roto no cubierto, ver A-1).</p>
+</blockquote>
+<hr />
+<h2 id="estado-de-implementacion-actualizado-al-cierre">⚡ ESTADO DE IMPLEMENTACIÓN (actualizado al cierre)</h2>
+<p><strong>Todas las olas ejecutadas.</strong> Resultado final:</p>
+<ul>
+<li><strong>Tests: 694 pasan / 0 fallan</strong> (679 originales + 15 nuevos de invariantes de correlación).</li>
+<li><strong>Respaldo:</strong> tag <code>pre-cleanup-2026-09-22</code> (push a origin) con el estado previo a la limpieza.</li>
+<li><strong>Ola 1 (bugs):</strong> A-1…A-13 ✅ — CLI reparado, polarización bipolar corregida (0.8→0.4),
+  Gini→ingreso monótono con media 0.5, factibilidad fiscal en dirección correcta
+  (déficit→0.30, equilibrado→0.50, superávit→0.70), Gini→σ implementado y anclado,
+  <code>social_pressure_weights</code> conectado al acoplamiento (0.8×–1.2×), docstrings de θ
+  veraces, escala <code>income_scale</code> unificada, <code>propose_landscape</code> con contrato válido,
+  doble muestreo de ruido eliminado, <code>.env.example</code> y README limpios, torch-guard en
+  <code>cfc_engine</code>. Nueva suite <code>tests/test_correlation_invariants.py</code> bloquea direcciones
+  y magnitudes.</li>
+<li><strong>Ola 2 (duplicados/basura):</strong> ✅ — <code>massive-ui-ng/</code> eliminado (tag de respaldo),
+  workflows Azure + HF borrados (11 workflows), 5 stubs raíz eliminados con 12 imports
+  migrados a <code>massive.core.*</code>, <code>py_modules</code> del pyproject corregido (listaba 3 módulos
+  inexistentes), demo JSX huérfana (825 líneas) eliminada, <code>reports/</code> reducido a
+  <code>audit_baseline.json</code> + dir de runtime, 27 archivos de artefactos borrados y 46
+  archivados en <code>docs/archive/</code>.</li>
+<li><strong>Ola 3 (agentes):</strong> ✅ — de ~1.095 coincidencias a 79 funcionales (cliente LLM del
+  producto, seguridad, ubicación canónica). <code>CLAUDE.md</code> eliminado, <code>Autor: MASSIVE
+  Research</code> eliminado de 16 archivos, CODEOWNERS y PULL_REQUEST_TEMPLATE sin
+  referencias a agentes, narrativa de audit neutralizada, <code>.github/agents/</code> con README
+  como única ubicación canónica (decisión del owner).</li>
+<li><strong>Ola 4 (docs):</strong> ✅ — 44 .md activos (antes 117), <code>docs/factbook.md</code> consolidado,
+  <code>mkdocs.yml</code> solo con docs de usuario, <code>current-state.md</code> reverificado 2026-09-22
+  (afirmaciones caducas corregidas), <code>check_docs_refs.py</code> verde.</li>
+<li><strong>Ola 5 (verificación):</strong> ✅ — pytest 694/0, ruff + black limpios, CLI smoke OK,
+  API en vivo OK (<code>/health</code>, <code>/ready</code>, <code>/v1/simulate</code>, <code>/v1/llm/run_simulation</code> con
+  detección de país → Brasil: gini 0.534, presión social derivada, motor energy_engine).</li>
+</ul>
+<p>Este archivo es el registro del trabajo; puede borrarse o moverse a <code>docs/archive/</code>
+una vez revisado.</p>
+<hr />
+<h2 id="a-defectos-funcionales-criticos">A. DEFECTOS FUNCIONALES (críticos)</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Severidad</th>
+<th>Hallazgo</th>
+<th>Evidencia</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>A-1</td>
+<td>🔴 CRÍTICO</td>
+<td><strong>CLI roto</strong>: <code>massive/cli/main.py</code> tiene un marcador de conflicto de merge huérfano (<code>&lt;&lt;&lt;&lt;&lt;&lt;&lt; HEAD</code> en línea 20) + línea <code>log = logging.getLogger(__name__)</code> duplicada. <code>python -m massive.cli</code> ni siquiera compila. Ningún test lo cubre.</td>
+<td><code>python -m compileall</code> falla; SyntaxError línea 20</td>
+</tr>
+<tr>
+<td>A-2</td>
+<td>🔴 CRÍTICO</td>
+<td><strong>Polarización duplicada en rango bipolar</strong> (motor escalar, path por defecto de <code>/v1/simulate</code>): <code>resumen_historial()</code> pasa la etiqueta humana <code>"[-1, 1] — Bipolar"</code> como <code>range_type</code> a <code>calculate_partisanship()</code>, que solo reconoce la cadena literal <code>"bipolar"</code> → cae en la rama unipolar (half_range 0.5 en vez de 1.0). <strong>Reproducido: opiniones [0.2,0.4,0.6] bipolares reportan 0.80 en vez de 0.40 (2× el valor real).</strong> Afecta <code>summary.polarizacion_media</code> de la API, CLI y services.</td>
+<td>Repro ejecutado: bipolar → 0.8 (esperado 0.4)</td>
+</tr>
+<tr>
+<td>A-3</td>
+<td>🔴 CRÍTICO</td>
+<td><strong>Correlación Gini→ingreso invertida/no monótona</strong> en <code>massive_engine.initialize_agents()</code>: <code>income ~ Beta(2(1-g), 2g)</code> ⇒ media del ingreso = <code>1-gini</code> (¡más Gini = país entero más pobre, el Gini no dice nada del nivel de ingreso!) y la <strong>dispersión</strong> (lo que el comentario dice querer) es no-monótona: máxima en g=0.5 y con g=0 (igualdad perfecta) sigue habiendo σ≈0.22 de dispersión de ingreso. Con g→1 la dispersión además <em>baja</em>.</td>
+<td><code>massive_engine.py:180-182</code>; Beta(a,b) con a+b=2</td>
+</tr>
+<tr>
+<td>A-4</td>
+<td>🔴 CRÍTICO</td>
+<td><strong>Correlación fiscal invertida</strong>: <code>fiscal_constraint</code> se deriva como <code>1 − (signo_superávit)·0.1</code> ⇒ <strong>déficit → 1.0 (máxima "feasibility"), superávit → 0.9, presupuesto equilibrado → 0.5</strong>. Se usa como presupuesto de intervención (<code>max_density = feasibility/scale</code>): un país en déficit recibe el MAYOR presupuesto de intervención y se reporta como el más sano (<code>fiscal_health</code>). Dirección exactamente opuesta a la real.</td>
+<td><code>massive/core/factbook/context.py::_derive_massive_params</code>; <code>intervention_optimizer.py:122-130</code></td>
+</tr>
+<tr>
+<td>A-5</td>
+<td>🟠 ALTO</td>
+<td><strong>Gini declarado pero sin efecto real en EnergyEngine</strong>: comentarios contradictorios — <code>create_gini_adjusted_landscape()</code> dice "Gini's effect is wired in step() (σ↓)"; <code>step()</code> dice "handled via propose_lambda() y EWS". <strong>Ninguno de los dos es cierto</strong>: <code>step()</code> no usa gini, y <code>propose_lambda()</code> es camino muerto porque los modelos <code>cfc_temperature.pt</code> / <code>cfc_lambda_corrector.pt</code> / <code>cfc_landscape.pt</code> <strong>no existen</strong> en <code>models/cfc_calibrated/</code> (solo existe <code>cfc_residual.pt</code>). El único efecto real de gini en energía es vía <code>inequality_factor → lambda_social</code>.</td>
+<td><code>energy_engine.py:139-144, 385-390, 455-460</code>; ls models/</td>
+</tr>
+<tr>
+<td>A-6</td>
+<td>🟠 ALTO</td>
+<td><strong><code>social_pressure_weights</code> = correlación muerta</strong>: se deriva (diversidad → presión social: <code>1 − diversidad</code>), se guarda, se pasa a <code>MassiveEngine.from_factbook</code>… y <strong>ninguna dinámica la consume</strong>. Cable sin conectar.</td>
+<td>grep: solo asignación en context.py:118 y config en massive_engine.py:168</td>
+</tr>
+<tr>
+<td>A-7</td>
+<td>🟠 ALTO</td>
+<td><strong><code>theta</code> sociodemográfico solo modula ruido</strong>: docstrings de <code>compute_theta()</code> afirman que religion/educación/edad escalan "el ruido <strong>y la sensibilidad</strong>" (educación→cooperación, edad→autoridad, etc.), pero en la dinámica (<code>multilayer_langevin_step</code>) theta <strong>solo multiplica el término estocástico</strong>. Efectos de nivel anunciados (educación↑ → cooperación↑) no existen en las ecuaciones; lo único implementado es volatilidad. Documentación de física ≠ física.</td>
+<td><code>multilayer_engine.py:230-262 vs 411-470</code></td>
+</tr>
+<tr>
+<td>A-8</td>
+<td>🟡 MEDIO</td>
+<td><strong>Inconsistencia de escala del mismo concepto</strong>: <code>income_scale = log1p(ingreso)/10</code> en <code>create_wealth_potential()</code> pero <code>/15</code> en <code>create_economic_landscape()</code>. Además defaults contradictorios: atractor <code>1.35</code> en el motor vs <code>1+2·polarización</code> (=1.7 para gini 35) en el mapeo.</td>
+<td><code>mappings.py:511</code> vs <code>energy_engine.py:527</code></td>
+</tr>
+<tr>
+<td>A-9</td>
+<td>🟡 MEDIO</td>
+<td><strong><code>propose_landscape()</code> viola su contrato</strong>: docstring dice "Falls back to original values" pero retorna <code>None</code> cuando no hay modelo (siempre). Callers deben manejar <code>None</code> no documentado.</td>
+<td><code>energy_engine.py:262-266</code></td>
+</tr>
+<tr>
+<td>A-10</td>
+<td>🟡 MEDIO</td>
+<td><strong>Doble muestreo de ruido en <code>energy_engine.step()</code></strong>: en el path del stepper se muestrea <code>noise</code> (línea ~375) y se descarta; luego se muestrea <code>step_noise</code>. RNG consumido innecesariamente y streams divergentes entre paths.</td>
+<td><code>energy_engine.py:374-432</code></td>
+</tr>
+<tr>
+<td>A-11</td>
+<td>🟡 MEDIO</td>
+<td><strong><code>.env.example</code> contiene artefacto de parche</strong>: sección "Missing Environment Variables (Added 2026-09-14)" — comentario de agente que documenta su propio parche, no al usuario.</td>
+<td><code>.env.example</code> líneas 40+</td>
+</tr>
+<tr>
+<td>A-12</td>
+<td>🟡 MEDIO</td>
+<td><strong>README con tautología imposible</strong>: "MASSIVE was previously developed as <strong>MASSIVE</strong> (archived in git history). Renamed 2026-06-29." El historial fue squashed a 1 commit; además MASSIVE→MASSIVE no es un renombramiento. Resto del proyecto dice que se renombró desde otro nombre (huellas: <code>.aionrs/</code> en .gitignore, "AionRS session data").</td>
+<td>README.md pie; .gitignore</td>
+</tr>
+<tr>
+<td>A-13</td>
+<td>🟡 MEDIO</td>
+<td><code>cfc_engine.py</code> importa <code>torch</code> de forma dura (sin el fallback que la auditoría anterior D1-002 ya señalaba); funciona aquí solo porque torch está instalado. El README afirma "torch optional / every optional layer has a deterministic fallback" — <strong>falso para cfc_engine</strong> (los guards de simulator/cfc_router contienen el fallo, pero <code>import cfc_engine</code> directo falla sin torch).</td>
+<td><code>cfc_engine.py:17</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="b-estructura-duplicacion-areas-no-funcionales-basura">B. ESTRUCTURA: duplicación, áreas no funcionales, basura</h2>
+<h3 id="b-1-duplicacion-mayor-tres-backends-dos-frontends-dos-kits-ui">B-1. Duplicación mayor (tres backends, dos frontends, dos kits UI)</h3>
+<table>
+<thead>
+<tr>
+<th>Ítem</th>
+<th>Detalle</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>massive-ui-ng/</code></td>
+<td>Kit completo duplicado: <strong>backend FastAPI propio</strong> (security.py, settings.py, metrics.py, rate_limit.py, narrative.py, 15 archivos), <strong>frontend React propio</strong>, <code>infra/</code> con su <strong>propio <code>.github/workflows</code></strong> anidado (raro y confuso), Dockerfile propio, tests propios, y 4 docs de proceso (AGENTS.md, WORKFLOW.md, EXAMPLES.md, MANIFEST.txt). No está en el CI raíz (README lo admite: "ARCH-02"). El CHANGELOG ya borró sus módulos huérfanos del backend raíz (PR #84) — el kit entero es el residuo.</td>
+</tr>
+<tr>
+<td><code>frontend/src/MASSIVE_UIL_demo.jsx</code></td>
+<td><strong>Copia byte-idéntica de 825 líneas</strong> duplicada también en <code>massive-ui-ng/frontend/src/</code>. Demo legacy "UIL" en ambos.</td>
+</tr>
+<tr>
+<td><code>backend/app/</code> vs <code>massive-ui-ng/backend/app/</code></td>
+<td>security.py / settings.py / metrics.py divergen (fork sin sincronizar). Namespace <code>backend</code> colisiona (auditoría previa D3-003, sin resolver).</td>
+</tr>
+<tr>
+<td><code>api.py</code> (legacy /api) vs <code>backend/app/</code> (canónico /v1)</td>
+<td>Superficies solapadas — esto sí está documentado como compatibilidad intencional, pero conviene congelarlo con fecha de expiración.</td>
+</tr>
+<tr>
+<td>Stubs raíz deprecados</td>
+<td><code>empirical_calibration.py</code>, <code>empirical_config.py</code>, <code>llm_credentials.py</code>, <code>schemas.py</code>, <code>state_compression.py</code> en raíz = re-exports de <code>massive/core/*</code> (5 archivos que solo existen por 12 imports legacy que se pueden actualizar).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="b-2-documentacion-artefacto-trabajo-de-agentes-no-documentacion">B-2. Documentación-artefacto (trabajo de agentes, no documentación)</h3>
+<p><code>docs/</code> tiene 117 .md (≈28.800 líneas). Gran parte NO es documentación de usuario sino bitácoras de agentes:</p>
+<table>
+<thead>
+<tr>
+<th>Archivo/carpeta</th>
+<th>Qué es</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>docs/AUDIT_FINDINGS_TRACKER.md</code> (27 KB)</td>
+<td>Tracker de 148 hallazgos de una auditoría anterior, mayormente "PENDIENTE"</td>
+</tr>
+<tr>
+<td><code>docs/architecture/AUDIT_REPORT_2026-09-15.md</code></td>
+<td>Reporte de auditoría puntual con 29 menciones de agentes</td>
+</tr>
+<tr>
+<td><code>docs/architecture/</code> (22 archivos)</td>
+<td>Incluye process-artifacts: <code>checkpoint_status.md</code>, <code>compatibility_map.md</code>, <code>consolidation_plan/vision/workflow.md</code> (3 sobre lo mismo), <code>domain_ownership.md</code>, <code>first_execution_slices.md</code>, <code>module_inventory.md</code>, <code>MASSIVE_PRODUCTION_SIGNOFF.md</code>, <code>MASSIVE_SYSTEM_MAP.md</code> (obsoleto vs current-state.md), <code>backward_compatibility_aliases.md</code>…</td>
+</tr>
+<tr>
+<td><code>docs/FACTBOOK_{SUMMARY,QUICKSTART,INTEGRATION_PLAN,INTEGRATION_COMPLETE}.md</code></td>
+<td>4 documentos del mismo feature (plan + "complete" + resumen + quickstart)</td>
+</tr>
+<tr>
+<td><code>docs/OPTIMIZATION_STATUS.md</code>, <code>docs/REMEDIATION_STATUS.md</code>, <code>docs/BACKLOG_POST_WORKFLOW.md</code></td>
+<td>Status de olas de trabajo internas (FASE 1-5, PRs #68-73+)</td>
+</tr>
+<tr>
+<td><code>docs/archive/</code></td>
+<td>Ya archived: <code>Audit_MASSIVE.patch</code> (¡un .patch!), REPORT_*.md (5), repomix-instruction.md</td>
+</tr>
+<tr>
+<td><code>docs/experiments/</code></td>
+<td>Carpetas numeradas 00-11 (falta 07, 09, 10 — numeración con huecos), con JSONs de resultados, <code>audit_report.md</code>, <code>TEST_SUMMARY.md</code></td>
+</tr>
+<tr>
+<td><code>docs/research/progress.md</code></td>
+<td>"operator map" con PRs internos</td>
+</tr>
+<tr>
+<td><code>docs/development_history/micro_massive_workflow_2026-05-17.md</code></td>
+<td>Historial de trabajo</td>
+</tr>
+<tr>
+<td><code>docs/MASSIVE_mockup.png</code> (698 KB) + <code>docs/massive_ui_mockup.png</code> (141 KB)</td>
+<td>Mockups sueltos en docs/</td>
+</tr>
+<tr>
+<td><code>docs/repomix.config.json</code> + <code>.repomixignore</code></td>
+<td>Config de herramienta de empaque para LLMs</td>
+</tr>
+<tr>
+<td><code>mkdocs.yml</code> nav</td>
+<td>Publica en el sitio la basura: AUDIT_FINDINGS_TRACKER, FACTBOOK_INTEGRATION_PLAN, etc.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="b-3-reports-con-artefactos-de-runtime-y-de-agentes">B-3. <code>reports/</code> con artefactos de runtime y de agentes</h3>
+<ul>
+<li><code>investigador_de_tendencias.md</code> — output de un agente "investigador de tendencias" (fuentes con enlaces <code>file:///tmp/MASSIVE/...</code> rotos)</li>
+<li><code>phase2_synthesis.md</code> — "Equipo de Agentes (4 paralelos)" con modelos <code>gemma4:31b-cloud</code> nombrados</li>
+<li><code>phase4_qa_validation.md</code>, <code>production_readiness_check.md</code> — checks puntuales</li>
+<li><code>factbook_validation_US_2026-{06-26,08-13,08-16,08-17}.json</code> — 4 versiones del mismo dump</li>
+<li><code>enkf_pilot*/</code>, <code>cluster_run/</code>, <code>sota_baselines/</code>, <code>validation/ci-test/</code> — outputs de runs</li>
+<li><code>.gitignore</code> ya dice <code>reports/**/*.json</code> pero estos están force-trackeados o son .md</li>
+</ul>
+<h3 id="b-4-ciinfra-irrelevante-o-rota">B-4. CI/infra irrelevante o rota</h3>
+<table>
+<thead>
+<tr>
+<th>Ítem</th>
+<th>Problema</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>.github/workflows/main_massive.yml</code></td>
+<td>Workflow <strong>de plantilla Azure</strong> con finales de línea CRLF (<code>\r</code>), deploy a Azure Web App en cada push a main. No hay configuración Azure en el repo (sin startup file, sin .azure). Deploy que no puede funcionar + nombre default.</td>
+</tr>
+<tr>
+<td><code>.github/workflows/deploy_hf_spaces.yml</code></td>
+<td>Push espejo a HuggingFace Spaces — requiere secret <code>HF_TOKEN</code>; ¿se usa?</td>
+</tr>
+<tr>
+<td>13 workflows</td>
+<td>El README presume "13 CI workflows per PR"; hay superposición (pytest vs main vs pvu vs benchmark)</td>
+</tr>
+<tr>
+<td><code>massive-ui-ng/infra/.github/workflows/</code></td>
+<td><strong>workflows anidados dentro de un subdirectorio</strong> — GitHub no los ejecuta pero confunde (además de duplicar CI).</td>
+</tr>
+<tr>
+<td><code>docs/examples/Dockerfile.optimized</code> + <code>docker-compose.single.yml</code> + nginx/supervisord</td>
+<td>Variante legacy archivada "bajo docs/examples" — configs de Docker dentro de docs/ es antipatrón.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="b-5-menciones-excesivas-de-agentes-de-ia-1095-coincidencias-en-md">B-5. Menciones excesivas de agentes de IA (~1.095 coincidencias en .md)</h3>
+<ul>
+<li><code>CLAUDE.md</code> en raíz (guías de comportamiento LLM genéricas, mezcladas con instrucciones de proyecto)</li>
+<li><code>.github/agents/massive-data-architect.agent.md</code> + <code>repo-surgeon.agent.md</code> (definiciones de agentes autónomos, una de ellas un "agente cirujano" que audita todo el repo)</li>
+<li><code>massive-ui-ng/AGENTS.md</code> + WORKFLOW.md + EXAMPLES.md (más menciones de agentes)</li>
+<li>CODEOWNERS referencia "AGENTS.md — agente Foundation" (archivo que no existe en raíz)</li>
+<li>Docs tachados de nombres de agentes: "agente Foundation", "Investigador", "Arquitecto", "Devil's Advocate", equipos de 4 agentes paralelos, "repo-surgeon", etc.</li>
+<li>Cabeceras tipo <code>Autor: MASSIVE Research</code> en cada engine + menciones en comentarios de código</li>
+</ul>
+<h3 id="b-6-varios-menores">B-6. Varios menores</h3>
+<ul>
+<li><code>metrics/</code>, <code>adapters/mutalambda/</code>, <code>micro_massive/</code> — paquetes con un solo consumidor cada uno (correctos pero dispersos; pyproject ya los empaqueta, OK).</li>
+<li><code>docs/NAMING_CONVENTIONS.md</code> (1.2 KB) existe pero el código mezcla español/inglés (auditoría previa D2-014).</li>
+<li>Numeración de carpetas de experiments con huecos (00-06, 08, 11).</li>
+<li><code>uv.lock</code> (1.2 MB) trackeado junto a <code>requirements.txt</code> y <code>pyproject.toml</code> — 3 mecanismos de lock.</li>
+<li><code>benchmark_scalability.py</code> (35 KB) y <code>brexit_calibration.py</code> (9 KB) en raíz — scripts, no módulos de librería.</li>
+</ul>
+<h2 id="c-lo-que-si-esta-bien-no-tocar">C. Lo que SÍ está bien (no tocar)</h2>
+<ul>
+<li>679 tests verdes en ~42 s; suite de reproducibilidad y caracterización.</li>
+<li><code>metrics/unified_metrics.py</code> — unificación URCC de polarización bien documentada y testeada.</li>
+<li>Arquitectura de engines + services + backend canónico; separación legacy documentada.</li>
+<li>EnKF, PVU benchmark, contract LLM v1.1.0, security fail-closed, Docker multi-stage no-root.</li>
+<li>Correlación Gini→regla_polarizacion del motor escalar: implementada, lineal y testeada (test_gini_rule_bridge).</li>
+</ul>
+<hr />
+<h2 id="plan-de-implementacion">PLAN DE IMPLEMENTACIÓN</h2>
+<h3 id="ola-1-bugs-funcionales-y-de-logica-sin-romper-api">Ola 1 — Bugs funcionales y de lógica (sin romper API)</h3>
+<ol>
+<li><strong>A-1</strong>: Reparar <code>massive/cli/main.py</code> (quitar marcador de conflicto y línea duplicada) + smoke test del CLI.</li>
+<li><strong>A-2</strong>: <code>resumen_historial()</code> → derivar <code>range_type</code> con <code>_es_bipolar(cfg)</code>; test de caracterización bipolar/unipolar (0.4 y 0.333).</li>
+<li><strong>A-3</strong>: <code>initialize_agents()</code> — ingreso ~ Beta simétrica con dispersión monótona en Gini y media desacoplada (media fija 0.5 o anclada a GDP si viene del factbook); test: Gini 0.6 → dispersión &gt; Gini 0.3 → dispersión &gt; Gini 0.1; media estable.</li>
+<li><strong>A-4</strong>: <code>fiscal_constraint</code> → factibilidad fiscal monótona: <code>clip(0.5 + 2.0·(superávit/revenues), 0, 1)</code> (déficit&lt;0 → &lt;0.5; superávit → &gt;0.5); tests de dirección con déficit/superávit.</li>
+<li><strong>A-5</strong>: conciliar comentarios/código: implementar el efecto Gini→σ del paisaje en <code>step()</code> (σ = σ₀·(1−0.5·gini)) o eliminar la promesa; conectar <code>propose_lambda</code>/modelos CfC faltantes → eliminar caminos muertos y dejar docstrings honestos.</li>
+<li><strong>A-6</strong>: conectar <code>social_pressure_weights</code> en <code>MassiveEngine</code> (modular la fuerza social por presión de grupo) O eliminar la derivación; decidido: conectar con efecto documentado y testeado (homogeneidad → más conformidad).</li>
+<li><strong>A-7</strong>: corregir docstrings de <code>compute_theta</code> (declara solo volatilidad) — y opcionalmente añadir el efecto de nivel educación→cooperación en el target del potencial (ya existe el término coop; se puede modular el target 0.8·align con educación). Implementación mínima honesta: docstrings veraces + efecto nivel para educación (el resto queda como ruido documentado).</li>
+<li><strong>A-8/A-9/A-10</strong>: unificar escala income_scale (constante compartida), defaults consistentes, contrato de <code>propose_landscape</code> (<code>return base</code> en vez de None), eliminar doble muestreo de ruido.</li>
+</ol>
+<h3 id="ola-2-limpieza-de-duplicacion-y-basura-segun-respuestas-del-usuario">Ola 2 — Limpieza de duplicación y basura (según respuestas del usuario)</h3>
+<ul>
+<li>Eliminar/archivar <code>massive-ui-ng/</code>; eliminar <code>MASSIVE_UIL_demo.jsx</code> duplicado; consolidar stubs raíz actualizando los 12 imports legacy; limpiar <code>reports/</code> de artefactos; quitar workflows Azure/HF si no se usan; mover configs Docker legacy fuera de docs.</li>
+</ul>
+<h3 id="ola-3-reduccion-de-menciones-de-agentes">Ola 3 — Reducción de menciones de agentes</h3>
+<ul>
+<li>Consolidar todo lo de agentes en UN lugar canónico (<code>.github/agents/</code> para prompts funcionales + una sección breve en CONTRIBUTING). Quitar nombres de agentes, "Autor: MASSIVE Research" redundante, referencias a equipos de agentes de docs, "agente Foundation" en CODEOWNERS, sección-parche en .env.example, tautología del README.</li>
+</ul>
+<h3 id="ola-4-docs-profesionales">Ola 4 — Docs profesionales</h3>
+<ul>
+<li>Reestructurar <code>docs/</code> para usuarios: keep runbooks/security/testing/validation/architecture(current/target); mover todo lo demás a <code>docs/archive/</code> o borrar; regenerar <code>mkdocs.yml</code> nav; arreglar numeración de experiments; README/README_ES consistentes y sin historia interna.</li>
+</ul>
+<h3 id="ola-5-optimizacion-y-verificacion-final">Ola 5 — Optimización y verificación final</h3>
+<ul>
+<li>Suite completa + lint + smoke CLI + API <code>/v1/simulate</code> sanity; revisar cobertura de los fixes; <code>check_docs_refs.py</code> verde.</li>
+</ul>
+<p><strong>Criterios de éxito</strong>: tests verdes (679 + nuevos), CLI funcional, correlaciones con tests de dirección (Gini↑→dispersión↑, déficit→factibilidad↓, bipolar→magnitud correcta), repo sin duplicados, docs nav limpio, ≤1 ubicación de menciones de agentes.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.expand", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
