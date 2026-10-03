@@ -22,8 +22,8 @@ References
 
 from __future__ import annotations
 
-from pathlib import Path
 import datetime
+from pathlib import Path
 
 # ── Repository paths ──────────────────────────────────────────────────
 
@@ -35,7 +35,7 @@ REAL_CASES_DIR = ROOT / "datasets" / "real_cases"
 
 PACKAGE_NAME = "ground_truth"
 LAYER_VERSION = "1.0.0"
-GENERATED_AT = datetime.datetime.now(datetime.timezone.utc).isoformat()
+GENERATED_AT = datetime.datetime.now(datetime.UTC).isoformat()
 
 # ── Microdata configuration ───────────────────────────────────────────
 

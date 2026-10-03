@@ -24,7 +24,7 @@ from __future__ import annotations
 import hashlib
 import json
 import warnings
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 import networkx as nx
@@ -47,12 +47,12 @@ from ground_truth._constants import (
     MICRODATA_PATH,
     MICRODATA_SEED,
     MICRODATA_VARIABLES,
-    NETWORK_ECHO_INTRA_RATIO,
     NETWORK_ECHO_INTER_RATIO,
+    NETWORK_ECHO_INTRA_RATIO,
+    NETWORK_FOLLOWER_INFLUENCER_RATIO,
     NETWORK_GAMMA,
     NETWORK_GAMMA_CI95,
     NETWORK_GLOBAL_CLUSTERING,
-    NETWORK_FOLLOWER_INFLUENCER_RATIO,
     NETWORK_INFLUENCER_GINI,
     NETWORK_INFLUENCER_TOP_PCT,
     NETWORK_MODULARITY,
@@ -96,7 +96,7 @@ def _sha256_bytes(data: bytes) -> str:
 
 def _now_iso() -> str:
     """UTC timestamp in ISO-8601."""
-    return datetime.now(timezone.utc).isoformat()
+    return datetime.now(UTC).isoformat()
 
 
 # ── 1. Synthetic microdata via IPF ─────────────────────────────────────
@@ -313,7 +313,7 @@ def _generate_representative_graph(
         NetworkX undirected graph.
     """
     rng = np.random.default_rng(seed)
-    np_rng = np.random.RandomState(seed)
+    np.random.RandomState(seed)
 
     # 10 communities (roughly equal size) — Conover et al. (2011)
     n_communities = 10
@@ -495,8 +495,8 @@ def compute_network_metrics(
             "description": (
                 "Empirical network topology metrics for the MASSIVE "
                 "calibration pipeline.  Computed from a representative "
-                "social network graph (N={:d}) whose parameters are "
-                "calibrated to real social-media studies.".format(n)
+                f"social network graph (N={n:d}) whose parameters are "
+                "calibrated to real social-media studies."
             ),
             "version": "1.0.0",
             "generated_at": _now_iso(),
@@ -698,7 +698,7 @@ def convert_all_timeseries() -> list[dict]:
             "scenario_type": meta.get("scenario_type", ""),
             "network_type": meta.get("network_type", ""),
             "n_timesteps": str(len(df)),
-            "source_csv": "datasets/real_cases/{}/timeseries.csv".format(case_id),
+            "source_csv": f"datasets/real_cases/{case_id}/timeseries.csv",
             "data_type": meta.get("data_type", ""),
             "data_confidence": meta.get("data_confidence", ""),
             "generated_at": _now_iso(),
@@ -747,7 +747,7 @@ def generate_splits() -> dict:
     Returns:
         Complete splits definition dictionary.
     """
-    rng = np.random.default_rng(SPLITS_SEED)
+    np.random.default_rng(SPLITS_SEED)
 
     events: dict[str, dict] = {}
 
@@ -758,7 +758,7 @@ def generate_splits() -> dict:
 
         # Deterministic split indices based on seed
         indices = np.arange(n, dtype=np.int64)
-        rng_shuffled = np.random.default_rng(hash((SPLITS_SEED, case_id)) % (2**32 - 1))
+        np.random.default_rng(hash((SPLITS_SEED, case_id)) % (2**32 - 1))
         # Actually, for time-series we should NOT shuffle — split chronologically.
         # Train = first 60 %, val = next 25 %, test = last 15 %.
         n_train = max(1, int(round(n * TRAIN_FRACTION)))
@@ -950,7 +950,7 @@ def generate_provenance(
 
     # Timeseries conversions
     for rec in timeseries_records:
-        ts_path = DATASETS_DIR / rec["output_path"]
+        DATASETS_DIR / rec["output_path"]
         registry["datasets"][f"timeseries_{rec['case_id']}"] = {
             "path": rec["output_path"],
             "sha256": rec["sha256"],

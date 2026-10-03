@@ -16,10 +16,10 @@ Usage:
 from __future__ import annotations
 
 from models.embedding_sociopolitico.encoder import (
+    DEFAULT_SEED,
     DIMENSIONS,
     EMBED_DIM,
     PROJECTION_DIM,
-    DEFAULT_SEED,
     SENTIMENT_LEXICON,
     SocioPoliticalEncoder,
     get_default_encoder,

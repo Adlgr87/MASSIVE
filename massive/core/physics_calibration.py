@@ -21,6 +21,7 @@ from __future__ import annotations
 
 import os
 from functools import lru_cache
+from pathlib import Path
 from typing import Any
 
 import numpy as np
@@ -73,7 +74,7 @@ def _load_yaml(path: str) -> dict:
     """
     if not os.path.exists(path):
         raise FileNotFoundError(f"physics params config not found: {path}")
-    with open(path, "r", encoding="utf-8") as fh:
+    with open(path, encoding="utf-8") as fh:
         return yaml.safe_load(fh)
 
 
@@ -341,7 +342,9 @@ class PhysicsParams:
 
     __slots__ = ("sigma", "epsilon", "lambda_social")
 
-    def __init__(self, sigma: float = 0.05, epsilon: float = 0.25, lambda_social: float = 0.5) -> None:
+    def __init__(
+        self, sigma: float = 0.05, epsilon: float = 0.25, lambda_social: float = 0.5
+    ) -> None:
         self.sigma = float(sigma)
         self.epsilon = float(epsilon)
         self.lambda_social = float(lambda_social)
@@ -356,9 +359,7 @@ class PhysicsParams:
             lo, hi = PHYSICS_RANGES[name]
             val = getattr(self, name)
             if not (lo <= val <= hi):
-                raise ValueError(
-                    f"{name} = {val} outside allowed range [{lo}, {hi}]"
-                )
+                raise ValueError(f"{name} = {val} outside allowed range [{lo}, {hi}]")
 
     def to_dict(self) -> dict[str, float]:
         """Serialise to a plain dictionary."""
@@ -369,7 +370,7 @@ class PhysicsParams:
         }
 
     @classmethod
-    def from_dict(cls, data: dict[str, Any]) -> "PhysicsParams":
+    def from_dict(cls, data: dict[str, Any]) -> PhysicsParams:
         """Build a :class:`PhysicsParams` from a dictionary.
 
         Args:
@@ -385,7 +386,7 @@ class PhysicsParams:
         )
 
     @classmethod
-    def from_schema(cls, schema: PhysicsParamsSchema) -> "PhysicsParams":
+    def from_schema(cls, schema: PhysicsParamsSchema) -> PhysicsParams:
         """Extract the three scalar physics params from a validated schema object.
 
         Args:
@@ -434,7 +435,6 @@ def save_calibrated_params(params: PhysicsParams, path: str | Path) -> None:
     """
 
     import yaml
-    from pathlib import Path
 
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -580,7 +580,7 @@ def simulate_opinion_dynamics(
         # ── Active intervention forcing ──────────────────────────────────────
         # direction > 0: push opinions away from centre (increase polarization)
         # direction < 0: push opinions toward centre (decrease polarization)
-        for f_step, f_dir_str, f_rem in active_forcings:
+        for _f_step, f_dir_str, f_rem in active_forcings:
             if f_rem > 0:
                 # Radial push: direction * sign(x) moves agents toward poles
                 radial_push = f_dir_str * eta * np.sign(opinions + 1e-8)

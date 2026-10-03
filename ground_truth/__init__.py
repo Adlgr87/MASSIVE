@@ -34,11 +34,8 @@ All empirical values are cited in ``_constants.py``.
 from __future__ import annotations
 
 import json
-from pathlib import Path
 from typing import Any
 
-import numpy as np
-import numpy.typing as npt
 import pandas as pd
 import pyarrow.parquet as pq
 
@@ -48,7 +45,6 @@ from ground_truth._constants import (
     MICRODATA_N_AGENTS,
     MICRODATA_PATH,
     MICRODATA_SEED,
-    MICRODATA_VARIABLES,
     NETWORK_PATH,
     PROVENANCE_PATH,
     REFERENCES,

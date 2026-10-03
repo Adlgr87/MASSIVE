@@ -6,6 +6,11 @@ convergence certification, and intervention optimisation.
 
 # Core utility functions
 # Factbook integration
+from massive.core.convergence_certifier import (
+    ConvergenceCertificate,
+    DeterministicPlanner,
+    certify_strategy,
+)
 from massive.core.factbook import (
     COUNTRY_MAPPINGS,
     DEMOGRAPHIC_FIELDS,
@@ -20,11 +25,6 @@ from massive.core.intervention_optimizer import (
     estimate_intervention_cost,
     get_intervention_feasibility,
     optimize_interventions,
-)
-from massive.core.convergence_certifier import (
-    ConvergenceCertificate,
-    DeterministicPlanner,
-    certify_strategy,
 )
 from massive.core.utility_logic import (
     calculate_demographic_strategic_force,

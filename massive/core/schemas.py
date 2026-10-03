@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Any, Literal, Union
+from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
@@ -71,7 +71,7 @@ class Intervention(BaseModel):
     )
 
     @model_validator(mode="after")
-    def _validate_time_order(self) -> "Intervention":
+    def _validate_time_order(self) -> Intervention:
         if self.time_start > self.time_end:
             raise ValueError(
                 f"time_start ({self.time_start}) must be <= time_end ({self.time_end})"
@@ -118,7 +118,7 @@ class StrategyMatrix(BaseModel):
 # Type alias: a calibrated value may be a scalar or an explicit [min, max]
 # interval (used for opinion-domain quantities such as attractor/repeller
 # positions and the HK bounded-confidence band).
-CalibratedValue = Union[float, list[float]]
+CalibratedValue = float | list[float]
 
 
 def _check_opinion_positions(positions: list[float]) -> None:
@@ -148,15 +148,13 @@ class ParamEntry(BaseModel):
     empirical_reference: str
 
     @model_validator(mode="after")
-    def _validate_interval_order(self) -> "ParamEntry":
+    def _validate_interval_order(self) -> ParamEntry:
         """Validate interval ordering (min <= max). Opinion-range bounds live on
         the domain fields (positions, HK band), not on generic multipliers."""
         v = self.value
         if isinstance(v, list):
             if len(v) != 2:
-                raise ValueError(
-                    f"interval value must have exactly 2 elements [min, max], got {v}"
-                )
+                raise ValueError(f"interval value must have exactly 2 elements [min, max], got {v}")
             if float(v[0]) > float(v[1]):
                 raise ValueError(f"interval min ({v[0]}) must be <= max ({v[1]})")
         return self
@@ -215,9 +213,7 @@ class AttractorBlock(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    positions: list[float] = Field(
-        description="Attractor x-positions, each clipped to [-1, 1]"
-    )
+    positions: list[float] = Field(description="Attractor x-positions, each clipped to [-1, 1]")
     strength: ParamEntry
 
     @field_validator("positions")
@@ -232,9 +228,7 @@ class RepellerBlock(BaseModel):
 
     model_config = ConfigDict(extra="forbid")
 
-    positions: list[float] = Field(
-        description="Repeller x-positions, each clipped to [-1, 1]"
-    )
+    positions: list[float] = Field(description="Repeller x-positions, each clipped to [-1, 1]")
     strength: ParamEntry
 
     @field_validator("positions")
@@ -287,9 +281,7 @@ class EpsBlock(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     base: ParamEntry
-    band: list[float] = Field(
-        description="Admissible HK epsilon range [min, max], both in [-1, 1]"
-    )
+    band: list[float] = Field(description="Admissible HK epsilon range [min, max], both in [-1, 1]")
     per_segment: _SegmentSet
 
     @field_validator("band")

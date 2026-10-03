@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+from datetime import UTC
 from pathlib import Path
 from typing import Any
 
@@ -180,9 +181,9 @@ def seal_splits() -> dict[str, Any]:
     splits["seal"]["seal_hash"] = _sha256_str(seal_payload)
     splits["seal"]["sealed_at"] = _sha256_str  # placeholder; updated below
 
-    from datetime import datetime, timezone
+    from datetime import datetime
 
-    splits["seal"]["sealed_at"] = datetime.now(timezone.utc).isoformat()
+    splits["seal"]["sealed_at"] = datetime.now(UTC).isoformat()
 
     _save_splits(splits)
     return splits
@@ -208,7 +209,7 @@ def verify_seal() -> bool:
         return False
 
     # Verify each event's train/val hashes
-    for case_id, event_data in splits["events"].items():
+    for _case_id, event_data in splits["events"].items():
         train_h = _sha256_str(json.dumps(event_data["train"]["indices"], sort_keys=True))
         val_h = _sha256_str(json.dumps(event_data["validation"]["indices"], sort_keys=True))
         if train_h != event_data["train"]["hash"]:
@@ -342,12 +343,12 @@ def _constant_time_compare(a: str, b: str) -> bool:
     if len(a) != len(b):
         return False
     result = 0
-    for x, y in zip(a, b):
+    for x, y in zip(a, b, strict=False):
         result |= ord(x) ^ ord(y)
     return result == 0
 
 
-def _read_parquet_dates(path: Path) -> "pd.DataFrame":  # noqa: F821
+def _read_parquet_dates(path: Path) -> pd.DataFrame:  # noqa: F821
     """Read date column from a parquet file (lazy import to avoid hard dep)."""
     import pandas as pd
 

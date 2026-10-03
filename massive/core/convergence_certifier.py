@@ -28,7 +28,7 @@ References:
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any
 
 import numpy as np
@@ -40,8 +40,8 @@ log = logging.getLogger(__name__)
 try:
     from energy_engine import (
         _gaussian,
-        _landscape_gradient,
         _landscape_energy,
+        _landscape_gradient,
         random_network,
     )
 
@@ -290,10 +290,7 @@ def _check_bounds(
         ``True`` if all values across all timesteps are within
         ``[min_val, max_val]``.
     """
-    for state in trajectory:
-        if np.any(state < min_val) or np.any(state > max_val):
-            return False
-    return True
+    return all(not (np.any(state < min_val) or np.any(state > max_val)) for state in trajectory)
 
 
 def _build_proof(
@@ -397,10 +394,7 @@ def certify_strategy(
 
     # ── Build adjacency matrix ──────────────────────────────────────────────
     n = len(opinions)
-    if n == 1:
-        adj = np.array([[0.0]])
-    else:
-        adj = random_network(n, connectivity=connectivity, seed=seed)
+    adj = np.array([[0.0]]) if n == 1 else random_network(n, connectivity=connectivity, seed=seed)
 
     # ── Run deterministic trajectory ───────────────────────────────────────
     trajectory: list[np.ndarray] = [opinions.copy()]
@@ -499,7 +493,7 @@ class DeterministicPlanner:
         """
         attractor_depth = float(self.params.get("attractor_depth", 0.5))
         repeller_strength_param = float(self.params.get("repeller_strength", 0.5))
-        lam = float(self.params.get("social_influence_lambda", 0.5))
+        float(self.params.get("social_influence_lambda", 0.5))
 
         attractors: list[dict] = []
         repellers: list[dict] = []
