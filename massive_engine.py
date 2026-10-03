@@ -33,7 +33,6 @@ Ejemplo de uso::
     print(result["memory_savings_pct"])   # ≈ 99.8%
     print(result["mean_opinion"])
 
-Autor: MASSIVE Research
 """
 
 from __future__ import annotations
@@ -107,6 +106,12 @@ _OPINION_MAX: float = 1.0
 _PARETO_SHOCK_PERCENTILE: float = 95.0
 _PARETO_SHOCK_AMPLIFICATION: float = 5.0
 
+# Sensibilidad del acoplamiento social a la presión social (Factbook):
+# presión 1.0 (sociedad homogénea) → acoplamiento ×1.2;
+# presión 0.0 (sociedad plural)     → acoplamiento ×0.8;
+# presión 0.5 (neutro, default)     → acoplamiento ×1.0 (sin cambio).
+_SOCIAL_PRESSURE_SENSITIVITY: float = 0.4
+
 
 class MassiveEngine:
     """Motor base de agentes completos con shock manual exógeno."""
@@ -116,6 +121,17 @@ class MassiveEngine:
         self.config = dict(cfg)
         self.param_provenance: dict[str, str] = dict(cfg.get("_provenance", {}))
         self.agents = self.initialize_agents(cfg)
+        # Presión social media en [0, 1] derivada del Factbook (1 − diversidad
+        # por grupo: sociedad homogénea → alta presión conformista). Se expone
+        # como escalar para modular el acoplamiento social de MassiveSimEngine
+        # (ver MassiveSimEngine.__init__). Neutro = 0.5 cuando no hay datos.
+        weights = cfg.get("social_pressure_weights") or {}
+        if weights:
+            self.social_pressure = float(np.clip(np.mean(list(weights.values())), 0.0, 1.0))
+            self.param_provenance.setdefault("social_pressure", "derived_parameter")
+        else:
+            self.social_pressure = 0.5
+            self.param_provenance.setdefault("social_pressure", "internal_default")
 
     @classmethod
     def from_factbook(
@@ -176,9 +192,18 @@ class MassiveEngine:
         seed = config.get("seed")
         rng = np.random.default_rng(seed)
         agents = rng.uniform(-0.5, 0.5, (n_agents, 5))
-        # Optional demographic conditioning via Gini → income dispersion
-        gini = float(config.get("gini_coefficient", 0.35))
-        income = rng.beta(max(0.5, 2.0 * (1.0 - gini)), max(0.5, 2.0 * gini), n_agents)
+        # Demographic conditioning: Gini → income dispersion.
+        # Income is a *relative standing* in [0, 1] (mean fixed at 0.5, i.e.
+        # the Gini says nothing about how rich a country is — that is GDP's
+        # job, consumed elsewhere via cost_scale_factor). We sample a
+        # symmetric Beta(c, c) whose concentration decreases monotonically
+        # with the Gini coefficient:
+        #   g=0   → c large  → (near-)degenerate distribution (perfect equality)
+        #   g=1   → c ~ 0    → bimodal at 0/1 (one agent owns everything)
+        # so dispersion is monotonic in gini and the mean stays at 0.5.
+        gini = float(np.clip(config.get("gini_coefficient", 0.35), 0.0, 1.0))
+        concentration = float(np.clip((1.0 - gini) / (2.0 * max(gini, 1e-6)), 0.05, 50.0))
+        income = rng.beta(concentration, concentration, n_agents)
         agents[:, 3] = income  # income column
         agents[:, 1:] = np.clip(agents[:, 1:], 0.0, 1.0)
         return agents.astype(np.float64)
@@ -849,6 +874,7 @@ class MassiveSimEngine:
         lod_mode: str = "synthetic",
         agent_states: np.ndarray | None = None,
         feature_matrix: np.ndarray | None = None,
+        social_pressure: float = 0.5,
     ) -> None:
         if lod_mode not in {"synthetic", "aggregated"}:
             raise ValueError("lod_mode must be 'synthetic' or 'aggregated'")
@@ -886,7 +912,12 @@ class MassiveSimEngine:
         self.event_driven = event_driven
         self.sleep_threshold = sleep_threshold
         self.use_gpu = use_gpu and _GPU_BACKEND != "numpy"
-        self.coupling = float(coupling)
+        # Presión social (Factbook: 1 − diversidad) → acoplamiento conformista.
+        # Sociedad homogénea (presión alta) → vecinos pesan más; plural (baja)
+        # → menos. Anclado en 0.5 (neutro) para no alterar runs sin Factbook.
+        _pressure = float(np.clip(social_pressure, 0.0, 1.0))
+        self.social_pressure = _pressure
+        self.coupling = float(coupling * (1.0 + _SOCIAL_PRESSURE_SENSITIVITY * (_pressure - 0.5)))
         self.dt = float(dt)
         self.seed = seed
         self.lod_mode = lod_mode

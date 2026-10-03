@@ -3,7 +3,6 @@
 from __future__ import annotations
 
 import logging
-import warnings
 from pathlib import Path
 
 from massive_core.config import (
@@ -58,15 +57,15 @@ def test_app_settings_rate_limit_fields():
     assert s.rate_limit_per_min >= 1
 
 
-def test_root_schemas_emits_deprecation():
-    import importlib
+def test_root_schemas_removed_canonical_imports():
+    """The deprecated root stub was removed; the canonical module must import."""
+    import massive.core.schemas as canonical
+
+    assert hasattr(canonical, "StrategicConfig")
+    # Guard: the deprecated root-level re-export must not be reintroduced.
     import sys
 
-    sys.modules.pop("schemas", None)
-    with warnings.catch_warnings(record=True) as caught:
-        warnings.simplefilter("always", DeprecationWarning)
-        importlib.import_module("schemas")
-    assert any(issubclass(w.category, DeprecationWarning) for w in caught)
+    assert "schemas" not in sys.modules, "root schemas.py stub should not exist"
 
 
 def test_simulation_service_seeded():

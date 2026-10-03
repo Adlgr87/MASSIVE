@@ -85,9 +85,9 @@ def __getattr__(name: str) -> Any:
     """
 
     if name in _LEGACY_EXPORTS:
-        from simulator import __dict__ as simulator_symbols
+        import simulator
 
-        value = simulator_symbols[name]
+        value = simulator.__dict__[name]
         globals()[name] = value
         return value
     raise AttributeError(f"module 'massive_core' has no attribute {name!r}")

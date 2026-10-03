@@ -91,7 +91,7 @@ class LayerState:
                 if hasattr(self.graph_adjacency, "toarray")
                 else self.graph_adjacency.tolist()
             ),
-            "agent_types": self.agent_types.tolist(),
+            "agent_types": self.agent_types.tolist() if self.agent_types is not None else None,
             "layer_id": self.layer_id,
             "metadata": self.metadata,
         }
@@ -213,7 +213,7 @@ class SparseMultilayerEngine:
     Supports inter-layer edges and efficient computation.
 
     This implementation is designed to pass all tests in test_sparse_refactor.py
-    and addresses the issues described in CLAUDE.md Section 6.
+    and addresses the known numerical-stability issues of the dense path.
 
     Attributes:
         layers: List of LayerState objects for each layer

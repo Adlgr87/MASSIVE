@@ -29,7 +29,7 @@ try:
 
         log.debug("[ExtModels] pgmpy >= 1.1.0 detectado — usando DiscreteBayesianNetwork.")
     except ImportError:
-        from pgmpy.models import BayesianNetwork  # type: ignore[assignment]
+        from pgmpy.models import BayesianNetwork
 
         log.debug("[ExtModels] pgmpy < 1.1.0 detectado — usando BayesianNetwork (legacy).")
     from pgmpy.factors.discrete import TabularCPD

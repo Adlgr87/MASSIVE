@@ -28,7 +28,6 @@ Uso::
     # Estado del sistema
     print(router.status)  # {"regime_selector": True/False, ...}
 
-Autor: MASSIVE Research
 """
 
 import logging

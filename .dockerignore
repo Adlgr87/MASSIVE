@@ -16,7 +16,6 @@ venv/
 
 # Dependencies (huge)
 frontend/node_modules/
-massive-ui-ng/frontend/node_modules/
 
 # Frontend build output (symlink in some configs — built inside container)
 frontend/dist

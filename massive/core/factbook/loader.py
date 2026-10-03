@@ -9,7 +9,6 @@ Supports:
 - Direct API calls to CIA website (when available)
 - Caching and lazy loading
 
-Author: MASSIVE Research
 """
 
 from __future__ import annotations
@@ -55,7 +54,6 @@ class FactbookDataLoader:
         # Resolve country code
         cia_code = loader.resolve_country_code("United States")
 
-    Author: MASSIVE Research
     """
 
     def __init__(

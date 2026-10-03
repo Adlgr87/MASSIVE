@@ -35,7 +35,7 @@ class ReconstructionResult:
     error: float
     iterations: int
     convergence: bool
-    missingness: float = field(default=0.0)  # type: ignore[assignment]
+    missingness: float = field(default=0.0)
 
     def __post_init__(self) -> None:
         pass

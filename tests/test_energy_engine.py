@@ -99,9 +99,12 @@ class TestEnergySettersAndLandscapes:
         base_a = [{"position": 0.5, "strength": 1.0}]
         base_r = [{"position": -0.5, "strength": 1.0}]
         a, r = eng.create_gini_adjusted_landscape(base_a, base_r)
-        factor = 1.3 * 1.35
-        assert a[0]["strength"] == pytest.approx(1.0 * factor)
-        assert r[0]["strength"] == pytest.approx(1.0 * 1.3 * 0.75)
+        # Defaults derive from Gini exactly like create_wealth_potential:
+        # attractor = 1 + 2·g, repeller = 0.5 + 0.5·g
+        factor_a = 1.3 * (1.0 + 2.0 * 0.4)
+        factor_r = 1.3 * (0.5 + 0.5 * 0.4)
+        assert a[0]["strength"] == pytest.approx(1.0 * factor_a)
+        assert r[0]["strength"] == pytest.approx(1.0 * factor_r)
 
     def test_create_gini_adjusted_landscape_uses_economic_potential(self):
         eng = SocialEnergyEngine()

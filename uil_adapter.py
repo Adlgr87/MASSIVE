@@ -7,7 +7,7 @@ Este módulo actúa como orquestador de los flujos de entrada:
   2. Document file → Simulator config (via DocumentIntelligence)
   3. Combined: Document + Interpretation → Simulation result
 
-Siguiendo protocolo CLAUDE.md: surgical changes, goal-driven execution.
+Principios: cambios quirúrgicos y ejecución orientada a objetivos.
 """
 
 from __future__ import annotations

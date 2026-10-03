@@ -2,7 +2,7 @@
 Tests for MASSIVE Core Contracts
 
 This module contains tests for the canonical contracts defined in massive_core.contracts.
-Following CLAUDE.md Section 3.4: "Tests de integración para contratos"
+Integration tests for the canonical contracts.
 """
 
 import numpy as np

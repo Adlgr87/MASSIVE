@@ -66,7 +66,7 @@ async def get_api_key(
                 status_code=503,
                 detail="API key not configured — server is not ready",
             )
-    if not api_key_matches(api_key, expected):
+    if api_key is None or not api_key_matches(api_key, expected):
         raise HTTPException(status_code=401, detail="Invalid API Key")
     return api_key
 

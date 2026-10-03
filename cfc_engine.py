@@ -14,13 +14,20 @@ Modelos:
     CfCTauMatrix       — genera la matriz θ sociodemográfica del motor multicapa
     CfCArchitectPolicy — propone una estrategia de intervención sin llamada LLM
 
-Autor: MASSIVE Research
 """
 
 from __future__ import annotations
 
-import torch
-import torch.nn as nn
+try:
+    import torch
+    import torch.nn as nn
+except ImportError as _exc:  # pragma: no cover - exercised only without torch
+    raise ImportError(
+        "cfc_engine requires PyTorch (torch). Install it with "
+        "`pip install torch` or the `massive[ml]` extra. The rest of MASSIVE "
+        "works without torch: simulator/multilayer/massive/energy engines "
+        "degrade deterministically (CfC fast paths disable themselves)."
+    ) from _exc
 
 # Número de regímenes (reglas 0–12 definidas en simulator.py → NOMBRES_REGLAS)
 NUM_REGIMES: int = 13

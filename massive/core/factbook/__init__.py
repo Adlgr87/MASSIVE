@@ -15,7 +15,6 @@ Main Components:
 - FactbookDataLoader: Loads and caches Factbook datasets
 - FactbookValidator: Validates simulation results against real data
 
-Author: MASSIVE Research
 """
 
 from massive.core.factbook.context import (

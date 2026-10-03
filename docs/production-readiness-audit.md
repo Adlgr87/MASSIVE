@@ -47,7 +47,7 @@ Severidad: 🔴 crítico · 🟠 alto · 🟡 medio · 🔵 bajo. Prob./Impacto:
 | DOCS-01 | Docs | README Quick Start referencia `python app.py` (Streamlit) inexistente; streamlit no está en requirements | `ls app.py` → no existe; `grep streamlit requirements.txt` → vacío | 🟠 | A | M | Reemplazar quickstart por API/UI reales; decidir destino de `/ui/` (streamlit) en nginx+supervisord | B | README ejecutado desde clonación limpia |
 | OPS-02 | Contenedores | supervisord arranca `streamlit` (binario no instalado en imagen) → reinicio eterno dentro del contenedor; puerto 8501 y ruta `/ui/` muertos | `supervisord.conf:23-24`, `requirements.txt` sin streamlit | 🟠 | A | M | Quitar programa streamlit + puerto 8501 + location `/ui/` (o instalar streamlit si el owner lo quiere) | B | Contenedor arranca sin procesos en respawn loop (verificable en CI docker-e2e) |
 | ARCH-01 | Arquitectura | 3 backends/contratos conviven; `backend/app/services/llm_orchestrator.py` es un duplicado huérfano con contrato divergente (riesgo de que alguien lo cablee) | `ls backend/app/services/`, diff de contratos | 🟡 | M | M | Marcar/aislar el kit UI-NG; eliminar el duplicado huérfano tras caracterización | M | Ningún import al duplicado; contract tests del canónico |
-| ARCH-02 | Arquitectura | Kit `massive-ui-ng/` completo (backend+frontend+tests+infra) mezclado en el árbol del repo; sus tests no corren en CI raíz | `massive-ui-ng/README.md` ("NO es standalone") | 🟡 | M | M | Decisión de producto: fusionar de verdad o mover a subdir ignorado — **requiere decisión del owner** | M | Docs de arquitectura reflejan la decisión |
+| ARCH-02 | Arquitectura | Kit `massive-ui-ng/` completo (backend+frontend+tests+infra) mezclado en el árbol del repo; sus tests no corren en CI raíz | `massive-ui-ng/README.md` ("NO es standalone") | 🟡 | M | M | **RESUELTO (2026-09-22): kit eliminado del árbol** (respaldo: tag `pre-cleanup-2026-09-22`); el frontend canónico es `frontend/` | ✅ | Kit eliminado; docs de arquitectura actualizadas |
 | HYG-01 | Higiene | Archivos basura: `0`, `Resolved test artifact`, `.github/test-zapier-dir.txt`, `README.backup.md`, `site/` (build MkDocs commiteado) | `ls` raíz; `git ls-files site/` | 🔵 | A | B | Eliminar basura; ignorar `site/` | B | Árbol limpio; CI docs sigue verde |
 | PERF-01 | Rendimiento | Sin baseline reproducible de rendimiento en CI/CD verificable desde clonación limpia (benchmarks existen pero informales) | `benchmarks/`, `benchmark_scalability.py` (con errores de lint) | 🟡 | M | M | Crear `docs/performance/baseline.md` con método reproducible | B | Baseline documentado + script ejecutable |
 | REL-01 | Release | Sin tags, sin releases, CHANGELOG mínimo; publish depende de tags que nunca se crearon | `git tag` → vacío; `gh release list` → vacío | 🟡 | M | M | Checklist de release + flujo semver documentado | B | `docs/release-checklist.md` ejecutado en un RC |
@@ -64,7 +64,7 @@ Severidad: 🔴 crítico · 🟠 alto · 🟡 medio · 🔵 bajo. Prob./Impacto:
 | OPS-02 | ✅ resuelto | supervisord/nginx/Dockerfile/compose sin streamlit; `compose-build-health` ✅ |
 | DOCS-01 | ✅ resuelto | quickstart con comandos reales; `massive-cli` verificado |
 | ARCH-01 | ✅ resuelto | 16 módulos huérfanos eliminados (AST reachability + grep sin importadores); API funcional post-borrado (200 en /health, /v1/simulate, /v1/llm) |
-| ARCH-02 | 🟡 pendiente owner | decisión de destino del kit `massive-ui-ng/` (ver target-state D1) |
+| ARCH-02 | ✅ resuelto (2026-09-22) | kit `massive-ui-ng/` eliminado; frontend canónico = `frontend/` |
 | HYG-01 | ✅ resuelto | archivos basura eliminados; `site/` des-trackeado |
 | PERF-01 | ✅ parcial | baseline reproducible con números reales (docs/performance/baseline.md) |
 | REL-01 | 🟡 pendiente | checklist listo; requiere tag semver + branch protection (owner) |
@@ -78,9 +78,12 @@ Severidad: 🔴 crítico · 🟠 alto · 🟡 medio · 🔵 bajo. Prob./Impacto:
 
 ## 3. Plan por hitos
 
-### Propuesta de mejora CI (requiere owner — el agente no puede pushear `.github/workflows/*`)
+### Propuesta de mejora CI (requiere permisos de owner sobre `.github/workflows/*`)
 
-**Estado (2026-08-20): autorizado por el owner e implementado hasta donde la credencial lo permite.** El agente tiene autorización explícita del owner para este cambio, pero el token de la App (`arena-ai-coding-agent[bot]`) carece del scope `workflows`: git push y la REST API lo rechazan (`refusing to allow a GitHub App to create or update workflow ... without workflows permission`). El YAML final quedó revertido a la versión vigente en la rama; aplicar el siguiente contenido exacto en `.github/workflows/secret_scan.yml` (vía GitHub web UI en la rama del PR o en main) cierra el check:
+**Estado (2026-08-20): autorizado por el owner.** El token de la App de automatización carecía
+del scope `workflows`, por lo que el cambio no pudo aplicarse por push y el YAML quedó
+revertido a la versión vigente en la rama. Aplicar el siguiente contenido exacto en
+`.github/workflows/secret_scan.yml` (vía GitHub web UI en la rama del PR o en main) cierra el check:
 
 ```yaml
 name: Secret scan

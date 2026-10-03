@@ -8,7 +8,7 @@ pyyaml>=6.0
 python-dotenv>=1.0.1
 requests>=2.31
 
-# API / API server (UI-NG frontend lives in massive-ui-ng/ and is served as static files)
+# API / API server (frontend/ is served as static files by the backend)
 fastapi>=0.110
 uvicorn[standard]>=0.27
 python-multipart>=0.0.6
