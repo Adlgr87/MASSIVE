@@ -171,10 +171,7 @@ def verify_integrity(name: str) -> bool:
     if not path.exists():
         return False
 
-    if path.is_file():
-        current = hash_file(path)
-    else:
-        current = hash_directory(path)
+    current = hash_file(path) if path.is_file() else hash_directory(path)
 
     return current == entry[_HASH]
 

@@ -20,6 +20,7 @@ import os
 import numpy as np
 import pytest
 import yaml
+from pydantic import ValidationError
 
 from massive.core.physics_calibration import (
     degroot_weight_matrix,
@@ -67,7 +68,7 @@ class TestPhysicsParamsYaml:
 
     def test_yaml_loads_and_validates(self):
         """The YAML artefact loads and passes PhysicsParams validation."""
-        with open(CONFIG_PATH, "r", encoding="utf-8") as fh:
+        with open(CONFIG_PATH, encoding="utf-8") as fh:
             raw = yaml.safe_load(fh)
         params = PhysicsParams.model_validate(raw)
         assert params.meta.version == "1.0.0"
@@ -75,10 +76,10 @@ class TestPhysicsParamsYaml:
 
     def test_extra_forbid_rejects_unknown_top_keys(self):
         """extra='forbid' must reject unexpected top-level keys."""
-        with open(CONFIG_PATH, "r", encoding="utf-8") as fh:
+        with open(CONFIG_PATH, encoding="utf-8") as fh:
             raw = yaml.safe_load(fh)
         raw["bogus_section"] = 1.0
-        with pytest.raises(Exception):
+        with pytest.raises((ValueError, TypeError, ValidationError)):
             PhysicsParams.model_validate(raw)
 
     def test_get_physics_params_validates_segment(self):

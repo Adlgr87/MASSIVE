@@ -24,28 +24,26 @@ import pyarrow.parquet as pq
 import pytest
 
 from ground_truth import (
-    DATASETS_DIR,
-    HistoricalTestSealedError,
     MICRODATA_DICT_PATH,
     MICRODATA_N_AGENTS,
     MICRODATA_PATH,
-    MICRODATA_SEED,
     NETWORK_PATH,
     PROVENANCE_PATH,
     SPLITS_PATH,
     SPLITS_SEED,
+    HistoricalTestSealedError,
     derive_unlock_key,
     get_split,
     list_timeseries_events,
     load_microdata,
     load_network_topology,
     load_timeseries,
+    load_timeseries_metadata,
     load_variable_dictionary,
     seal_splits,
     unlock_historical_test,
     verify_seal,
 )
-from ground_truth import load_timeseries_metadata
 
 # ── Fixtures ────────────────────────────────────────────────────────────
 
@@ -403,14 +401,14 @@ class TestSealedSplits:
 
     def test_train_split_has_indices(self, splits: dict):
         """Train split should list plaintext indices."""
-        for case_id, event_data in splits["events"].items():
+        for _case_id, event_data in splits["events"].items():
             assert "train" in event_data
             assert "indices" in event_data["train"]
             assert len(event_data["train"]["indices"]) > 0
 
     def test_validation_split_has_indices(self, splits: dict):
         """Validation split should list plaintext indices."""
-        for case_id, event_data in splits["events"].items():
+        for _case_id, event_data in splits["events"].items():
             assert "validation" in event_data
             assert "indices" in event_data["validation"]
 

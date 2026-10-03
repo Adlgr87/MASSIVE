@@ -289,20 +289,20 @@ class TestSyntheticBenchmark(unittest.TestCase):
     def test_benchmark_file_exists(self):
         """benchmark_results.json exists and is valid JSON."""
         self.assertTrue(os.path.exists(BENCHMARK_PATH))
-        with open(BENCHMARK_PATH, "r", encoding="utf-8") as f:
+        with open(BENCHMARK_PATH, encoding="utf-8") as f:
             data = json.load(f)
         self.assertIn("metrics", data)
         self.assertIn("pearson_correlation", data["metrics"])
 
     def test_threshold_achieved(self):
         """Benchmark reports correlation_achieved = true."""
-        with open(BENCHMARK_PATH, "r", encoding="utf-8") as f:
+        with open(BENCHMARK_PATH, encoding="utf-8") as f:
             data = json.load(f)
         self.assertTrue(data["threshold"]["correlation_achieved"])
 
     def test_all_dimensions_above_threshold(self):
         """All five dimensions exceed the 0.65 correlation threshold."""
-        with open(BENCHMARK_PATH, "r", encoding="utf-8") as f:
+        with open(BENCHMARK_PATH, encoding="utf-8") as f:
             data = json.load(f)
         pearson = data["metrics"]["pearson_correlation"]
         for dim in ("opinion", "cooperation", "hierarchy", "income", "info_access"):
@@ -314,7 +314,7 @@ class TestSyntheticBenchmark(unittest.TestCase):
 
     def test_benchmarking_is_deterministic(self):
         """Benchmark file declares deterministic = true."""
-        with open(BENCHMARK_PATH, "r", encoding="utf-8") as f:
+        with open(BENCHMARK_PATH, encoding="utf-8") as f:
             data = json.load(f)
         self.assertTrue(data["reproducibility"]["deterministic"])
 
@@ -325,13 +325,13 @@ class TestAgentProfiles(unittest.TestCase):
     def test_file_exists(self):
         """agent_profiles.json exists and is valid JSON."""
         self.assertTrue(os.path.exists(AGENTS_PATH))
-        with open(AGENTS_PATH, "r", encoding="utf-8") as f:
+        with open(AGENTS_PATH, encoding="utf-8") as f:
             data = json.load(f)
         self.assertIn("profiles", data)
 
     def test_six_archetypes_present(self):
         """Exactly six empirically-derived archetypes are present."""
-        with open(AGENTS_PATH, "r", encoding="utf-8") as f:
+        with open(AGENTS_PATH, encoding="utf-8") as f:
             data = json.load(f)
         profiles = data["profiles"]
         self.assertEqual(len(profiles), 6)
@@ -347,7 +347,7 @@ class TestAgentProfiles(unittest.TestCase):
 
     def test_values_in_range(self):
         """All parameter values are in [-1, 1]."""
-        with open(AGENTS_PATH, "r", encoding="utf-8") as f:
+        with open(AGENTS_PATH, encoding="utf-8") as f:
             data = json.load(f)
         for name, profile in data["profiles"].items():
             params = profile["parameters"]
@@ -362,15 +362,15 @@ class TestAgentProfiles(unittest.TestCase):
 
     def test_references_present(self):
         """Each archetype cites empirical literature."""
-        with open(AGENTS_PATH, "r", encoding="utf-8") as f:
+        with open(AGENTS_PATH, encoding="utf-8") as f:
             data = json.load(f)
-        for name, profile in data["profiles"].items():
+        for _name, profile in data["profiles"].items():
             self.assertIn("empirical_basis", profile)
             self.assertGreater(len(profile["empirical_basis"]), 0)
 
     def test_contrast_between_extremes(self):
         """Activist left and right have opposite opinion baselines."""
-        with open(AGENTS_PATH, "r", encoding="utf-8") as f:
+        with open(AGENTS_PATH, encoding="utf-8") as f:
             data = json.load(f)
         left = data["profiles"]["activist_left"]["parameters"]["opinion_baseline"]
         right = data["profiles"]["activist_right"]["parameters"]["opinion_baseline"]
@@ -380,7 +380,7 @@ class TestAgentProfiles(unittest.TestCase):
 
     def test_conspiracy_leaning_low_responsiveness(self):
         """Conspiracy-leaning archetype has lowest evidence responsiveness."""
-        with open(AGENTS_PATH, "r", encoding="utf-8") as f:
+        with open(AGENTS_PATH, encoding="utf-8") as f:
             data = json.load(f)
         vals = {
             name: p["parameters"]["response_to_evidence"] for name, p in data["profiles"].items()
@@ -393,12 +393,12 @@ class TestIntegration(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        from models.embedding_sociopolitico.encoder import SocioPoliticalEncoder
         from energy_engine import SocialEnergyEngine
         from massive.core.convergence_certifier import (
             DeterministicPlanner,
             certify_strategy,
         )
+        from models.embedding_sociopolitico.encoder import SocioPoliticalEncoder
 
         cls.encoder = SocioPoliticalEncoder(seed=42)
         cls.SocialEnergyEngine = SocialEnergyEngine
