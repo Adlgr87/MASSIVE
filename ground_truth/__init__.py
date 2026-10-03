@@ -37,7 +37,6 @@ import json
 from typing import Any
 
 import pandas as pd
-import pyarrow.parquet as pq
 
 from ground_truth._constants import (
     DATASETS_DIR,
@@ -196,6 +195,8 @@ def load_timeseries_metadata(case_id: str) -> dict[str, Any]:
         Dictionary of metadata key-value pairs embedded in the parquet
         file (e.g. ``title``, ``country``, ``scenario_type``).
     """
+    import pyarrow.parquet as pq  # noqa: PLC0415
+
     ts_path = DATASETS_DIR / f"timeseries_{case_id}.parquet"
     if not ts_path.exists():
         raise FileNotFoundError(f"Timeseries for '{case_id}' not found.")

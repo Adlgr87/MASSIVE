@@ -20,7 +20,14 @@ import hashlib
 import json
 
 import pandas as pd
-import pyarrow.parquet as pq
+
+try:
+    import pyarrow.parquet as pq
+
+    HAS_PYARROW = True
+except ImportError:
+    HAS_PYARROW = False
+
 import pytest
 
 from ground_truth import (
@@ -194,6 +201,7 @@ class TestMicrodata:
             assert "description" in var
             assert "source" in var
 
+    @pytest.mark.skipif(not HAS_PYARROW, reason="pyarrow not available")
     def test_parquet_metadata(self, microdata: pd.DataFrame):
         """Parquet file should have embedded metadata."""
         table = pq.read_table(str(MICRODATA_PATH))
