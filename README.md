@@ -26,7 +26,7 @@ MASSIVE is **hybrid by design** at every layer:
 |---|---|---|
 | 🌍 **Population-scale via LOD compression** | Agents with identical features collapse into *super-agents*, so **100 million agents run in ~8 GB RAM** — near-constant memory with event-driven, uint8-quantized sparse updates. | `massive_engine.py` |
 | 🤖 **LLM as a *mathematical translator*, not a chatbot** | Natural language → validated simulation config under a **versioned machine contract** (v1.1.0): intent classification routes to the right engine, ambiguous requests get `422 + requested_fields`, and every run degrades **deterministically** — basic simulations run without LLM; advanced inverse design fails closed with 503 when no LLM key configured. | `services/llm_orchestrator.py`, `configs/llm_contract/` |
-| 🧠 **Liquid neural residual correction** | A Closed-form Continuous-time (CfC) network learns the *systematic bias* of the physics engine and corrects it — **~50% error reduction** on the Brexit 2016 referendum case (validated on 10/10 seeds, see `calibration_log.md` for full metrics). | `cfc_engine.py`, `models/cfc_calibrated/`, `calibration_log.md` |
+| 🧠 **Liquid neural residual correction** | A Closed-form Continuous-time (CfC) network was trained to learn the systematic bias of the physics engine. Walk-forward validation **disqualified** it (R²=-18.7, 8.2× worse than persistence baseline) — the model is loaded but suppressed by a quality gate. The label-leakage path that produced a spurious ~50 % "improvement" has been removed. See `scripts/validate_cfc_walkforward.py` and `models/cfc_calibrated/validation.json`. | `cfc_engine.py`, `cfc_router.py`, `models/cfc_calibrated/` |
 | 📡 **Data assimilation for opinion dynamics** | Sparse Ensemble Kalman Filter fuses real-world observations into the running state, the way numerical weather prediction does. | `massive_core/data_assimilation/` |
 | ⚗️ **Scientific opt-in layer** | Adaptive steppers, stability & bifurcation analysis, physics-informed neural nets, network inference and statistical mechanics — all behind explicit config flags that never alter the default dynamics. | `massive_core/` |
 | 🧬 **Inverse intervention design** | Ask *"what campaign reaches this consensus?"* — the social architect searches the intervention space backwards from the goal. | `social_architect.py` |
@@ -229,11 +229,13 @@ energy 50×100 **0.012 s** — method in [`docs/performance/baseline.md`](docs/p
 
 **Scientific validation**: the PVU-MASSIVE protocol runs real-case studies offline
 (`python -m benchmarks.runner --cases datasets/pvu_cases --offline`), with a
-pre-registration template to prevent analysis leakage. The calibrated CfC corrector
-reduced **absolute Leave-percentage error** on the Brexit case by ~50 % (54.5 % →
-53.2 % Leave; actual 51.9 %; 10/10 seeds improved). This is a **direction-error**
-metric — the ~27 % *RMSE* reduction (the primary scientific metric) is detailed in
-`calibration_log.md` §4 with the negative-R² caveat.
+pre-registration template to prevent analysis leakage. The CfC residual corrector
+was **disqualified** by walk-forward validation
+(`scripts/validate_cfc_walkforward.py`): walk-forward R² = **-18.7**, 8.2× worse
+than the persistence baseline. The previously reported ~50 % "direction-error"
+improvement was traced to label leakage (`correct_residual` interpolating 50 %
+toward the known answer) and has been removed. See `models/cfc_calibrated/validation.json`
+for the held-out metrics and the *CfC neural corrector — disqualified* section below.
 
 ---
 
@@ -335,8 +337,8 @@ Full methodology and gate thresholds: [`CALIBRATION_REPORT.md`](CALIBRATION_REPO
 
 | Signal | Status |
 |---|---|
-| Test suite | **887 tests** — `pytest tests/` (calibration, backtesting, ground-truth, physics)  |
-| Coverage | 68 % branch (scope: engines + services + backend) — `make test-cov` |
+| Test suite | **878 tests** — `pytest tests/` (calibration, backtesting, ground-truth, physics)  |
+| Coverage | 71 % branch (scope: engines + services + backend) — `make test-cov` |
 | Static quality | ruff + black + mypy (gradual slice) green in CI |
 | CI | 11 CI workflows per PR: lint, types, core/scientific/api/full suites, frontend build+lint, Docker compose health, TS-type sync, secret scan, PVU benchmark |
 | Security | fail-closed auth, rate & body limits (`MASSIVE_MAX_BODY_MB`, streaming upload guard), constant-time compares, `n_agents` cap (prevents 8 TB OOM), `max_intentos` clamp (prevents LLM DoS), CSP/HSTS/X-Frame-Options at nginx edge, no secrets in tree |
@@ -380,7 +382,7 @@ MASSIVE/
 ├── scripts/              # Backup automation, security audit, TS type generator, calibration pipeline
 ├── docs/                 # MkDocs site + production-readiness suite
 ├── monitoring/           # Prometheus alert rules + Grafana dashboard spec
-└── tests/                # 887 tests: unit, integration, contract, security, calibration, backtesting, ground-truth
+└── tests/                # 878 tests: unit, integration, contract, security, calibration, backtesting, ground-truth
 ```
 
 ---
