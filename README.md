@@ -337,7 +337,7 @@ Full methodology and gate thresholds: [`CALIBRATION_REPORT.md`](CALIBRATION_REPO
 
 | Signal | Status |
 |---|---|
-| Test suite | **878 tests** — `pytest tests/` (calibration, backtesting, ground-truth, physics)  |
+| Test suite | **883 tests** — `pytest tests/` (calibration, backtesting, ground-truth, physics)  |
 | Coverage | 71 % branch (scope: engines + services + backend) — `make test-cov` |
 | Static quality | ruff + black + mypy (gradual slice) green in CI |
 | CI | 11 CI workflows per PR: lint, types, core/scientific/api/full suites, frontend build+lint, Docker compose health, TS-type sync, secret scan, PVU benchmark |
@@ -382,7 +382,7 @@ MASSIVE/
 ├── scripts/              # Backup automation, security audit, TS type generator, calibration pipeline
 ├── docs/                 # MkDocs site + production-readiness suite
 ├── monitoring/           # Prometheus alert rules + Grafana dashboard spec
-└── tests/                # 878 tests: unit, integration, contract, security, calibration, backtesting, ground-truth
+└── tests/                # 883 tests: unit, integration, contract, security, calibration, backtesting, ground-truth
 ```
 
 ---
