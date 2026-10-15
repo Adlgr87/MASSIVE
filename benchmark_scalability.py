@@ -47,7 +47,7 @@ POPULATIONS = [1_000, 10_000, 100_000, 1_000_000, 10_000_000, 100_000_000]
 
 # Adaptive steps: fewer steps for very large populations to stay within time budget
 def _adaptive_steps(n_agents: int) -> int:
-    if n_agents <= 100_000 or n_agents <= 1_000_000:
+    if n_agents <= 1_000_000:
         return STEPS
     elif n_agents <= 10_000_000:
         return 100  # reduced for time budget
@@ -339,14 +339,24 @@ def run_energy_engine(
         for _ in range(steps):
             noise = np.sqrt(2.0 * eta * temperature) * rng.standard_normal(n_agents)
             neighbor_mean = (adj @ opinions) / row_sums
-            new_op = np.empty(n_agents)
-            for i in range(n_agents):
-                grad_u = _landscape_gradient(opinions[i], attractors, repellers, sigma2)
-                social = lambda_social * (neighbor_mean[i] - opinions[i])
-                landscape = (1.0 - lambda_social) * (-grad_u)
-                val = opinions[i] + eta * landscape + eta * social + noise[i]
-                new_op[i] = max(-1.0, min(1.0, val))
-                opinions = new_op
+            # Vectorised landscape gradient: _landscape_gradient is a pure
+            # function of each agent's own opinion, so we compute all gradients
+            # in one pass instead of a Python for-loop (O(N) — O(1) overhead).
+            _grad = np.zeros(n_agents)
+            for att in attractors:
+                diff = opinions - att["position"]
+                scale = np.exp(-diff * diff / (2.0 * sigma2))
+                _grad += att["strength"] * diff / sigma2 * scale
+            for rep in repellers:
+                diff = opinions - rep["position"]
+                scale = np.exp(-diff * diff / (2.0 * sigma2))
+                _grad -= rep["strength"] * diff / sigma2 * scale
+            val = (
+                opinions
+                + eta * ((1.0 - lambda_social) * (-_grad) + lambda_social * (neighbor_mean - opinions))
+                + noise
+            )
+            opinions = np.clip(val, -1.0, 1.0)
             del noise
     except MemoryError:
         tracemalloc.stop()
