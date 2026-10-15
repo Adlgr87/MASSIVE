@@ -1,0 +1,66 @@
+{
+  "args": {
+    "data": "tests/compare_arms/plantilla_etiquetado.csv",
+    "split": "all",
+    "arms": "lexicon,mock",
+    "target": "politica",
+    "repo": null,
+    "lex_threshold": 0.2,
+    "jev_model": "typesafe/jev-1.13",
+    "jev_min_interval": 0.06,
+    "repeat_n": 100,
+    "repeat_k": 1,
+    "price": "jev=0.042,llm=0,von=0,lexicon=0,mock=0",
+    "margin": 0.05,
+    "min_ece_gain": 0.02,
+    "min_flip_gain": 0.02,
+    "min_ratio": 5.0,
+    "cache_dir": "cache",
+    "out": "results_compare_arms.json"
+  },
+  "skipped": {},
+  "results": {
+    "lexicon": {
+      "n": 2,
+      "invalid_rate": 0.0,
+      "accuracy": 0.5,
+      "macro_f1": 0.3333333333333333,
+      "by_lang": {
+        "en": {
+          "n": 1,
+          "accuracy": 0.0
+        },
+        "es": {
+          "n": 1,
+          "accuracy": 1.0
+        }
+      },
+      "latency_median_s": 5.993250033498043e-05,
+      "latency_p95_s": 0.00010253999971610028,
+      "cost_per_1k_usd": 0.0,
+      "cost_is_estimate": true
+    },
+    "mock": {
+      "n": 2,
+      "invalid_rate": 0.0,
+      "accuracy": 0.5,
+      "macro_f1": 0.3333333333333333,
+      "by_lang": {
+        "en": {
+          "n": 1,
+          "accuracy": 0.0
+        },
+        "es": {
+          "n": 1,
+          "accuracy": 1.0
+        }
+      },
+      "ece": 0.08352221874326293,
+      "brier": 0.6152581588745574,
+      "latency_median_s": 0.001,
+      "latency_p95_s": 0.001,
+      "cost_per_1k_usd": 0.0,
+      "cost_is_estimate": true
+    }
+  }
+}

@@ -1,0 +1,3 @@
+id,text,lang,target,label,label_2,split
+ej001,"EJEMPLO (borrar): texto de muestra en español sin datos personales",es,tema objetivo,neutral,,dev
+ej002,"EXAMPLE (delete): sample text in English with no personal data",en,target topic,a_favor,,dev

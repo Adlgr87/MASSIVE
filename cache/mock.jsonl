@@ -1,0 +1,2 @@
+{"id": "ej001", "run": 0, "label": "neutral", "probs": {"a_favor": 0.36457067910615293, "neutral": 0.40882810705789724, "en_contra": 0.2266012138359498}, "latency_s": 0.001, "input_tokens": null, "meta": {}}
+{"id": "ej002", "run": 0, "label": "en_contra", "probs": {"a_favor": 0.3259048486321713, "neutral": 0.24996769591225187, "en_contra": 0.42412745545557684}, "latency_s": 0.001, "input_tokens": null, "meta": {}}
