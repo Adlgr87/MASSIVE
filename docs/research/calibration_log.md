@@ -52,6 +52,23 @@ with fixed `η`, `λ`, `T`. Residuals arise because:
 
 The CfC compensates by learning a *continuous-time* correction `r(t)` driven by the *time-varying Leave percentage itself* — the residual is modeled as a dynamical system whose rate of change depends on the current opinion state, elapsed time, and recent residual history (autoregressive context). The dynamic `τ` lets the model slow down (long memory) when residuals are stable and speed up (short memory) when they accelerate near the referendum.
 
+> ⚠️ **DISQUALIFIED — Audit Finding CRÍTICO-1** (2026-10-14): The results in
+> §3–§5 below were produced with **label leakage** — `correct_residual()` was
+> called with the `actual=` parameter, interpolating 50% of the way toward
+> ground truth. Out-of-sample walk-forward validation (see
+> `scripts/validate_cfc_walkforward.py`) shows the corrector is **not fit for
+> purpose**:
+>
+> | Strategy | RMSE | R² |
+> |---|---|---|
+> | persistence | 0.00457 | **0.709** |
+> | cfc_model (disqualified) | 0.03763 | **-18.732** |
+>
+> The model is **8.2× worse** than a trivial persistence baseline. The 50%
+> direction-error reduction reported in §4 was an artifact of leakage. The model
+> is now **disqualified** by the quality gate (`cfc_router.py:_check_residual_quality`)
+> and falls back to passthrough (`correct_residual()` returns `"disqualified"`).
+
 ---
 
 ## 2. Training Parameters
@@ -94,7 +111,9 @@ The validation loss dropped from `0.003249` (ep 0) to `0.000371` (best), confirm
 | **RMSE** | 0.037625 | 0.051665 |
 | **R²** | -18.73 | -1.69 |
 
-**RMSE reduction: ~27%** (0.0517 → 0.0376). **MAE reduction: ~18%** (0.0446 → 0.0365).
+> ⚠️ **DISQUALIFIED:** These per-timestep metrics are from the **training/test
+> split only** and were contaminated by label leakage (the `actual=` parameter
+> was passed to `correct_residual()`). See the out-of-sample table below.
 
 ### Direction-error metric (Brexit 2016 referendum-level, 10 seeds)
 
@@ -104,15 +123,23 @@ The validation loss dropped from `0.003249` (ep 0) to `0.000371` (best), confirm
 | Absolute error vs actual (51.89 %) | 2.61 pp | 1.30 pp | **~50 %** |
 | Seeds with improvement | — | 10 / 10 | 100 % |
 
-> **Note:** The "~50 % reduction" quoted in `README.md` refers to the **absolute
-> direction-error** of the referendum-level Leave% forecast (2.61 → 1.30 pp),
-> **not** the per-timestep RMSE. The 27 % RMSE reduction above is the
-> timestep-level metric and is the primary scientific validation figure. Both
-> metrics are consistent: the CfC corrects the *systematic drift* of the static
-> Langevin landscape, halving the net direction error while reducing per-step
-> RMSE by ~27 %.
+> ⚠️ **DISCLAIMED — Label Leakage:** The "~50 % reduction" and 10/10
+> seeds-with-improvement results in this table were produced with the
+> `actual=` parameter passed to `correct_residual()`, which interpolated
+> 50% of the way toward ground truth. See the out-of-sample table below.
 
-> **Note on R²:** The negative R² on the test split reflects the test window's *narrow residual range* (≈0.068–0.080, low variance) combined with the model's small systematic bias — R² is variance-normalized and becomes unstable when the target variance is tiny. The absolute-error metrics (MAE/RMSE) are the reliable indicator here and show a genuine **~27% RMSE improvement** over the Langevin baseline. On the full series and validation set, the CfC achieves strong fit (val MSE 0.00037).
+### Out-of-sample walk-forward validation (disqualifying)
+
+| Strategy | RMSE | MAE | R² |
+|---|---|---|---|
+| persistence | 0.00457 | 0.00381 | 0.709 |
+| oracle_mean | 0.00847 | 0.00629 | 0.000 |
+| train_mean | 0.03184 | 0.03069 | -13.128 |
+| cfc_model | 0.03763 | 0.03653 | **-18.732** |
+| zero | 0.07373 | 0.07325 | -74.779 |
+
+**VERDICT:** NOT FIT FOR PURPOSE — a trained neural ODE that loses to a trivial
+persistence baseline should not be presented as a calibrated corrector.
 
 ### Reference (from `residual_stats.json`)
 - Residual mean: `0.0426`, std: `0.0293`
@@ -164,9 +191,14 @@ See also existing CfC components in `cfc_engine.py` (`CfCCell`, `CfCTauMatrix`) 
 
 | Path | Description |
 |---|---|
-| `models/cfc_calibrated/cfc_residual.pt` | Trained CfC residual-corrector weights |
+| `models/cfc_calibrated/cfc_residual.pt` | Trained CfC residual-corrector weights (**DISQUALIFIED** — see CRÍTICO-1) |
 | `models/cfc_calibrated/config.json` | Model + training configuration & metrics |
 | `models/cfc_calibrated/training_log.json` | Per-epoch loss + evaluation metrics |
 | `models/cfc_calibrated/predictions.npz` | Test-set predictions vs actuals |
 | `models/cfc_calibrated/checkpoints/checkpoint_ep*.pt` | Periodic checkpoints (every 25 epochs) |
 | `calibration_log.md` | This document |
+
+> ⚠️ **DISQUALIFIED:** The model weights in §1 are **not used in production**.
+> `cfc_router.py` loads `validation.json` which has `test_r2: -18.732` — the
+> quality gate rejects the model and `correct_residual()` returns
+> `"disqualified"`. The passthrough path (no correction) is the active code.
