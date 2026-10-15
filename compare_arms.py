@@ -49,26 +49,17 @@ class Arm:
 class LexiconArm(Arm):
     """Usa score_text de massive.core.sentiment (sentimiento -> clase).
 
-    Lightweight keyword-based sentiment scoring extracted from the former
-    social_connectors.py into massive/core/sentiment.py.
+    Lightweight keyword-based sentiment scoring using the bundled
+    sentiment module (massive/core/sentiment.py).
     """
 
     name = "lexicon"
 
     def __init__(self, repo: str | None, threshold: float):
-        # Backwards-compat: accept --repo flag but use the bundled sentiment module.
         if repo:
             sys.path.insert(0, repo)
-        try:
-            from massive.core.sentiment import score_text  # noqa: WPS433
-        except Exception as exc:
-            # Fallback: try the old module location if it still exists in repo
-            try:
-                from social_connectors import _score_text as score_text  # noqa: WPS433
-            except Exception:
-                raise RuntimeError(
-                    f"No pude importar massive.core.sentiment (usa --repo={repo}): {exc}"
-                ) from exc
+        from massive.core.sentiment import score_text  # noqa: WPS433
+
         self._score = score_text
         self.t = threshold
 
