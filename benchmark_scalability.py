@@ -353,7 +353,8 @@ def run_energy_engine(
                 _grad -= rep["strength"] * diff / sigma2 * scale
             val = (
                 opinions
-                + eta * ((1.0 - lambda_social) * (-_grad) + lambda_social * (neighbor_mean - opinions))
+                + eta
+                * ((1.0 - lambda_social) * (-_grad) + lambda_social * (neighbor_mean - opinions))
                 + noise
             )
             opinions = np.clip(val, -1.0, 1.0)
