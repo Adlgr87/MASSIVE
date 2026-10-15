@@ -10,7 +10,7 @@ Usage:
     registry.observe("http_request_duration_seconds", 0.042, {"method": "GET", "group": "simulate"})
     text = registry.render()
 
-SLOs (defined in PRODUCTION_ARCHITECTURE_SPEC.md §5.3):
+SLOs (defined in CALIBRATION_REPORT.md §5.3):
     - Error budget: < 5% error rate (500/502 responses)
     - P95 latency:  < 2s  (simulations < 100 steps)
                      < 30s (LLM calls)

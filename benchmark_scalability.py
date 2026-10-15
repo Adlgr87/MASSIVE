@@ -7,9 +7,9 @@ collecting execution time, peak memory, CPU utilization, throughput, and
 bottleneck analysis.
 
 Output files:
-  /tmp/performance_metrics/performance_benchmarks.json
-  /tmp/performance_metrics/benchmark_timeseries.csv
-  /tmp/performance_metrics/benchmark_log.txt
+  $MASSIVE_BENCHMARK_OUT_DIR/performance_benchmarks.json
+  $MASSIVE_BENCHMARK_OUT_DIR/benchmark_timeseries.csv
+  $MASSIVE_BENCHMARK_OUT_DIR/benchmark_log.txt
 """
 
 from __future__ import annotations
@@ -20,6 +20,7 @@ import json
 import logging
 import sys
 import threading
+import os
 import time
 import tracemalloc
 from dataclasses import asdict, dataclass
@@ -30,7 +31,7 @@ import psutil
 from scipy import sparse
 
 # ─── Paths & Constants ───────────────────────────────────────────────────────
-OUT_DIR = Path("/tmp/performance_metrics")
+OUT_DIR = Path(os.environ.get("MASSIVE_BENCHMARK_OUT_DIR", Path.cwd() / "reports" / "benchmarks" / "performance_metrics"))
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 LOG_PATH = OUT_DIR / "benchmark_log.txt"
 JSON_PATH = OUT_DIR / "performance_benchmarks.json"

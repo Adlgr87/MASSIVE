@@ -6,10 +6,11 @@ Integrates all Phase 1+2 components:
 3. CFC residual correction for bias adjustment
 4. CFC lambda corrector for adaptive social coupling
 
-Produces: /tmp/brexit_calibration_report.md
+Produces: $MASSIVE_CALIBRATION_REPORT_PATH or reports/calibration/brexit_calibration_report.md
 """
 
 import json
+import os
 import time
 from pathlib import Path
 
@@ -221,7 +222,8 @@ def main():
     print(f"Router status: {results['engine_metrics']['router_status']}")
 
     # Write report
-    report_path = Path("/tmp/brexit_calibration_report.md")
+    report_path = Path(os.environ.get("MASSIVE_CALIBRATION_REPORT_PATH", "reports/calibration/brexit_calibration_report.md"))
+    report_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.write_text(
         f"""# Brexit 2016 Calibration Report
 
