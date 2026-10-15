@@ -192,4 +192,4 @@ aws s3 sync /tmp/massive_backups/ s3://massive-backups/$(date +%Y/%m/)
 
 ---
 
-*Documented in docs/architecture/current-state.md §4.9*
+*Documented in PRODUCTION_ARCHITECTURE_SPEC.md §4.9*

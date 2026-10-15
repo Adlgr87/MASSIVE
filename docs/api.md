@@ -134,7 +134,7 @@ Build metadata and version info.
 Legacy endpoints at `/api/*` are deprecated and return `X-API-Warn` header:
 
 ```
-X-API-Warn: Deprecated endpoint. Use /v1/* instead. See docs/architecture/current-state.md §5.1
+X-API-Warn: Deprecated endpoint. Use /v1/* instead. See PRODUCTION_ARCHITECTURE_SPEC.md §5.1
 ```
 
 | Legacy | New Endpoint |

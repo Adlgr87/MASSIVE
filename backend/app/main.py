@@ -154,7 +154,7 @@ async def deprecation_warning(request: Request, call_next):
     path = request.url.path
     if path.startswith("/api/") and not path.startswith("/api/v1"):
         response.headers["X-API-Warn"] = (
-            "Deprecated endpoint. Use /v1/* instead. " "See docs/architecture.md §5.1"
+            "Deprecated endpoint. Use /v1/* instead. " "See PRODUCTION_ARCHITECTURE_SPEC.md §5.1"
         )
     return response
 
