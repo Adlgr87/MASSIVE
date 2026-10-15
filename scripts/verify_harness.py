@@ -178,7 +178,7 @@ class StageResult:
 
 
 def run_ruff():
-    proc = _run(["ruff", "check", "."], timeout=120)
+    proc = _run([sys.executable, "-m", "ruff", "check", "."], timeout=120)
     return StageResult(
         "ruff",
         _ok(proc),
@@ -188,7 +188,7 @@ def run_ruff():
 
 
 def run_black():
-    proc = _run(["black", "--check", "."], timeout=120)
+    proc = _run([sys.executable, "-m", "black", "--check", "."], timeout=120)
     return StageResult(
         "black",
         _ok(proc),
