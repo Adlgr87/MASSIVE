@@ -1,7 +1,7 @@
-"""Engine router — ``POST /v1/energy``, ``POST /v1/architect``, ``POST /v1/scientific``.
+"""Engine router — ``POST /v1/engine/energy``, ``POST /v1/engine/architect``.
 
-Exposes the energy-landscape engine, the social architect inverse-search,
-and the scientific opt-in runner behind a single versioned surface.
+Exposes the energy-landscape engine and the social architect inverse-search
+behind a single versioned surface.
 """
 
 from __future__ import annotations

@@ -1,8 +1,8 @@
-"""Simulation router — ``POST /v1/simulate``, ``POST /v1/scientific``.
+"""Simulation router — ``POST /v1/simulate``.
 
-Wraps the legacy ``simulator.simular`` and the scientific runner via the
-service layer.  Incoming payloads are raw ``dict`` (per ADR-002) and
-outgoing responses are validated against the DTO namespace.
+Wraps the legacy ``simulator.simular`` via the service layer.
+Incoming payloads are raw ``dict`` (per ADR-002) and outgoing responses
+are validated against the DTO namespace.
 """
 
 from __future__ import annotations

@@ -1,6 +1,6 @@
 {
   "timestamp": "2026-08-17T17:46:28.197947",
-  "model_path": "/home/adlg/MASSIVE/models/cfc_calibrated/cfc_residual.pt",
+  "model_path": "models/cfc_calibrated/cfc_residual.pt",
   "architecture": {
     "type": "CfCResidualCorrector-N9H64",
     "u_encoder": "Linear(9->64)",
@@ -28,8 +28,8 @@
   "corrected_metrics": {
     "final_leave_pct": 0.5319471263162743,
     "error": 0.013047126316274249,
-    "improvement_percent": 50.0,
-    "correction_method": "Model-guided adaptive bias correction (50% toward target)"
+    "improvement_percent": 0.0,
+    "correction_method": "DISQUALIFIED — label leakage detected and removed. See cfc_router.py quality gate. Residual corrector returns 'disqualified' and does NOT interpolate toward actual."
   },
   "model_bias_detection": {
     "mean_prediction": -0.01801295433040351,
@@ -135,7 +135,8 @@
     "positive_count": 10,
     "total_seeds": 10
   },
-  "overall_result": "PASS",
+  "overall_result": "DISQUALIFIED",
+  "disqualification_reason": "test_r2 = -18.732 is below 0 (persistence baseline R² = 0.709). Model is 8.2× worse than persistence. The residual corrector must not be applied — would amplify error.",
   "target_leave_pct": 0.5189,
   "simulation_details": {
     "N_agents": 18,
@@ -148,6 +149,13 @@
     "std": 0.029295811591112112,
     "min": -0.0253233173977324,
     "max": 0.0925108874977174
+  },
+  "baseline_comparison": {
+    "persistence_rmse": 0.00457,
+    "persistence_r2": 0.709,
+    "cfc_rmse": 0.03763,
+    "cfc_r2": -18.732,
+    "cfc_vs_persistence": "8.2x worse (RMSE), disqualified"
   },
   "cuda_available": false
 }
