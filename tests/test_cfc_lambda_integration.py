@@ -11,10 +11,25 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-import torch
 
-from cfc_engine import CfCLambdaCorrector
-from cfc_router import CfCRouter
+# Guard the torch import so that the test module can be *collected* even when
+# PyTorch is not installed.  Tests that actually exercise the trained model
+# are skipped via the weights skipif marker below; tests that only exercise
+# the transparent fallback (no torch) run unconditionally — matching the
+# documented "torch is optional" contract.
+try:
+    import torch  # noqa: F401
+    _TORCH_AVAILABLE = True
+except ImportError:  # pragma: no cover - exercised only without torch
+    _TORCH_AVAILABLE = False
+
+torch_available = pytest.mark.skipif(
+    not _TORCH_AVAILABLE,
+    reason="PyTorch is not installed; CfC neural tests require torch.",
+)
+
+from cfc_engine import CfCLambdaCorrector  # noqa: E402
+from cfc_router import CfCRouter  # noqa: E402
 
 # ── Skip-condition: trained Lambda-corrector weights ─────────────────────
 # The trained model artifact ``models/cfc_calibrated/cfc_lambda_corrector.pt``
@@ -57,6 +72,7 @@ def engine():
 class TestLambdaCorrectorModel:
     """Test the CfCLambdaCorrector architecture directly."""
 
+    @torch_available
     @skip_no_lambda_weights
     def test_loads_from_trained_weights(self):
         """The trained model file should load into CfCLambdaCorrector."""
