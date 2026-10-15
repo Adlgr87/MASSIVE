@@ -214,7 +214,7 @@ class FactbookContext:
         self._initialized: bool = False
 
         # Set up data loader
-        self.data_path = data_path or "data/factbook/factbook.json"
+        self.data_path = data_path or "data/factbook/factbook_sample.json"
         self._try_load_data()
 
     def _try_load_data(self):

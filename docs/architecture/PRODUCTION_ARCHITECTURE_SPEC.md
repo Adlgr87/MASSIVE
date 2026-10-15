@@ -53,6 +53,7 @@ Esto significa que la "Fase 1 del Master Orchestrator" debe **definir** esta sup
 │  GET  /version     → build metadata                            │
 │  POST /v1/simulate → run_scalar_simulation (simulator.py)      │
 │  POST /v1/scientific → run_scientific_simulation (opt-in)      │
+│  (NOT YET IMPLEMENTED — documented as FUTURE work)              │
 │  POST /v1/factbook → build_engine_from_country                 │
 │  POST /v1/benchmarks → benchmark runner (offline/real/llm)     │
 │  POST /v1/llm/run_simulation → UIL full_pipeline (LLM)         │

@@ -38,7 +38,7 @@ flowchart LR
     end
 
     subgraph API_v1["backend/app/ — CANÓNICO (FastAPI 1.0.0)"]
-        B1["POST /v1/simulate · /v1/scientific"]
+        B1["POST /v1/simulate"]
         B2["POST /v1/forecast"]
         B3["POST /v1/engine/energy · /v1/engine/architect"]
         B4["POST /v1/benchmarks"]

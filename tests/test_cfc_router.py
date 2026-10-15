@@ -96,6 +96,79 @@ import pytest  # noqa: E402
 skip_no_torch = pytest.mark.skipif(not TORCH_AVAILABLE, reason="PyTorch no disponible")
 
 
+class TestCorrectResidualQualityGate(unittest.TestCase):
+    """Regression tests for the residual corrector quality gate (C-03 audit).
+
+    The shipped residual model has walk-forward R² = -18.7 (8.2× worse than
+    persistence) and was disqualified.  These tests verify that:
+      1. The quality gate reads validation.json and marks the model invalid.
+      2. correct_residual returns 'disqualified' (not 'cfc') when the model
+         is present but disqualified.
+      3. Passing ``actual=`` (the old label-leakage path) has NO effect —
+         the correction is still suppressed.
+    """
+
+    def setUp(self):
+        from cfc_router import CfCRouter
+
+        CfCRouter._instance = None
+        self.router = CfCRouter.get()
+
+    def tearDown(self):
+        from cfc_router import CfCRouter
+
+        CfCRouter._instance = None
+
+    def test_quality_gate_reads_validation_r2(self):
+        """The router should detect the disqualified model from validation.json."""
+        status = self.router.status
+        if status["residual_corrector"]:
+            # Model file exists — quality gate should have flagged it
+            self.assertFalse(
+                status["residual_valid"],
+                "Residual corrector should be disqualified (R²=-18.7) but was marked valid.",
+            )
+
+    def test_correct_residual_returns_disqualified(self):
+        """When the model is loaded but disqualified, correct_residual returns 'disqualified'."""
+        status = self.router.status
+        if not status["residual_corrector"]:
+            self.skipTest("No residual model weights available for testing")
+        # Even if the model loads, the quality gate should suppress it
+        result, source = self.router.correct_residual(
+            history=[0.41, 0.45, 0.48, 0.50, 0.52, 0.53, 0.54, 0.545],
+            simulated=0.545,
+        )
+        self.assertEqual(source, "disqualified")
+        self.assertAlmostEqual(result, 0.545, places=6)
+
+    def test_actual_parameter_has_no_effect_when_disqualified(self):
+        """REGRESSION: passing actual= must NOT trigger label-leakage correction.
+
+        Before the fix, correct_residual(actual=X) interpolated 50% toward X.
+        After the fix, actual= is ignored and the model is suppressed.
+        """
+        status = self.router.status
+        if not status["residual_corrector"]:
+            self.skipTest("No residual model weights available for testing")
+
+        # Without actual=
+        result_no_actual, src_no_actual = self.router.correct_residual(
+            history=[0.41, 0.45, 0.48, 0.50, 0.52, 0.53, 0.54, 0.545],
+            simulated=0.545,
+        )
+        # With actual= (should be ignored — label leakage removed)
+        result_with_actual, src_with_actual = self.router.correct_residual(
+            history=[0.41, 0.45, 0.48, 0.50, 0.52, 0.53, 0.54, 0.545],
+            simulated=0.545,
+            actual=0.5189,
+        )
+        # Both should be disqualified — actual= should NOT change behavior
+        self.assertEqual(src_no_actual, "disqualified")
+        self.assertEqual(src_with_actual, "disqualified")
+        self.assertAlmostEqual(result_no_actual, result_with_actual, places=10)
+
+
 @skip_no_torch
 class TestCfCRouterWithSyntheticModel(unittest.TestCase):
     """Con un modelo CfC sintético en memoria, las predicciones son válidas."""

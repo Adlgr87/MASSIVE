@@ -287,38 +287,39 @@ def multi_potential_gradient(x: np.ndarray) -> np.ndarray:
     U(x) = U_opinion(x[:,0]) + U_coop(x[:,1], x[:,0])
            + U_hierarchy(x[:,2]) + U_income(x[:,3]) + U_info(x[:,4])
 
+    Vectorized over agents for O(1) Python-level overhead per dimension
+    regardless of N.
+
     Args:
         x: Estado actual de forma (N, K).
 
     Returns:
         Gradiente ∇U de forma (N, K).
     """
-    N = x.shape[0]
     grad = np.zeros_like(x)
 
-    for i in range(N):
-        op = x[i, COL_OPINION]
-        coop = x[i, COL_COOP]
-        hier = x[i, COL_HIER]
-        inc = x[i, COL_INCOME]
-        info = x[i, COL_INFO]
+    op = x[:, COL_OPINION]
+    coop = x[:, COL_COOP]
+    hier = x[:, COL_HIER]
+    inc = x[:, COL_INCOME]
+    info = x[:, COL_INFO]
 
-        # Opinión: doble pozo → polarización emergente en ±0.7
-        grad[i, COL_OPINION] = _bimodal_grad(op)
+    # Opinión: doble pozo → polarización emergente en ±0.7
+    grad[:, COL_OPINION] = 4.0 * op * (op * op - 0.49)  # _bimodal_grad vectorized
 
-        # Cooperación: depende de la opinión del agente (alineación social)
-        # Alto acuerdo de opinión → cooperación se estabiliza en 0.8
-        align = 0.5 * (op + 1.0)  # mapea [-1,1] → [0,1]
-        grad[i, COL_COOP] = 2.0 * (coop - 0.8 * align)
+    # Cooperación: depende de la opinión del agente (alineación social)
+    # Alto acuerdo de opinión → cooperación se estabiliza en 0.8
+    align = 0.5 * (op + 1.0)  # mapea [-1,1] → [0,1]
+    grad[:, COL_COOP] = 2.0 * (coop - 0.8 * align)
 
-        # Jerarquía: atracción hacia 0 (rebelde) o 1 (conformista)
-        grad[i, COL_HIER] = -2.0 * hier * (1.0 - hier) * (2.0 * hier - 1.0)
+    # Jerarquía: atracción hacia 0 (rebelde) o 1 (conformista)
+    grad[:, COL_HIER] = -2.0 * hier * (1.0 - hier) * (2.0 * hier - 1.0)
 
-        # Ingreso: gradiente suave hacia centro (0.5), con fricción por jerarquía
-        grad[i, COL_INCOME] = 0.5 * (inc - 0.5) * (1.0 + hier)
+    # Ingreso: gradiente suave hacia centro (0.5), con fricción por jerarquía
+    grad[:, COL_INCOME] = 0.5 * (inc - 0.5) * (1.0 + hier)
 
-        # Acceso info: decaimiento lento hacia 0.5 modulado por cooperación
-        grad[i, COL_INFO] = 0.3 * (info - 0.5 - 0.2 * coop)
+    # Acceso info: decaimiento lento hacia 0.5 modulado por cooperación
+    grad[:, COL_INFO] = 0.3 * (info - 0.5 - 0.2 * coop)
 
     return grad
 

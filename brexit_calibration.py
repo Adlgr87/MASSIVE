@@ -6,10 +6,11 @@ Integrates all Phase 1+2 components:
 3. CFC residual correction for bias adjustment
 4. CFC lambda corrector for adaptive social coupling
 
-Produces: /tmp/brexit_calibration_report.md
+Produces: $MASSIVE_CALIBRATION_REPORT_PATH or reports/calibration/brexit_calibration_report.md
 """
 
 import json
+import os
 import time
 from pathlib import Path
 
@@ -142,7 +143,19 @@ def run_brexit_calibration(
     final_mean = opinion_history[-1]
     final_leave = (final_mean + 1.0) / 2.0  # normalized [0, 1]
 
-    # Apply CFC residual correction
+    # Apply CFC residual correction.
+    #
+    # IMPORTANT: ``actual`` is deliberately NOT passed here.  Passing the
+    # ground-truth Leave percentage would trigger the "adaptive bias
+    # correction" code path in ``CfCRouter.correct_residual`` which
+    # interpolates 50 % toward the known answer — that is label leakage
+    # and was audited out in ``scripts/validate_cfc_walkforward.py``
+    # (the residual model's walk-forward R² = -18.7 makes it 8.2× worse
+    # than the persistence baseline, so it is disqualified).
+    #
+    # The router itself checks the model's validation R² against the
+    # persistence baseline and suppresses the correction when the model
+    # is disqualified, returning (simulated, "disqualified") instead.
     sim_leave_series = [(v + 1.0) / 2.0 for v in opinion_history]
     corrected_val = final_leave
 
@@ -150,7 +163,6 @@ def run_brexit_calibration(
         corrected_raw, src = router.correct_residual(
             history=sim_leave_series,
             simulated=final_leave,
-            actual=BREXIT_ACTUAL_LEAVE,
         )
         corrected_val = corrected_raw
         residual_source = src
@@ -210,7 +222,12 @@ def main():
     print(f"Router status: {results['engine_metrics']['router_status']}")
 
     # Write report
-    report_path = Path("/tmp/brexit_calibration_report.md")
+    report_path = Path(
+        os.environ.get(
+            "MASSIVE_CALIBRATION_REPORT_PATH", "reports/calibration/brexit_calibration_report.md"
+        )
+    )
+    report_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.write_text(
         f"""# Brexit 2016 Calibration Report
 

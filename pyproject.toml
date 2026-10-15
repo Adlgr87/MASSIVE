@@ -154,6 +154,7 @@ follow_imports = "silent"
 show_error_codes = true
 namespace_packages = true
 explicit_package_bases = true
+mypy_path = "."
 exclude = [
     "frontend/",
     "frontend/node_modules/",

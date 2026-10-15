@@ -12,6 +12,8 @@ __pycache__/
 
 # Reports generados en runtime
 reports/validation/run_*/
+reports/validation/ci/
+reports/validation/local/
 reports/benchmarks/baseline_v*/
 
 # Runtime artifacts (no commit)
@@ -33,6 +35,12 @@ data/factbook/*_test.json
 
 # SOTA roadmap artifacts (regenerated on each run)
 reports/sota_v0_seed*/
+
+# Comparación de brazos de clasificación — artifacts de runtime
+cache/lexicon.jsonl
+cache/mock.jsonl
+results_compare_arms.json
+tests/compare_arms/cache/
 
 # Repomix output bundles
 repomix-output*.xml

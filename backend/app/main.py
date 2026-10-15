@@ -129,7 +129,7 @@ async def body_size_limit(request: Request, call_next):
 def _path_group(path: str) -> str:
     if path.startswith("/v1/llm"):
         return "llm"
-    if path.startswith("/v1/simulate") or path.startswith("/v1/scientific"):
+    if path.startswith("/v1/simulate"):
         return "simulate"
     if path.startswith("/v1/forecast"):
         return "forecast"
