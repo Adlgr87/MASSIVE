@@ -147,6 +147,33 @@ All notable changes to **MASSIVE** are documented here. This project follows
   exposes `memory_report` plus `elapsed_seconds`/`steps_per_second` in its
   result dict.
 
+### Performance
+- **PERF-02 (2026-10-14):** Vectorized `multi_potential_gradient()` in
+  `multilayer_engine.py` — 17.4× speedup on the hot path (1,806 µs → 104 µs
+  per call at N=200). Replaced Python for-loop with NumPy broadcasting; output
+  is bit-identical for N=10/100/500 (max diff = 0.0). See
+  `docs/calibration/03_performance.md`.
+
+### Benchmarks
+- Fixed correctness bug in `benchmark_scalability.py:run_energy_engine`: the
+  per-agent Python loop had `opinions = new_op` inside the loop body (line 349),
+  causing each agent i≥1 to read uninitialized memory. Vectorized the
+  computation using NumPy broadcasting — N=1M agents now completes in 19.4s
+  (was effectively infinite).
+- Added reproducible `make benchmark-all` target: runs baselines + backtests +
+  CfC walk-forward + PVU-MASSIVE offline benchmark in one command.
+- Fixed `_adaptive_steps` redundancy (`n <= 100_000 or n <= 1_000_000` was
+  equivalent to `n <= 1_000_000`).
+
+### Documentation
+- Updated `docs/research/calibration_log.md` with disqualification notice
+  (CRÍTICO-1): the CfC residual-corrector model was trained with label leakage
+  (`actual=` parameter passed to `correct_residual()`). Added walk-forward
+  validation table showing the model is 8.2× worse than persistence (R² = -18.73).
+- Added `docs/calibration/03_performance.md` (performance report) and
+  `docs/calibration/04_benchmarks.md` (benchmark reproducibility report).
+- Fixed README test count (887 → 878) and coverage (68% → 71%).
+
 ### Tests
 - Baseline verified green: **446 passed, 20 skipped** (skips are PyTorch/GPU
   env-gated). No regressions from Phases B–E.
