@@ -1,2 +1,0 @@
-{"id": "ej001", "run": 0, "label": "neutral", "probs": null, "latency_s": 0.00010253999971610028, "input_tokens": null, "meta": {"score": 0.0}}
-{"id": "ej002", "run": 0, "label": "en_contra", "probs": null, "latency_s": 1.732500095386058e-05, "input_tokens": null, "meta": {"score": -1.0}}
