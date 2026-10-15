@@ -193,9 +193,9 @@ massive-cli = "massive.cli:cli_main"
 | Elemento | Exposición | Comentario |
 |----------|-----------|-----------|
 | `simular`, `simular_multiples` | **Interno** | Se accede vía service layer, no exportado directamente por API |
-| `run_with_schedule` | **Interno** | Usado por CLI y `/v1/scientific` indirectlyamente |
+| `run_with_schedule` | **Interno** | Usado por CLI y ``/v1/simulate`` indirectlyamente |
 | `buscar_estrategia_inversa` | **Interno** | Envuelto por `/v1/llm/run_simulation` |
-| `SocialEnergyEngine` | **Interno** | Accedido vía `/v1/scientific` |
+| `SocialEnergyEngine` | **Interno** | Accedido vía `/v1/simulate` |
 | `ForecastEngine` | **Interno** | Accedido vía `/v1/forecast` (heredado) |
 | DTOs (`backend.app.models.*`) | **Público (salida)** | Definen el contrato API; versionados |
 | `massive_core.*` | **Interno + opt-in** | Para consumidores científicos avanzados |
