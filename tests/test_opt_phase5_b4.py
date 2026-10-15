@@ -22,9 +22,9 @@ def test_typecheck_slice_script_exists():
     assert script.is_file()
     text = script.read_text(encoding="utf-8")
     assert "massive_core/numerics/steppers.py" in text
-    assert "disallow_untyped" not in text  # policy lives in mypy.ini
-    mypy_ini = REPO / "mypy.ini"
-    assert "massive_core.numerics" in mypy_ini.read_text(encoding="utf-8")
+    assert "disallow_untyped" not in text  # policy lives in pyproject.toml
+    pyproject = REPO / "pyproject.toml"
+    assert "massive_core.numerics" in pyproject.read_text(encoding="utf-8")
 
 
 def test_sparse_enkf_local_rng_typed_predict():

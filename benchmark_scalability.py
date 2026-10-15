@@ -31,7 +31,7 @@ import psutil
 from scipy import sparse
 
 # ─── Paths & Constants ───────────────────────────────────────────────────────
-OUT_DIR = Path(os.environ.get("MASSIVE_BENCHMARK_OUT_DIR", Path.cwd() / "reports" / "benchmarks" / "performance_metrics"))
+OUT_DIR = Path(os.environ.get("MASSIVE_BENCHMARK_OUT_DIR", str(Path.cwd() / "reports" / "benchmarks" / "performance_metrics")))
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 LOG_PATH = OUT_DIR / "benchmark_log.txt"
 JSON_PATH = OUT_DIR / "performance_benchmarks.json"
