@@ -292,8 +292,9 @@ benchmarks/ → runner.py, baselines.py, fidelity.py, metrics.py
 | Commit HEAD | `30eee99` |
 | Tests totales | 878 |
 | Tests pasados | 866 |
-| Tests omitidos | 12 (pesos .pt git-ignored) |
-| Tests fallidos | 0 (después de instalar torch, pyarrow, psutil) |
+| Tests omitidos | 13 (12 git-ignored .pt + 1 no-torch fallback) |
+| Tests xfailed | 2 (CfC corrector disqualified: R²=-18.7) |
+| Tests fallidos | 0 |
 | Cobertura branch | 71.12% |
 | Imports rotos | 0 |
 | Ciclos de import | 0 |
@@ -326,3 +327,63 @@ benchmarks/ → runner.py, baselines.py, fidelity.py, metrics.py
 5. MENOR-2: Discrepancia de cobertura en README.
 
 > **Nota:** El venv local estaba incompleto (faltaban torch, pyarrow, psutil). Esto NO es un bug del repo — `requirements.txt` lista las tres dependencias correctamente. La limpieza del venv fue realizada para esta auditoría. La discrepancia de versión de Python (3.14 local vs 3.11 CI) se recomienda verificar en FASE 1.
+
+---
+
+## FASE 1 — Corrección de lógica (completada)
+
+### Resumen
+Todos los 3 problemas críticos y 2 menores identificados en FASE 0 fueron resueltos con tests de regresión. La suite completa pasa: **868 passed, 13 skipped, 2 xfailed, 0 fallidos**.
+
+### CRÍTICO-1: Data leakage en brexit_calibration.py — ✅ RESUELTO
+- **Root cause:** `brexit_calibration.py:162` pasaba `actual=BREXIT_ACTUAL_LEAVE` (ground truth = 51.89%) a `CfCRouter.correct_residual()`. El método interpolaba 50% hacia la respuesta conocida (`correction = 0.5 * baseline_error`), produciendo siempre una "mejora" del 50% sin aprendizaje real.
+- **Evidencia:** `scripts/validate_cfc_walkforward.py` muestra R²=-18.7 (8.2× peor que persistencia). `models/cfc_calibrated/validation.json` muestra exactamente 50.0% de mejora en todos los 10 seeds (firma de label leakage).
+- **Fix:**
+  - `brexit_calibration.py`: eliminado el parámetro `actual=` del llamado a `correct_residual()`.
+  - `cfc_router.py`: agregado `_check_residual_quality()` que lee `validation.json`, detecta R² < 0, y marca el corrector como `_residual_valid = False`.
+  - `correct_residual()` ahora retorna `(value, "disqualified")` cuando el modelo está presente pero no califica, en lugar de aplicar su predicción.
+  - Se eliminado completamente el camino de interpolación hacia el ground truth.
+- **Tests de regresión:** `TestCorrectResidualQualityGate` en `tests/test_cfc_router.py`:
+  - `test_quality_gate_reads_validation_r2` — verifica el gate detecta el modelo descalificado.
+  - `test_correct_residual_returns_disqualified` — verifica el source="disqualified".
+  - `test_actual_parameter_has_no_effect_when_disqualified` — verifica que `actual=` es ignorado (label leakage borrado).
+
+### CRÍTICO-2: Import torch sin guarda en test_cfc_lambda_integration.py — ✅ RESUELTO
+- **Root cause:** `tests/test_cfc_lambda_integration.py:14` importaba `torch` condicionalmente en nivel módulo, causando `ModuleNotFoundError` durante la colección si torch no estaba instalado.
+- **Fix:** Envuelto en `try/except` con marcador `torch_available = pytest.mark.skipif(...)`. Los tests que necesitan pesos entrenados ya estaban marcados con `skip_no_lambda_weights`; ahora los que necesitan torch también son skippeables.
+
+### CRÍTICO-3: test_brexit_calibration.py sin skipif de torch — ✅ RESUELTO
+- **Root cause:** Los tests `test_cfc_correction_reduces_error` y `test_correction_improvement_at_least_25_percent` exigían >=25% de mejora, lo cual solo era posible vía label leakage (ahora borrado). Sin torch, fallaban con `assert 6.1986 < 6.1986`.
+- **Fix:** 
+  - Agregado `torch_required = pytest.mark.skipif(...)`.
+  - Los dos tests de mejora marcados como `strict xfail` con explicación detallada del hallazgo de auditoría.
+  - Agregado `test_residual_corrector_is_disqualified` (verifica quality gate).
+  - Agregado `test_correction_source_is_passthrough_without_torch` (verifica fallback determinista).
+
+### MENOR-1: Discrepancia de conteo de tests — ✅ RESUELTO
+- README decía "887 tests"; realidad: 878 (866+12). Actualizado a 878.
+
+### MENOR-2: Discrepancia de cobertura — ✅ RESUELTO
+- README decía "68%"; realidad: 71.12%. Actualizado a 71%.
+
+### MENOR-3: Referencia a calibration_log.md inexistente — ✅ RESUELTO
+- README referenciaba `calibration_log.md` en root. El archivo existe solo en `docs/research/calibration_log.md` (172 líneas, descripción de layout). Actualizada la referencia.
+
+### Commits (FASE 1)
+```
+efd3bac fix: remove label leakage from CfC corrector + add quality gate + test guards
+d1e5753 test: fix brexit calibration tests for disqualified corrector + add regression tests
+e2996b3 fix(core): remove label-leakage from CfC residual corrector + add quality gate
+f2ad342 fix(test): guard torch import in test_cfc_lambda_integration.py
+2390bd0 docs(README): fix test count, coverage, remove label-leakage claim
+```
+
+### GATE — FASE 1
+
+### ✅ CUMPLIDO
+
+- ✅ 0 imports rotos
+- ✅ 0 tests fallidos (868 passed, 13 skipped, 2 xfailed)
+- ✅ Cada bug tiene test de regresión (3 tests de calidad-gate + 2 xfail-documentados)
+- ✅ Python vs Rust N/A (Rust fue eliminado; no hay kennels que verificar)
+- ✅ Lint (ruff) + format (black) limpios en todos los archivos modificados
