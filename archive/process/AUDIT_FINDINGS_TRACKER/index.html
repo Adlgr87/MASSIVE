@@ -1,0 +1,3073 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="MASSIVE — Hybrid social dynamics simulator. Numerical core + LLM as regime selector.">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Tracker de hallazgos de auditoría — MASSIVE - MASSIVE Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#tracker-de-hallazgos-de-auditoria-massive" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="MASSIVE Documentation" class="md-header__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MASSIVE Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Tracker de hallazgos de auditoría — MASSIVE
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="MASSIVE Documentation" class="md-nav__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    MASSIVE Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../factbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Factbook Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM Interface
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    LLM Interface
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../MASSIVE_LLM_INTERFACE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface spec
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../LLM_PROMPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompt templates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Readiness
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Production Readiness
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../production-readiness-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Audit & Risk Matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../release-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/current-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (current)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/target-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (target)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/PRODUCTION_ARCHITECTURE_SPEC/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Architecture Spec
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/safety_protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_7" id="__nav_5_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runbooks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Runbooks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../runbooks/local-development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../runbooks/operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../runbooks/incidents/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Incidents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/threat-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/secrets-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secrets & Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../OBSERVABILITY_AND_SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability & Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../backup_restore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup & Restore
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../disaster_recovery_plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disaster Recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DOCKER/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ENV_VARS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Environment Variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../NAMING_CONVENTIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NAMING_CONVENTIONS.md
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation (PVU-BS)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Validation (PVU-BS)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/PVU_MASSIVE_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/PVU_MASSIVE_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocolo (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/preregistration_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registration (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/preregistration_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registro (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/validation_report_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report template (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/validation_report_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plantilla de reporte (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cards/BENCHMARK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Card
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cards/REPRODUCIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reproducibility Card
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Testing
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../testing/test-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Test Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../performance/baseline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Baseline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../performance_report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#resumen-de-cobertura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resumen de cobertura
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#estados-del-tracker" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Estados del tracker
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#referencias" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Referencias
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="tracker-de-hallazgos-de-auditoria-massive">Tracker de hallazgos de auditoría — MASSIVE</h1>
+<blockquote>
+<p><strong>Documento maestro de trazabilidad.</strong> Derive de <code>AUDIT_REPORT_2026-09-15.md</code> (148 hallazgos, commit <code>473b04a6</code>).
+Cada fila se asigna a una ola y tarea del <code>AUDIT_REMEDIATION_WORKFLOW.md</code>.
+Los hallazgos 🟢 son activos preservados (G-1) que no deben romperse.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Severidad</th>
+<th>Título</th>
+<th>Ola</th>
+<th>Tarea</th>
+<th>Estado</th>
+<th>Issue</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>D1-001</td>
+<td>🔴 CRITICAL</td>
+<td><code>import simulator</code> falla con <code>AttributeError</code> en cualquier entorno sin PyTorch — rompe 25 módulos y 21 archivos de test</td>
+<td>W1</td>
+<td>W1-T01</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/91">#91</a></td>
+</tr>
+<tr>
+<td>D1-002</td>
+<td>🔴 CRITICAL</td>
+<td>El "fallback NumPy" de <code>cfc_engine.py</code> no existe — el mensaje de warning miente y el módulo falla al definir las clases</td>
+<td>W1</td>
+<td>W1-T02</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/92">#92</a></td>
+</tr>
+<tr>
+<td>D1-003</td>
+<td>🔴 CRITICAL</td>
+<td><code>simulator.py</code> importa <code>extended_models</code> desde root, pero el módulo vive en <code>massive/core/</code> — se desactiva en silencio y sin warning</td>
+<td>W1</td>
+<td>W1-T01</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/93">#93</a></td>
+</tr>
+<tr>
+<td>D1-004</td>
+<td>🔴 CRITICAL</td>
+<td>La recolección de pytest se interrumpe por completo en el entorno de dependencias que instala el job <code>core</code> de CI</td>
+<td>W1</td>
+<td>W1-T03</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/94">#94</a></td>
+</tr>
+<tr>
+<td>D1-005</td>
+<td>🟠 HIGH</td>
+<td><code>mamba_engine.py</code> / <code>MambaBaseline</code> no existen — el brief los lista y el mapa del sistema los referencia</td>
+<td>W5</td>
+<td>W5-T06</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/95">#95</a></td>
+</tr>
+<tr>
+<td>D1-006</td>
+<td>🟠 HIGH</td>
+<td><code>app.py</code> (Streamlit) no existe pero está referenciado 22 veces, el topic de GitHub sigue siendo <code>streamlit</code>, y <code>requirements.txt</code> sigue instalando Streamlit</td>
+<td>W5</td>
+<td>W5-T06</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/96">#96</a></td>
+</tr>
+<tr>
+<td>D1-007</td>
+<td>🟢 PRESERVE</td>
+<td><code>simulator_core/</code> no existe — item del contexto previo resuelto</td>
+<td>W0</td>
+<td>W0-T03</td>
+<td>GUARDRAIL → RESUELTO</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D1-008</td>
+<td>🟡 MEDIUM</td>
+<td>Efectos colaterales en tiempo de import: <code>import simulator</code> crea archivos en el CWD</td>
+<td>W2</td>
+<td>W2-T05</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D1-009</td>
+<td>🟡 MEDIUM</td>
+<td>Inventario de importabilidad: 121/146 OK sin torch, 146/146 con torch</td>
+<td>W3</td>
+<td>W3-T05</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D1-010</td>
+<td>🟢 PRESERVE</td>
+<td>Cero errores de sintaxis y cero imports relativos rotos en 245 archivos</td>
+<td>W0</td>
+<td>W0-T01</td>
+<td>GUARDRAIL</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D1-011</td>
+<td>🟡 MEDIUM</td>
+<td><code>docker-compose config</code> no verificable en el sandbox — validación YAML sustituta OK</td>
+<td>W1</td>
+<td>W1-T04</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D2-001</td>
+<td>🔴 CRITICAL</td>
+<td><code>ruff check .</code> falla (28 issues, exit 1) — bloquea <code>lint.yml</code> y la cadena completa de <code>publish.yml</code></td>
+<td>W1</td>
+<td>W1-T06</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/97">#97</a></td>
+</tr>
+<tr>
+<td>D2-002</td>
+<td>🔴 CRITICAL</td>
+<td><code>black --check .</code> reformatearía 30 de 245 archivos (exit 1)</td>
+<td>W1</td>
+<td>W1-T06</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/98">#98</a></td>
+</tr>
+<tr>
+<td>D2-003</td>
+<td>🟠 HIGH</td>
+<td>198 errores de tipo repo-wide; 36 en el slice que ejecuta CI</td>
+<td>W2</td>
+<td>W2-T06</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/99">#99</a></td>
+</tr>
+<tr>
+<td>D2-004</td>
+<td>🟠 HIGH</td>
+<td><code>mypy .</code> aborta sin analizar nada: "Duplicate module named backend"</td>
+<td>W1</td>
+<td>W1-T07</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/100">#100</a></td>
+</tr>
+<tr>
+<td>D2-005</td>
+<td>🟠 HIGH</td>
+<td>127 <code>except Exception</code> y 26 handlers que silencian con <code>pass</code>/<code>continue</code></td>
+<td>W2</td>
+<td>W2-T05</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/101">#101</a></td>
+</tr>
+<tr>
+<td>D2-006</td>
+<td>🟠 HIGH</td>
+<td><code>energy_engine.py</code> calcula y descarta 6 valores en el hot path del paisaje de energía</td>
+<td>W2</td>
+<td>W2-T07</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/102">#102</a></td>
+</tr>
+<tr>
+<td>D2-007</td>
+<td>🟢 PRESERVE</td>
+<td>Cero <code>except:</code> desnudos en todo el repo</td>
+<td>W0</td>
+<td>W0-T01</td>
+<td>GUARDRAIL</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D2-008</td>
+<td>🟡 MEDIUM</td>
+<td><code>print()</code> en código de librería — 156 ocurrencias vs 347 de logging</td>
+<td>W2</td>
+<td>W2-T04</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D2-009</td>
+<td>🟡 MEDIUM</td>
+<td><code>logging.basicConfig</code> invocado 13 veces, incluidas 2 en módulos de test y 2 a nivel de módulo de librería</td>
+<td>W2</td>
+<td>W2-T05</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D2-010</td>
+<td>🟡 MEDIUM</td>
+<td>Tres convenciones de nombrado de logger coexisten; ninguna coincide con <code>__name__</code> de forma consistente</td>
+<td>W2</td>
+<td>W2-T05</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D2-011</td>
+<td>🟡 MEDIUM</td>
+<td>12 bloques con complejidad ciclomática ≥ D; dos en grado F</td>
+<td>W5</td>
+<td>W5-T04</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D2-012</td>
+<td>🟡 MEDIUM</td>
+<td><code>train_cfc_lambda.py</code>, <code>train_cfc_landscape.py</code> y <code>train_cfc_temp.py</code> son clones ~85 % idénticos</td>
+<td>W5</td>
+<td>W5-T03</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D2-013</td>
+<td>🟡 MEDIUM</td>
+<td>Código muerto: 311 hallazgos de vulture al 60 %, con núcleos completos sin consumidores</td>
+<td>W5</td>
+<td>W5-T03</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D2-014</td>
+<td>🟡 MEDIUM</td>
+<td>Nomenclatura mixta español/inglés para el mismo concepto, a veces dentro de la misma tupla</td>
+<td>W5</td>
+<td>W5-T04</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D2-015</td>
+<td>🟢 PRESERVE</td>
+<td>Cero marcadores TODO/FIXME/HACK/XXX en el código Python</td>
+<td>W0</td>
+<td>W0-T01</td>
+<td>GUARDRAIL</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D2-016</td>
+<td>🟡 MEDIUM</td>
+<td>URLs y hosts hardcodeados; <code>interpreter_layer.py</code> ignora la variable de entorno que el resto sí respeta</td>
+<td>W2</td>
+<td>W2-T08</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D2-017</td>
+<td>🟡 MEDIUM</td>
+<td>Deuda de estilo pytest: 230 asserts estilo unittest y 18 <code>__all__</code> sin ordenar</td>
+<td>W1</td>
+<td>W1-T06</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D3-001</td>
+<td>🔴 CRITICAL</td>
+<td><code>pyproject.toml</code> no empaqueta los 31 módulos root ni <code>metrics/</code> — cualquier wheel construido es import-roto</td>
+<td>W3</td>
+<td>W3-T01</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/103">#103</a></td>
+</tr>
+<tr>
+<td>D3-002</td>
+<td>🔴 CRITICAL</td>
+<td>Tres backends FastAPI paralelos con superficies divergentes</td>
+<td>W5</td>
+<td>W5-T01</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/104">#104</a></td>
+</tr>
+<tr>
+<td>D3-003</td>
+<td>🔴 CRITICAL</td>
+<td>Colisión de namespace <code>backend</code> entre root y <code>massive-ui-ng/</code> — rompe mypy y el generador de tipos forkado</td>
+<td>W5</td>
+<td>W5-T01</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/105">#105</a></td>
+</tr>
+<tr>
+<td>D3-004</td>
+<td>🟠 HIGH</td>
+<td>La capa de DTOs Pydantic es decorativa en el backend canónico: 5 de 6 routers aceptan <code>dict[str, Any]</code> crudo</td>
+<td>W2</td>
+<td>W2-T01</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/106">#106</a></td>
+</tr>
+<tr>
+<td>D3-005</td>
+<td>🟠 HIGH</td>
+<td>Dos frontends React/Vite paralelos con un archivo de 825 líneas byte-idéntico y tipos generados divergentes</td>
+<td>W5</td>
+<td>W5-T01</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/107">#107</a></td>
+</tr>
+<tr>
+<td>D3-006</td>
+<td>🟠 HIGH</td>
+<td>31 módulos Python en la raíz del repositorio; <code>simulator.py</code> es un god-module de 2 457 líneas</td>
+<td>W5</td>
+<td>W5-T02</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/108">#108</a></td>
+</tr>
+<tr>
+<td>D3-007</td>
+<td>🟠 HIGH</td>
+<td>22 archivos Python superan las 500 líneas; 49 174 LOC totales</td>
+<td>W5</td>
+<td>W5-T02</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/109">#109</a></td>
+</tr>
+<tr>
+<td>D3-008</td>
+<td>🟠 HIGH</td>
+<td>Tres paquetes <code>utils/</code> distintos bajo tres prefijos de paquete distintos</td>
+<td>W5</td>
+<td>W5-T02</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/110">#110</a></td>
+</tr>
+<tr>
+<td>D3-009</td>
+<td>🟠 HIGH</td>
+<td>La capa de shims deprecados de root es inconsistente: 4 silenciosos, 1 con warning incondicional y docstring malformado, 1 ausente</td>
+<td>W5</td>
+<td>W5-T04</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/111">#111</a></td>
+</tr>
+<tr>
+<td>D3-010</td>
+<td>🟡 MEDIUM</td>
+<td><code>massive/</code> vs <code>massive_core/</code>: la separación de responsabilidades existe pero está invertida respecto a la intuición del nombre</td>
+<td>W5</td>
+<td>W5-T02</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D3-011</td>
+<td>🟡 MEDIUM</td>
+<td>Cada endpoint <code>/v1/*</code> está duplicado en <code>/api/v1/*</code> — 22 paths en OpenAPI para 13 operaciones</td>
+<td>W4</td>
+<td>W4-T05</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D3-012</td>
+<td>🟡 MEDIUM</td>
+<td><code>micro_engine.py</code> (root, 1 034 líneas) y <code>micro_massive/</code> (9 módulos) son dos implementaciones micro paralelas</td>
+<td>W5</td>
+<td>W5-T02</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D3-013</td>
+<td>🟡 MEDIUM</td>
+<td>El console script publicado (<code>massive-cli</code>) tiene 0 % de cobertura y 0 tests</td>
+<td>W5</td>
+<td>W5-T06</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D3-014</td>
+<td>🟡 MEDIUM</td>
+<td><code>monitoring/</code> está referenciado por el README pero no conectado a nada</td>
+<td>W3</td>
+<td>W3-T03</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D3-015</td>
+<td>🟢 PRESERVE</td>
+<td><code>adapters/mutalambda/</code> está bien diseñado: thin, sin dependencia dura, con manifiesto declarativo</td>
+<td>W0</td>
+<td>W0-T01</td>
+<td>GUARDRAIL</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D3-016</td>
+<td>🟡 MEDIUM</td>
+<td>La cadena de imports del adapter es frágil: <code>adapters → forecast → simulator → cfc_router</code></td>
+<td>W5</td>
+<td>W5-T02</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D3-017</td>
+<td>🟢 RESOLVED</td>
+<td>Dos <code>Cargo.toml</code> contradictorios para el mismo crate; el de <code>rust_core/</code> es huérfano y referencia un crate inexistente</td>
+<td>W3</td>
+<td>W3-T02</td>
+<td>RESUELTO</td>
+<td>Capa Rust eliminada del repositorio</td>
+</tr>
+<tr>
+<td>D3-018</td>
+<td>🟢 RESOLVED</td>
+<td>El núcleo Rust nunca se compila ni se testea en ningún entorno automatizado — es código muerto en la práctica</td>
+<td>W3</td>
+<td>W3-T02</td>
+<td>RESUELTO</td>
+<td>Capa Rust eliminada del repositorio</td>
+</tr>
+<tr>
+<td>D3-019</td>
+<td>🟡 MEDIUM</td>
+<td><code>scripts/gen_ts_types.py</code> no tiene interfaz CLI: <code>--dry-run</code> y <code>--stdout</code> se ignoran en silencio y el script escribe el archivo</td>
+<td>W2</td>
+<td>W2-T08</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D3-020</td>
+<td>🟢 PRESERVE</td>
+<td>Los tipos TypeScript de <code>frontend/</code> están efectivamente sincronizados con los DTOs Pydantic</td>
+<td>W0</td>
+<td>W0-T01</td>
+<td>GUARDRAIL</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D4-001</td>
+<td>🔴 CRITICAL</td>
+<td>12 de 681 tests fallan en un clone limpio: requieren pesos <code>.pt</code> que no están en el repositorio</td>
+<td>W1</td>
+<td>W1-T09</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/113">#113</a></td>
+</tr>
+<tr>
+<td>D4-002</td>
+<td>🟠 HIGH</td>
+<td>Cobertura real 59.62 % branch; el README declara 68 %; el gate de CI está en 30 %</td>
+<td>W5</td>
+<td>W5-T05</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/114">#114</a></td>
+</tr>
+<tr>
+<td>D4-003</td>
+<td>🟠 HIGH</td>
+<td>16 archivos con 0 % de cobertura (1 734 sentencias), incluido el CLI publicado y modelos científicos completos</td>
+<td>W5</td>
+<td>W5-T03</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/115">#115</a></td>
+</tr>
+<tr>
+<td>D4-004</td>
+<td>🟠 HIGH</td>
+<td>16 archivos por debajo del 50 %; <code>social_architect.py</code> al 14.4 % es la superficie de producto menos cubierta</td>
+<td>W2</td>
+<td>W2-T01</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/116">#116</a></td>
+</tr>
+<tr>
+<td>D4-005</td>
+<td>🟠 HIGH</td>
+<td>140 de 666 funciones de test (21 %) no contienen ninguna aserción</td>
+<td>W5</td>
+<td>W5-T05</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/117">#117</a></td>
+</tr>
+<tr>
+<td>D4-006</td>
+<td>🟠 HIGH</td>
+<td>3 archivos de test no pueden recolectarse sin <code>httpx</code>, que no está declarado en <code>requirements.txt</code></td>
+<td>W1</td>
+<td>W1-T03</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/118">#118</a></td>
+</tr>
+<tr>
+<td>D4-007</td>
+<td>🟡 MEDIUM</td>
+<td>Un segundo directorio de tests (<code>massive-ui-ng/tests/</code>) queda fuera de <code>testpaths</code> y nunca se ejecuta</td>
+<td>W1</td>
+<td>W1-T10</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D4-008</td>
+<td>🟡 MEDIUM</td>
+<td>No existe <code>conftest.py</code> en la raíz ni en <code>tests/</code></td>
+<td>W1</td>
+<td>W1-T10</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D4-009</td>
+<td>🟡 MEDIUM</td>
+<td>El test diseñado para cubrir el camino sin torch no puede pasar en un entorno sin torch</td>
+<td>W1</td>
+<td>W1-T10</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D4-010</td>
+<td>🟡 MEDIUM</td>
+<td><code>tests/test_cfc_router.py</code> produce 4 fallos en entorno sin torch, incluido <code>test_simular_works_without_cfc_models</code></td>
+<td>W1</td>
+<td>W1-T01</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D4-011</td>
+<td>🟡 MEDIUM</td>
+<td>El benchmark PVU canónico termina en 0 pero emite <code>ConvergenceWarning</code> de statsmodels en los casos publicados</td>
+<td>W6</td>
+<td>W6-T02</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D4-012</td>
+<td>🟡 MEDIUM</td>
+<td>En el caso de muestra publicado, MASSIVE pierde contra un baseline lineal (<code>ridge_lags</code>) en MAE y en accuracy direccional</td>
+<td>W6</td>
+<td>W6-T02</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D4-013</td>
+<td>🟢 PRESERVE</td>
+<td>Suite predominantemente de integración real: ratio de mocks bajo y sólo 2 skips en 666 tests</td>
+<td>W0</td>
+<td>W0-T01</td>
+<td>GUARDRAIL</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D4-014</td>
+<td>🟡 MEDIUM</td>
+<td>Mezcla de <code>unittest.TestCase</code> y pytest en los mismos archivos; 230 asserts estilo unittest</td>
+<td>W1</td>
+<td>W1-T10</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D5-001</td>
+<td>🔴 CRITICAL</td>
+<td>El backend canónico no impone ningún límite a <code>pasos</code>, <code>n_agents</code> ni <code>max_intentos</code> — las protecciones anti-DoS documentadas sólo existen en los caminos deprecados</td>
+<td>W2</td>
+<td>W2-T01</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/119">#119</a></td>
+</tr>
+<tr>
+<td>D5-002</td>
+<td>🟢 RESOLVED</td>
+<td><code>pip install -e .</code> es imposible: el build-backend es <code>maturin</code></td>
+<td>W3</td>
+<td>W3-T01</td>
+<td>RESUELTO</td>
+<td>Build backend cambiado a setuptools, Rust eliminado</td>
+</tr>
+<tr>
+<td>D5-003</td>
+<td>🟠 HIGH</td>
+<td>0 de 30 dependencias pinneadas y no existe lockfile de Python</td>
+<td>W2</td>
+<td>W2-T10</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/121">#121</a></td>
+</tr>
+<tr>
+<td>D5-004</td>
+<td>🟠 HIGH</td>
+<td><code>requirements.txt</code> y <code>pyproject.toml</code> declaran conjuntos de dependencias distintos y con especificadores distintos</td>
+<td>W2</td>
+<td>W2-T10</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/122">#122</a></td>
+</tr>
+<tr>
+<td>D5-005</td>
+<td>🟠 HIGH</td>
+<td>6 paquetes importados por el código no están declarados en ninguna parte (+ <code>httpx</code> para tests)</td>
+<td>W1</td>
+<td>W1-T03</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/123">#123</a></td>
+</tr>
+<tr>
+<td>D5-006</td>
+<td>🟠 HIGH</td>
+<td>Dependencias declaradas con cero imports: <code>torchdiffeq</code> y <code>streamlit</code></td>
+<td>W2</td>
+<td>W2-T10</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/124">#124</a></td>
+</tr>
+<tr>
+<td>D5-007</td>
+<td>🟠 HIGH</td>
+<td>El <code>requirements.txt</code> de producción instala pytest y el stack completo de MkDocs en la imagen Docker</td>
+<td>W2</td>
+<td>W2-T10</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/125">#125</a></td>
+</tr>
+<tr>
+<td>D5-008</td>
+<td>🟠 HIGH</td>
+<td><code>torch</code> es una dependencia dura de facto pero opcional de jure</td>
+<td>W1</td>
+<td>W1-T02</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/126">#126</a></td>
+</tr>
+<tr>
+<td>D5-009</td>
+<td>🟡 MEDIUM</td>
+<td><code>GET /metrics</code> responde 200 sin autenticación y nginx lo expone públicamente</td>
+<td>W2</td>
+<td>W2-T02</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D5-010</td>
+<td>🟡 MEDIUM</td>
+<td><code>.env.example</code> propone <code>MASSIVE_ALLOWED_HOSTS=*</code> (wildcard)</td>
+<td>W2</td>
+<td>W2-T02</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D5-011</td>
+<td>🟡 MEDIUM</td>
+<td><code>.env.example</code> duplica claves y documenta explícitamente dos convenciones en competencia</td>
+<td>W2</td>
+<td>W2-T10</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D5-012</td>
+<td>🟡 MEDIUM</td>
+<td><code>.env.local.example</code> es un subconjunto divergente de <code>.env.example</code>, y <code>docker-compose.yml</code> monta ambos</td>
+<td>W2</td>
+<td>W2-T10</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D5-013</td>
+<td>🟡 MEDIUM</td>
+<td><code>MASSIVE_ENV</code> sin definir resuelve a "development", lo que activa la clave fallback publicada <code>dev-secret-key</code></td>
+<td>W2</td>
+<td>W2-T02</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D5-014</td>
+<td>🟡 MEDIUM</td>
+<td>CSP con <code>'unsafe-inline'</code> en script-src y style-src; header deprecado <code>X-XSS-Protection</code>; sin <code>server_tokens off</code></td>
+<td>W2</td>
+<td>W2-T03</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D5-015</td>
+<td>🟡 MEDIUM</td>
+<td>El <code>add_header</code> del location de assets estáticos cancela todos los headers de seguridad del nivel server (regla de herencia de nginx)</td>
+<td>W2</td>
+<td>W2-T03</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D5-016</td>
+<td>🟡 MEDIUM</td>
+<td>El deploy a Hugging Face embebe el token en la URL del remoto git y hardcodea el usuario</td>
+<td>W3</td>
+<td>W3-T04</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D5-017</td>
+<td>🟢 PRESERVE</td>
+<td><code>pip-audit</code> no encuentra vulnerabilidades conocidas en <code>requirements.txt</code></td>
+<td>W0</td>
+<td>W0-T01</td>
+<td>GUARDRAIL</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D5-018</td>
+<td>🟢 PRESERVE</td>
+<td>Sin credenciales en el árbol; <code>llm_credentials.py</code> está bien diseñado. Items <code>test-zapier.txt</code> y secretos commiteados: RESUELTOS</td>
+<td>W0</td>
+<td>W0-T03</td>
+<td>GUARDRAIL → RESUELTO (test-zapier.txt)</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D5-019</td>
+<td>🟡 MEDIUM</td>
+<td>Typo en <code>.gitignore</code>: <code>repomack-output*.xml</code> en lugar de <code>repomix-output*.xml</code> — el bundle generado NO está ignorado</td>
+<td>W1</td>
+<td>W1-T05</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D5-020</td>
+<td>🟡 MEDIUM</td>
+<td>Las reglas de <code>.gitignore</code> para binarios y artefactos son ineficaces porque los archivos ya están trackeados</td>
+<td>W1</td>
+<td>W1-T05</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D5-021</td>
+<td>🟡 MEDIUM</td>
+<td>Estado runtime commiteado: <code>data/ui_ng/runs.db</code> (SQLite, 40 KB)</td>
+<td>W1</td>
+<td>W1-T05</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D5-022</td>
+<td>🟡 MEDIUM</td>
+<td><code>.dockerignore</code> excluye <code>models/</code>, <code>datasets/</code> y <code>data/</code> — la imagen de producción arranca sin pesos CfC; además no excluye docs ni el segundo frontend, y tiene un glob malformado</td>
+<td>W1</td>
+<td>W1-T05</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D5-023</td>
+<td>🟡 MEDIUM</td>
+<td><code>gitleaks.toml</code> permite 14 stopwords, incluida la clave de desarrollo activa</td>
+<td>W2</td>
+<td>W2-T02</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D5-024</td>
+<td>🟡 MEDIUM</td>
+<td>Faltan <code>SECURITY.md</code>, <code>dependabot.yml</code>, <code>CODEOWNERS</code> y <code>.github/ISSUE_TEMPLATE/</code></td>
+<td>W0</td>
+<td>W0-T02</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/153">#153</a></td>
+</tr>
+<tr>
+<td>D6-001</td>
+<td>🔴 CRITICAL</td>
+<td>La tabla "Quality &amp; production posture" del README contiene 4 afirmaciones falsas verificables</td>
+<td>W4</td>
+<td>W4-T01</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/127">#127</a></td>
+</tr>
+<tr>
+<td>D6-002</td>
+<td>🟠 HIGH</td>
+<td><code>README.md</code> y <code>README_ES.md</code> discrepan en cifras y en enlaces pese a tener la misma estructura</td>
+<td>W4</td>
+<td>W4-T01</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/128">#128</a></td>
+</tr>
+<tr>
+<td>D6-003</td>
+<td>🟠 HIGH</td>
+<td>21 archivos Markdown de planning/reportes/agentes en la raíz (≈250 KB)</td>
+<td>W4</td>
+<td>W4-T02</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/129">#129</a></td>
+</tr>
+<tr>
+<td>D6-004</td>
+<td>🟠 HIGH</td>
+<td>356 referencias a rutas inexistentes repartidas en 114 archivos Markdown</td>
+<td>W4</td>
+<td>W4-T03</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/130">#130</a></td>
+</tr>
+<tr>
+<td>D6-005</td>
+<td>🟠 HIGH</td>
+<td>Rutas absolutas de la máquina personal del autor incrustadas en la documentación pública (16 ocurrencias)</td>
+<td>W4</td>
+<td>W4-T03</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/131">#131</a></td>
+</tr>
+<tr>
+<td>D6-006</td>
+<td>🟠 HIGH</td>
+<td>Tres reportes de root tienen fechas anteriores a la creación del repositorio</td>
+<td>W1</td>
+<td>W1-T08</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/132">#132</a></td>
+</tr>
+<tr>
+<td>D6-007</td>
+<td>🟠 HIGH</td>
+<td><code>REPORT_OPTIMIZATION.md</code> describe una arquitectura Numba/JIT que fue eliminada del código</td>
+<td>W4</td>
+<td>W4-T03</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/133">#133</a></td>
+</tr>
+<tr>
+<td>D6-008</td>
+<td>🟠 HIGH</td>
+<td><code>MASSIVE_SYSTEM_MAP.md</code> (36 KB, el mapa autoritativo) referencia 11 archivos inexistentes y componentes retirados</td>
+<td>W4</td>
+<td>W4-T03</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/134">#134</a></td>
+</tr>
+<tr>
+<td>D6-009</td>
+<td>🟠 HIGH</td>
+<td>35 de 60 documentos de <code>docs/</code> son huérfanos del nav de MkDocs — invisibles en el sitio publicado</td>
+<td>W4</td>
+<td>W4-T04</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/135">#135</a></td>
+</tr>
+<tr>
+<td>D6-010</td>
+<td>🟠 HIGH</td>
+<td>La entrada "Spanish Version" del nav de MkDocs apunta a un stub de 5 líneas</td>
+<td>W4</td>
+<td>W4-T03</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/136">#136</a></td>
+</tr>
+<tr>
+<td>D6-011</td>
+<td>🟡 MEDIUM</td>
+<td>24 de 245 archivos Python no tienen docstring de módulo</td>
+<td>W4</td>
+<td>W4-T03</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D6-012</td>
+<td>🟡 MEDIUM</td>
+<td><code>CHANGELOG.md</code> tiene dos secciones <code>[Unreleased]</code> y ninguna versión SemVer; no hay releases ni tags en GitHub</td>
+<td>W3</td>
+<td>W3-T04</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D6-013</td>
+<td>🟡 MEDIUM</td>
+<td>El README indica servir MkDocs en el puerto 8000, que es el puerto de la API</td>
+<td>W1</td>
+<td>W1-T08</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D6-014</td>
+<td>🟡 MEDIUM</td>
+<td>Recuentos de endpoints desactualizados en README y en el árbol de layout</td>
+<td>W4</td>
+<td>W4-T01</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D6-015</td>
+<td>🟡 MEDIUM</td>
+<td>Seis archivos de instrucciones para agentes/IA con propósitos solapados</td>
+<td>W4</td>
+<td>W4-T04</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D6-016</td>
+<td>🟡 MEDIUM</td>
+<td><code>.github/Agent_Copilot2</code>: archivo sin extensión, en la ubicación equivocada y con frontmatter malformado</td>
+<td>W1</td>
+<td>W1-T08</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D6-017</td>
+<td>🟡 MEDIUM</td>
+<td><code>.github/agents/my-agent.agent.md</code> está envuelto en un code fence y tiene nombre de placeholder</td>
+<td>W1</td>
+<td>W1-T08</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D6-018</td>
+<td>🟢 PRESERVE</td>
+<td><code>mkdocs build --strict</code> compila sin errores ni warnings</td>
+<td>W0</td>
+<td>W0-T01</td>
+<td>GUARDRAIL</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D6-019</td>
+<td>🟢 PRESERVE</td>
+<td>Existen <code>CHANGELOG.md</code>, <code>CONTRIBUTING.md</code>, <code>CODE_OF_CONDUCT.md</code> y <code>PULL_REQUEST_TEMPLATE.md</code></td>
+<td>W0</td>
+<td>W0-T01</td>
+<td>GUARDRAIL</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D7-001</td>
+<td>🔴 CRITICAL</td>
+<td>Los 13 workflows fallan en <code>main</code>; HEAD nunca fue validado por CI (bloqueo de facturación de GitHub Actions desde 2026-09-13)</td>
+<td>W0</td>
+<td>W0-T01</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/137">#137</a></td>
+</tr>
+<tr>
+<td>D7-002</td>
+<td>🔴 CRITICAL</td>
+<td>Aun con Actions restaurado, el pipeline está rojo por mérito propio en 7 puntos independientes</td>
+<td>W3</td>
+<td>W3-T05</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/138">#138</a></td>
+</tr>
+<tr>
+<td>D7-003</td>
+<td>🔴 CRITICAL</td>
+<td>El job <code>core</code> de <code>pytest.yml</code> instala dependencias sin torch y luego ejecuta los tests que requieren torch</td>
+<td>W2</td>
+<td>W2-T09</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/139">#139</a></td>
+</tr>
+<tr>
+<td>D7-004</td>
+<td>🔴 CRITICAL</td>
+<td><code>Dockerfile.optimized</code> tiene una línea 1 que no es sintaxis Docker válida — el archivo no puede construirse</td>
+<td>W1</td>
+<td>W1-T04</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/140">#140</a></td>
+</tr>
+<tr>
+<td>D7-005</td>
+<td>🟠 HIGH</td>
+<td>Bucle de contradicción en la ruta de despliegue: cada archivo remite al siguiente, que remite al anterior</td>
+<td>W1</td>
+<td>W1-T04</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/141">#141</a></td>
+</tr>
+<tr>
+<td>D7-006</td>
+<td>🟠 HIGH</td>
+<td>El type checking no puede fallar CI: <code>|| true</code> en <code>lint.yml</code> y <code>continue-on-error</code> en <code>typecheck.yml</code> — y hoy hay un error real que se reporta como éxito</td>
+<td>W2</td>
+<td>W2-T06</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/142">#142</a></td>
+</tr>
+<tr>
+<td>D7-007</td>
+<td>🟠 HIGH</td>
+<td><code>massive-ui-ng/infra/.github/workflows/ui-ng.yml</code> es un workflow muerto con rutas incorrectas para su propia ubicación</td>
+<td>W5</td>
+<td>W5-T01</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/143">#143</a></td>
+</tr>
+<tr>
+<td>D7-008</td>
+<td>🟠 HIGH</td>
+<td><code>publish.yml</code> encadena 10 jobs detrás de un gate de lint que está rojo y de dos jobs que requieren un toolchain que nadie instala</td>
+<td>W3</td>
+<td>W3-T04</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/144">#144</a></td>
+</tr>
+<tr>
+<td>D7-009</td>
+<td>🟢 RESOLVED</td>
+<td>Ningún workflow, Dockerfile o target de Make construye o testa el crate Rust</td>
+<td>W3</td>
+<td>W3-T02</td>
+<td>RESUELTO</td>
+<td>Capa Rust eliminada del repositorio</td>
+</tr>
+<tr>
+<td>D7-010</td>
+<td>🟡 MEDIUM</td>
+<td><code>pvu-validation.yml</code> no se dispara en push a <code>main</code></td>
+<td>W2</td>
+<td>W2-T09</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D7-011</td>
+<td>🟡 MEDIUM</td>
+<td><code>main_massive.yml</code> despliega a Azure Web App: objetivo de despliegue huérfano, CRLF, y <code>python-version: '3.x'</code></td>
+<td>W3</td>
+<td>W3-T03</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D7-012</td>
+<td>🟡 MEDIUM</td>
+<td>Clave de API estática y débil en los smoke tests de CI</td>
+<td>W2</td>
+<td>W2-T09</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D7-013</td>
+<td>🟡 MEDIUM</td>
+<td><code>secret_scan.yml</code> hace <code>fetch-depth: 0</code> sobre 1 735 runs de historial sin <code>GITLEAKS_LICENSE</code> ni <code>paths-ignore</code></td>
+<td>W2</td>
+<td>W2-T09</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D7-014</td>
+<td>🟡 MEDIUM</td>
+<td><code>mypy.ini</code> en modo permisivo, sin <code>exclude</code>, con opt-outs por módulo y duplicado de configuración con <code>pyproject.toml</code></td>
+<td>W1</td>
+<td>W1-T07</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D7-015</td>
+<td>🟡 MEDIUM</td>
+<td>Cuatro combinaciones de despliegue sin una ruta canónica documentada</td>
+<td>W3</td>
+<td>W3-T03</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D7-016</td>
+<td>🟡 MEDIUM</td>
+<td><code>supervisord.conf</code> gestiona 2 procesos en un contenedor (nginx como root + uvicorn como appuser)</td>
+<td>W2</td>
+<td>W2-T03</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D7-017</td>
+<td>🟢 PRESERVE</td>
+<td>Los 13 workflows, los 2 compose, <code>mkdocs.yml</code> y los 2 <code>configs/*.yaml</code> parsean sin errores</td>
+<td>W0</td>
+<td>W0-T01</td>
+<td>GUARDRAIL</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D7-018</td>
+<td>🟢 PRESERVE</td>
+<td><code>Makefile</code> e <code>install.sh</code> ofrecen una superficie de desarrollador coherente y auto-documentada</td>
+<td>W0</td>
+<td>W0-T01</td>
+<td>GUARDRAIL</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D7-019</td>
+<td>🟡 MEDIUM</td>
+<td><code>pyproject.toml</code> declara <code>massive-cli</code> como único script pero el CLI no está probado, y <code>addopts</code> desactiva un plugin no declarado</td>
+<td>W5</td>
+<td>W5-T06</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D7-020</td>
+<td>🟡 MEDIUM</td>
+<td><code>.gitattributes</code> no declara binarios para <code>.pt</code>, <code>.npz</code>, <code>.png</code> ni <code>.db</code> pese a <code>* text=auto</code></td>
+<td>W1</td>
+<td>W1-T05</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D8-001</td>
+<td>🟠 HIGH</td>
+<td>106 entradas en la raíz del repositorio (78 archivos + 28 directorios) — 7× el umbral razonable</td>
+<td>W4</td>
+<td>W4-T02</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/145">#145</a></td>
+</tr>
+<tr>
+<td>D8-002</td>
+<td>🟠 HIGH</td>
+<td>Cero releases, cero tags, cero versiones semánticas — con un pipeline de publicación a PyPI ya escrito</td>
+<td>W3</td>
+<td>W3-T01</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/146">#146</a></td>
+</tr>
+<tr>
+<td>D8-003</td>
+<td>🟠 HIGH</td>
+<td>GitHub no reconoce la licencia (reporta "Other") aunque <code>pyproject.toml</code> y el README declaran Apache-2.0</td>
+<td>W1</td>
+<td>W1-T08</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/147">#147</a></td>
+</tr>
+<tr>
+<td>D8-004</td>
+<td>🟡 MEDIUM</td>
+<td>Topics de GitHub desactualizados y con una errata</td>
+<td>W1</td>
+<td>W1-T08</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D8-005</td>
+<td>🟡 MEDIUM</td>
+<td>Badges del README: 5 presentes (2 de ellos rotos por estado de CI) y 7 relevantes ausentes</td>
+<td>W4</td>
+<td>W4-T01</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D8-006</td>
+<td>🟡 MEDIUM</td>
+<td>Sin issue templates, sin labels de triaje visibles, 90 issues cerrados y 0 abiertos</td>
+<td>W0</td>
+<td>W0-T02</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D8-007</td>
+<td>🟡 MEDIUM</td>
+<td>0 estrellas, 0 forks, 0 watchers tras 5.5 meses — el repo no tiene tracción ni señales sociales</td>
+<td>W6</td>
+<td>W6-T04</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D8-008</td>
+<td>🟢 PRESERVE</td>
+<td>El Quick start del README funciona de punta a punta — verificado en vivo</td>
+<td>W0</td>
+<td>W0-T01</td>
+<td>GUARDRAIL</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D8-009</td>
+<td>🟢 PRESERVE</td>
+<td>El ejemplo más simple de <code>simulator</code> del brief de auditoría ejecuta y produce salida correcta</td>
+<td>W0</td>
+<td>W0-T01</td>
+<td>GUARDRAIL</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D8-010</td>
+<td>🟡 MEDIUM</td>
+<td>El README es visualmente rico pero su tabla de arquitectura y su árbol de layout omiten la mitad del repositorio</td>
+<td>W4</td>
+<td>W4-T01</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D8-011</td>
+<td>🟡 MEDIUM</td>
+<td>El renombrado UIL → UI-NG → MASSIVE está incompleto en nombres de archivo y de paquete</td>
+<td>W4</td>
+<td>W4-T05</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D8-012</td>
+<td>🟢 PRESERVE</td>
+<td><code>test-zapier.txt</code> y <code>repomix-output.xml</code>: ambos items sospechosos del brief están ausentes del árbol</td>
+<td>W1</td>
+<td>W1-T05</td>
+<td>GUARDRAIL → RESUELTO</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D9-001</td>
+<td>🟠 HIGH</td>
+<td><code>LandscapeCache</code> no tiene TTL: la columna <code>created_at</code> se escribe y nunca se lee, y el dict en memoria crece sin límite</td>
+<td>W2</td>
+<td>W2-T04</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/148">#148</a></td>
+</tr>
+<tr>
+<td>D9-002</td>
+<td>🟠 HIGH</td>
+<td>Clave de cache = MD5 truncado a 48 bits del objetivo, sin componente de versión — riesgo de colisión y de envenenamiento entre versiones</td>
+<td>W2</td>
+<td>W2-T04</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/149">#149</a></td>
+</tr>
+<tr>
+<td>D9-003</td>
+<td>🟠 HIGH</td>
+<td>La afirmación de thread-safety del cache es falsa y los tres fallos de E/S se tragan en silencio</td>
+<td>W2</td>
+<td>W2-T04</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/150">#150</a></td>
+</tr>
+<tr>
+<td>D9-004</td>
+<td>🟠 HIGH</td>
+<td><code>energy_engine.py</code> computa y descarta 6 valores en el cálculo del paisaje — incluido un coeficiente de Gini</td>
+<td>W2</td>
+<td>W2-T07</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/151">#151</a></td>
+</tr>
+<tr>
+<td>D9-005</td>
+<td>🟠 HIGH</td>
+<td>La tabla de escalabilidad del README no es reproducible desde nada que exista en el repositorio</td>
+<td>W6</td>
+<td>W6-T01</td>
+<td>PENDIENTE</td>
+<td><a href="https://github.com/Adlgr87/MASSIVE/issues/152">#152</a></td>
+</tr>
+<tr>
+<td>D9-006</td>
+<td>🟡 MEDIUM</td>
+<td><code>profiling_results/</code> no existe; el material de profiling está disperso en 3 sitios sin conexión con CI</td>
+<td>W6</td>
+<td>W6-T01</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D9-007</td>
+<td>🟢 RESOLVED</td>
+<td>El fallback Python de <code>rust_core.py</code> es correcto y está testeado, pero no existe test de paridad entre las dos implementaciones</td>
+<td>W3</td>
+<td>W3-T02</td>
+<td>RESUELTO</td>
+<td>Capa Rust eliminada, no existe rust_core.py</td>
+</tr>
+<tr>
+<td>D9-008</td>
+<td>🟡 MEDIUM</td>
+<td><code>multilayer_engine_sparse.py</code> (789 líneas) duplica <code>multilayer_engine.py</code> (1 025 líneas) y está exento de typing</td>
+<td>W6</td>
+<td>W6-T03</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D9-009</td>
+<td>🟡 MEDIUM</td>
+<td>La narrativa de "uint8-quantized" no explica el footprint real: la extrapolación naive queda 88× por debajo de lo declarado</td>
+<td>W6</td>
+<td>W6-T01</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D9-010</td>
+<td>🟡 MEDIUM</td>
+<td>El historial de simulación se acumula en memoria sin política de streaming ni checkpointing documentado</td>
+<td>W6</td>
+<td>W6-T03</td>
+<td>PENDIENTE</td>
+<td>-</td>
+</tr>
+<tr>
+<td>D9-011</td>
+<td>🟢 PRESERVE</td>
+<td>Complejidad ciclomática media B (9.53) — razonable para un codebase científico de 49 K LOC</td>
+<td>W6</td>
+<td>W6-T03</td>
+<td>GUARDRAIL</td>
+<td>-</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="resumen-de-cobertura">Resumen de cobertura</h2>
+<table>
+<thead>
+<tr>
+<th>Severidad</th>
+<th>Hallazgos</th>
+<th>Issues</th>
+<th>Estado tracker</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>🔴 CRITICAL</td>
+<td>17</td>
+<td>17</td>
+<td>PENDIENTE</td>
+</tr>
+<tr>
+<td>🟠 HIGH</td>
+<td>45</td>
+<td>45</td>
+<td>PENDIENTE</td>
+</tr>
+<tr>
+<td>🟡 MEDIUM</td>
+<td>69</td>
+<td>0</td>
+<td>PENDIENTE</td>
+</tr>
+<tr>
+<td>🟢 PRESERVE</td>
+<td>17</td>
+<td>0</td>
+<td>17 preservados, 3 resueltos</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>148</strong></td>
+<td><strong>62</strong></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h2 id="estados-del-tracker">Estados del tracker</h2>
+<table>
+<thead>
+<tr>
+<th>Estado</th>
+<th>Significado</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PENDIENTE</code></td>
+<td>Hallazgo sin tratar; 🔴/🟠 tiene issue abierto</td>
+</tr>
+<tr>
+<td><code>RESUELTO</code></td>
+<td>Hallazgo 🟢 ya satisfecho en la línea base</td>
+</tr>
+<tr>
+<td>Preservado</td>
+<td>Hallazgo 🟢 que debe mantenerse (G-1)</td>
+</tr>
+<tr>
+<td><code>CERRADO</code></td>
+<td>Hallazgo tratado por una tarea del workflow</td>
+</tr>
+</tbody>
+</table>
+<h2 id="referencias">Referencias</h2>
+<ul>
+<li><code>AUDIT_REPORT_2026-09-15.md</code> — reporte de auditoría original (148 hallazgos)</li>
+<li><code>AUDIT_REMEDIATION_WORKFLOW.md</code> — plan de remediación por olas</li>
+<li><a href="https://github.com/Adlgr87/MASSIVE/issues">GitHub Issues</a> — seguimiento por hallazgo</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.sections", "navigation.expand", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

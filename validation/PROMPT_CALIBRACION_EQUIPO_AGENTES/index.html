@@ -1,0 +1,3036 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="MASSIVE — Hybrid social dynamics simulator. Numerical core + LLM as regime selector.">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>PROMPT — Equipo de agentes: investigación, datos y calibración de MASSIVE - MASSIVE Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#prompt-equipo-de-agentes-investigacion-datos-y-calibracion-de-massive" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="MASSIVE Documentation" class="md-header__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MASSIVE Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              PROMPT — Equipo de agentes: investigación, datos y calibración de MASSIVE
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="MASSIVE Documentation" class="md-nav__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    MASSIVE Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../factbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Factbook Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM Interface
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    LLM Interface
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../MASSIVE_LLM_INTERFACE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface spec
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LLM_PROMPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompt templates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Readiness
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Production Readiness
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../production-readiness-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Audit & Risk Matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/current-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (current)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/target-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (target)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/PRODUCTION_ARCHITECTURE_SPEC/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Architecture Spec
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/safety_protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_7" id="__nav_5_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runbooks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Runbooks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/local-development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/incidents/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Incidents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/threat-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/secrets-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secrets & Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OBSERVABILITY_AND_SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability & Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backup_restore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup & Restore
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../disaster_recovery_plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disaster Recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DOCKER/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ENV_VARS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Environment Variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NAMING_CONVENTIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NAMING_CONVENTIONS.md
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation (PVU-BS)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Validation (PVU-BS)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PVU_MASSIVE_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../PVU_MASSIVE_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocolo (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../preregistration_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registration (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../preregistration_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registro (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation_report_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report template (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../validation_report_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plantilla de reporte (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cards/BENCHMARK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Card
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cards/REPRODUCIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reproducibility Card
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Testing
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../testing/test-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Test Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../performance/baseline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Baseline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../performance_report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#0-contexto-imprescindible-leer-antes-de-planificar-nada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        0. CONTEXTO IMPRESCINDIBLE (leer antes de planificar nada)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="0. CONTEXTO IMPRESCINDIBLE (leer antes de planificar nada)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hecho-1-el-corpus-real-es-minusculo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hecho 1 — El corpus real es minúsculo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hecho-1-bis-la-variable-objetivo-no-esta-definida-y-no-es-la-misma-en-todos-los-casos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hecho 1-bis — La variable objetivo no está definida, y no es la misma en todos los casos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hecho-2-el-corrector-cfc-fallo-y-se-sabe-exactamente-por-que" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hecho 2 — El corrector CfC falló, y se sabe exactamente por qué
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hecho-3-la-precision-que-se-publicaba-era-un-artefacto-aritmetico" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hecho 3 — La precisión que se publicaba era un artefacto aritmético
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hecho-4-la-paridad-de-features-ya-se-corrigio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hecho 4 — La paridad de features ya se corrigió
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-roles-del-equipo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. ROLES DEL EQUIPO
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-bis-sprint-0-tres-entregables-obligatorios-antes-de-todo-lo-demas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-BIS. SPRINT 0 — TRES ENTREGABLES OBLIGATORIOS ANTES DE TODO LO DEMÁS
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1-BIS. SPRINT 0 — TRES ENTREGABLES OBLIGATORIOS ANTES DE TODO LO DEMÁS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#g0-etiqueta-de-la-variable-objetivo-el-lexico-de-sentimiento" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        G0 — Etiqueta de la variable objetivo: el léxico de sentimiento
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#g0-bis-definicion-de-la-variable-objetivo-y-del-operador-de-observacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        G0-bis — Definición de la variable objetivo y del operador de observación
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#g0-ter-plan-de-sourcing-con-fuentes-y-costos-reales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        G0-ter — Plan de sourcing con fuentes y costos reales
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#g0-quater-lineas-base-sobre-los-12-casos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        G0-quater — Líneas base sobre los 12 casos
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-fase-1-adquisicion-de-datos-bloqueante" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. FASE 1 — ADQUISICIÓN DE DATOS (bloqueante)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. FASE 1 — ADQUISICIÓN DE DATOS (bloqueante)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#21-que-buscar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.1 Qué buscar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#22-criterios-de-aceptacion-de-un-caso" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.2 Criterios de aceptación de un caso
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#23-trampa-a-evitar" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.3 Trampa a evitar
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#24-escalera-de-capacidad-no-es-un-muro-cada-peldano-habilita-trabajo-real" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2.4 Escalera de capacidad (no es un muro: cada peldaño habilita trabajo real)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-fase-2-estructuracion-y-control-de-calidad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. FASE 2 — ESTRUCTURACIÓN Y CONTROL DE CALIDAD
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-fase-3-calibracion-de-los-motores" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. FASE 3 — CALIBRACIÓN DE LOS MOTORES
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. FASE 3 — CALIBRACIÓN DE LOS MOTORES">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#41-parametros-candidatos-ubicaciones-reales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.1 Parámetros candidatos (ubicaciones reales)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-antes-de-calibrar-analisis-de-identificabilidad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2 Antes de calibrar: análisis de identificabilidad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-bis-la-granularidad-de-los-datos-acota-la-del-modelo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2-bis La granularidad de los datos acota la del modelo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#42-ter-pooling-jerarquico-bayesiano-entre-casos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.2-ter Pooling jerárquico bayesiano entre casos
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#43-metodo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.3 Método
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#44-preservar-invariantes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4.4 Preservar invariantes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-fase-4-redes-neuronales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. FASE 4 — REDES NEURONALES
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. FASE 4 — REDES NEURONALES">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#51-puerta-de-entrada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.1 Puerta de entrada
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#52-protocolo-de-entrenamiento" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.2 Protocolo de entrenamiento
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#53-disciplina-de-capacidad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.3 Disciplina de capacidad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#54-los-tres-modelos-ausentes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5.4 Los tres modelos ausentes
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-areas-que-no-estaban-en-el-encargo-y-si-importan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. ÁREAS QUE NO ESTABAN EN EL ENCARGO Y SÍ IMPORTAN
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. ÁREAS QUE NO ESTABAN EN EL ENCARGO Y SÍ IMPORTAN">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#61-el-lexico-de-sentimiento-promovido-a-g0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.1 El léxico de sentimiento → promovido a G0
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#62-cuantificacion-de-incertidumbre-de-extremo-a-extremo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.2 Cuantificación de incertidumbre de extremo a extremo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#63-calibracion-de-la-propia-incertidumbre" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.3 Calibración de la propia incertidumbre
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#64-ablacion-por-mecanismo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.4 Ablación por mecanismo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#65-validacion-fuera-de-distribucion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.5 Validación fuera de distribución
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#66-zona-muerta-de-la-cuantizacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.6 Zona muerta de la cuantización
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#67-sesgo-y-etica-de-los-datos-de-opinion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.7 Sesgo y ética de los datos de opinión
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#68-dominio-de-validez-declarado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.8 Dominio de validez declarado
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#69-datos-sinteticos-solo-como-puente" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.9 Datos sintéticos: solo como puente
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#610-deriva-y-recalibracion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.10 Deriva y recalibración
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#611-reproducibilidad-de-la-calibracion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6.11 Reproducibilidad de la calibración
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-reglas-inquebrantables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. REGLAS INQUEBRANTABLES
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-entregables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. ENTREGABLES
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-criterio-de-exito" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. CRITERIO DE ÉXITO
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="prompt-equipo-de-agentes-investigacion-datos-y-calibracion-de-massive">PROMPT — Equipo de agentes: investigación, datos y calibración de MASSIVE</h1>
+<p><em>Objetivo: que la simulación produzca resultados defendibles frente a la realidad,
+no que parezca que los produce.</em></p>
+<hr />
+<h2 id="0-contexto-imprescindible-leer-antes-de-planificar-nada">0. CONTEXTO IMPRESCINDIBLE (leer antes de planificar nada)</h2>
+<p>MASSIVE ya es un sistema funcional: 837 tests en verde, API versionada <code>/v1</code>,
+motores deterministas con semilla, y una capa científica opt-in. <strong>Lo que falta
+no es código: son datos y calibración.</strong></p>
+<p>Un diagnóstico previo del repositorio dejó cuatro hechos que condicionan todo el
+trabajo. No los reinvestiguéis: partid de ellos.</p>
+<h3 id="hecho-1-el-corpus-real-es-minusculo">Hecho 1 — El corpus real es minúsculo</h3>
+<p><code>datasets/real_cases/</code> contiene <strong>12 casos</strong>, y cada uno tiene entre <strong>11 y 15
+puntos temporales</strong>. En total, <strong>~170 observaciones reales</strong>.</p>
+<table>
+<thead>
+<tr>
+<th>Caso</th>
+<th style="text-align: right;">Puntos</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>brazil_election_2022</td>
+<td style="text-align: right;">12</td>
+</tr>
+<tr>
+<td>brexit_referendum_2016</td>
+<td style="text-align: right;">11</td>
+</tr>
+<tr>
+<td>chile_estallido_2019</td>
+<td style="text-align: right;">15</td>
+</tr>
+<tr>
+<td>colombia_paro_2021</td>
+<td style="text-align: right;">15</td>
+</tr>
+<tr>
+<td>egypt_arab_spring_2011</td>
+<td style="text-align: right;">14</td>
+</tr>
+<tr>
+<td>france_gilets_jaunes_2018</td>
+<td style="text-align: right;">15</td>
+</tr>
+<tr>
+<td>germany_pegida_2014</td>
+<td style="text-align: right;">15</td>
+</tr>
+<tr>
+<td>hong_kong_protests_2019</td>
+<td style="text-align: right;">15</td>
+</tr>
+<tr>
+<td>iran_mahsa_amini_2022</td>
+<td style="text-align: right;">14</td>
+</tr>
+<tr>
+<td>myanmar_coup_cdm_2021</td>
+<td style="text-align: right;">15</td>
+</tr>
+<tr>
+<td>south_korea_candlelight_2016</td>
+<td style="text-align: right;">14</td>
+</tr>
+<tr>
+<td>us_election_2020</td>
+<td style="text-align: right;">14</td>
+</tr>
+</tbody>
+</table>
+<h3 id="hecho-1-bis-la-variable-objetivo-no-esta-definida-y-no-es-la-misma-en-todos-los-casos">Hecho 1-bis — La variable objetivo no está definida, y no es la misma en todos los casos</h3>
+<p>Esto es <strong>más bloqueante que la escasez de datos</strong> y se descubrió al construir el
+validador. Los doce <code>timeseries.csv</code> tienen la columna <code>P</code>, pero <strong>ningún <code>meta.json</code>
+dice qué mide</strong>, y demostrablemente mide cosas distintas:</p>
+<table>
+<thead>
+<tr>
+<th>Caso</th>
+<th><code>scenario_type</code></th>
+<th>Serie <code>P</code></th>
+<th>Qué parece medir</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>brexit_referendum_2016</td>
+<td>polarization_spike</td>
+<td>0,28 → 0,62 → 0,52</td>
+<td>Cuota de voto <em>Leave</em></td>
+</tr>
+<tr>
+<td>egypt_arab_spring_2011</td>
+<td>contagion_sir</td>
+<td>0,02 → 0,70 → 0,08</td>
+<td>Fracción participante (curva SIR)</td>
+</tr>
+<tr>
+<td>south_korea_candlelight_2016</td>
+<td>consensus_cascade</td>
+<td>0,35 → 0,50 → 0,23</td>
+<td>Cascada de consenso</td>
+</tr>
+</tbody>
+</table>
+<p>Una cuota de voto y una fracción de movilización <strong>no son el mismo observable</strong>.
+Agruparlas porque comparten nombre de columna no es <em>pooling</em>: es un error de tipo.</p>
+<p>Además, <code>data_type</code> es <code>empirical_estimated</code> en los doce: las series fueron
+<strong>reconstruidas a mano desde fuentes publicadas</strong>, no medidas directamente. Es
+legítimo, pero debe declararse y ponderarse distinto que un dato medido.</p>
+<p><strong>Nada se calibra hasta que cada caso declare <code>target_variable</code>, <code>target_units</code> y
+<code>observation_operator</code>.</strong> <code>python scripts/validate_dataset.py</code> ya lo exige y
+actualmente falla los doce casos.</p>
+<h3 id="hecho-2-el-corrector-cfc-fallo-y-se-sabe-exactamente-por-que">Hecho 2 — El corrector CfC falló, y se sabe exactamente por qué</h3>
+<p>El checkpoint de <code>models/cfc_calibrated/</code> tiene <strong>10.177 parámetros</strong> y se entrenó
+sobre los <strong>11 puntos reales</strong> del caso Brexit, interpolados a 366 y divididos en
+251/54/55. Eso es una ratio de <strong>925 parámetros por observación real</strong>. Interpolar
+no crea información: crea pseudodatos autocorrelacionados que inflan el tamaño
+muestral aparente.</p>
+<p>Resultado medido fuera de muestra (reproducible con
+<code>python scripts/validate_cfc_walkforward.py</code>):</p>
+<table>
+<thead>
+<tr>
+<th>Estimador</th>
+<th style="text-align: right;">RMSE</th>
+<th style="text-align: right;">R²</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Persistencia (último residuo observado)</td>
+<td style="text-align: right;"><strong>0,00457</strong></td>
+<td style="text-align: right;"><strong>+0,709</strong></td>
+</tr>
+<tr>
+<td>Mejor constante posible</td>
+<td style="text-align: right;">0,00847</td>
+<td style="text-align: right;">0,000</td>
+</tr>
+<tr>
+<td>Constante = media de entrenamiento</td>
+<td style="text-align: right;">0,03184</td>
+<td style="text-align: right;">−13,13</td>
+</tr>
+<tr>
+<td><strong>Modelo CfC</strong></td>
+<td style="text-align: right;">0,03763</td>
+<td style="text-align: right;"><strong>−18,73</strong></td>
+</tr>
+<tr>
+<td>Sin corrección</td>
+<td style="text-align: right;">0,07373</td>
+<td style="text-align: right;">−74,78</td>
+</tr>
+</tbody>
+</table>
+<p>El modelo mejora sobre no corregir, pero <strong>pierde contra repetir el último valor</strong>.
+Sus predicciones tienen std 0,00223 frente a una std real del residuo de 0,00847:
+es una constante sesgada.</p>
+<h3 id="hecho-3-la-precision-que-se-publicaba-era-un-artefacto-aritmetico">Hecho 3 — La precisión que se publicaba era un artefacto aritmético</h3>
+<p>La versión anterior calculaba <code>corrected = 0,5·simulado + 0,5·observado</code>. Eso divide
+el error a la mitad <strong>por aritmética, con independencia del modelo</strong>: por eso los
+diez seeds del stress test reportaban una mejora de <em>exactamente</em> 50,000 %. La fuga
+ya se eliminó y hay tests que la bloquean, pero <strong>es el modo de fallo que debéis
+vigilar en todo lo que hagáis</strong>: si un resultado mejora de forma sospechosamente
+redonda y estable, buscad la filtración antes de celebrarlo.</p>
+<h3 id="hecho-4-la-paridad-de-features-ya-se-corrigio">Hecho 4 — La paridad de features ya se corrigió</h3>
+<p><code>cfc_router.py</code> alimentaba al modelo con las features intercambiadas y la ventana de
+lags invertida respecto a lo declarado en <code>models/cfc_calibrated/config.json</code>.
+Corregido. Cualquier reentrenamiento parte ya de un pipeline coherente.</p>
+<p><strong>Conclusión operativa:</strong> el reentrenamiento del CfC <strong>no es la primera tarea</strong>. Con
+170 observaciones no hay nada que reentrenar. La primera tarea es conseguir datos.</p>
+<hr />
+<h2 id="1-roles-del-equipo">1. ROLES DEL EQUIPO</h2>
+<p>Organizaos en seis roles. Pueden solaparse, pero cada entregable tiene un
+responsable único.</p>
+<table>
+<thead>
+<tr>
+<th>Rol</th>
+<th>Responsabilidad</th>
+<th>Entregable principal</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A. Investigador de fuentes</strong></td>
+<td>Localizar series temporales de opinión públicas, citables y relicenciables</td>
+<td><code>docs/validation/DATA_SOURCES.md</code></td>
+</tr>
+<tr>
+<td><strong>B. Ingeniero de datos</strong></td>
+<td>Ingesta, normalización, control de calidad, versionado</td>
+<td><code>datasets/real_cases/</code> ampliado + esquema</td>
+</tr>
+<tr>
+<td><strong>C. Calibrador de motores</strong></td>
+<td>Estimar los parámetros físicos contra datos</td>
+<td><code>reports/engine_calibration.json</code></td>
+</tr>
+<tr>
+<td><strong>D. Entrenador de redes</strong></td>
+<td>CfC y correctores, <strong>solo cuando haya datos suficientes</strong></td>
+<td><code>models/</code> + <code>reports/cfc_validation.json</code></td>
+</tr>
+<tr>
+<td><strong>E. Validador independiente</strong></td>
+<td>Protocolo, líneas base, pruebas de fuga. <strong>No calibra nada</strong></td>
+<td><code>reports/validation_report.md</code></td>
+</tr>
+<tr>
+<td><strong>F. Documentalista</strong></td>
+<td>Que lo publicado coincida con lo medido</td>
+<td>README, <code>docs/</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Regla de independencia:</strong> quien calibra no valida. El rol E debe poder tumbar el
+trabajo de C y D, y su veredicto es vinculante. La razón es el Hecho 3: la precisión
+inflada anterior sobrevivió porque nadie la auditó desde fuera.</p>
+<hr />
+<h2 id="1-bis-sprint-0-tres-entregables-obligatorios-antes-de-todo-lo-demas">1-BIS. SPRINT 0 — TRES ENTREGABLES OBLIGATORIOS ANTES DE TODO LO DEMÁS</h2>
+<p>Nada de las fases siguientes empieza hasta cerrar estos tres. Son baratos, son
+rápidos y determinan si el resto del trabajo tiene sentido.</p>
+<h3 id="g0-etiqueta-de-la-variable-objetivo-el-lexico-de-sentimiento">G0 — Etiqueta de la variable objetivo: el léxico de sentimiento</h3>
+<p><strong>Esta es la prioridad número uno, por encima de conseguir más datos.</strong> Si la
+variable objetivo está mal etiquetada, ninguna calibración la arregla: <em>garbage in,
+garbage out</em>.</p>
+<p><code>social_connectors.py</code> puntúa texto con <strong>37 palabras positivas y 36 negativas</strong>, en
+inglés y español, <strong>sin negación, sin intensificadores, sin ironía y sin pesos</strong>.
+«No es nada bueno» puntúa <strong>positivo</strong>. Todo el camino de sembrado desde opinión real
+(<code>massive_core/opinion_sources.py</code>) descansa sobre esto.</p>
+<p>Entregables:</p>
+<ol>
+<li><strong>Gold set humano de 200–300 mensajes</strong>, muestreados del dominio real (protesta,
+   elección, polarización), en español e inglés, anotados por ≥ 2 personas.</li>
+<li><strong>Acuerdo entre anotadores</strong> (kappa de Cohen o Krippendorff). Si κ &lt; 0,6, el
+   problema es la guía de anotación, no el modelo: corregidla antes de seguir.</li>
+<li><strong>Medición del léxico actual contra el gold set</strong>: accuracy, F1 macro, y matriz de
+   confusión. Documentad explícitamente el comportamiento ante negación.</li>
+<li><strong>Decisión fundamentada</strong>: sustituir por un transformer de dominio (XLM-T,
+   RoBERTa en español afinado, o similar) o, como mínimo, un léxico con manejo de
+   negación e intensificadores. Reportad la mejora medida sobre el mismo gold set.</li>
+</ol>
+<p><strong>Criterio de salida de G0:</strong> el analizador elegido supera al léxico actual sobre el
+gold set con significación, y su F1 se publica. Sin esto, el sembrado desde opinión
+real no es utilizable para calibrar.</p>
+<h3 id="g0-bis-definicion-de-la-variable-objetivo-y-del-operador-de-observacion">G0-bis — Definición de la variable objetivo y del operador de observación</h3>
+<p>Para <strong>cada</strong> caso de <code>datasets/real_cases/</code>, rellenad en <code>meta.json</code>:</p>
+<ul>
+<li><code>target_variable</code>: qué mide <code>P</code>, en palabras inequívocas
+  (p. ej. <code>leave_vote_share</code>, <code>fraction_participating</code>, <code>polarization_index</code>).</li>
+<li><code>target_units</code>: <code>share</code> | <code>fraction_participating</code> | <code>index</code> | …</li>
+<li><code>observation_operator</code>: <strong>cómo se obtiene la medición a partir del estado del
+  simulador</strong>. Ejemplos: <code>mean(opinion &gt; 0)</code> para una cuota de voto;
+  <code>fraction(|opinion| &gt; umbral)</code> para participación; <code>std(opinion)/half_range</code> para
+  un índice de polarización.</li>
+</ul>
+<p>Sin el operador <strong>H</strong>, ninguna distancia entre simulación y realidad (RMSE,
+Wasserstein, KL) está bien definida — se estaría comparando magnitudes distintas.</p>
+<p><strong>Criterio de salida:</strong> <code>python scripts/validate_dataset.py</code> termina con código 0.
+Hoy falla los doce casos por esta razón exacta.</p>
+<h3 id="g0-ter-plan-de-sourcing-con-fuentes-y-costos-reales">G0-ter — Plan de sourcing con fuentes y costos reales</h3>
+<p>Una meta de «2.000 observaciones» sin decir de dónde salen es una lista de deseos.
+Entregad una tabla con fuente, volumen estimado, licencia, <strong>coste real</strong> y esfuerzo:</p>
+<table>
+<thead>
+<tr>
+<th>Fuente</th>
+<th>Tipo</th>
+<th>Volumen estimado</th>
+<th>Licencia</th>
+<th>Coste</th>
+<th>Notas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Latinobarómetro</td>
+<td>Encuesta anual, 18 países</td>
+<td>alto</td>
+<td>Registro gratuito</td>
+<td>0 €</td>
+<td>Serie larga, ideal para pooling</td>
+</tr>
+<tr>
+<td>CEP (Chile)</td>
+<td>Encuesta, serie histórica</td>
+<td>medio</td>
+<td>Pública</td>
+<td>0 €</td>
+<td>Cubre el caso Chile 2019</td>
+</tr>
+<tr>
+<td>ANES / CSES</td>
+<td>Panel electoral</td>
+<td>alto</td>
+<td>Académica</td>
+<td>0 €</td>
+<td>Requiere acuerdo de uso</td>
+</tr>
+<tr>
+<td>Eurobarómetro</td>
+<td>Encuesta UE</td>
+<td>alto</td>
+<td>Pública</td>
+<td>0 €</td>
+<td>Serie muy larga</td>
+</tr>
+<tr>
+<td>Archivos Pushshift / Reddit</td>
+<td>Texto con timestamp</td>
+<td>muy alto</td>
+<td>Variable</td>
+<td>0 €</td>
+<td>Verificad estado actual del archivo</td>
+</tr>
+<tr>
+<td>Kaggle (datasets de opinión)</td>
+<td>Mixto</td>
+<td>medio</td>
+<td>Por dataset</td>
+<td>0 €</td>
+<td>Revisar licencia caso por caso</td>
+</tr>
+<tr>
+<td>Comentarios de medios con timestamp</td>
+<td>Texto</td>
+<td>medio</td>
+<td>Por medio</td>
+<td>Variable</td>
+<td>Suele requerir permiso</td>
+</tr>
+<tr>
+<td><strong>API de X/Twitter</strong></td>
+<td>Texto</td>
+<td>alto</td>
+<td>Comercial</td>
+<td><strong>Caro y restringido</strong></td>
+<td><strong>No asumir disponibilidad</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Criterio de salida:</strong> un plan que llegue al Nivel 2 (500 obs) con fuentes concretas,
+licencias verificadas y coste cerrado. No basta con enumerar posibilidades.</p>
+<h3 id="g0-quater-lineas-base-sobre-los-12-casos">G0-quater — Líneas base sobre los 12 casos</h3>
+<p>Antes de calibrar nada, medid qué hace falta batir. Sobre los doce casos actuales:</p>
+<ul>
+<li><strong>Persistencia</strong> (último valor observado).</li>
+<li><strong>Lineal</strong> (tendencia ajustada por mínimos cuadrados).</li>
+<li><strong>Mean-reverting</strong> (Ornstein-Uhlenbeck / AR(1)).</li>
+</ul>
+<p>Usad <code>benchmarks/baselines.py</code> y <code>benchmarks/metrics.py</code>, que ya existen. Publicad la
+tabla en <code>reports/baselines_12cases.json</code>. <strong>Ese es el listón.</strong> Cualquier motor o red
+que no lo supere no se publica como mejora.</p>
+<hr />
+<h2 id="2-fase-1-adquisicion-de-datos-bloqueante">2. FASE 1 — ADQUISICIÓN DE DATOS (bloqueante)</h2>
+<p>Nada de lo demás tiene sentido sin esto.</p>
+<h3 id="21-que-buscar">2.1 Qué buscar</h3>
+<p>Series temporales de opinión agregada, con <strong>al menos 30 puntos por caso</strong> (objetivo:
+100+), de fuentes citables:</p>
+<ul>
+<li><strong>Encuestas electorales y de opinión</strong>: Eurobarómetro, Latinobarómetro, Pew Research,
+  Gallup, World Values Survey, ANES, CSES, CEP (Chile), INE/CIS (España), Ipsos,
+  YouGov, Roper Center.</li>
+<li><strong>Agregadores de sondeos</strong>: FiveThirtyEight (histórico), PollOfPolls, Wikipedia
+  <em>opinion polling for X</em> (con las fuentes primarias, no el agregado).</li>
+<li><strong>Datos de protesta y movilización</strong>: ACLED, GDELT, Mass Mobilization Project.</li>
+<li><strong>Opinión digital</strong>: corpus académicos ya publicados y anonimizados; evitad el
+  <em>scraping</em> de plataformas cuyos términos lo prohíban.</li>
+<li><strong>Indicadores estructurales</strong>: World Bank (Gini, PIB), V-Dem, CIA World Factbook,
+  OWID.</li>
+</ul>
+<h3 id="22-criterios-de-aceptacion-de-un-caso">2.2 Criterios de aceptación de un caso</h3>
+<p>Un caso solo entra en <code>datasets/real_cases/</code> si cumple <strong>todos</strong>:</p>
+<ol>
+<li>≥ 30 observaciones temporales con fecha.</li>
+<li>Fuente primaria citable y accesible (URL + fecha de consulta + licencia).</li>
+<li>Licencia compatible con la del repositorio (Apache 2.0) o datos agregados de uso
+   permitido. <strong>Documentad la licencia; si es incompatible, no lo incluyáis: enlazad
+   un script de descarga.</strong></li>
+<li>Metodología de la medición documentada (tamaño muestral, margen de error, pregunta
+   exacta formulada).</li>
+<li><code>meta.json</code> con la estructura actual + campos nuevos: <code>n_observations</code>,
+   <code>source_license</code>, <code>sampling_error</code>, <code>question_wording</code>.</li>
+</ol>
+<h3 id="23-trampa-a-evitar">2.3 Trampa a evitar</h3>
+<p><strong>No interpoléis para "aumentar" el dataset.</strong> Es lo que hundió el entrenamiento
+anterior. Si una serie tiene 15 puntos, tiene 15 puntos. La interpolación es legítima
+únicamente para alinear rejillas temporales <em>dentro</em> del modelo, y en ese caso el
+recuento efectivo de observaciones sigue siendo el número de mediciones reales — así
+debe reportarse en todos los cálculos de capacidad y significación.</p>
+<h3 id="24-escalera-de-capacidad-no-es-un-muro-cada-peldano-habilita-trabajo-real">2.4 Escalera de capacidad (no es un muro: cada peldaño habilita trabajo real)</h3>
+<p>El estado actual es <strong>169 observaciones</strong> → Nivel 1. Cada peldaño habilita técnicas,
+no solo permisos. <code>scripts/validate_dataset.py</code> calcula el nivel automáticamente.</p>
+<table>
+<thead>
+<tr>
+<th>Nivel</th>
+<th>Observaciones válidas</th>
+<th>Qué se puede hacer</th>
+<th>Qué queda prohibido</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>1</strong></td>
+<td>&lt; 500</td>
+<td>Líneas base; parámetros <strong>agregados</strong> (σ, ε promedio) con <strong>priors fuertes</strong>; pooling jerárquico</td>
+<td>Redes neuronales; parámetros por segmento o por arista (<code>W</code> completa, ε por perfil)</td>
+</tr>
+<tr>
+<td><strong>2</strong></td>
+<td>500 – 2.000</td>
+<td>Calibración paramétrica por <strong>SBI/ABC con pooling jerárquico</strong>; posteriores con incertidumbre</td>
+<td>Correctores neuronales residuales</td>
+</tr>
+<tr>
+<td><strong>3</strong></td>
+<td>&gt; 2.000, ≥ 25 casos</td>
+<td>Corrector neuronal con capacidad ajustada al número de observaciones</td>
+<td>Nada por volumen; la identificabilidad sigue mandando</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Qué cuenta como observación válida</strong> (el validador lo exige):</p>
+<ol>
+<li>Tiene <strong>timestamp</strong> parseable y ordenado.</li>
+<li>Pertenece a una <strong>serie</strong>, no es un escalar suelto sin contexto temporal.</li>
+<li>Su caso declara <code>target_variable</code>, <code>target_units</code> y <code>observation_operator</code>.</li>
+<li>Está en <code>[0,1]</code> y su <code>data_type</code> está declarado.</li>
+</ol>
+<p>Una serie <strong>escalar</strong> (<code>date,P</code> sin dispersión) cuenta para el volumen pero <strong>no
+habilita calibrar parámetros distribucionales</strong>. Para eso hacen falta columnas de
+dispersión (<code>P_std</code>, <code>n_sample</code>, o intervalos).</p>
+<hr />
+<h2 id="3-fase-2-estructuracion-y-control-de-calidad">3. FASE 2 — ESTRUCTURACIÓN Y CONTROL DE CALIDAD</h2>
+<ol>
+<li><strong>Esquema versionado.</strong> Extended <code>meta.json</code> + <code>timeseries.csv</code> con columnas
+   obligatorias <code>date,P</code> y opcionales <code>n_sample,margin_error,source_id</code>.</li>
+<li><strong>Validador automático</strong> (<code>scripts/validate_dataset.py</code>, a crear): comprueba
+   esquema, monotonía de fechas, rango <code>P ∈ [0,1]</code>, huecos, duplicados y que el
+   <code>n_observations</code> declarado coincida con las filas.</li>
+<li><strong>Control de sesgos.</strong> Documentad explícitamente: sesgo de selección (qué países
+   tienen datos y cuáles no), sesgo de modo (teléfono vs online), efecto casa
+   (<em>house effect</em>) entre encuestadoras, y cambios de formulación de pregunta.</li>
+<li><strong>Partición pre-registrada.</strong> Antes de mirar los datos de test, fijad la partición
+   y registradla usando <code>docs/validation/preregistration_template_ES.md</code>. Esto ya
+   existe en el repo: <strong>usadlo, no lo reinventéis</strong>.</li>
+<li><strong>Umbral de éxito pre-registrado, con número exacto.</strong> Antes de ejecutar nada,
+   escribid la métrica primaria, el valor que cuenta como éxito y el test estadístico
+   — por ejemplo: <em>«RMSE out-of-sample menor que la persistencia, con DM test
+   p &lt; 0,05 tras Holm-Bonferroni»</em>. Decidirlo después de ver los resultados es
+   p-hacking aunque no se le llame así, y es exactamente cómo sobrevivió la cifra
+   inflada del 50 %.</li>
+</ol>
+<hr />
+<h2 id="4-fase-3-calibracion-de-los-motores">4. FASE 3 — CALIBRACIÓN DE LOS MOTORES</h2>
+<p>Hay constantes fijadas por decreto que nadie ha estimado contra datos. Son el
+objetivo principal, y probablemente den más mejora que cualquier red neuronal.</p>
+<h3 id="41-parametros-candidatos-ubicaciones-reales">4.1 Parámetros candidatos (ubicaciones reales)</h3>
+<table>
+<thead>
+<tr>
+<th>Parámetro</th>
+<th>Dónde</th>
+<th>Valor actual</th>
+<th>Qué gobierna</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>_SIGMA</code></td>
+<td><code>energy_engine.py:38</code></td>
+<td>0,3</td>
+<td>Ancho del paisaje de energía</td>
+</tr>
+<tr>
+<td><code>_GINI_SIGMA_ANCHOR</code></td>
+<td><code>energy_engine.py:92</code></td>
+<td>0,35</td>
+<td>Gini de referencia</td>
+</tr>
+<tr>
+<td><code>_GINI_SIGMA_SENSITIVITY</code></td>
+<td><code>energy_engine.py:95</code></td>
+<td>0,5</td>
+<td>Pendiente Gini→σ</td>
+</tr>
+<tr>
+<td>Doble pozo <code>0.49</code></td>
+<td><code>multilayer_engine.py:283</code></td>
+<td>±0,7</td>
+<td>Posición de los atractores de opinión</td>
+</tr>
+<tr>
+<td><code>coupling</code></td>
+<td><code>multilayer_engine.py</code></td>
+<td>~0,003</td>
+<td>Fuerza social entre capas</td>
+</tr>
+<tr>
+<td><code>temperature</code></td>
+<td><code>energy_engine.py</code></td>
+<td>0,05</td>
+<td>Ruido térmico / libre albedrío</td>
+</tr>
+<tr>
+<td><code>lambda_social</code></td>
+<td><code>energy_engine.py</code></td>
+<td>0,5</td>
+<td>Balance red ↔ paisaje</td>
+</tr>
+<tr>
+<td><code>eta</code></td>
+<td><code>energy_runner.py</code></td>
+<td>0,01</td>
+<td>Paso de integración</td>
+</tr>
+<tr>
+<td>Mapeos Factbook</td>
+<td><code>massive/core/factbook/mappings.py</code></td>
+<td>varios</td>
+<td>Gini→atractor, PIB→presupuesto, diversidad→presión</td>
+</tr>
+<tr>
+<td>Inflación / localización EnKF</td>
+<td><code>massive_core/data_assimilation/kalman.py</code></td>
+<td>—</td>
+<td>Estabilidad del filtro</td>
+</tr>
+</tbody>
+</table>
+<h3 id="42-antes-de-calibrar-analisis-de-identificabilidad">4.2 Antes de calibrar: análisis de identificabilidad</h3>
+<p><strong>Obligatorio y previo.</strong> Con ~170–2.000 observaciones no todos los parámetros son
+estimables. Haced:</p>
+<ol>
+<li><strong>Análisis de sensibilidad global</strong> (Sobol o Morris) sobre los parámetros de §4.1:
+   ¿cuáles mueven realmente la salida?</li>
+<li><strong>Matriz de correlación de parámetros</strong>: detectad pares que se compensan entre sí
+   (no identificables por separado).</li>
+<li><strong>Decisión explícita</strong>: calibrad solo los identificables; <strong>fijad el resto con
+   justificación documentada</strong>. Un parámetro no identificable "calibrado" es ruido
+   presentado como ciencia.</li>
+</ol>
+<h3 id="42-bis-la-granularidad-de-los-datos-acota-la-del-modelo">4.2-bis La granularidad de los datos acota la del modelo</h3>
+<p>Con un observable <strong>escalar</strong> por instante (que es lo que hay: <code>date,P</code>), la regla es
+dura y no negociable:</p>
+<table>
+<thead>
+<tr>
+<th>Lo que se observa</th>
+<th>Lo que se puede identificar</th>
+<th>Lo que NO</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Escalar por instante (<code>P</code>)</td>
+<td>Dinámica <strong>agregada</strong>: σ global, ε promedio, tasa de reversión, profundidad media del atractor</td>
+<td><code>W</code> completa, ε por perfil, profundidad por segmento, cualquier parámetro distribucional</td>
+</tr>
+<tr>
+<td>Escalar + dispersión (<code>P_std</code>, <code>n_sample</code>)</td>
+<td>Lo anterior + varianza del estado</td>
+<td>Estructura de red individual</td>
+</tr>
+<tr>
+<td>Distribución completa por instante</td>
+<td>Parámetros distribucionales</td>
+<td>Identidades de agente</td>
+</tr>
+</tbody>
+</table>
+<p>Consecuencia directa para el motor: <strong>el Langevin 5D no es observable con datos
+escasos y escalares</strong>. Las cinco dimensiones (opinión, cooperación, jerarquía,
+ingreso, acceso a información) no se pueden separar a partir de un único número por
+fecha. Dos salidas legítimas, elegid una y documentadla:</p>
+<ol>
+<li><strong>Reducir la dimensión de estado</strong> para la calibración: calibrad un modelo de
+   opinión 1D y tratad las otras cuatro capas como fijas o derivadas.</li>
+<li><strong>Definir un operador de observación H explícito</strong> que proyecte el estado 5D al
+   escalar medido, y calibrad solo lo que H deja identificable. Este es el mismo H que
+   necesita el EnKF (<code>massive_core/data_assimilation/kalman.py</code>): definidlo <strong>una vez</strong>
+   y reutilizadlo en ambos sitios.</li>
+</ol>
+<h3 id="42-ter-pooling-jerarquico-bayesiano-entre-casos">4.2-ter Pooling jerárquico bayesiano entre casos</h3>
+<p>Con 12 casos cortos, tratarlos por separado desperdicia información y tratarlos como
+uno solo borra sus diferencias. La forma eficiente es <strong>partial pooling</strong>:</p>
+<pre><code>  theta_caso_i ~ Normal(mu_global, tau)      # cada caso tiene su parámetro…
+  mu_global, tau ~ priors                     # …extraído de una población común
+</code></pre>
+<p>Así cada caso toma fuerza estadística prestada de los demás, y <code>tau</code> cuantifica
+cuánto varían realmente entre contextos — que es en sí un resultado publicable.</p>
+<p><strong>Advertencia derivada del Hecho 1-bis:</strong> solo se agrupan casos que compartan
+<code>target_variable</code>. Una cuota de voto y una fracción de movilización no pertenecen a
+la misma población de parámetros. Si tras G0-bis resultan ser tres observables
+distintos, haced <strong>tres jerarquías</strong>, no una.</p>
+<h3 id="43-metodo">4.3 Método</h3>
+<ul>
+<li><strong>Estimación bayesiana</strong> preferida, porque entrega <strong>distribuciones posteriores</strong> y
+  no puntos. Con tan pocos datos, la incertidumbre <em>es</em> el resultado.</li>
+<li><strong>Coste computacional, que decide el método.</strong> ABC por rechazo puro es prohibitivo:
+  necesita cientos de miles de simulaciones. Usad <strong>estimación neuronal de posterior
+  (NPE/SNPE)</strong>, que amortiza el coste entrenando un estimador sobre un presupuesto
+  acotado de simulaciones.</li>
+<li><strong>Simulad sobre <code>massive_engine.py</code> (super-agentes LOD), no sobre el motor a
+  resolución completa.</strong> El bucle de inferencia ejecuta miles de simulaciones; a plena
+  resolución es inviable. Antes de usarlo, <strong>verificad que el LOD preserva los
+  estadísticos que alimentan la verosimilitud</strong> (media y varianza se conservan; hay
+  tests que lo cubren) y documentad el error de aproximación que introduce.</li>
+<li>Alternativa frecuentista aceptable: optimización + <em>bootstrap</em> para intervalos.</li>
+<li><strong>Prohibido</strong> ajustar a ojo hasta que "se parezca". Si se hace manualmente, debe
+  documentarse como tal y no llamarse calibración.</li>
+</ul>
+<h3 id="44-preservar-invariantes">4.4 Preservar invariantes</h3>
+<p>La calibración <strong>no puede</strong> romper lo que ya está garantizado por tests:</p>
+<ul>
+<li>Determinismo con semilla fija (hay una huella de referencia; ver §7).</li>
+<li><code>θ ≥ 0</code>, escalado <code>√dt</code> de la difusión, conservación de media/varianza en LOD.</li>
+<li>"Optional means optional": sin GPU, sin LLM, sin Factbook, todo sigue corriendo.</li>
+<li>Rangos de opinión: <code>bipolar [-1,1]</code>, <code>unipolar [0,1]</code>.</li>
+</ul>
+<p>Si una calibración exige cambiar una ley física, eso es un cambio de modelo, no una
+calibración: separadlo en su propia propuesta con su justificación.</p>
+<hr />
+<h2 id="5-fase-4-redes-neuronales">5. FASE 4 — REDES NEURONALES</h2>
+<h3 id="51-puerta-de-entrada">5.1 Puerta de entrada</h3>
+<p><strong>No se reentrena el CfC.</strong> Es una decisión tomada, no una recomendación: con 169
+observaciones el reentrenamiento repetiría el fallo del Hecho 2.</p>
+<p>El Nivel 3 de la escalera (§2.4) —más de 2.000 observaciones válidas y ≥ 25 casos— es
+condición <strong>necesaria pero no suficiente</strong> para reabrir la cuestión. También hace falta
+haber cerrado G0 (etiquetas fiables) y G0-bis (operador H), y que el validador con veto
+lo autorice. Si no se llega, eso no es un fracaso: es el resultado, y se documenta.</p>
+<h3 id="52-protocolo-de-entrenamiento">5.2 Protocolo de entrenamiento</h3>
+<ol>
+<li><strong>Validación cruzada por casos</strong> (<em>leave-one-case-out</em>), no por puntos. Partir una
+   serie temporal por puntos filtra información del futuro al pasado.</li>
+<li><strong>Walk-forward</strong> dentro de cada caso: en el instante <em>t</em> solo se usan datos
+   estrictamente anteriores a <em>t</em>.</li>
+<li><strong>Líneas base obligatorias</strong> en cada informe: persistencia, constante óptima, media
+   de entrenamiento, y sin corrección. Están implementadas en <code>benchmarks/baselines.py</code>
+   y <code>benchmarks/metrics.py</code>. <strong>Un modelo que no las supere no se publica como
+   corrector.</strong></li>
+<li><strong>Significación estadística</strong>: test de Diebold-Mariano (<code>benchmarks/metrics.py:67</code>)
+   y corrección Holm-Bonferroni para comparaciones múltiples. Ya está implementado.</li>
+<li><strong>Reportad R² además de RMSE.</strong> Un RMSE bajo con R² negativo significa "constante
+   razonable", no "modelo que entiende la dinámica" — exactamente el fallo actual.</li>
+</ol>
+<h3 id="53-disciplina-de-capacidad">5.3 Disciplina de capacidad</h3>
+<p>Elegid la capacidad según los datos, no al revés:</p>
+<table>
+<thead>
+<tr>
+<th>Observaciones reales</th>
+<th>Modelo defendible</th>
+<th>Nivel (§2.4)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>&lt; 500</td>
+<td>Ninguno. Persistencia + parámetros agregados con priors fuertes</td>
+<td>1</td>
+</tr>
+<tr>
+<td>500 – 2.000</td>
+<td>SBI/ABC paramétrico con pooling jerárquico (&lt; 100 parámetros)</td>
+<td>2</td>
+</tr>
+<tr>
+<td>2.000 – 10.000</td>
+<td>CfC pequeño (hidden 8–16, &lt; 1.000 parámetros)</td>
+<td>3</td>
+</tr>
+<tr>
+<td>&gt; 10.000</td>
+<td>CfC actual (hidden 64, 10.177 parámetros) justificable</td>
+<td>3</td>
+</tr>
+</tbody>
+</table>
+<p>Reportad siempre la ratio <strong>parámetros : observaciones reales</strong> en el informe. Si
+supera 1:10, justificadlo explícitamente o reducid el modelo.</p>
+<h3 id="54-los-tres-modelos-ausentes">5.4 Los tres modelos ausentes</h3>
+<p><code>cfc_temperature.pt</code>, <code>cfc_lambda.pt</code> y <code>cfc_landscape.pt</code> se cargan opcionalmente
+pero <strong>no están publicados</strong>: los motores caen siempre a las reglas heurísticas. O se
+entrenan con el mismo protocolo, o se elimina su ruta de carga. No dejéis la
+ambigüedad.</p>
+<hr />
+<h2 id="6-areas-que-no-estaban-en-el-encargo-y-si-importan">6. ÁREAS QUE NO ESTABAN EN EL ENCARGO Y SÍ IMPORTAN</h2>
+<p>Estas no se pidieron explícitamente, pero sin ellas la simulación no será
+"completamente funcional" en ningún sentido defendible.</p>
+<h3 id="61-el-lexico-de-sentimiento-promovido-a-g0">6.1 El léxico de sentimiento → promovido a G0</h3>
+<p>Era el punto más subestimado de la versión anterior de este documento. Está ahora en
+<strong>§1-BIS / G0</strong> como entregable bloqueante del Sprint 0, por delante de conseguir más
+datos: una variable objetivo mal etiquetada no se arregla con ninguna calibración
+posterior.</p>
+<h3 id="62-cuantificacion-de-incertidumbre-de-extremo-a-extremo">6.2 Cuantificación de incertidumbre de extremo a extremo</h3>
+<p>Una simulación que devuelve un número sin intervalo es inutilizable para decidir.
+Propagad: incertidumbre de los datos → posterior de parámetros → ensemble de
+simulaciones → <strong>intervalos de credibilidad en la salida</strong>. El envelope de respuesta
+ya tiene sitio para ello (<code>summary</code>, <code>assumptions</code>).</p>
+<h3 id="63-calibracion-de-la-propia-incertidumbre">6.3 Calibración de la propia incertidumbre</h3>
+<p>No basta con dar intervalos: hay que comprobar que son honestos. Medid <strong>cobertura
+empírica</strong> (¿el intervalo al 90 % contiene el valor real el 90 % de las veces?),
+<em>reliability diagrams</em> y CRPS. Un intervalo mal calibrado es peor que ninguno porque
+transmite falsa confianza.</p>
+<h3 id="64-ablacion-por-mecanismo">6.4 Ablación por mecanismo</h3>
+<p>Para cada mecanismo (fuerza social, paisaje, ruido, EnKF, corrector CfC, compresión
+LOD): desactivadlo y medid cuánto se degrada la predicción. <strong>Un mecanismo que no
+mejora nada debe retirarse o documentarse como no verificado.</strong> Esto es lo que
+convierte el motor en ciencia en vez de folclore.</p>
+<h3 id="65-validacion-fuera-de-distribucion">6.5 Validación fuera de distribución</h3>
+<p>Reservad casos enteros <strong>nunca vistos</strong> (p. ej. un régimen político o una región no
+representada en entrenamiento). El rendimiento dentro de distribución no dice nada
+sobre si el modelo generaliza a la siguiente crisis.</p>
+<h3 id="66-zona-muerta-de-la-cuantizacion">6.6 Zona muerta de la cuantización</h3>
+<p><code>massive_engine.py</code> cuantiza a uint8. Queda sin medir a partir de qué <code>dt</code> la dinámica
+se congela porque el incremento cae por debajo del paso de cuantización. Medidlo y
+documentad el límite de validez: es una frontera dura de aplicabilidad del motor LOD.</p>
+<h3 id="67-sesgo-y-etica-de-los-datos-de-opinion">6.7 Sesgo y ética de los datos de opinión</h3>
+<p>Documentad a quién representan y a quién no los datos (cobertura digital, sesgo
+urbano, idioma, acceso). Una simulación calibrada sobre Twitter no modela una
+población: modela a quienes tuitean. Debe decirse en la salida, no en una nota al pie.</p>
+<h3 id="68-dominio-de-validez-declarado">6.8 Dominio de validez declarado</h3>
+<p>Los doce casos están sesgados a <strong>protestas y elecciones polarizadas</strong>, en su mayoría
+episodios de crisis de 2011–2022. Un simulador calibrado sobre eso <strong>no es un
+simulador social general</strong>.</p>
+<p>Declarad explícitamente, en la salida de la API y en el README, para qué familia de
+eventos es válido y para cuál no se ha verificado. No afirméis fidelidad universal:
+es la forma más rápida de perder la credibilidad que el resto del trabajo construye.</p>
+<h3 id="69-datos-sinteticos-solo-como-puente">6.9 Datos sintéticos: solo como puente</h3>
+<p>Se permiten <strong>únicamente</strong> para stress-testing, pruebas de recuperación de parámetros
+(¿recupera el calibrador un valor conocido?) y pruebas de carga. <strong>Nunca para
+calibrar</strong>, y siempre etiquetados <code>data_type: synthetic</code> — el validador ya los marca y
+los excluye del recuento de calibración.</p>
+<p>Un uso legítimo y valioso: <strong>prueba de recuperación</strong>. Generad datos con parámetros
+conocidos, pasadlos por el pipeline completo y comprobad que la posterior los
+recupera. Si no los recupera con datos sintéticos limpios, no los recuperará jamás con
+datos reales — y eso se sabe antes de gastar el presupuesto de datos.</p>
+<h3 id="610-deriva-y-recalibracion">6.10 Deriva y recalibración</h3>
+<p>Los parámetros sociales no son constantes universales. Definid cada cuánto se
+revalida, con qué criterio se declara obsoleta una calibración, y dejadlo
+automatizado en CI.</p>
+<h3 id="611-reproducibilidad-de-la-calibracion">6.11 Reproducibilidad de la calibración</h3>
+<p>Todo el pipeline debe poder re-ejecutarse de cero con un comando y dar el mismo
+resultado: semillas fijas, versiones de datos ancladas (hash), entorno declarado.
+Si la calibración no es reproducible, no es verificable.</p>
+<hr />
+<h2 id="7-reglas-inquebrantables">7. REGLAS INQUEBRANTABLES</h2>
+<ol>
+<li>
+<p><strong>El determinismo es sagrado.</strong> Hay una huella numérica de referencia:
+   <code>PYTHONHASHSEED=0, energy_runner.run_energy_simulation(
+       "polarizacion social", n_agents=60, steps=25, seed=1234)
+   → sha256 4dd504333bbfa2c983fc4bc3adcbeee4978b43c3cb3d5ba607a3017ad99ac388</code>
+   Cambiará legítimamente al recalibrar los motores (son otros parámetros). Lo que
+   <strong>no</strong> puede pasar es que cambie por un refactor, ni que deje de ser reproducible.
+   Fijad una huella nueva con cada calibración aceptada.</p>
+</li>
+<li>
+<p><strong>Cero fugas.</strong> El valor que se predice no puede entrar, ni directa ni
+   indirectamente, en su propia predicción. Ante una mejora sospechosamente limpia,
+   asumid fuga hasta demostrar lo contrario.</p>
+</li>
+<li>
+<p><strong>Las líneas base son obligatorias.</strong> Ningún resultado se publica sin la tabla
+   comparativa frente a persistencia y constantes.</p>
+</li>
+<li>
+<p><strong>Los resultados negativos son entregables de pleno derecho.</strong> "El modelo no supera
+   la persistencia" es un hallazgo valioso y debe publicarse con la misma visibilidad
+   que un éxito. El repositorio ya tiene precedente:
+   <code>reports/cfc_validation.json</code> y <code>scripts/validate_cfc_walkforward.py</code>.</p>
+</li>
+<li>
+<p><strong>No toquéis la documentación para que cuadre con el modelo.</strong> Al revés: si el
+   README afirma algo que la medición no sostiene, se corrige el README.</p>
+</li>
+<li>
+<p><strong>La suite debe seguir verde.</strong> 837 tests, <code>ruff</code>, <code>black</code>, cobertura ≥ 60 %.
+   Añadid tests de regresión para cada calibración aceptada.</p>
+</li>
+<li>
+<p><strong>Toda cifra publicada necesita el comando que la reproduce.</strong> Sin excepción.</p>
+</li>
+</ol>
+<hr />
+<h2 id="8-entregables">8. ENTREGABLES</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Entregable</th>
+<th>Ruta</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0a</td>
+<td><strong>G0</strong> Gold set + medición del léxico + decisión</td>
+<td><code>reports/sentiment_goldset.md</code></td>
+</tr>
+<tr>
+<td>0b</td>
+<td><strong>G0-bis</strong> <code>target_variable</code> + <code>observation_operator</code> en los 12 casos</td>
+<td><code>datasets/real_cases/*/meta.json</code></td>
+</tr>
+<tr>
+<td>0c</td>
+<td><strong>G0-ter</strong> Plan de sourcing con costos</td>
+<td><code>docs/validation/DATA_SOURCES.md</code></td>
+</tr>
+<tr>
+<td>0d</td>
+<td><strong>G0-quater</strong> Líneas base sobre los 12 casos</td>
+<td><code>reports/baselines_12cases.json</code></td>
+</tr>
+<tr>
+<td>1</td>
+<td>Validador del corpus</td>
+<td><code>scripts/validate_dataset.py</code> <strong>(ya entregado)</strong></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Dataset ampliado</td>
+<td><code>datasets/real_cases/</code></td>
+</tr>
+<tr>
+<td>3</td>
+<td>Pre-registro de la partición</td>
+<td><code>docs/validation/preregistration_*.md</code></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Análisis de identificabilidad + jerarquía de pooling</td>
+<td><code>reports/identifiability.json</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td>Calibración de motores + posteriores</td>
+<td><code>reports/engine_calibration.json</code></td>
+</tr>
+<tr>
+<td>6</td>
+<td>Informe de entrenamiento con líneas base</td>
+<td><code>reports/cfc_validation.json</code></td>
+</tr>
+<tr>
+<td>7</td>
+<td>Estudio de ablación</td>
+<td><code>reports/ablation.md</code></td>
+</tr>
+<tr>
+<td>8</td>
+<td>Calibración de incertidumbre</td>
+<td><code>reports/uncertainty_calibration.md</code></td>
+</tr>
+<tr>
+<td>9</td>
+<td>Veredicto independiente (rol E)</td>
+<td><code>reports/validation_report.md</code></td>
+</tr>
+<tr>
+<td>10</td>
+<td>Documentación sincronizada</td>
+<td>README (EN/ES), <code>docs/</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="9-criterio-de-exito">9. CRITERIO DE ÉXITO</h2>
+<p>La simulación se considera <strong>calibrada y funcional</strong> cuando:</p>
+<ol>
+<li>Supera a la persistencia y a la mejor constante en <strong>validación cruzada por casos</strong>,
+   con significación estadística (DM test, Holm-Bonferroni).</li>
+<li>Sus intervalos de incertidumbre tienen <strong>cobertura empírica correcta</strong> (±5 % del
+   nominal).</li>
+<li>Mantiene el rendimiento en <strong>al menos un caso fuera de distribución</strong>.</li>
+<li>Cada mecanismo activo <strong>justifica su presencia</strong> en la ablación.</li>
+<li>Todo el pipeline es <strong>reproducible desde cero</strong> con un comando.</li>
+<li>La documentación publicada <strong>coincide exactamente</strong> con lo medido.</li>
+<li><code>python scripts/validate_dataset.py</code> termina en 0: cada caso declara su variable
+   objetivo y su operador de observación.</li>
+<li>El <strong>dominio de validez</strong> está declarado y no se afirma fidelidad fuera de él.</li>
+<li>El umbral de éxito estaba <strong>pre-registrado antes</strong> de ver los resultados.</li>
+</ol>
+<p>Si no se alcanza alguno, el entregable es el informe honesto de por qué — no una
+versión maquillada de las cifras.</p>
+<blockquote>
+<p>Lo que hace creíble a un simulador social no es acertar: es saber, y poder demostrar,
+cuánto se equivoca y dónde deja de ser válido.</p>
+</blockquote>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.expand", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

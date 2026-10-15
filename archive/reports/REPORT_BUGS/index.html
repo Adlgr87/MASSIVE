@@ -1,0 +1,2168 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="MASSIVE — Hybrid social dynamics simulator. Numerical core + LLM as regime selector.">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Reporte de Errores y Bugs — MASSIVE - MASSIVE Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#reporte-de-errores-y-bugs-massive" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../.." title="MASSIVE Documentation" class="md-header__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MASSIVE Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Reporte de Errores y Bugs — MASSIVE
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../.." title="MASSIVE Documentation" class="md-nav__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    MASSIVE Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../factbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Factbook Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM Interface
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    LLM Interface
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../MASSIVE_LLM_INTERFACE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface spec
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../LLM_PROMPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompt templates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Readiness
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Production Readiness
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../production-readiness-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Audit & Risk Matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../release-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/current-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (current)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/target-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (target)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/PRODUCTION_ARCHITECTURE_SPEC/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Architecture Spec
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../architecture/safety_protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_7" id="__nav_5_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runbooks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Runbooks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../runbooks/local-development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../runbooks/operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../runbooks/incidents/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Incidents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/threat-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../security/secrets-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secrets & Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../OBSERVABILITY_AND_SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability & Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../backup_restore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup & Restore
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../disaster_recovery_plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disaster Recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../DOCKER/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../ENV_VARS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Environment Variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../NAMING_CONVENTIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NAMING_CONVENTIONS.md
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation (PVU-BS)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Validation (PVU-BS)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/PVU_MASSIVE_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/PVU_MASSIVE_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocolo (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/preregistration_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registration (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/preregistration_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registro (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/validation_report_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report template (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../validation/validation_report_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plantilla de reporte (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cards/BENCHMARK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Card
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../cards/REPRODUCIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reproducibility Card
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Testing
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../testing/test-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Test Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../performance/baseline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Baseline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../performance_report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#tests-fallidos-actuales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests Fallidos Actuales
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bugs-conocidos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bugs Conocidos
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bugs Conocidos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-01-inmemoryratelimiter-memory-leak-por-acumulacion-de-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BUG-01: InMemoryRateLimiter — Memory Leak por Acumulación de Keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-02-llm-router-httpexception-no-atrapada-explicitamente" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BUG-02: LLM Router — HTTPException no atrapada explícitamente
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-03-sim-router-variable-_exc-sin-uso-dead-binding" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BUG-03: Sim Router — Variable _exc sin uso (dead binding)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#potenciales-race-conditions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Potenciales Race Conditions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#memory-leaks-potenciales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Memory Leaks Potenciales
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#error-handling-deficiente" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Error Handling Deficiente
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#bugs-de-logica-comportamiento" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Bugs de Lógica / Comportamiento
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Bugs de Lógica / Comportamiento">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#bug-04-llm-router-resolved-es-unreferenced-cuando-motor_hint-esta-presente" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BUG-04: LLM Router — resolved es unreferenced cuando motor_hint está presente
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-05-forecast-router-confidence_lower-hardcoded-a-005" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BUG-05: Forecast Router — confidence_lower hardcoded a 0.05
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-06-benchmark-router-no-valida-path-de-cases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BUG-06: Benchmark Router — No valida path de cases
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#bug-07-fileratelimiter-lock-no-se-mantiene-en-error-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        BUG-07: FileRateLimiter — Lock no se mantiene en error path
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#lista-de-reparaciones-priorizadas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lista de Reparaciones Priorizadas
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resumen-estadistico" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resumen Estadístico
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="reporte-de-errores-y-bugs-massive">Reporte de Errores y Bugs — MASSIVE</h1>
+<blockquote>
+<p>⚠️ HISTÓRICO — describe el commit 2b70984 del 14 de septiembre de 2026. No refleja main actual.</p>
+</blockquote>
+<p><strong>Fecha:</strong> 2026-09-14<br />
+<strong>Estado tests:</strong> ✅ 668 passed, 0 failed (32.2s)<br />
+<strong>Advertencia:</strong> <code>StarletteDeprecationWarning</code> → httpx/starlette.testclient<br />
+<strong>Importaciones principales:</strong> ✅ <code>backend.app.main:app</code> carga correctamente (20 endpoints)</p>
+<hr />
+<h2 id="tests-fallidos-actuales">Tests Fallidos Actuales</h2>
+<table>
+<thead>
+<tr>
+<th>Test</th>
+<th>Error</th>
+<th>Estado</th>
+<th>Prioridad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>(ninguno)</em></td>
+<td>—</td>
+<td>Todos pasan</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="bugs-conocidos">Bugs Conocidos</h2>
+<h3 id="bug-01-inmemoryratelimiter-memory-leak-por-acumulacion-de-keys">BUG-01: InMemoryRateLimiter — Memory Leak por Acumulación de Keys</h3>
+<table>
+<thead>
+<tr>
+<th>Ubicación</th>
+<th>Descripción</th>
+<th>Workaround</th>
+<th>Prioridad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>massive_core/config/rate_limit.py:31-41</code></td>
+<td><code>self._hits</code> es un <code>defaultdict(list)</code> que nunca elimina keys antigüas. Aunque la lista de timestamps por key se poda a 60s, la key en sí permanece en el diccionario para siempre. Con suficientes IPs distintas, el diccionario crece sin límite.</td>
+<td>Usar <code>FileRateLimiter</code> en producción multi-IP, o añadir limpieza periódica.</td>
+<td>🔴 <strong>Critical</strong></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-python"># Código actual (problemático):
+def allow(self, key: str, limit_per_min: int) -&gt; bool:
+    now = time.time()
+    window = [t for t in self._hits[key] if now - t &lt; 60.0]  # Lista podada
+    if len(window) &gt;= limit_per_min:
+        self._hits[key] = window
+        return False
+    window.append(now)
+    self._hits[key] = window
+    return True
+    # ^ self._hits nunca se limpia de keys inactive
+</code></pre>
+<h3 id="bug-02-llm-router-httpexception-no-atrapada-explicitamente">BUG-02: LLM Router — <code>HTTPException</code> no atrapada explícitamente</h3>
+<table>
+<thead>
+<tr>
+<th>Ubicación</th>
+<th>Descripción</th>
+<th>Workaround</th>
+<th>Prioridad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>backend/app/routers/llm.py:114-131</code></td>
+<td>El <code>try/except</code> atrapa <code>ValueError</code> y <code>RuntimeError</code> pero no <code>HTTPException</code>. Si <code>run_llm_simulation</code> lanza una <code>HTTPException</code> interna, se propaga sin el <code>log.exception()</code> de seguridad, filtrando detalles internos.</td>
+<td>Añadir <code>except HTTPException: raise</code> explícito en el bloque.</td>
+<td>🟡 <strong>Medium</strong></td>
+</tr>
+</tbody>
+</table>
+<pre><code class="language-python"># Faltante:
+except HTTPException:
+    raise
+</code></pre>
+<h3 id="bug-03-sim-router-variable-_exc-sin-uso-dead-binding">BUG-03: Sim Router — Variable <code>_exc</code> sin uso (dead binding)</h3>
+<table>
+<thead>
+<tr>
+<th>Ubicación</th>
+<th>Descripción</th>
+<th>Workaround</th>
+<th>Prioridad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>backend/app/routers/sim.py:53</code></td>
+<td><code>except Exception as _exc:</code> captura la excepción pero el logging usa <code>"v1/simulate error"</code> sin incluir el mensaje. El <code>from _exc</code> al final preserva el chain pero el log no muestra el detalle.</td>
+<td>Cambiar a <code>logging.getLogger(...).exception("v1/simulate error: %s", _exc)</code></td>
+<td>🟢 <strong>Low</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="potenciales-race-conditions">Potenciales Race Conditions</h2>
+<table>
+<thead>
+<tr>
+<th>Código</th>
+<th>Problema</th>
+<th>Recomendación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>massive_core/config/rate_limit.py:33</code> — <code>InMemoryRateLimiter.allow()</code></td>
+<td><strong>No usa locking</strong>. <code>defaultdict(list)</code> + lectura/escritura no atómica en Python GIL no garantiza atomicidad para <code>self._hits[key]</code>. En workers multi-hilo (uvicorn con <code>--workers &gt; 1</code>), dos requests concurrentes pueden leer el mismo estado y ambos permitir o ambos rechazar.</td>
+<td>Añadir <code>threading.Lock()</code> o usar <code>FileRateLimiter</code> para producción.</td>
+</tr>
+<tr>
+<td><code>backend/app/metrics.py:122-124</code> — <code>MetricsRegistry.observe()</code></td>
+<td>Acceso a <code>self._histograms</code> sin lock antes de verificar si existe. Aunque el GIL de Python lo hace seguro en CPython, es una práctica riesgosa que rompe en otras implementaciones (PyPy, Jython).</td>
+<td>Mover la creación del histograma dentro del lock o usar <code>dict.get()</code> con locking.</td>
+</tr>
+<tr>
+<td><code>services/llm_orchestrator.py:720</code> — <code>uuid.uuid4()</code></td>
+<td><code>sim_id</code> generado por <code>uuid.uuid4()</code> es seguro pero la combinación de <code>sim_id</code> + variables de estado compartido en el llamador podría crear condiciones de carrera si se usa en contexto asíncrono concurrente.</td>
+<td>Asegurar que cada request tenga su propio scope de ejecución.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="memory-leaks-potenciales">Memory Leaks Potenciales</h2>
+<table>
+<thead>
+<tr>
+<th>Código</th>
+<th>Problema</th>
+<th>Recomendación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>massive_core/config/rate_limit.py:31</code> — <code>InMemoryRateLimiter._hits</code></td>
+<td>Dictionary grows unboundedly — cada IP única crea una entry que nunca se elimina. En un servidor con alto tráfico de IPs únicas, esto crece linearmente.</td>
+<td>Agregar periodic pruning: eliminar keys con listas vacías después de la ventana de 60s.</td>
+</tr>
+<tr>
+<td><code>backend/app/metrics.py:45-49</code> — <code>Histogram._counts</code>, <code>_sum</code>, <code>_total_count</code></td>
+<td>Los diccionarios indexados por <code>key</code> (tuple de labels) nunca se limpian. Cada combinación única de <code>{method, group, status}</code> agrega una entrada permanente. Con muchas etiquetas dinámicas (ej. user IDs en paths), esto es un leak.</td>
+<td>Implementar eviction LRU o limitar el número de keys por histograma.</td>
+</tr>
+<tr>
+<td><code>services/llm_orchestrator.py:163</code> — <code>_aliases()</code> lru_cache(maxsize=1)</td>
+<td>El cache está diseñado para una sola entrada. Como las llamadas ocurren con diferentes países, cada llamada nueva invalida la anterior (maxsize=1), causando que el cache sea prácticamente inútil y generando carga adicional de re-cálculo.</td>
+<td>Aumentar <code>maxsize</code> a un valor razonable (ej. 32 o 64) o usar <code>maxsize=None</code> si el número de países es acotado.</td>
+</tr>
+<tr>
+<td><code>massive/core/factbook/loader.py</code></td>
+<td>Loader acumula datos de países sin TTL de expiración. Las llamadas repetidas a <code>load_country</code> con <code>force_reload=False</code> mantienen los datos en memoria indefinidamente.</td>
+<td>Añadir TTL o implementar <code>weakref</code> para objetos grandes.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="error-handling-deficiente">Error Handling Deficiente</h2>
+<table>
+<thead>
+<tr>
+<th>Ubicación</th>
+<th>Problema</th>
+<th>Mejora Sugerida</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>backend/app/routers/sim.py:49-52</code></td>
+<td><code>except HTTPException: raise</code> y <code>except ValidationError: raise</code> son redundantes — FastAPI ya re-lanza estas excepciones. El código funciona pero añade complejidad innecesaria.</td>
+<td>Eliminar estos bloques y dejar que FastAPI maneje las excepciones naturalmente.</td>
+</tr>
+<tr>
+<td><code>backend/app/main.py:313-318</code> — <code>readiness_check</code></td>
+<td><code>except Exception as exc:</code> captura todo pero solo registra el tipo. Si falla la importación de <code>simulator</code>, el error real se pierde en el log pero el healthcheck responde 503 sin el detalle.</td>
+<td>Usar <code>except Exception as exc:</code> con logging del mensaje completo, o especificar <code>except (ImportError, ModuleNotFoundError)</code> para dar más contexto.</td>
+</tr>
+<tr>
+<td><code>backend/app/main.py:343</code></td>
+<td><code>except Exception:</code> sin captura de variable — imposible loggear el error.</td>
+<td><code>except Exception as exc:</code> con <code>log.warning("UIL adapter unavailable: %s", exc)</code></td>
+</tr>
+<tr>
+<td><code>services/llm_orchestrator.py:760</code></td>
+<td><code>except Exception:</code> en <code>_sanitize_for_json</code> sin logging — silencia errores de serialización que podrían indicar bugs en los engines.</td>
+<td><code>except Exception as exc:</code> con <code>log.debug("sanitize skip: %s", exc)</code></td>
+</tr>
+<tr>
+<td><code>services/llm_orchestrator.py:776</code></td>
+<td>Segundo <code>except Exception:</code> sin variable capturada en el bloque numpy check.</td>
+<td>Unificar en un solo try/except al inicio de la función.</td>
+</tr>
+<tr>
+<td><code>massive_core/numerics/stability.py:298</code></td>
+<td><code>except Exception:</code> sin captura — silencia errores de ARPACK/eigsh que podrían ser diagnósticos importantes.</td>
+<td><code>except Exception as exc:</code> con logging del error para debugging.</td>
+</tr>
+<tr>
+<td><code>massive/core/factbook/context.py:235</code></td>
+<td><code>except Exception as e:</code> captura todo pero luego usa <code>f-string</code> en lugar de parámetros de logging (puede causar problemas de performance si el logging está disabled).</td>
+<td>Usar <code>log.warning("...: %s", e)</code> en vez de f-string.</td>
+</tr>
+<tr>
+<td><code>massive/core/intervention_optimizer.py:118,244,317</code></td>
+<td>Tres bloques <code>except Exception as e:</code> sin logging de traceback. Los errores de Factbook se pierden silenciosamente.</td>
+<td>Agregar <code>log.exception()</code> o <code>log.warning(..., exc_info=True)</code> para debugging.</td>
+</tr>
+<tr>
+<td><code>backend/app/routers/llm.py:218</code></td>
+<td><code>except Exception as exc:</code> llama a <code>_public_error(exc)</code> que loguea con <code>log.exception()</code>. Correcto, pero el mensaje dice "Internal server error" que no ayuda al debugging del cliente.</td>
+<td>Mantener el pattern actual pero agregar un campo <code>request_id</code> al detail para correlación.</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="bugs-de-logica-comportamiento">Bugs de Lógica / Comportamiento</h2>
+<h3 id="bug-04-llm-router-resolved-es-unreferenced-cuando-motor_hint-esta-presente">BUG-04: LLM Router — <code>resolved</code> es unreferenced cuando <code>motor_hint</code> está presente</h3>
+<table>
+<thead>
+<tr>
+<th>Ubicación</th>
+<th>Descripción</th>
+<th>Prioridad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>backend/app/routers/llm.py:95-110</code></td>
+<td>La variable <code>resolved</code> se asigna dentro del bloque <code>if not motor_hint:</code> pero se referencia fuera en <code>"motor": motor_hint or resolved</code>. Python evalúa <code>motor_hint</code> primero (truthy → corta), pero si <code>motor_hint</code> es <code>None</code>/vacío, <code>resolved</code> debe estar definido. <strong>Funciona</strong>, pero es frágil: si la lógica cambia, puede causar <code>NameError</code>.</td>
+<td>🟡 Medium</td>
+</tr>
+</tbody>
+</table>
+<h3 id="bug-05-forecast-router-confidence_lower-hardcoded-a-005">BUG-05: Forecast Router — <code>confidence_lower</code> hardcoded a 0.05</h3>
+<table>
+<thead>
+<tr>
+<th>Ubicación</th>
+<th>Descripción</th>
+<th>Prioridad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>backend/app/routers/forecast.py:74-75</code></td>
+<td>Los intervals de confianza usan <code>±0.05</code> fijos en lugar de usar los valores reales del engine (<code>data.get("confidence_lower")</code>, etc.). Esto produce respuestas engañosas con CI arbitrario.</td>
+<td>🟡 Medium</td>
+</tr>
+</tbody>
+</table>
+<h3 id="bug-06-benchmark-router-no-valida-path-de-cases">BUG-06: Benchmark Router — No valida path de <code>cases</code></h3>
+<table>
+<thead>
+<tr>
+<th>Ubicación</th>
+<th>Descripción</th>
+<th>Prioridad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>backend/app/routers/benchmark.py:51</code></td>
+<td><code>cases = payload.get("cases", "datasets/pvu_cases")</code> acepta cualquier string. Un path malicioso como <code>../../etc/passwd</code> podría leer archivos del servidor.</td>
+<td>🟠 <strong>High</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="bug-07-fileratelimiter-lock-no-se-mantiene-en-error-path">BUG-07: FileRateLimiter — Lock no se mantiene en error path</h3>
+<table>
+<thead>
+<tr>
+<th>Ubicación</th>
+<th>Descripción</th>
+<th>Prioridad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>massive_core/config/rate_limit.py:65-93</code></td>
+<td>El <code>fcntl.flock</code> se adquiere antes del <code>try</code> y se libera en el <code>finally</code>. Sin embargo, si <code>json.loads(raw)</code> falla (archivo corrupto), el lock se libera correctamente, pero el archivo queda sin cambios. Esto es <strong>correcto</strong>, pero si el archivo es persistentemente corrupto, cada request fallará con un error no manejado (no hay <code>except</code> alrededor del <code>json.loads</code>).</td>
+<td>🟢 Low</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="lista-de-reparaciones-priorizadas">Lista de Reparaciones Priorizadas</h2>
+<ol>
+<li>
+<p><strong>[Critical] InMemoryRateLimiter memory leak</strong> — <code>massive_core/config/rate_limit.py</code><br />
+   Añadir limpieza de keys vacías después de la ventana de 60s.</p>
+</li>
+<li>
+<p><strong>[High] Benchmark path injection</strong> — <code>backend/app/routers/benchmark.py:51</code><br />
+   Validar que <code>cases</code> y <code>out</code> son paths relativos (no empiezan con <code>/</code> o <code>..</code>).</p>
+</li>
+<li>
+<p><strong>[High] Race condition en InMemoryRateLimiter</strong> — <code>massive_core/config/rate_limit.py:33</code><br />
+   Añadir <code>threading.Lock()</code> para acceso thread-safe.</p>
+</li>
+<li>
+<p><strong>[Medium] Forecast confidence hardcoded</strong> — <code>backend/app/routers/forecast.py:74-75</code><br />
+   Usar valores del engine en vez de ±0.05 fijo.</p>
+</li>
+<li>
+<p><strong>[Medium] LLM router exception gap</strong> — <code>backend/app/routers/llm.py:114-131</code><br />
+   Añadir <code>except HTTPException: raise</code> explícito.</p>
+</li>
+<li>
+<p><strong>[Medium] LLM orchestrator lru_cache maxsize=1</strong> — <code>services/llm_orchestrator.py:163</code><br />
+   Aumentar a <code>maxsize=64</code> para evitar thrashing.</p>
+</li>
+<li>
+<p><strong>[Medium] Stability.py silent exception</strong> — <code>massive_core/numerics/stability.py:298</code><br />
+   Capturar con logging para debugging de eigenvalue failures.</p>
+</li>
+<li>
+<p><strong>[Low] Dead binding <code>_exc</code> en sim router</strong> — <code>backend/app/routers/sim.py:53</code><br />
+   Usar <code>_exc</code> en el mensaje de log.</p>
+</li>
+<li>
+<p><strong>[Low] Redundant HTTPException/ValidationError re-raise</strong> — <code>backend/app/routers/sim.py:49-52</code><br />
+   Eliminar bloques redundantes.</p>
+</li>
+<li>
+<p><strong>[Low] Readiness check exception detail</strong> — <code>backend/app/main.py:316,325,343</code><br />
+    Mejorar logging con <code>exc_info=True</code> para diagnosticar fallos de import.</p>
+</li>
+</ol>
+<hr />
+<h2 id="resumen-estadistico">Resumen Estadístico</h2>
+<table>
+<thead>
+<tr>
+<th>Categoría</th>
+<th>Cantidad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bugs Critical</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Bugs High</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Bugs Medium</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Bugs Low</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Race Conditions</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Memory Leaks</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Error Handling Deficiente</td>
+<td>9 ubicaciones</td>
+</tr>
+<tr>
+<td>Tests Fallidos</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Total de hallazgos:</strong> 21 issues identificados</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../..", "features": ["navigation.sections", "navigation.expand", "content.code.copy"], "search": "../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

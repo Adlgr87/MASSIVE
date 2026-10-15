@@ -1,0 +1,55 @@
+{
+  "benchmark_environment": {
+    "python_version": "3.14.6 (main, Jun 11 2026, 00:00:00) [GCC 16.1.1 20260515 (Red Hat 16.1.1-2)]",
+    "platform": "Linux-7.0.14-200.fc44.x86_64-x86_64-with-glibc2.43",
+    "os": "Fedora 44",
+    "cpu_count": 12,
+    "ram_total_gb": 33.31,
+    "ram_available_gb": 24.96,
+    "gpu": "None (no CUDA)",
+    "dependencies": {
+      "numpy": "2.4.4",
+      "scipy": "1.17.1",
+      "numba": "0.65.1"
+    },
+    "pytest": "9.0.5",
+    "notes": "No GPU detected. All GPU-specific tests will use NumPy fallback. Numba JIT available for Langevin engine."
+  },
+  "test_results": {
+    "total_collected": 336,
+    "passed": 331,
+    "failed": 5,
+    "failures": [
+      "test_integrated_dynamics.py::TestDynamicRewiring::test_dynamic_rewiring_updates_layer — AttributeError: 'MultilayerEngine' object has no attribute 'dynamic_rewiring'",
+      "test_integrated_dynamics.py::TestDynamicRewiring::test_graphs_property_returns_sparse_layers — same root cause",
+      "test_integrated_dynamics.py::TestIntegratedSimulator::test_integrated_simulator_runs_with_dynamic_modules — cascade from above",
+      "test_scientific_benchmarks_and_cfc_data.py::test_engine_scientific_runners_return_reports_and_diagnostics — TypeError: MultilayerEngine.__init__() got an unexpected keyword argument 'scientific_config'",
+      "test_scientific_integration.py::test_multilayer_engine_opt_in_euler_matches_legacy_without_noise — same: scientific_config not accepted"
+    ],
+    "root_cause": "Tests are outdated relative to MultilayerEngine API. The engine's __init__ no longer accepts scientific_config, and dynamic_rewiring method has been renamed or removed."
+  },
+  "pvu_cases": {
+    "total_cases": 2,
+    "all_synthetic": true,
+    "cases": ["sample_case_001", "sample_case_002"],
+    "note": "Both cases are explicitly marked as 'NOT for real PVU validation' in their meta.json"
+  },
+  "empirical_config": {
+    "version": "1.1.0",
+    "total_params_declared": 43,
+    "master_params_count": 28,
+    "runtime_params_count": 10,
+    "coverage_pct": 88.4,
+    "null_params": [],
+    "categories": [
+      "network_dynamics (4 params)",
+      "temporal (4 params)",
+      "individual_psychology (5 params)",
+      "mass_psychology (5 params)",
+      "cultural_variables (3 params)",
+      "social_status (2 params)",
+      "gender (1 param)",
+      "game_theory (4 params)"
+    ]
+  }
+}

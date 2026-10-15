@@ -1,0 +1,2619 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="MASSIVE — Hybrid social dynamics simulator. Numerical core + LLM as regime selector.">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>ROADMAP SOTA — MASSIVE v1.0 - MASSIVE Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../../../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#roadmap-sota-massive-v10" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../../../.." title="MASSIVE Documentation" class="md-header__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MASSIVE Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              ROADMAP SOTA — MASSIVE v1.0
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../../../.." title="MASSIVE Documentation" class="md-nav__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    MASSIVE Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../factbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Factbook Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM Interface
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    LLM Interface
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../MASSIVE_LLM_INTERFACE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface spec
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../LLM_PROMPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompt templates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Readiness
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Production Readiness
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../production-readiness-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Audit & Risk Matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../release-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../architecture/current-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (current)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../architecture/target-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (target)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../architecture/PRODUCTION_ARCHITECTURE_SPEC/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Architecture Spec
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../architecture/safety_protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_7" id="__nav_5_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runbooks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Runbooks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../runbooks/local-development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../runbooks/operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../runbooks/incidents/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Incidents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../security/threat-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../security/secrets-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secrets & Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../OBSERVABILITY_AND_SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability & Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../backup_restore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup & Restore
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../disaster_recovery_plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disaster Recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../DOCKER/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../ENV_VARS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Environment Variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../NAMING_CONVENTIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NAMING_CONVENTIONS.md
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation (PVU-BS)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Validation (PVU-BS)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../validation/PVU_MASSIVE_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../validation/PVU_MASSIVE_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocolo (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../validation/preregistration_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registration (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../validation/preregistration_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registro (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../validation/validation_report_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report template (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../validation/validation_report_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plantilla de reporte (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../cards/BENCHMARK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Card
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../cards/REPRODUCIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reproducibility Card
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Testing
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../testing/test-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Test Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../performance/baseline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Baseline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../performance_report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#hallazgo-critico-leer-antes-de-planear" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ⚠️ HALLAZGO CRÍTICO (leer antes de planear)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#1-resumen-ejecutivo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Resumen ejecutivo
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-roadmap-3-horizontes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Roadmap 3 horizontes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Roadmap 3 horizontes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#horizonte-1-cimientos-sota-4-semanas-p0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Horizonte 1 — "Cimientos SOTA" (4 semanas, P0)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#horizonte-2-asimilacion-y-calibracion-6-semanas-p1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Horizonte 2 — "Asimilación y Calibración" (6 semanas, P1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#horizonte-3-ablations-y-claims-4-semanas-p2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Horizonte 3 — "Ablations y claims" (4 semanas, P2)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-matriz-de-brechas-estado-actual-vs-sota" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Matriz de brechas: Estado actual vs SOTA
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-backlog-priorizado-impacto-esfuerzo-riesgo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Backlog priorizado (Impacto × Esfuerzo × Riesgo)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Backlog priorizado (Impacto × Esfuerzo × Riesgo)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#ticket-1-p0-impacto-maximo-esfuerzo-bajo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ticket 1 — P0, IMPACTO MÁXIMO, esfuerzo bajo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ticket-2-p0-impacto-alto-esfuerzo-bajo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ticket 2 — P0, IMPACTO ALTO, esfuerzo bajo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ticket-3-p1-impacto-alto-esfuerzo-medio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ticket 3 — P1, IMPACTO ALTO, esfuerzo medio
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ticket-4-p1-impacto-critico-esfuerzo-medio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ticket 4 — P1, IMPACTO CRÍTICO, esfuerzo medio
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ticket-5-p2-impacto-alto-esfuerzo-alto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ticket 5 — P2, IMPACTO ALTO, esfuerzo alto
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ticket-6-p2-impacto-medio-esfuerzo-medio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ticket 6 — P2, IMPACTO MEDIO, esfuerzo medio
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ticket-7-p2-impacto-bajo-esfuerzo-bajo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ticket 7 — P2, IMPACTO BAJO, esfuerzo bajo
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ticket-8-p3-impacto-bajo-esfuerzo-bajo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Ticket 8 — P3, IMPACTO BAJO, esfuerzo bajo
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-primeros-5-experimentos-orden-de-ejecucion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Primeros 5 experimentos (orden de ejecución)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Primeros 5 experimentos (orden de ejecución)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#experimento-1-exp-001-massive_real_benchmark_v0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Experimento 1 — EXP-001: MASSIVE_REAL_BENCHMARK_v0
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#experimento-2-exp-002-baseline_expansion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Experimento 2 — EXP-002: BASELINE_EXPANSION
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#experimento-3-exp-003-enkf_delta_measurement" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Experimento 3 — EXP-003: ENKF_DELTA_MEASUREMENT
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#experimento-4-exp-004-regime_conditioned_benchmark" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Experimento 4 — EXP-004: REGIME_CONDITIONED_BENCHMARK
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#experimento-5-exp-005-walk_forward_cv" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Experimento 5 — EXP-005: WALK_FORWARD_CV
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-niveles-de-exito-realistas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Niveles de éxito realistas
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-honestidad-cientifica-lo-que-no-se-afirma" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Honestidad científica: lo que NO se afirma
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-lo-que-si-se-afirma-con-evidencia" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Lo que SÍ se afirma (con evidencia)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-estructura-de-carpetas-propuesta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Estructura de carpetas propuesta
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#10-workflow-operativo-regla-estricta" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        10. Workflow operativo (regla estricta)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#11-comandos-clave" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        11. Comandos clave
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#12-riesgos-globales-y-mitigacion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        12. Riesgos globales y mitigación
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="roadmap-sota-massive-v10">ROADMAP SOTA — MASSIVE v1.0</h1>
+<blockquote>
+<p><strong>De "aceptable" a "SOTA defendible" en un nicho acotado:</strong>
+Simulación social mecanística con captura de atractor, asimilación de
+observaciones y validación empírica multi-caso.</p>
+</blockquote>
+<p><strong>Fecha:</strong> 2026-06-30
+<strong>Estado actual:</strong> v0.9 (aceptable con gaps documentados)
+<strong>Estado objetivo:</strong> v1.0 SOTA-defendible
+<strong>Autor del roadmap:</strong> Agente de programación + investigación aplicada
+<strong>Branch de trabajo:</strong> <code>sota-roadmap/v1</code></p>
+<hr />
+<h2 id="hallazgo-critico-leer-antes-de-planear">⚠️ HALLAZGO CRÍTICO (leer antes de planear)</h2>
+<p>Durante la auditoría previa a este roadmap se descubrió que <strong>la evaluación
+emprírica de los 12 casos reales NO se ejecutó contra el motor MASSIVE real,
+sino contra un PROXY determinista</strong>. El proxy está implementado en
+<code>benchmarks/runner.py:51-82</code> (<code>_massive_offline_forecast</code>) y consiste en:</p>
+<pre><code>AR(1) trend + ruido gausiano con std amortiguado
+   ↓
+(nada del motor real: ni HK, ni Sznajd, ni energy engine, ni multilayer, ni EnKF)
+</code></pre>
+<p>El motor real (<code>simulator.py</code> + <code>massive_engine.py</code> + <code>multilayer_engine.py</code>)
+solo se invoca si la variable <code>OPENROUTER_API_KEY</code> u <code>OPENAI_API_KEY</code> está
+presente. En modo offline (el usado en los 12 casos) se usa el proxy.</p>
+<p><strong>Implicaciones:</strong>
+1. Las 11/12 derrotas frente a naive en MAE son del PROXY, no del motor real.
+2. El EnKF (<code>massive_core/data_assimilation/kalman.py</code>, 289 líneas) existe
+   pero <strong>nunca se ejecutó</strong> sobre los 12 casos.
+3. La directional accuracy "9/12" tampoco es de MASSIVE real, es del proxy.
+4. El <code>cluster_id</code> está en <code>unknown</code> para los 12 casos — el régimen dinámico
+   no se propaga al runner.</p>
+<p><strong>Decisión:</strong> este roadmap parte de cero en lo que respecta a validación del
+motor real. El proxy se mantiene como baseline de control (degradación
+graceful cuando no hay LLM), pero el benchmark principal usa el motor real.</p>
+<hr />
+<h2 id="1-resumen-ejecutivo">1. Resumen ejecutivo</h2>
+<table>
+<thead>
+<tr>
+<th>Concepto</th>
+<th>Estado actual</th>
+<th>Estado objetivo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Motor MASSIVE evaluado empíricamente</td>
+<td>❌ Solo proxy</td>
+<td>✅ Motor real + EnKF + ablations</td>
+</tr>
+<tr>
+<td>MAE vs naive (n=12 reales)</td>
+<td>+0.064 peor (p=0.0012)</td>
+<td>Empate o superior en 8/12</td>
+</tr>
+<tr>
+<td>Directional accuracy</td>
+<td>0.36 (proxy)</td>
+<td>≥0.45 (motor real + asimilación)</td>
+</tr>
+<tr>
+<td>Baselines comparados</td>
+<td>4 (naive, AR1, MA, random)</td>
+<td>7+ (añadir ETS, ARIMA, threshold, ML)</td>
+</tr>
+<tr>
+<td>Asimilación (EnKF) en benchmark</td>
+<td>❌ No integrado</td>
+<td>✅ Δ pre/post medido en 12 casos</td>
+</tr>
+<tr>
+<td>Ablations componentes</td>
+<td>❌ No hechas</td>
+<td>✅ 7 ablations con efecto medido</td>
+</tr>
+<tr>
+<td>Calibración cuantitativa</td>
+<td>Manual por región</td>
+<td>CMA-ES / Optuna en 5-8 parámetros</td>
+</tr>
+<tr>
+<td>Out-of-sample validation</td>
+<td>Train/test split fijo</td>
+<td>Walk-forward k-fold</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Nicho SOTA defendible propuesto:</strong></p>
+<blockquote>
+<p>"ABM social con asimilación de observaciones para captura temprana de
+cambio de régimen en series de polarización de longitud media (10-30
+timesteps), con calibración automática restringida y benchmarks contra
+baselines estadísticos estándar."</p>
+</blockquote>
+<p><strong>Lo que NO se afirma:</strong>
+- ❌ "Mejor predictor general" — el proxy no lo es, y MASSIVE tampoco.
+- ❌ "SOTA en MAE" — no realista para ABM sin observations frecuentes.
+- ❌ "Sustituye a encuestas reales" — no, las encuestas son ground truth.</p>
+<hr />
+<h2 id="2-roadmap-3-horizontes">2. Roadmap 3 horizontes</h2>
+<h3 id="horizonte-1-cimientos-sota-4-semanas-p0">Horizonte 1 — "Cimientos SOTA" (4 semanas, P0)</h3>
+<p><strong>Objetivo:</strong> benchmark del motor real comparable y honesto.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Ticket</th>
+<th>Semana</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1.1</td>
+<td>Integrar <code>simulator.simular()</code> como predictor real en <code>runner.py</code> (no solo proxy)</td>
+<td>S1</td>
+</tr>
+<tr>
+<td>1.2</td>
+<td>Propagar <code>cluster_id</code> desde <code>interventions.json</code> al runner</td>
+<td>S1</td>
+</tr>
+<tr>
+<td>1.3</td>
+<td>Añadir baselines ETS, ARIMA, threshold logistic, ML tabular (Ridge con lags)</td>
+<td>S1-S2</td>
+</tr>
+<tr>
+<td>1.4</td>
+<td>Métricas: añadir CRPS, interval score, energy distance (no solo MAE)</td>
+<td>S2</td>
+</tr>
+<tr>
+<td>1.5</td>
+<td>Calibrar el motor real con <code>seed=42</code> y documentar sensibilidad cross-seed</td>
+<td>S2</td>
+</tr>
+<tr>
+<td>1.6</td>
+<td>Benchmark honesto: motor real vs 7 baselines en 12 casos → tabla paper-ready</td>
+<td>S3</td>
+</tr>
+<tr>
+<td>1.7</td>
+<td><strong>DECISIÓN GO/NO-GO</strong> basada en resultados de 1.6</td>
+<td>S4</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Criterio de éxito H1:</strong>
+- MASSIVE real ejecutado y comparado vs 7 baselines en los 12 casos
+- Al menos 1 baseline estadístico estándar (ETS/ARIMA) está en la comparación
+- MAE del motor real &lt; MAE del proxy (porque el proxy es solo AR(1))</p>
+<h3 id="horizonte-2-asimilacion-y-calibracion-6-semanas-p1">Horizonte 2 — "Asimilación y Calibración" (6 semanas, P1)</h3>
+<p><strong>Objetivo:</strong> demostrar que la asimilación mejora MASSIVE real.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Ticket</th>
+<th>Semana</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2.1</td>
+<td>Integrar <code>EnsembleKalmanFilter</code> con <code>simulator.simular()</code> como <code>model_step</code></td>
+<td>S5</td>
+</tr>
+<tr>
+<td>2.2</td>
+<td>Protocolo de asimilación: observar cada K pasos, inyectar ruido obs.</td>
+<td>S5-S6</td>
+</tr>
+<tr>
+<td>2.3</td>
+<td>Δ pre/post asimilación en los 12 casos (paired t-test + bootstrap CI)</td>
+<td>S6</td>
+</tr>
+<tr>
+<td>2.4</td>
+<td>Sensibilidad al ruido observacional (σ_obs ∈ {0.01, 0.05, 0.10, 0.20})</td>
+<td>S7</td>
+</tr>
+<tr>
+<td>2.5</td>
+<td>Calibración restringida con CMA-ES sobre 5-8 parámetros top-sensitivity</td>
+<td>S7-S8</td>
+</tr>
+<tr>
+<td>2.6</td>
+<td>Walk-forward k-fold validation (k=3) en lugar de split fijo 70/30</td>
+<td>S8</td>
+</tr>
+<tr>
+<td>2.7</td>
+<td><strong>DECISIÓN GO/NO-GO</strong> basada en asimilación</td>
+<td>S9</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Criterio de éxito H2:</strong>
+- EnKF + MASSIVE real mejora MAE vs MASSIVE sin EnKF en ≥8/12 casos
+- Mejora estadísticamente significativa (p&lt;0.05 con Holm-Bonferroni)
+- Direccional accuracy con EnKF ≥0.45 en 8/12 casos</p>
+<h3 id="horizonte-3-ablations-y-claims-4-semanas-p2">Horizonte 3 — "Ablations y claims" (4 semanas, P2)</h3>
+<p><strong>Objetivo:</strong> empaquetado científico defendible.</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Ticket</th>
+<th>Semana</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3.1</td>
+<td>Ablations: {sin LLM selector, sin homofilia, sin confirmation bias, sin energy engine, sin multilayer, sin Factbook, sin EnKF}</td>
+<td>S10-S11</td>
+</tr>
+<tr>
+<td>3.2</td>
+<td>Contribución marginal por componente (shap value o leave-one-out)</td>
+<td>S11</td>
+</tr>
+<tr>
+<td>3.3</td>
+<td>Model card + benchmark card + reproducibility card</td>
+<td>S12</td>
+</tr>
+<tr>
+<td>3.4</td>
+<td>Tabla paper-ready + figuras (matplotlib publication style)</td>
+<td>S12</td>
+</tr>
+<tr>
+<td>3.5</td>
+<td>Threat model y error taxonomy</td>
+<td>S13</td>
+</tr>
+<tr>
+<td>3.6</td>
+<td>Release v1.0 con tag y CHANGELOG</td>
+<td>S13</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Criterio de éxito H3:</strong>
+- Cada componente tiene un % de contribución medido
+- Hay un componente cuya remoción <strong>empeora significativamente</strong> (≥1 componente)
+- Cards públicos en <code>docs/cards/</code>
+- Release v1.0 taggeado en git</p>
+<hr />
+<h2 id="3-matriz-de-brechas-estado-actual-vs-sota">3. Matriz de brechas: Estado actual vs SOTA</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Brecha</th>
+<th>Estado actual</th>
+<th>Estado SOTA</th>
+<th>Severidad</th>
+<th>Esfuerzo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>G1</td>
+<td>Motor real no evaluado</td>
+<td>Proxy AR(1)</td>
+<td><code>simulator.simular()</code> en runner</td>
+<td><strong>CRÍTICA</strong></td>
+<td>Bajo (2-3 días)</td>
+</tr>
+<tr>
+<td>G2</td>
+<td>EnKF no integrado al benchmark</td>
+<td>Código existe, no usado</td>
+<td>Δ pre/post medido en 12 casos</td>
+<td><strong>CRÍTICA</strong></td>
+<td>Medio (1 sem)</td>
+</tr>
+<tr>
+<td>G3</td>
+<td>cluster_id no se propaga</td>
+<td>"unknown" en 12/12</td>
+<td>Régimen dinámico en runner</td>
+<td>Alta</td>
+<td>Bajo (1 día)</td>
+</tr>
+<tr>
+<td>G4</td>
+<td>Baseline débil contra naive</td>
+<td>4 baselines simples</td>
+<td>7+ incluyendo ETS/ARIMA</td>
+<td>Alta</td>
+<td>Bajo (3 días)</td>
+</tr>
+<tr>
+<td>G5</td>
+<td>Solo MAE/RMSE/mape</td>
+<td>Sin CRPS ni interval score</td>
+<td>Distribución completa de predicción</td>
+<td>Media</td>
+<td>Bajo (2 días)</td>
+</tr>
+<tr>
+<td>G6</td>
+<td>Calibración manual</td>
+<td>43 parámetros hard-coded</td>
+<td>CMA-ES sobre 5-8 sensibles</td>
+<td>Media</td>
+<td>Medio (2 sem)</td>
+</tr>
+<tr>
+<td>G7</td>
+<td>Sin walk-forward CV</td>
+<td>Split 70/30 fijo</td>
+<td>k-fold con ventana móvil</td>
+<td>Media</td>
+<td>Bajo (3 días)</td>
+</tr>
+<tr>
+<td>G8</td>
+<td>Sin ablations</td>
+<td>No medidas</td>
+<td>Cada componente medido</td>
+<td>Media</td>
+<td>Medio (1 sem)</td>
+</tr>
+<tr>
+<td>G9</td>
+<td>Sin claim defendible</td>
+<td>"Publishable" (eliminado)</td>
+<td>Nicho acotado y honesto</td>
+<td>Baja</td>
+<td>Bajo (ya hecho)</td>
+</tr>
+<tr>
+<td>G10</td>
+<td>Sin cards públicos</td>
+<td>README + docs dispersos</td>
+<td>Model/Benchmark/Repro cards</td>
+<td>Baja</td>
+<td>Bajo (1 sem)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Leyenda severidad:</strong> CRÍTICA = bloquea H1; Alta = bloquea H2; Media = nice-to-have.</p>
+<hr />
+<h2 id="4-backlog-priorizado-impacto-esfuerzo-riesgo">4. Backlog priorizado (Impacto × Esfuerzo × Riesgo)</h2>
+<h3 id="ticket-1-p0-impacto-maximo-esfuerzo-bajo">Ticket 1 — P0, IMPACTO MÁXIMO, esfuerzo bajo</h3>
+<p><strong>Congelar benchmark del motor real en los 12 casos</strong>
+- <strong>Diagnóstico:</strong> El benchmark actual usa proxy (AR(1) + ruido). Las cifras no
+  son honestas sobre MASSIVE.
+- <strong>Hipótesis:</strong> El motor real (<code>simulator.simular()</code>) tiene acceso a la
+  estructura completa de cada caso (cultural profile, intervention schedule,
+  Factbook data). Por lo tanto, debería ganar al proxy trivial.
+- <strong>Plan:</strong>
+  - Modificar <code>_massive_offline_forecast</code> para invocar <code>simular()</code> con
+    parámetros derivados del case meta
+  - Mantener proxy como fallback cuando el motor falle
+  - Re-ejecutar 12 casos con motor real
+- <strong>Experimento:</strong>
+  - Dataset: <code>datasets/real_cases/*</code> (12 casos)
+  - Seed: 42
+  - Baselines: 4 actuales + motor real
+  - Métrica: MAE, RMSE, MAPE, dir_acc
+  - Test: paired t-test MASSIVE_real vs MASSIVE_proxy
+  - <strong>Criterio de éxito:</strong> MASSIVE_real MAE &lt; MASSIVE_proxy MAE en ≥9/12 casos
+- <strong>Riesgo de regresión:</strong> Bajo — es un benchmark nuevo, no toca simulador.
+- <strong>Riesgo de no-determinismo:</strong> Bajo — <code>simular()</code> ya es determinista con seed.
+- <strong>Esfuerzo:</strong> 2-3 días.
+- <strong>Reversión:</strong> Trivial (mantener <code>--proxy</code> flag).</p>
+<h3 id="ticket-2-p0-impacto-alto-esfuerzo-bajo">Ticket 2 — P0, IMPACTO ALTO, esfuerzo bajo</h3>
+<p><strong>Propagar cluster_id del case meta al runner</strong>
+- <strong>Diagnóstico:</strong> <code>cluster_id</code> está en <code>unknown</code> para los 12 casos. El régimen
+  dinámico (polarization_spike, contagion_sir, etc.) no se usa.
+- <strong>Hipótesis:</strong> Si el runner sabe el régimen, puede ajustar hiperparámetros
+  del motor (e.g., β en SIR, ε en HK) sin reentrenar.
+- <strong>Plan:</strong>
+  - Asegurar que <code>generate_real_cases.py</code> escribe <code>cluster_id</code> en <code>meta.json</code>
+  - <code>evaluate_case</code> lee <code>cluster_id</code> y lo pasa al predictor MASSIVE
+- <strong>Criterio de éxito:</strong> <code>cluster_id</code> no es "unknown" en los 12 casos.
+- <strong>Esfuerzo:</strong> 1 día.
+- <strong>Impacto marginal esperado:</strong> Bajo por sí solo, pero habilita Ticket 5.</p>
+<h3 id="ticket-3-p1-impacto-alto-esfuerzo-medio">Ticket 3 — P1, IMPACTO ALTO, esfuerzo medio</h3>
+<p><strong>Añadir baselines estadísticos estándar (ETS, ARIMA, threshold)</strong>
+- <strong>Diagnóstico:</strong> Las 4 baselines actuales (naive, AR(1), MA, random) son
+  demasiado simples. Falta comparación con métodos estándar.
+- <strong>Hipótesis:</strong> ETS y ARIMA pueden ganar a MASSIVE real en MAE. Si pasan, el
+  claim SOTA debe ser sobre dirección, no MAE.
+- <strong>Plan:</strong>
+  - Añadir <code>ETSBaseline</code> (statsmodels ExponentialSmoothing)
+  - Añadir <code>ARIMABaseline</code> (auto_arima o (1,1,1) fijo)
+  - Añadir <code>ThresholdLogisticBaseline</code> (ajuste sigmoid a ventana de 3 puntos)
+  - Documentar parámetros de cada baseline
+- <strong>Criterio de éxito:</strong> 7 baselines ejecutan sin error en 12 casos.
+- <strong>Esfuerzo:</strong> 3-4 días.
+- <strong>Dependencia:</strong> statsmodels en requirements.</p>
+<h3 id="ticket-4-p1-impacto-critico-esfuerzo-medio">Ticket 4 — P1, IMPACTO CRÍTICO, esfuerzo medio</h3>
+<p><strong>Integrar EnKF y medir Δ asimilación en 12 casos</strong>
+- <strong>Diagnóstico:</strong> EnKF existe (289 líneas) pero no se usa nunca en benchmark.
+- <strong>Hipótesis:</strong> Inyectar observaciones cada 3-5 pasos reduce MAE en ≥8/12
+  casos respecto a no-asimilar.
+- <strong>Plan:</strong>
+  - Envolver <code>simular()</code> como <code>model_step</code> callable del EnsembleKalmanFilter
+  - Estrategia: ensemble de 32 miembros, observación cada 5 pasos, σ_obs=0.05
+  - Ejecutar 12 casos × 2 modos (con/sin EnKF)
+  - Comparar MAE, RMSE, dir_acc, turning_point F1
+- <strong>Experimento:</strong>
+  - n_ensemble: {16, 32, 64} (sweep)
+  - σ_obs: {0.01, 0.05, 0.10} (sweep)
+  - observation_interval: {3, 5, 10} pasos
+  - <strong>Criterio de éxito:</strong> ΔMAE = MAE_noEnKF - MAE_EnKF &gt; 0 en ≥8/12 casos,
+    paired t-test p&lt;0.05 con Holm-Bonferroni
+- <strong>Esfuerzo:</strong> 1 semana.
+- <strong>Riesgo de no-determinismo:</strong> Medio — EnKF añade ruido. Usar seed fija.
+- <strong>Dependencia:</strong> Que Ticket 1 (motor real en runner) esté hecho.</p>
+<h3 id="ticket-5-p2-impacto-alto-esfuerzo-alto">Ticket 5 — P2, IMPACTO ALTO, esfuerzo alto</h3>
+<p><strong>Calibración restringida con CMA-ES sobre top-sensitivity params</strong>
+- <strong>Diagnóstico:</strong> Los 43 parámetros empíricos están calibrados manualmente.
+  No hay evidencia de que sean los valores óptimos.
+- <strong>Hipótesis:</strong> Optimización sobre 5-8 parámetros top-sensibles (β, σ, α_HK,
+  α_Sznajd, etc.) puede mejorar MAE out-of-sample ≥10%.
+- <strong>Plan:</strong>
+  - Análisis de sensibilidad global (Sobol o Morris) sobre 43 parámetros
+  - Seleccionar top 5-8
+  - CMA-ES (cma library) con walk-forward k-fold (k=3) en los 12 casos
+  - Train: primeros 8 timesteps, test: restantes
+- <strong>Criterio de éxito:</strong> MAE out-of-sample calibrado &lt; MAE hard-coded
+  en ≥7/12 casos
+- <strong>Esfuerzo:</strong> 2 semanas.
+- <strong>Riesgo:</strong> Overfitting a los 12 casos. Mitigación: k-fold + reservar 2
+  casos como holdout final.
+- <strong>Dependencia:</strong> Tickets 1, 2, 3 completos.</p>
+<h3 id="ticket-6-p2-impacto-medio-esfuerzo-medio">Ticket 6 — P2, IMPACTO MEDIO, esfuerzo medio</h3>
+<p><strong>Ablations de componentes</strong>
+- <strong>Diagnóstico:</strong> No se sabe qué componente aporta qué.
+- <strong>Hipótesis:</strong> Cada componente (LLM selector, homofilia, confirmation bias,
+  energy engine, multilayer, Factbook, EnKF) tiene una contribución medible
+  y al menos uno es &gt;5% del MAE.
+- <strong>Plan:</strong>
+  - 7 ablations: quitar uno por uno
+  - Métrica: ΔMAE vs MASSIVE full
+  - Test: leave-one-out + ranking de importancia
+- <strong>Criterio de éxito:</strong> Hay ≥1 componente con ΔMAE &gt; 5% al removerlo.
+- <strong>Esfuerzo:</strong> 1 semana.</p>
+<h3 id="ticket-7-p2-impacto-bajo-esfuerzo-bajo">Ticket 7 — P2, IMPACTO BAJO, esfuerzo bajo</h3>
+<p><strong>Métricas: CRPS, interval score, energy distance</strong>
+- <strong>Diagnóstico:</strong> Solo MAE/RMSE/mape. Para distribuciones de ensemble
+  (con EnKF) se necesitan métricas probabilísticas.
+- <strong>Plan:</strong> Añadir <code>properscoring</code> o implementación propia de CRPS.
+- <strong>Criterio de éxito:</strong> MASSIVE+EnKF reporta CRPS ≤ ETS en ≥6/12 casos.
+- <strong>Esfuerzo:</strong> 2 días.</p>
+<h3 id="ticket-8-p3-impacto-bajo-esfuerzo-bajo">Ticket 8 — P3, IMPACTO BAJO, esfuerzo bajo</h3>
+<p><strong>Cards públicos: Model / Benchmark / Reproducibility</strong>
+- <strong>Diagnóstico:</strong> No hay cards estandarizados.
+- <strong>Plan:</strong> Escribir <code>docs/cards/{MODEL,BENCHMARK,REPRODUCIBILITY}.md</code> siguiendo
+  plantillas de Mitchell et al. 2019.
+- <strong>Esfuerzo:</strong> 1 semana.</p>
+<hr />
+<h2 id="5-primeros-5-experimentos-orden-de-ejecucion">5. Primeros 5 experimentos (orden de ejecución)</h2>
+<h3 id="experimento-1-exp-001-massive_real_benchmark_v0">Experimento 1 — <code>EXP-001: MASSIVE_REAL_BENCHMARK_v0</code></h3>
+<p><strong>Objetivo:</strong> cuantificar el delta entre MASSIVE real y el proxy.
+<strong>Setup:</strong>
+- Dataset: 12 casos
+- Predictor: <code>simulator.simular()</code> con parámetros derivados del case meta
+- Baselines: 4 actuales
+- Seeds: {42, 43, 44} (3 seeds para varianza)
+- Salida: <code>experiments/06_real_benchmark_v0/{metrics.json, report.md}</code>
+- Comando: <code>python3 -m benchmarks.runner --cases datasets/real_cases --real --seeds 42 43 44 --out reports/sota_v0</code>
+<strong>Criterio de éxito:</strong> MASSIVE_real MAE &lt; MASSIVE_proxy MAE en ≥9/12.
+<strong>Riesgo de fallo:</strong> Medio — si la API de <code>simular()</code> no acepta los inputs del runner.</p>
+<h3 id="experimento-2-exp-002-baseline_expansion">Experimento 2 — <code>EXP-002: BASELINE_EXPANSION</code></h3>
+<p><strong>Objetivo:</strong> añadir ETS, ARIMA, threshold logistic, ML tabular.
+<strong>Setup:</strong>
+- Dataset: 12 casos
+- Baselines nuevos: 4
+- Salida: <code>experiments/07_baseline_expansion/baselines_comparison.csv</code>
+- Comando: <code>python3 -m benchmarks.runner --cases datasets/real_cases --baselines all --out reports/baselines</code>
+<strong>Criterio de éxito:</strong> 7 baselines ejecutan sin error.
+<strong>Riesgo de fallo:</strong> Bajo — usar implementaciones estándar de statsmodels.</p>
+<h3 id="experimento-3-exp-003-enkf_delta_measurement">Experimento 3 — <code>EXP-003: ENKF_DELTA_MEASUREMENT</code></h3>
+<p><strong>Objetivo:</strong> medir Δ pre/post asimilación.
+<strong>Setup:</strong>
+- Dataset: 12 casos
+- Predictores: MASSIVE_real_sin_EnKF, MASSIVE_real_con_EnKF
+- Parámetros EnKF: n_ensemble=32, σ_obs=0.05, interval=5
+- Salida: <code>experiments/08_enkf_delta/{metrics.json, plot.png}</code>
+- Comando: <code>python3 experiments/sota_roadmap/exp_003_enkf.py</code>
+<strong>Criterio de éxito:</strong> ΔMAE &gt; 0 en ≥8/12 casos, p&lt;0.05.
+<strong>Riesgo de fallo:</strong> Alto — EnKF puede no converger con el simulador caótico.</p>
+<h3 id="experimento-4-exp-004-regime_conditioned_benchmark">Experimento 4 — <code>EXP-004: REGIME_CONDITIONED_BENCHMARK</code></h3>
+<p><strong>Objetivo:</strong> ¿mejora MASSIVE si se le da el cluster_id correcto?
+<strong>Setup:</strong>
+- Dataset: 12 casos con cluster_id propagado
+- Predictor: MASSIVE con hiperparámetros adaptados al régimen
+- Comparar: MASSIVE con/sin cluster_id
+- Salida: <code>experiments/09_regime_conditioned/</code>
+<strong>Criterio de éxito:</strong> MAE con cluster_id ≤ MAE sin cluster_id en ≥10/12.
+<strong>Riesgo de fallo:</strong> Bajo — Ticket 2 ya hecho.</p>
+<h3 id="experimento-5-exp-005-walk_forward_cv">Experimento 5 — <code>EXP-005: WALK_FORWARD_CV</code></h3>
+<p><strong>Objetivo:</strong> validar robustez out-of-sample con ventana móvil.
+<strong>Setup:</strong>
+- Dataset: 12 casos
+- Esquema: train en [0, k], test en [k, k+3], avanzar k
+- Repetir para k ∈ {0.5, 0.6, 0.7} del total
+- Salida: <code>experiments/10_walk_forward/</code>
+<strong>Criterio de éxito:</strong> La mejora MASSIVE&gt;naive se mantiene en ≥2/3 splits.
+<strong>Riesgo de fallo:</strong> Medio — series cortas (11-15 timesteps) dan splits
+de test muy pequeños (3-5 puntos).</p>
+<hr />
+<h2 id="6-niveles-de-exito-realistas">6. Niveles de éxito realistas</h2>
+<table>
+<thead>
+<tr>
+<th>Nivel</th>
+<th>Criterio</th>
+<th>Probabilidad estimada</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>N1</strong></td>
+<td>MASSIVE real supera a proxy en ≥9/12 casos (Experimento 1)</td>
+<td>80% — el motor tiene acceso a más info que el proxy.</td>
+</tr>
+<tr>
+<td><strong>N2</strong></td>
+<td>MASSIVE+EnKF mejora MASSIVE sin EnKF en ≥8/12 (Exp 3)</td>
+<td>50% — depende de convergencia EnKF.</td>
+</tr>
+<tr>
+<td><strong>N3</strong></td>
+<td>MASSIVE+EnKF gana o empata vs ETS en dirección (≥6/12)</td>
+<td>40% — ETS es fuerte en series suaves.</td>
+</tr>
+<tr>
+<td><strong>N4</strong></td>
+<td>Calibración CMA-ES mejora out-of-sample ≥10% (Exp 5)</td>
+<td>30% — riesgo de overfitting alto.</td>
+</tr>
+<tr>
+<td><strong>N5</strong></td>
+<td>Claim SOTA-defendible publicable</td>
+<td>20% — requiere N1+N2+N3.</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Si no se llega a N3</strong>, redefinir el nicho: "mejor ABM con asimilación
+para captura temprana de régimen" en vez de "mejor predictor".</p>
+<hr />
+<h2 id="7-honestidad-cientifica-lo-que-no-se-afirma">7. Honestidad científica: lo que NO se afirma</h2>
+<ul>
+<li>❌ "MASSIVE predice mejor que cualquier modelo" — el proxy pierde vs naive.</li>
+<li>❌ "MASSIVE es SOTA en polarización social" — no se ha comparado vs SOTA real.</li>
+<li>❌ "Las 39 fuentes académicas revisadas por pares" — son referencias
+  documentadas, no una afirmación de que MASSIVE mismo haya pasado revisión.</li>
+<li>❌ "EnKF funciona automáticamente con MASSIVE" — el código existe, la
+  integración no se ha validado empíricamente.</li>
+<li>❌ "Las simulaciones son ground truth" — son interpretaciones de mecanismos
+  basadas en literatura.</li>
+</ul>
+<h2 id="8-lo-que-si-se-afirma-con-evidencia">8. Lo que SÍ se afirma (con evidencia)</h2>
+<ul>
+<li>✅ MASSIVE tiene 4 motores, 43 parámetros, 7 perfiles culturales, 12 casos
+  reales — verificable en <code>experiments/</code>.</li>
+<li>✅ El simulador es determinista con <code>seed=42</code> y <code>PYTHONHASHSEED=42</code> — verificado
+  en tests 6.</li>
+<li>✅ MASSIVE captura dirección de cambio (proxy: 9/12) — verificable.</li>
+<li>✅ 3 casos tienen Diebold-Mariano significativo — verificable.</li>
+</ul>
+<hr />
+<h2 id="9-estructura-de-carpetas-propuesta">9. Estructura de carpetas propuesta</h2>
+<pre><code>experiments/
+├── 06_real_benchmark_v0/        # Exp 1: motor real vs proxy
+├── 07_baseline_expansion/        # Exp 2: 7 baselines
+├── 08_enkf_delta/                # Exp 3: Δ asimilación
+├── 09_regime_conditioned/        # Exp 4: cluster_id propagation
+├── 10_walk_forward/              # Exp 5: validación out-of-sample
+├── 11_sensitivity/               # Sobol/Morris sobre 43 params
+├── 12_cma_es_calibration/        # Calibración automática
+├── 13_ablations/                 # Leave-one-out de componentes
+└── sota_roadmap/
+    ├── ROADMAP_SOTA_MASSIVE.md   # este documento
+    ├── exp_001_real_benchmark.py
+    ├── exp_002_baselines.py
+    ├── exp_003_enkf.py
+    ├── exp_004_regime.py
+    └── exp_005_walk_forward.py
+
+docs/
+└── cards/
+    ├── MODEL_CARD.md             # Mitchell et al. 2019 style
+    ├── BENCHMARK_CARD.md
+    └── REPRODUCIBILITY_CARD.md
+</code></pre>
+<hr />
+<h2 id="10-workflow-operativo-regla-estricta">10. Workflow operativo (regla estricta)</h2>
+<p>Para cada ticket:</p>
+<pre><code>A. Diagnóstico    →  qué problema exacto resuelve + evidencia
+B. Hipótesis      →  mecanismo plausible + qué parte del sistema toca
+C. Plan           →  archivos a modificar + cambios mínimos + riesgos
+D. Experimento    →  dataset + seeds + métricas + criterio de éxito
+E. Benchmark      →  ejecutar + guardar artifacts
+F. Ablation       →  qué pasa si quitas el cambio
+G. Decisión       →  CONSERVAR (commit) / REVERTIR (revert) / ITERAR (siguiente ronda)
+</code></pre>
+<p><strong>No avanzar a la siguiente etapa sin evidencia de la anterior.</strong></p>
+<hr />
+<h2 id="11-comandos-clave">11. Comandos clave</h2>
+<pre><code class="language-bash"># H1 — Benchmark del motor real
+python3 -m benchmarks.runner --cases datasets/real_cases --real --seeds 42 43 44 \
+    --out reports/sota_v0 --config configs/sota_v0.yaml
+
+# H2 — EnKF delta
+python3 experiments/sota_roadmap/exp_003_enkf.py \
+    --cases datasets/real_cases --n_ensemble 32 --sigma_obs 0.05
+
+# H3 — Ablations
+python3 experiments/sota_roadmap/exp_006_ablations.py \
+    --component {llm_selector,homofilia,confirmation_bias,energy_engine,multilayer,factbook,enkf}
+</code></pre>
+<hr />
+<h2 id="12-riesgos-globales-y-mitigacion">12. Riesgos globales y mitigación</h2>
+<table>
+<thead>
+<tr>
+<th>Riesgo</th>
+<th>Probabilidad</th>
+<th>Mitigación</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>EnKF no converge con simulador caótico</td>
+<td>Media</td>
+<td>Usar inflación de covarianza + localization</td>
+</tr>
+<tr>
+<td>CMA-ES sobreajusta a 12 casos</td>
+<td>Alta</td>
+<td>Walk-forward k-fold + 2 casos holdout</td>
+</tr>
+<tr>
+<td>Motor real más lento que proxy</td>
+<td>Baja</td>
+<td>Cachear simulación por (seed, config)</td>
+</tr>
+<tr>
+<td>Claims inflados que dañan credibilidad</td>
+<td>Media (ya pasada)</td>
+<td>Política de honestidad escrita, código la aplica</td>
+</tr>
+<tr>
+<td>Dependencia de statsmodels / pmdarima</td>
+<td>Baja</td>
+<td>Fallback a (1,1,1) fijo si no hay auto_arima</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>Mantra del roadmap:</strong></p>
+<blockquote>
+<p>"Ningún número se reporta sin benchmark reproducible. Ningún claim se hace
+sin significancia estadística. Ningún feature se añade sin cerrar una
+brecha validada."</p>
+</blockquote>
+<hr />
+<p><strong>Próximo paso inmediato:</strong> ejecutar Experimento 1 (EXP-001) y reportar
+resultados en 1 semana. Si N1 falla, replantear.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../../../..", "features": ["navigation.sections", "navigation.expand", "content.code.copy"], "search": "../../../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

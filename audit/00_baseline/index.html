@@ -1,0 +1,2814 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="MASSIVE — Hybrid social dynamics simulator. Numerical core + LLM as regime selector.">
+      
+      
+      
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>FASE 0 — Cartografía y Línea Base - MASSIVE Documentation</title>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="../../assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL("../..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#fase-0-cartografia-y-linea-base" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="../.." title="MASSIVE Documentation" class="md-header__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            MASSIVE Documentation
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              FASE 0 — Cartografía y Línea Base
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+    
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="../.." title="MASSIVE Documentation" class="md-nav__button md-logo" aria-label="MASSIVE Documentation" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    MASSIVE Documentation
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../.." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../api/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    API Reference
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../factbook/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Factbook Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    LLM Interface
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    LLM Interface
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../MASSIVE_LLM_INTERFACE/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Interface spec
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../LLM_PROMPTS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Prompt templates
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5" >
+        
+          
+          <label class="md-nav__link" for="__nav_5" id="__nav_5_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Readiness
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_5_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Production Readiness
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../production-readiness-audit/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Audit & Risk Matrix
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../release-checklist/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Release Checklist
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/current-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (current)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/target-state/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Architecture (target)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/PRODUCTION_ARCHITECTURE_SPEC/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Production Architecture Spec
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../architecture/safety_protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Safety Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_7" id="__nav_5_7_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Runbooks
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Runbooks
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/local-development/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Local Development
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/operations/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Operations
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../runbooks/incidents/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Incidents
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    
+    
+    
+    
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_5_8" >
+        
+          
+          <label class="md-nav__link" for="__nav_5_8" id="__nav_5_8_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_5_8_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_5_8">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Security
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/threat-model/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Threat Model
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../security/secrets-and-configuration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Secrets & Configuration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../OBSERVABILITY_AND_SECURITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Observability & Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../backup_restore/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Backup & Restore
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../disaster_recovery_plan/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Disaster Recovery
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../DOCKER/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Docker
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../ENV_VARS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Environment Variables
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../NAMING_CONVENTIONS/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    NAMING_CONVENTIONS.md
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_6" >
+        
+          
+          <label class="md-nav__link" for="__nav_6" id="__nav_6_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Validation (PVU-BS)
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_6_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_6">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Validation (PVU-BS)
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/PVU_MASSIVE_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/PVU_MASSIVE_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocolo (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/preregistration_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registration (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/preregistration_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Pre-registro (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/validation_report_template_EN/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Report template (EN)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../validation/validation_report_template_ES/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Plantilla de reporte (ES)
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cards/BENCHMARK/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Benchmark Card
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../cards/REPRODUCIBILITY/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Reproducibility Card
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+      
+        
+        
+          
+        
+        <input class="md-nav__toggle md-toggle md-toggle--indeterminate" type="checkbox" id="__nav_7" >
+        
+          
+          <label class="md-nav__link" for="__nav_7" id="__nav_7_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Testing
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_7_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_7">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Testing
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../testing/test-strategy/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Test Strategy
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../performance/baseline/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Baseline
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../performance_report/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Performance Report
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#1-estado-del-repositorio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. Estado del repositorio
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="1. Estado del repositorio">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#sincronizacion-local-github" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Sincronización local ↔ GitHub
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rust-layer-confirmado-eliminado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rust layer (confirmado eliminado)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#2-estructura-del-arbol-verificado-lsgit-ls-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. Estructura del árbol (verificado ls/git ls-files)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="2. Estructura del árbol (verificado ls/git ls-files)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#tamanos-de-modulos-clave-lineas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tamaños de módulos clave (líneas)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#3-verificacion-de-imports-smoke-test" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. Verificación de imports (smoke test)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="3. Verificación de imports (smoke test)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#root-modules-22-verificados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Root modules (22 verificados)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#packages-subpackages-38-23-submodulos-verificados" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Packages + subpackages (38 + 23 submódulos verificados)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#import-cycles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Import cycles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dependencias-opcionales" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependencias opcionales
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#4-linea-base-de-pruebas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        4. Línea base de pruebas
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="4. Línea base de pruebas">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#resultados-pythonhashseed42-venvbinpython-m-pytest-tests-tbline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resultados (PYTHONHASHSEED=42 .venv/bin/python -m pytest tests/ --tb=line)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tests-omitidos-12-todos-por-pesos-pt-git-ignored" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tests omitidos (12) — TODOS por pesos .pt git-ignored
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#discrepancia-readme-vs-realidad" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Discrepancia README vs realidad
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#coverage-report-modulos-clave" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Coverage report (módulos clave)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ci-workflows-11-archivos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CI workflows (11 archivos)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#5-instalacion-limpia-verificacion-del-readme" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        5. Instalación limpia (verificación del README)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="5. Instalación limpia (verificación del README)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#pasos-del-readme-quick-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pasos del README (§Quick start)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resultado" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resultado:
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#problema-critico-venv-existente-estaba-incompleto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PROBLEMA CRÍTICO: venv existente estaba incompleto
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#6-mapa-de-dependencias-entre-modulos" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        6. Mapa de dependencias entre módulos
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="6. Mapa de dependencias entre módulos">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dependencias-criticas-runtime" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dependencias críticas (runtime)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#7-problemas-criticos-identificados-requieren-fase-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        7. Problemas críticos identificados (requieren FASE 1)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="7. Problemas críticos identificados (requieren FASE 1)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#critico-1-data-leakage-en-brexit_calibrationpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CRÍTICO-1: Data leakage en brexit_calibration.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#critico-2-import-de-torch-no-guardado-en-test_cfc_lambda_integrationpy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CRÍTICO-2: Import de torch no guardado en test_cfc_lambda_integration.py
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#critico-3-test_brexit_calibrationpy-no-omite-cuando-falta-torch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CRÍTICO-3: test_brexit_calibration.py no omite cuando falta torch
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#menor-1-discrepancia-de-conteo-de-tests" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MENOR-1: Discrepancia de conteo de tests
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#menor-2-discrepancia-de-cobertura" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MENOR-2: Discrepancia de cobertura
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#8-hipotesis-pendientes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        8. Hipótesis pendientes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#9-resumen-de-la-linea-base" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        9. Resumen de la línea base
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#gate-fase-0" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GATE — FASE 0
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="GATE — FASE 0">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cumplido" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✅ CUMPLIDO
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#fase-1-correccion-de-logica-completada" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FASE 1 — Corrección de lógica (completada)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="FASE 1 — Corrección de lógica (completada)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#resumen" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resumen
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#critico-1-data-leakage-en-brexit_calibrationpy-resuelto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CRÍTICO-1: Data leakage en brexit_calibration.py — ✅ RESUELTO
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#critico-2-import-torch-sin-guarda-en-test_cfc_lambda_integrationpy-resuelto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CRÍTICO-2: Import torch sin guarda en test_cfc_lambda_integration.py — ✅ RESUELTO
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#critico-3-test_brexit_calibrationpy-sin-skipif-de-torch-resuelto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CRÍTICO-3: test_brexit_calibration.py sin skipif de torch — ✅ RESUELTO
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#menor-1-discrepancia-de-conteo-de-tests-resuelto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MENOR-1: Discrepancia de conteo de tests — ✅ RESUELTO
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#menor-2-discrepancia-de-cobertura-resuelto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MENOR-2: Discrepancia de cobertura — ✅ RESUELTO
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#menor-3-referencia-a-calibration_logmd-inexistente-resuelto" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        MENOR-3: Referencia a calibration_log.md inexistente — ✅ RESUELTO
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#commits-fase-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Commits (FASE 1)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#gate-fase-1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        GATE — FASE 1
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cumplido_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ✅ CUMPLIDO
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="fase-0-cartografia-y-linea-base">FASE 0 — Cartografía y Línea Base</h1>
+<blockquote>
+<p><strong>Orquestador:</strong> OMNISCIENT (este documento)
+<strong>Fecha:</strong> 2026-10-14
+<strong>Commit HEAD:</strong> <code>30eee99</code> (main / prod-readiness)
+<strong>Entorno:</strong> Python 3.14.8 (venv), Node 22.x, Ubuntu
+<strong>Objetivo:</strong> Mapear el repositorio, verificar instalación limpia, establecer línea base de pruebas e imports, y producir el mapa de dependencias entre módulos.</p>
+</blockquote>
+<hr />
+<h2 id="1-estado-del-repositorio">1. Estado del repositorio</h2>
+<h3 id="sincronizacion-local-github">Sincronización local ↔ GitHub</h3>
+<ul>
+<li><strong>Hecho:</strong> <code>git log --oneline main</code> y <code>origin/main</code> están ambos en <code>30eee99</code> — <strong>local está sincronizado con GitHub</strong>.</li>
+<li><code>git merge-base --is-ancestor main prod-readiness</code> → <code>main</code> es ancestro de <code>prod-readiness</code> → <strong>sin divergencia</strong>.</li>
+<li>La rama <code>prod-readiness</code> está disponible y apunta al mismo commit que <code>main</code>.</li>
+</ul>
+<h3 id="rust-layer-confirmado-eliminado">Rust layer (confirmado eliminado)</h3>
+<ul>
+<li><strong>Hecho:</strong> La capa Rust fue eliminada en commits <code>75c2b64</code> y <code>3a6a6a3</code> (ver histórico git).</li>
+<li><code>pyproject.toml</code> línea 63: <em>"Pure Python build — no native extensions, no Rust toolchain required."</em></li>
+<li>No existen archivos <code>Cargo.toml</code>, <code>rust_core/</code>, ni referencias a Rust en el código (verificado via grep).</li>
+<li>El antecedente conocido (abr 2026: <em>"main roto por imports de módulos inexistentes"</em>) <strong>ya no aplica</strong> — todos los imports verificados (§3).</li>
+</ul>
+<hr />
+<h2 id="2-estructura-del-arbol-verificado-lsgit-ls-files">2. Estructura del árbol (verificado <code>ls</code>/<code>git ls-files</code>)</h2>
+<pre><code>MASSIVE/
+├── backend/app/                     # FastAPI canónico (/v1/*)
+│   ├── main.py (390 lines)
+│   ├── models/                      # DTOs Pydantic v2 (extra=&quot;forbid&quot;)
+│   ├── routers/                     # sim, forecast, engine, llm, benchmark
+│   ├── security.py, metrics.py, settings.py
+├── services/                        # Orquestación (llm_orchestrator 874 lines)
+│   ├── simulation_service.py, forecast_service.py, factbook_service.py
+│   └── llm_service.py, llm_orchestrator.py
+├── massive/                         # CLI + core/factbook + empirical
+│   ├── cli/main.py, core/{abcsbi,backtesting,convergence_certifier,...}
+├── massive_core/                    # Capa científica opt-in
+│   ├── numerics/{solvers,steppers,stability,multilayer_engine_sparse}
+│   ├── physics/, dynamical_systems/, data_assimilation/, metalearning/
+│   ├── diagnostics/, multiscale/, network_inference/, neural_physics/
+│   └── config/, analysis/
+├── forecast/                        # Motor de riesgo temporal
+├── ground_truth/                    # Tier 1 microdata parquet (12 casos)
+├── datasets/                        # ground_truth parquet + pvu_cases/ + real_cases/
+├── configs/                         # calibrated/, llm_contract/, gitleaks.toml
+├── models/                          # cfc_calibrated/ (weights .pt git-ignored)
+├── benchmarks/                      # PVU-BS runner + scientific benchmarks
+├── scripts/                         # calibración, TS generation, verificación
+├── frontend/                        # React 18 + Vite + TS
+├── tests/                           # 878 tests totales
+├── monitoring/                      # Prometheus + Grafana
+├── .github/workflows/               # 11 CI workflows
+├── requirements.txt (38 líneas)
+├── pyproject.toml (v1.0.0)
+├── Makefile
+├── README.md, README_ES.md
+└── CHANGELOG.md
+</code></pre>
+<h3 id="tamanos-de-modulos-clave-lineas">Tamaños de módulos clave (líneas)</h3>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Líneas</th>
+<th>Rol</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>simulator.py</code></td>
+<td>2,463</td>
+<td>Engine escalar legacy</td>
+</tr>
+<tr>
+<td><code>massive_engine.py</code></td>
+<td>1,271</td>
+<td>LOD super-agents (100M)</td>
+</tr>
+<tr>
+<td><code>multilayer_engine.py</code></td>
+<td>1,035</td>
+<td>Langevin sociodemográfico 5D</td>
+</tr>
+<tr>
+<td><code>micro_engine.py</code></td>
+<td>1,038</td>
+<td>Familias de futuros / bifurcatación</td>
+</tr>
+<tr>
+<td><code>energy_engine.py</code></td>
+<td>687</td>
+<td>Social-energy SDE (Euler-Maruyama)</td>
+</tr>
+<tr>
+<td><code>social_architect.py</code></td>
+<td>706</td>
+<td>Búsqueda inversa de intervenciones</td>
+</tr>
+<tr>
+<td><code>cfc_engine.py</code></td>
+<td>356</td>
+<td>Corrector residual CfC</td>
+</tr>
+<tr>
+<td><code>cfc_router.py</code></td>
+<td>460</td>
+<td>Router singleton CfC + fallbacks</td>
+</tr>
+<tr>
+<td><code>api.py</code></td>
+<td>506</td>
+<td>FastAPI legacy (/api/*)</td>
+</tr>
+<tr>
+<td><code>backend/app/main.py</code></td>
+<td>390</td>
+<td>FastAPI canónico (/v1/*)</td>
+</tr>
+<tr>
+<td><code>services/llm_orchestrator.py</code></td>
+<td>874</td>
+<td>NL→engine dispatch (contract v1.1.0)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="3-verificacion-de-imports-smoke-test">3. Verificación de imports (smoke test)</h2>
+<h3 id="root-modules-22-verificados">Root modules (22 verificados)</h3>
+<pre><code>✅ 21/22 OK
+❌ benchmark_scalability: ModuleNotFoundError psutil  →  RESUELTO (instalar from requirements.txt)
+</code></pre>
+<h3 id="packages-subpackages-38-23-submodulos-verificados">Packages + subpackages (38 + 23 submódulos verificados)</h3>
+<pre><code>✅ 38/38 packages OK
+✅ 23/23 submódulos corregidos OK
+  (Nota: smoke test inicial usó nombres erróneos massive.core.empirical, 
+   massive.core.intervention, massive.core.utility — los módulos reales son
+   empirical_calibration, intervention_optimizer, utility_logic respectivamente.
+   Estos existen y se importan correctamente.)
+</code></pre>
+<h3 id="import-cycles">Import cycles</h3>
+<ul>
+<li><strong>Ningún ciclo detectado</strong> (verificado importando módulos uno a uno y monitoreando sys.modules).</li>
+</ul>
+<h3 id="dependencias-opcionales">Dependencias opcionales</h3>
+<table>
+<thead>
+<tr>
+<th>Dependencia</th>
+<th>Estado</th>
+<th>Nota</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>torch</code> (&gt;=2.2.0)</td>
+<td>✅ Instalable via requirements.txt</td>
+<td>CfC engines; fallback transparente si no está</td>
+</tr>
+<tr>
+<td><code>pyarrow</code> (&gt;=14.0)</td>
+<td>✅ Instalable via requirements.txt</td>
+<td>Parquet (ground_truth microdata)</td>
+</tr>
+<tr>
+<td><code>psutil</code> (&gt;=5.9.0)</td>
+<td>✅ Instalable via requirements.txt</td>
+<td>Benchmarking de recursos</td>
+</tr>
+<tr>
+<td><code>ripser/persim</code></td>
+<td>⚠️ No en requirements.txt</td>
+<td>TDA: se desactiva con warning (<code>[TDA] ripser/persim no instalados</code>)</td>
+</tr>
+<tr>
+<td>LLM keys (OpenAI/Groq/OpenRouter)</td>
+<td>⚠️ Opcional</td>
+<td>Fallback determinista cuando no configurados</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="4-linea-base-de-pruebas">4. Línea base de pruebas</h2>
+<h3 id="resultados-pythonhashseed42-venvbinpython-m-pytest-tests-tbline">Resultados (<code>PYTHONHASHSEED=42 .venv/bin/python -m pytest tests/ --tb=line</code>)</h3>
+<pre><code>866 passed, 12 skipped, 17 warnings in 25.94s
+878 tests collected (866 + 12)
+</code></pre>
+<h3 id="tests-omitidos-12-todos-por-pesos-pt-git-ignored">Tests omitidos (12) — TODOS por pesos .pt git-ignored</h3>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Tests omitidos</th>
+<th>Razón</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>test_cfc_lambda_integration.py</code></td>
+<td>3</td>
+<td><code>cfc_lambda_corrector.pt</code> no existe (git-ignored)</td>
+</tr>
+<tr>
+<td><code>test_cfc_landscape_integration.py</code></td>
+<td>9</td>
+<td><code>cfc_landscape.pt</code> no existe (git-ignored)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Verificado:</strong> Los 12 skips están correctamente marcados con <code>pytest.mark.skipif</code> y la razón documentada. El comportamiento de fallback (passthrough) está cubierto por tests no marcados que pasan.</p>
+<h3 id="discrepancia-readme-vs-realidad">Discrepancia README vs realidad</h3>
+<table>
+<thead>
+<tr>
+<th>Ítem</th>
+<th>README dice</th>
+<th>Realidad verificada</th>
+<th>Ajuste necesario</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Count de tests</td>
+<td>"887 tests"</td>
+<td>878 (866+12)</td>
+<td>Actualizar README</td>
+</tr>
+<tr>
+<td>Cobertura</td>
+<td>"68 % branch"</td>
+<td>71.12%</td>
+<td>Actualizar README</td>
+</tr>
+</tbody>
+</table>
+<h3 id="coverage-report-modulos-clave">Coverage report (módulos clave)</h3>
+<table>
+<thead>
+<tr>
+<th>Módulo</th>
+<th>Cobertura</th>
+<th>Archivos críticos sin cobertura</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>multilayer_engine.py</code></td>
+<td>95%</td>
+<td>Líneas 368, 370, 553-554, 569, 845-859</td>
+</tr>
+<tr>
+<td><code>micro_engine.py</code></td>
+<td>89%</td>
+<td>Líneas 297-298, 302-314, 392-405, 541-558</td>
+</tr>
+<tr>
+<td><code>massive_engine.py</code></td>
+<td>77%</td>
+<td>Líneas 60-66, 75-79, 635-653, 764-813 (bloques de fallback)</td>
+</tr>
+<tr>
+<td><code>simulator.py</code></td>
+<td>67%</td>
+<td>Líneas 976-1004, 1184-1188, 1284-1285, 2327-2428</td>
+</tr>
+<tr>
+<td><code>cfc_engine.py</code></td>
+<td>—</td>
+<td>Ver detalle en test-cov</td>
+</tr>
+<tr>
+<td><code>cfc_router.py</code></td>
+<td>—</td>
+<td>Ver detalle en test-cov</td>
+</tr>
+<tr>
+<td><code>services/llm_orchestrator.py</code></td>
+<td>82%</td>
+<td>Líneas 407-435 (fallback LLM), 583-608 (error handling)</td>
+</tr>
+<tr>
+<td><code>backend/app/main.py</code></td>
+<td>—</td>
+<td>Ver detalle en test-cov</td>
+</tr>
+<tr>
+<td><code>massive_core/neural_physics/pinns.py</code></td>
+<td><strong>0%</strong></td>
+<td><strong>0% cobertura — módulo entero</strong></td>
+</tr>
+<tr>
+<td><code>massive_core/network_inference/reconstruct.py</code></td>
+<td>21%</td>
+<td>Muy bajo</td>
+</tr>
+<tr>
+<td><code>massive_core/physics/perturbation_theory.py</code></td>
+<td>33%</td>
+<td>Muy bajo</td>
+</tr>
+<tr>
+<td><code>massive_core/analysis/</code></td>
+<td>0%</td>
+<td>Módulo sin tests</td>
+</tr>
+</tbody>
+</table>
+<h3 id="ci-workflows-11-archivos">CI workflows (11 archivos)</h3>
+<table>
+<thead>
+<tr>
+<th>Workflow</th>
+<th>Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pytest.yml</code></td>
+<td>Core (6 archivos), Scientific (5 archivos), API, Full-suite con coverage gate (30%)</td>
+</tr>
+<tr>
+<td><code>lint.yml</code></td>
+<td>ruff + black + mypy slice</td>
+</tr>
+<tr>
+<td><code>benchmark.yml</code></td>
+<td>PVU-BS offline validation</td>
+</tr>
+<tr>
+<td><code>frontend-build.yml</code></td>
+<td>React build + lint + tsc</td>
+</tr>
+<tr>
+<td><code>docker-e2e.yml</code></td>
+<td>Docker compose health check</td>
+</tr>
+<tr>
+<td><code>mkdocs.yml</code></td>
+<td>Build docs site</td>
+</tr>
+<tr>
+<td><code>typecheck.yml</code></td>
+<td>Mypy full (services/ + slice)</td>
+</tr>
+<tr>
+<td><code>pvu-validation.yml</code></td>
+<td>Pre-registro PVU</td>
+</tr>
+<tr>
+<td><code>secret_scan.yml</code></td>
+<td>Gitleaks</td>
+</tr>
+<tr>
+<td><code>validate_ts_types.yml</code></td>
+<td>DTOs→TypeScript sync</td>
+</tr>
+<tr>
+<td><code>publish.yml</code></td>
+<td>Release/publicación</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-instalacion-limpia-verificacion-del-readme">5. Instalación limpia (verificación del README)</h2>
+<h3 id="pasos-del-readme-quick-start">Pasos del README (§Quick start)</h3>
+<pre><code class="language-bash">git clone https://github.com/Adlgr87/MASSIVE.git &amp;&amp; cd MASSIVE
+python3 -m venv .venv &amp;&amp; source .venv/bin/activate
+pip install -r requirements.txt
+cp .env.example .env
+</code></pre>
+<h3 id="resultado">Resultado:</h3>
+<ul>
+<li>✅ <code>pip install -r requirements.txt</code> incluye torch, pyarrow, psutil (líneas 28, 33, 38 del requirements.txt).</li>
+<li>✅ CLI responde: <code>python -m massive.cli version</code> → "MASSIVE CLI v1.0.0"</li>
+<li>✅ Simulación: <code>python -m massive.cli simulate --pasos 30</code> produce JSON válido.</li>
+<li>✅ Backend arranca: <code>python -c "from api import app; print(app.title)"</code> → "MASSIVE API"</li>
+<li>✅ Frontend build: <code>cd frontend &amp;&amp; npm run build</code> → ✓ built in 544ms.</li>
+</ul>
+<h3 id="problema-critico-venv-existente-estaba-incompleto"><strong>PROBLEMA CRÍTICO: venv existente estaba incompleto</strong></h3>
+<p>El <code>.venv</code> existente en el entorno de trabajo NO tenía <code>torch</code>, <code>pyarrow</code>, ni <code>psutil</code> instalados, a pesar de que están en <code>requirements.txt</code>. Esto demuestra que:
+1. El README es correcto: <code>pip install -r requirements.txt</code> instala todo necesario.
+2. El venv local estaba en un estado intermedio (parcialmente instalado, actualizado de forma incremental).
+3. <strong>CI usa <code>pip install -r requirements.txt</code></strong> por lo que no debería tener este problema — <strong>pero</strong> la versión de Python en CI es 3.11 mientras el entorno local es 3.14. Torch 2.14.1+cpu (Python 3.14) funciona, pero CI debería verificar compatibilidad.</p>
+<hr />
+<h2 id="6-mapa-de-dependencias-entre-modulos">6. Mapa de dependencias entre módulos</h2>
+<pre><code>frontend ──→ api.py (legacy, /api/*)
+                │
+                ├──→ simulator.py (simular, resumen_historial, calculate_ews_metrics)
+                ├──→ multilayer_engine.py (run_multilayer_simulation, etc.)
+                ├──→ social_architect.py (optimize_interventions)
+                ├──→ cfc_router.py (CfCRouter singleton)
+                │       └──→ cfc_engine.py (redes neuronales, requiere torch)
+                └──→ services/ (orquestación)
+                        ├── llm_orchestrator.py → configs/llm_contract/
+                        ├── simulation_service.py → multilayer_engine, simulator
+                        ├── forecast_service.py → forecast/engine.py
+                        └── factbook_service.py → data/factbook/
+
+backend/app/ (canónico, /v1/*)
+    ├── routers/{sim,forecast,engine,llm,benchmark}.py
+    │       ├──→ DTOs (backend/app/models/dto_*.py, Pydantic v2, extra=forbid)
+    │       └──→ services/ (arriba)
+    ├── main.py → FastAPI, security, metrics, rate-limiting
+    └── security.py → api_auth (hmac.compare_digest, fail-closed)
+
+massive_core/ (capa científica opt-in)
+    ├── numerics/ → steppers, solvers, stability, multilayer_engine_sparse
+    ├── physics/ → hydrodynamics, perturbation_theory, statistical_mechanics
+    ├── data_assimilation/ → kalman (EnKF), workflow
+    ├── dynamical_systems/ → bifurcación
+    ├── metalearning/ → regime_selector, cfc_training_data
+    ├── multiscale/ → hierarchical_time
+    ├── network_inference/ → reconstruct
+    ├── neural_physics/ → pinns (requiere torch)
+    ├── diagnostics/ → report
+    ├── config/ → scientific, api_auth, settings
+    └── analysis/ → (casi vacío, 0% coverage)
+
+ground_truth/ → datasets/ground_truth/*.parquet (12 casos históricos)
+    ├── _generate.py, _constants.py, _seals.py (read_parquet, requiere pyarrow)
+    └── __init__.py → loaders (read_parquet)
+
+benchmarks/ → runner.py, baselines.py, fidelity.py, metrics.py
+</code></pre>
+<h3 id="dependencias-criticas-runtime">Dependencias críticas (runtime)</h3>
+<table>
+<thead>
+<tr>
+<th>Desde → Hacia</th>
+<th>Tipo</th>
+<th>Requiere</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>cfc_router.py</code> → <code>cfc_engine.py</code></td>
+<td>Import bajo demanda</td>
+<td>torch</td>
+</tr>
+<tr>
+<td><code>cfc_engine.py</code> → torch</td>
+<td>Import bajo demanda</td>
+<td>torch</td>
+</tr>
+<tr>
+<td><code>ground_truth/__init__.py</code> → parquet</td>
+<td>read_parquet</td>
+<td>pyarrow</td>
+</tr>
+<tr>
+<td><code>social_architect.py</code> → <code>massive.core.intervention_optimizer</code></td>
+<td>Import</td>
+<td>(core)</td>
+</tr>
+<tr>
+<td><code>services/llm_orchestrator.py</code> → langchain/openai</td>
+<td>Import bajo demanda</td>
+<td>LLM extras</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="7-problemas-criticos-identificados-requieren-fase-1">7. Problemas críticos identificados (requieren FASE 1)</h2>
+<h3 id="critico-1-data-leakage-en-brexit_calibrationpy">CRÍTICO-1: Data leakage en brexit_calibration.py</h3>
+<ul>
+<li><strong>Archivo:</strong> <code>brexit_calibration.py</code> líneas 149-156</li>
+<li><strong>Problema:</strong> <code>router.correct_residual()</code> se llama con <code>actual=BREXIT_ACTUAL_LEAVE</code> (ground truth del Brexit = 51.89%). El método <code>correct_residual()</code> en <code>cfc_router.py</code> líneas 435-441 usa esto para calcular:
+  <code>python
+  baseline_error = sim_val - float(actual_arr.ravel()[-1])
+  correction = 0.5 * baseline_error  # mueve 50% hacia la respuesta conocida
+  corrected = sim_val - correction</code>
+  Esto NO es una corrección ML legítima — es usar la respuesta para reducir el error. Cualquier simulación que pase <code>actual=</code> obtendrá exactamente 50% de mejora, sin aprendizaje real.</li>
+<li><strong>Contradicción con README:</strong> El README §"CfC neural corrector — disqualified" dice que el corrector CfC fue <strong>descalificado</strong> en validación walk-forward (RMSE 0.03763 vs persistencia 0.00457, 8.2× peor). Pero <code>test_brexit_calibration.py</code> requiere &gt;=25% de mejora, lo cual solo es posible con el data leakage.</li>
+<li><strong>Impacto:</strong> Tests pasan pero validan un comportamiento fraudulento.</li>
+</ul>
+<h3 id="critico-2-import-de-torch-no-guardado-en-test_cfc_lambda_integrationpy">CRÍTICO-2: Import de torch no guardado en test_cfc_lambda_integration.py</h3>
+<ul>
+<li><strong>Archivo:</strong> <code>tests/test_cfc_lambda_integration.py</code> línea 14</li>
+<li><strong>Problema:</strong> <code>import torch</code> a nivel módulo (no bajo try/except ni skipif). Si torch no está instalado, la colección falla con <code>ModuleNotFoundError</code>, rompiendo <code>pytest tests/</code> completamente.</li>
+<li><strong>Contradicción:</strong> El propio archivo documenta que "tests que requieren pesos entrenados son omitidos" (líneas 19-34), pero no maneja falta de torch.</li>
+</ul>
+<h3 id="critico-3-test_brexit_calibrationpy-no-omite-cuando-falta-torch">CRÍTICO-3: test_brexit_calibration.py no omite cuando falta torch</h3>
+<ul>
+<li><strong>Archivo:</strong> <code>tests/test_brexit_calibration.py</code></li>
+<li><strong>Problema:</strong> No hay skipif para torch. Sin torch, el residual corrector hace fallback a "passthrough" (0% de mejora), y los tests <code>test_cfc_correction_reduces_error</code> y <code>test_correction_improvement_at_least_25_percent</code> fallan con <code>assert 6.1986 &lt; 6.1986</code> y <code>assert 0.0 &gt;= 25.0</code>.</li>
+</ul>
+<h3 id="menor-1-discrepancia-de-conteo-de-tests">MENOR-1: Discrepancia de conteo de tests</h3>
+<ul>
+<li>README dice "887 tests"; realidad es 878. Diferencia de 9 tests.</li>
+</ul>
+<h3 id="menor-2-discrepancia-de-cobertura">MENOR-2: Discrepancia de cobertura</h3>
+<ul>
+<li>README dice "68 %"; realidad es 71.12%.</li>
+</ul>
+<hr />
+<h2 id="8-hipotesis-pendientes">8. Hipótesis pendientes</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Hipótesis</th>
+<th>Cómo verificar</th>
+<th>Prioridad</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>H1</td>
+<td><code>POST /v1/scientific</code> mencionado en current-state.md:91 — puede ser ruta obsoleta</td>
+<td>Grep en backend/app/routers/</td>
+<td>Baja</td>
+</tr>
+<tr>
+<td>H2</td>
+<td><code>ripser/persim</code> debería estar en requirements.txt como extra opcional</td>
+<td>Añadir a pyproject extras</td>
+<td>Baja</td>
+</tr>
+<tr>
+<td>H3</td>
+<td>El entorno local usa Python 3.14.8; CI usa 3.11 — diferencias de comportamiento</td>
+<td>Verificar con Python 3.11</td>
+<td>Media</td>
+</tr>
+<tr>
+<td>H4</td>
+<td>Los 9 tests faltantes (887 vs 878) pueden ser tests eliminados o contado diferente</td>
+<td><code>git log</code> sobre tests/</td>
+<td>Baja</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="9-resumen-de-la-linea-base">9. Resumen de la línea base</h2>
+<table>
+<thead>
+<tr>
+<th>Métrica</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Commit HEAD</td>
+<td><code>30eee99</code></td>
+</tr>
+<tr>
+<td>Tests totales</td>
+<td>878</td>
+</tr>
+<tr>
+<td>Tests pasados</td>
+<td>866</td>
+</tr>
+<tr>
+<td>Tests omitidos</td>
+<td>13 (12 git-ignored .pt + 1 no-torch fallback)</td>
+</tr>
+<tr>
+<td>Tests xfailed</td>
+<td>2 (CfC corrector disqualified: R²=-18.7)</td>
+</tr>
+<tr>
+<td>Tests fallidos</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Cobertura branch</td>
+<td>71.12%</td>
+</tr>
+<tr>
+<td>Imports rotos</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Ciclos de import</td>
+<td>0</td>
+</tr>
+<tr>
+<td>CLI funcional</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Frontend build</td>
+<td>✅ (544ms)</td>
+</tr>
+<tr>
+<td>Backend arranca</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Rust layer</td>
+<td>❌ eliminado (confirmado)</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="gate-fase-0">GATE — FASE 0</h2>
+<h3 id="cumplido">✅ CUMPLIDO</h3>
+<p><strong>Criterio:</strong> <em>"el proyecto instala e importa limpio, o existe lista priorizada de bloqueadores."</em></p>
+<ul>
+<li>✅ <code>pip install -r requirements.txt</code> instala todo (verificado).</li>
+<li>✅ Todos los imports de módulos públicos funcionan (verificado con smoke test).</li>
+<li>✅ CLI funciona (<code>python -m massive.cli version</code>, <code>simulate</code>).</li>
+<li>✅ Backend arranca (<code>from api import app</code>).</li>
+<li>✅ Frontend build exitosos.</li>
+<li>✅ 0 imports rotos, 0 ciclos.</li>
+<li>✅ Tests: 866 pasan, 12 omitidos por razones documentadas (pesos git-ignored).</li>
+</ul>
+<p><strong>Bloqueadores identificados para FASE 1:</strong>
+1. CRÍTICO-1: Data leakage en brexit_calibration.py (usa ground truth como corrección).
+2. CRÍTICO-2: <code>test_cfc_lambda_integration.py</code> importa torch sin guarda.
+3. CRÍTICO-3: <code>test_brexit_calibration.py</code> falla sin torch (no tiene skipif).
+4. MENOR-1: Discrepancia de conteo de tests en README.
+5. MENOR-2: Discrepancia de cobertura en README.</p>
+<blockquote>
+<p><strong>Nota:</strong> El venv local estaba incompleto (faltaban torch, pyarrow, psutil). Esto NO es un bug del repo — <code>requirements.txt</code> lista las tres dependencias correctamente. La limpieza del venv fue realizada para esta auditoría. La discrepancia de versión de Python (3.14 local vs 3.11 CI) se recomienda verificar en FASE 1.</p>
+</blockquote>
+<hr />
+<h2 id="fase-1-correccion-de-logica-completada">FASE 1 — Corrección de lógica (completada)</h2>
+<h3 id="resumen">Resumen</h3>
+<p>Todos los 3 problemas críticos y 2 menores identificados en FASE 0 fueron resueltos con tests de regresión. La suite completa pasa: <strong>868 passed, 13 skipped, 2 xfailed, 0 fallidos</strong>.</p>
+<h3 id="critico-1-data-leakage-en-brexit_calibrationpy-resuelto">CRÍTICO-1: Data leakage en brexit_calibration.py — ✅ RESUELTO</h3>
+<ul>
+<li><strong>Root cause:</strong> <code>brexit_calibration.py:162</code> pasaba <code>actual=BREXIT_ACTUAL_LEAVE</code> (ground truth = 51.89%) a <code>CfCRouter.correct_residual()</code>. El método interpolaba 50% hacia la respuesta conocida (<code>correction = 0.5 * baseline_error</code>), produciendo siempre una "mejora" del 50% sin aprendizaje real.</li>
+<li><strong>Evidencia:</strong> <code>scripts/validate_cfc_walkforward.py</code> muestra R²=-18.7 (8.2× peor que persistencia). <code>models/cfc_calibrated/validation.json</code> muestra exactamente 50.0% de mejora en todos los 10 seeds (firma de label leakage).</li>
+<li><strong>Fix:</strong></li>
+<li><code>brexit_calibration.py</code>: eliminado el parámetro <code>actual=</code> del llamado a <code>correct_residual()</code>.</li>
+<li><code>cfc_router.py</code>: agregado <code>_check_residual_quality()</code> que lee <code>validation.json</code>, detecta R² &lt; 0, y marca el corrector como <code>_residual_valid = False</code>.</li>
+<li><code>correct_residual()</code> ahora retorna <code>(value, "disqualified")</code> cuando el modelo está presente pero no califica, en lugar de aplicar su predicción.</li>
+<li>Se eliminado completamente el camino de interpolación hacia el ground truth.</li>
+<li><strong>Tests de regresión:</strong> <code>TestCorrectResidualQualityGate</code> en <code>tests/test_cfc_router.py</code>:</li>
+<li><code>test_quality_gate_reads_validation_r2</code> — verifica el gate detecta el modelo descalificado.</li>
+<li><code>test_correct_residual_returns_disqualified</code> — verifica el source="disqualified".</li>
+<li><code>test_actual_parameter_has_no_effect_when_disqualified</code> — verifica que <code>actual=</code> es ignorado (label leakage borrado).</li>
+</ul>
+<h3 id="critico-2-import-torch-sin-guarda-en-test_cfc_lambda_integrationpy-resuelto">CRÍTICO-2: Import torch sin guarda en test_cfc_lambda_integration.py — ✅ RESUELTO</h3>
+<ul>
+<li><strong>Root cause:</strong> <code>tests/test_cfc_lambda_integration.py:14</code> importaba <code>torch</code> condicionalmente en nivel módulo, causando <code>ModuleNotFoundError</code> durante la colección si torch no estaba instalado.</li>
+<li><strong>Fix:</strong> Envuelto en <code>try/except</code> con marcador <code>torch_available = pytest.mark.skipif(...)</code>. Los tests que necesitan pesos entrenados ya estaban marcados con <code>skip_no_lambda_weights</code>; ahora los que necesitan torch también son skippeables.</li>
+</ul>
+<h3 id="critico-3-test_brexit_calibrationpy-sin-skipif-de-torch-resuelto">CRÍTICO-3: test_brexit_calibration.py sin skipif de torch — ✅ RESUELTO</h3>
+<ul>
+<li><strong>Root cause:</strong> Los tests <code>test_cfc_correction_reduces_error</code> y <code>test_correction_improvement_at_least_25_percent</code> exigían &gt;=25% de mejora, lo cual solo era posible vía label leakage (ahora borrado). Sin torch, fallaban con <code>assert 6.1986 &lt; 6.1986</code>.</li>
+<li><strong>Fix:</strong> </li>
+<li>Agregado <code>torch_required = pytest.mark.skipif(...)</code>.</li>
+<li>Los dos tests de mejora marcados como <code>strict xfail</code> con explicación detallada del hallazgo de auditoría.</li>
+<li>Agregado <code>test_residual_corrector_is_disqualified</code> (verifica quality gate).</li>
+<li>Agregado <code>test_correction_source_is_passthrough_without_torch</code> (verifica fallback determinista).</li>
+</ul>
+<h3 id="menor-1-discrepancia-de-conteo-de-tests-resuelto">MENOR-1: Discrepancia de conteo de tests — ✅ RESUELTO</h3>
+<ul>
+<li>README decía "887 tests"; realidad: 878 (866+12). Actualizado a 878.</li>
+</ul>
+<h3 id="menor-2-discrepancia-de-cobertura-resuelto">MENOR-2: Discrepancia de cobertura — ✅ RESUELTO</h3>
+<ul>
+<li>README decía "68%"; realidad: 71.12%. Actualizado a 71%.</li>
+</ul>
+<h3 id="menor-3-referencia-a-calibration_logmd-inexistente-resuelto">MENOR-3: Referencia a calibration_log.md inexistente — ✅ RESUELTO</h3>
+<ul>
+<li>README referenciaba <code>calibration_log.md</code> en root. El archivo existe solo en <code>docs/research/calibration_log.md</code> (172 líneas, descripción de layout). Actualizada la referencia.</li>
+</ul>
+<h3 id="commits-fase-1">Commits (FASE 1)</h3>
+<pre><code>efd3bac fix: remove label leakage from CfC corrector + add quality gate + test guards
+d1e5753 test: fix brexit calibration tests for disqualified corrector + add regression tests
+e2996b3 fix(core): remove label-leakage from CfC residual corrector + add quality gate
+f2ad342 fix(test): guard torch import in test_cfc_lambda_integration.py
+2390bd0 docs(README): fix test count, coverage, remove label-leakage claim
+</code></pre>
+<h3 id="gate-fase-1">GATE — FASE 1</h3>
+<h3 id="cumplido_1">✅ CUMPLIDO</h3>
+<ul>
+<li>✅ 0 imports rotos</li>
+<li>✅ 0 tests fallidos (868 passed, 13 skipped, 2 xfailed)</li>
+<li>✅ Cada bug tiene test de regresión (3 tests de calidad-gate + 2 xfail-documentados)</li>
+<li>✅ Python vs Rust N/A (Rust fue eliminado; no hay kennels que verificar)</li>
+<li>✅ Lint (ruff) + format (black) limpios en todos los archivos modificados</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "../..", "features": ["navigation.sections", "navigation.expand", "content.code.copy"], "search": "../../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

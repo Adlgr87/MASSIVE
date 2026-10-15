@@ -1,0 +1,95 @@
+{
+  "phase": "FASE 6 - PVU-BS",
+  "runs": [
+    {
+      "run_id": "pvu_20260629_223155",
+      "seed": 42,
+      "provider": "heur\u00edstico (offline)",
+      "command": "/usr/bin/python3 -m benchmarks.runner --cases datasets/pvu_cases --offline --out /home/adlg/Escritorio/Proyectos/MASSIVE/reports/validation/run_20260629_223155 --seed 42",
+      "exit_code": 0,
+      "elapsed_ms": 569.0,
+      "stdout": "",
+      "stderr": "22:31:56 [INFO] PVU-BS runner | mode=offline | seed=42 | cases=datasets/pvu_cases\n22:31:56 [INFO] Loaded 2 case(s).\n22:31:56 [INFO] Evaluating case: sample_case_001\n22:31:56 [INFO] Evaluating case: sample_case_002\n22:31:56 [INFO] Metrics saved to /home/adlg/Escritorio/Proyectos/MASSIVE/reports/validation/run_20260629_223155/metrics.json\n22:31:56 [INFO] Report saved to /home/adlg/Escritorio/Proyectos/MASSIVE/reports/validation/run_20260629_223155/report.md\n22:31:56 [INFO] Done. 2 case(s) evaluated, 0 skipped.\n",
+      "status": "PASS"
+    },
+    {
+      "run_id": "manual_simulator_lineal_1782786718",
+      "motor": "simulator_lineal",
+      "seed": 42,
+      "provider": "heur\u00edstico (offline)",
+      "N": 1,
+      "steps": 50,
+      "mean_opinion_final": 0.130639,
+      "std_opinion_final": 0.07193,
+      "polarization_index": 0.07193,
+      "n_regime_changes": 3,
+      "convergencia_step": 7,
+      "tiempo_ejecucion_ms": 23.0,
+      "memory_peak_MB": 809.1
+    },
+    {
+      "run_id": "manual_simulator_hk_1782786718",
+      "motor": "simulator_hk",
+      "seed": 42,
+      "provider": "heur\u00edstico (offline)",
+      "N": 1,
+      "steps": 50,
+      "mean_opinion_final": 0.130639,
+      "std_opinion_final": 0.07193,
+      "polarization_index": 0.07193,
+      "n_regime_changes": 3,
+      "convergencia_step": 7,
+      "tiempo_ejecucion_ms": 21.9,
+      "memory_peak_MB": 809.2
+    },
+    {
+      "run_id": "manual_massive_engine_N10k_1782786719",
+      "motor": "massive_engine_N10k",
+      "seed": 42,
+      "provider": "heur\u00edstico (offline)",
+      "N": 10000,
+      "steps": 20,
+      "mean_opinion_final": -0.021962,
+      "std_opinion_final": 0.556432,
+      "polarization_index": 0.556432,
+      "n_regime_changes": 0,
+      "convergencia_step": -1,
+      "tiempo_ejecucion_ms": 293.5,
+      "memory_peak_MB": 864.6
+    },
+    {
+      "run_id": "manual_multilayer_engine_1782786719",
+      "motor": "multilayer_engine",
+      "seed": 42,
+      "provider": "heur\u00edstico (offline)",
+      "N": 100,
+      "steps": 50,
+      "mean_opinion_final": 0.397163,
+      "std_opinion_final": 0.33878,
+      "polarization_index": 0.33878,
+      "n_regime_changes": 0,
+      "convergencia_step": -1,
+      "tiempo_ejecucion_ms": 845.2,
+      "memory_peak_MB": 885.8
+    }
+  ],
+  "summary": {
+    "total_runs": 5,
+    "passed": 5,
+    "failed": 0,
+    "cases_synthetic": true,
+    "note": "Todos los casos PVU son sint\u00e9ticos. No hay validaci\u00f3n emp\u00edrica real."
+  },
+  "statistical_tests": {
+    "test": "Wilcoxon signed-rank",
+    "comparison": "hk_vs_lineal",
+    "n_runs": 20,
+    "statistic": 0.0,
+    "p_value": NaN,
+    "significant": "False",
+    "delta_MAE": 0.0,
+    "delta_RMSE": 0.0,
+    "hk_mean": 0.445874,
+    "lineal_mean": 0.445874
+  }
+}

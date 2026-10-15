@@ -1,0 +1,44 @@
+[
+  {
+    "invariante": "Conservaci\u00f3n rango [0,1] (unipolar)",
+    "resultado": "PASS",
+    "delta_observado": "N/A",
+    "detail": "13 reglas \u00d7 100 pasos = 1300 evaluaciones sin violaciones"
+  },
+  {
+    "invariante": "Conservaci\u00f3n rango [-1,1] (bipolar)",
+    "resultado": "PASS",
+    "delta_observado": "N/A",
+    "detail": "13 reglas \u00d7 100 pasos = 1300 evaluaciones sin violaciones"
+  },
+  {
+    "invariante": "Convergencia DeGroot (lineal)",
+    "resultado": "PASS",
+    "delta_observado": "1.1102230246251565e-16",
+    "detail": "std_final=0.000000, fixed_point=0.8000, observed=0.8000"
+  },
+  {
+    "invariante": "Clustering HK (epsilon peque\u00f1o vs grande)",
+    "resultado": "PASS",
+    "delta_observado": "\u0394_A=0.1000",
+    "detail": "eps=0.1: opinion=0.7000 (cerca de A=0.8), eps=1.0: opinion=0.5000 (consenso\u22480.5)"
+  },
+  {
+    "invariante": "Efecto Backlash",
+    "resultado": "PASS",
+    "delta_observado": "\u0394=-0.2000",
+    "detail": "opinion: 0.2000 \u2192 0.0000 (se alej\u00f3 de propaganda=0.9)"
+  },
+  {
+    "invariante": "Invariante SIR (S+I+R=N)",
+    "resultado": "PASS",
+    "delta_observado": "9.999999999998899e-05",
+    "detail": "100 pasos, max_violation=0.000100"
+  },
+  {
+    "invariante": "Equilibrio Nash (convergencia)",
+    "resultado": "PASS",
+    "delta_observado": "0.0",
+    "detail": "std_final=0.000000, valor=0.7400"
+  }
+]

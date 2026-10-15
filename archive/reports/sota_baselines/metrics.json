@@ -1,0 +1,1238 @@
+[
+  {
+    "case": "brazil_election_2022",
+    "cluster_id": null,
+    "n_total": 12,
+    "n_train": 8,
+    "n_test": 4,
+    "baselines": {
+      "naive": {
+        "mae": 0.08499999999999999,
+        "rmse": 0.08916277250063503,
+        "mape": 12.967302305537597,
+        "directional_accuracy": 0.0
+      },
+      "moving_average": {
+        "mae": 0.09749999999999995,
+        "rmse": 0.1011496416207195,
+        "mape": 14.850090677296551,
+        "directional_accuracy": 0.0
+      },
+      "ar1": {
+        "mae": 0.11264810821571239,
+        "rmse": 0.11827485731919334,
+        "mape": 17.187043697888097,
+        "directional_accuracy": 0.0
+      },
+      "random_regime": {
+        "mae": 0.09014972135490851,
+        "rmse": 0.10018144498838691,
+        "mape": 13.819698419729697,
+        "directional_accuracy": 0.3333333333333333
+      },
+      "ets": {
+        "mae": 0.03999999649822719,
+        "rmse": 0.04949746985122329,
+        "mape": 6.200620726732625,
+        "directional_accuracy": 1.0
+      },
+      "arima": {
+        "mae": 0.014668504181880065,
+        "rmse": 0.020816728950894144,
+        "mape": 2.2956457453899524,
+        "directional_accuracy": 1.0
+      },
+      "ridge_lags": {
+        "mae": 0.09873391785635355,
+        "rmse": 0.10233352408934387,
+        "mape": 15.035795808517413,
+        "directional_accuracy": 0.6666666666666666
+      }
+    },
+    "massive": {
+      "mae": 0.04251370971017698,
+      "rmse": 0.05244263759059935,
+      "mape": 6.345914139125942,
+      "directional_accuracy": 0.6666666666666666
+    },
+    "dm_tests": {
+      "naive": {
+        "p_raw": 0.17335913491376082,
+        "p_adj_holm": 0.6934365396550433,
+        "significant": false
+      },
+      "moving_average": {
+        "p_raw": 0.10310733993827968,
+        "p_adj_holm": 0.6343008057232766,
+        "significant": false
+      },
+      "ar1": {
+        "p_raw": 0.09061440081761095,
+        "p_adj_holm": 0.6343008057232766,
+        "significant": false
+      },
+      "random_regime": {
+        "p_raw": 0.24082621314287278,
+        "p_adj_holm": 0.6934365396550433,
+        "significant": false
+      },
+      "ets": {
+        "p_raw": 0.8975911543148803,
+        "p_adj_holm": 0.8975911543148803,
+        "significant": false
+      },
+      "arima": {
+        "p_raw": 0.20831504105208168,
+        "p_adj_holm": 0.6934365396550433,
+        "significant": false
+      },
+      "ridge_lags": {
+        "p_raw": 0.09807552535132315,
+        "p_adj_holm": 0.6343008057232766,
+        "significant": false
+      }
+    },
+    "turning_points": {
+      "precision": NaN,
+      "recall": NaN,
+      "f1": 0.0,
+      "mean_timing_error": NaN,
+      "n_true": 0,
+      "n_pred": 0
+    },
+    "skipped": false
+  },
+  {
+    "case": "brexit_referendum_2016",
+    "cluster_id": null,
+    "n_total": 11,
+    "n_train": 7,
+    "n_test": 4,
+    "baselines": {
+      "naive": {
+        "mae": 0.03249999999999997,
+        "rmse": 0.03905124837953324,
+        "mape": 5.861154974058194,
+        "directional_accuracy": 0.0
+      },
+      "moving_average": {
+        "mae": 0.09999999999999998,
+        "rmse": 0.1066243405606806,
+        "mape": 17.272369940960036,
+        "directional_accuracy": 0.0
+      },
+      "ar1": {
+        "mae": 0.32585298303932925,
+        "rmse": 0.3866670063588145,
+        "mape": 60.040149353711,
+        "directional_accuracy": 0.0
+      },
+      "random_regime": {
+        "mae": 0.042814635608166424,
+        "rmse": 0.050315051534198775,
+        "mape": 7.805473617077788,
+        "directional_accuracy": 0.3333333333333333
+      },
+      "ets": {
+        "mae": 0.16250000469386583,
+        "rmse": 0.19293781875672697,
+        "mape": 29.947397726145308,
+        "directional_accuracy": 0.0
+      },
+      "arima": {
+        "mae": 0.0631702965210015,
+        "rmse": 0.07390969393505145,
+        "mape": 11.610005826341943,
+        "directional_accuracy": 0.0
+      },
+      "ridge_lags": {
+        "mae": 0.05705379050878459,
+        "rmse": 0.06801799106317276,
+        "mape": 9.67235367441355,
+        "directional_accuracy": 0.3333333333333333
+      }
+    },
+    "massive": {
+      "mae": 0.03137159740309289,
+      "rmse": 0.036454381201817265,
+      "mape": 5.593457523470559,
+      "directional_accuracy": 0.6666666666666666
+    },
+    "dm_tests": {
+      "naive": {
+        "p_raw": 0.7970901022528052,
+        "p_adj_holm": 0.9990583777930027,
+        "significant": false
+      },
+      "moving_average": {
+        "p_raw": 0.08415275399572714,
+        "p_adj_holm": 0.5890692779700899,
+        "significant": false
+      },
+      "ar1": {
+        "p_raw": 0.13602112595265356,
+        "p_adj_holm": 0.7568809772597029,
+        "significant": false
+      },
+      "random_regime": {
+        "p_raw": 0.49952918889650133,
+        "p_adj_holm": 0.9990583777930027,
+        "significant": false
+      },
+      "ets": {
+        "p_raw": 0.12614682954328382,
+        "p_adj_holm": 0.7568809772597029,
+        "significant": false
+      },
+      "arima": {
+        "p_raw": 0.21192992116886755,
+        "p_adj_holm": 0.8477196846754702,
+        "significant": false
+      },
+      "ridge_lags": {
+        "p_raw": 0.26190656648388744,
+        "p_adj_holm": 0.8477196846754702,
+        "significant": false
+      }
+    },
+    "turning_points": {
+      "precision": NaN,
+      "recall": NaN,
+      "f1": 0.0,
+      "mean_timing_error": NaN,
+      "n_true": 0,
+      "n_pred": 0
+    },
+    "skipped": false
+  },
+  {
+    "case": "chile_estallido_2019",
+    "cluster_id": null,
+    "n_total": 15,
+    "n_train": 10,
+    "n_test": 5,
+    "baselines": {
+      "naive": {
+        "mae": 0.11799999999999997,
+        "rmse": 0.12513992168768523,
+        "mape": 25.391825229034527,
+        "directional_accuracy": 0.0
+      },
+      "moving_average": {
+        "mae": 0.18800000000000003,
+        "rmse": 0.19256167843057456,
+        "mape": 40.02087150575523,
+        "directional_accuracy": 0.0
+      },
+      "ar1": {
+        "mae": 0.1672091595179562,
+        "rmse": 0.17655123818627244,
+        "mape": 35.937823706794916,
+        "directional_accuracy": 0.0
+      },
+      "random_regime": {
+        "mae": 0.10950005374128162,
+        "rmse": 0.13043898692788675,
+        "mape": 23.382043569509143,
+        "directional_accuracy": 0.5
+      },
+      "ets": {
+        "mae": 0.2013332333727817,
+        "rmse": 0.2168789876958663,
+        "mape": 43.494568884624854,
+        "directional_accuracy": 0.0
+      },
+      "arima": {
+        "mae": 0.1672224815263752,
+        "rmse": 0.17656648922711482,
+        "mape": 35.940753941083855,
+        "directional_accuracy": 0.0
+      },
+      "ridge_lags": {
+        "mae": 0.20287831069721385,
+        "rmse": 0.2073755902869884,
+        "mape": 43.15017716623493,
+        "directional_accuracy": 0.5
+      }
+    },
+    "massive": {
+      "mae": 0.08530592871972281,
+      "rmse": 0.1047647582857874,
+      "mape": 18.224073791162322,
+      "directional_accuracy": 0.75
+    },
+    "dm_tests": {
+      "naive": {
+        "p_raw": 0.3824471778802259,
+        "p_adj_holm": 0.7648943557604518,
+        "significant": false
+      },
+      "moving_average": {
+        "p_raw": 0.013384443251150494,
+        "p_adj_holm": 0.08030665950690297,
+        "significant": false
+      },
+      "ar1": {
+        "p_raw": 0.041488747905151065,
+        "p_adj_holm": 0.17354625137881527,
+        "significant": false
+      },
+      "random_regime": {
+        "p_raw": 0.6413436621820268,
+        "p_adj_holm": 0.7648943557604518,
+        "significant": false
+      },
+      "ets": {
+        "p_raw": 0.034709250275763055,
+        "p_adj_holm": 0.17354625137881527,
+        "significant": false
+      },
+      "arima": {
+        "p_raw": 0.04147675311289737,
+        "p_adj_holm": 0.17354625137881527,
+        "significant": false
+      },
+      "ridge_lags": {
+        "p_raw": 0.009644614109179288,
+        "p_adj_holm": 0.06751229876425502,
+        "significant": false
+      }
+    },
+    "turning_points": {
+      "precision": NaN,
+      "recall": NaN,
+      "f1": 0.0,
+      "mean_timing_error": NaN,
+      "n_true": 0,
+      "n_pred": 0
+    },
+    "skipped": false
+  },
+  {
+    "case": "colombia_paro_2021",
+    "cluster_id": null,
+    "n_total": 15,
+    "n_train": 10,
+    "n_test": 5,
+    "baselines": {
+      "naive": {
+        "mae": 0.094,
+        "rmse": 0.10049875621120889,
+        "mape": 18.40425206976931,
+        "directional_accuracy": 0.0
+      },
+      "moving_average": {
+        "mae": 0.13649999999999998,
+        "rmse": 0.14105406764783493,
+        "mape": 26.520672574551877,
+        "directional_accuracy": 0.0
+      },
+      "ar1": {
+        "mae": 0.13163012500478538,
+        "rmse": 0.14018435990081798,
+        "mape": 25.751235694013303,
+        "directional_accuracy": 0.0
+      },
+      "random_regime": {
+        "mae": 0.08896172035742697,
+        "rmse": 0.10136076049482615,
+        "mape": 17.358403936717302,
+        "directional_accuracy": 0.5
+      },
+      "ets": {
+        "mae": 0.008000000089406956,
+        "rmse": 0.008944271876679153,
+        "mape": 1.5097460228420656,
+        "directional_accuracy": 1.0
+      },
+      "arima": {
+        "mae": 0.06102750935652779,
+        "rmse": 0.0667869946762283,
+        "mape": 12.000623485460693,
+        "directional_accuracy": 1.0
+      },
+      "ridge_lags": {
+        "mae": 0.14550758217813697,
+        "rmse": 0.14987495420028044,
+        "mape": 28.245098525272926,
+        "directional_accuracy": 0.5
+      }
+    },
+    "massive": {
+      "mae": 0.06399404186860824,
+      "rmse": 0.09271132262010147,
+      "mape": 12.715086551344,
+      "directional_accuracy": 0.75
+    },
+    "dm_tests": {
+      "naive": {
+        "p_raw": 0.7698700748188678,
+        "p_adj_holm": 1.0,
+        "significant": false
+      },
+      "moving_average": {
+        "p_raw": 0.07513102605529376,
+        "p_adj_holm": 0.45078615633176256,
+        "significant": false
+      },
+      "ar1": {
+        "p_raw": 0.08114742848987178,
+        "p_adj_holm": 0.45078615633176256,
+        "significant": false
+      },
+      "random_regime": {
+        "p_raw": 0.8524895909202062,
+        "p_adj_holm": 1.0,
+        "significant": false
+      },
+      "ets": {
+        "p_raw": 0.2509601306593693,
+        "p_adj_holm": 1.0,
+        "significant": false
+      },
+      "arima": {
+        "p_raw": 0.4825453678634898,
+        "p_adj_holm": 1.0,
+        "significant": false
+      },
+      "ridge_lags": {
+        "p_raw": 0.04550569101337709,
+        "p_adj_holm": 0.31853983709363964,
+        "significant": false
+      }
+    },
+    "turning_points": {
+      "precision": NaN,
+      "recall": NaN,
+      "f1": 0.0,
+      "mean_timing_error": NaN,
+      "n_true": 0,
+      "n_pred": 0
+    },
+    "skipped": false
+  },
+  {
+    "case": "egypt_arab_spring_2011",
+    "cluster_id": null,
+    "n_total": 14,
+    "n_train": 9,
+    "n_test": 5,
+    "baselines": {
+      "naive": {
+        "mae": 0.254,
+        "rmse": 0.2715511001634867,
+        "mape": 199.21428571428575,
+        "directional_accuracy": 0.0
+      },
+      "moving_average": {
+        "mae": 0.39150000000000007,
+        "rmse": 0.4031082360855457,
+        "mape": 290.64087301587307,
+        "directional_accuracy": 0.0
+      },
+      "ar1": {
+        "mae": 0.33231505649258514,
+        "rmse": 0.3541858982362746,
+        "mape": 259.6510449196195,
+        "directional_accuracy": 0.0
+      },
+      "random_regime": {
+        "mae": 0.2431972463072553,
+        "rmse": 0.2702644067661925,
+        "mape": 183.8673207042575,
+        "directional_accuracy": 0.5
+      },
+      "ets": {
+        "mae": 0.046000002235174836,
+        "rmse": 0.06737952436744997,
+        "mape": 47.50000183816522,
+        "directional_accuracy": 1.0
+      },
+      "arima": {
+        "mae": 0.08852248045452582,
+        "rmse": 0.10033798574765607,
+        "mape": 74.15318757596287,
+        "directional_accuracy": 1.0
+      },
+      "ridge_lags": {
+        "mae": 0.3586669106212704,
+        "rmse": 0.3727992461329228,
+        "mape": 270.09060232065116,
+        "directional_accuracy": 0.25
+      }
+    },
+    "massive": {
+      "mae": 0.2266230536200644,
+      "rmse": 0.23573059713040148,
+      "mape": 144.14908796079823,
+      "directional_accuracy": 0.5
+    },
+    "dm_tests": {
+      "naive": {
+        "p_raw": 0.5414881840328876,
+        "p_adj_holm": 1.0,
+        "significant": false
+      },
+      "moving_average": {
+        "p_raw": 0.04657849905404927,
+        "p_adj_holm": 0.23289249527024633,
+        "significant": false
+      },
+      "ar1": {
+        "p_raw": 0.15454025819553058,
+        "p_adj_holm": 0.46362077458659173,
+        "significant": false
+      },
+      "random_regime": {
+        "p_raw": 0.679191163847965,
+        "p_adj_holm": 1.0,
+        "significant": false
+      },
+      "ets": {
+        "p_raw": 0.023316773511399394,
+        "p_adj_holm": 0.16321741457979577,
+        "significant": false
+      },
+      "arima": {
+        "p_raw": 0.037276196494564345,
+        "p_adj_holm": 0.22365717896738607,
+        "significant": false
+      },
+      "ridge_lags": {
+        "p_raw": 0.08264351722232796,
+        "p_adj_holm": 0.33057406888931185,
+        "significant": false
+      }
+    },
+    "turning_points": {
+      "precision": NaN,
+      "recall": NaN,
+      "f1": 0.0,
+      "mean_timing_error": NaN,
+      "n_true": 0,
+      "n_pred": 0
+    },
+    "skipped": false
+  },
+  {
+    "case": "france_gilets_jaunes_2018",
+    "cluster_id": null,
+    "n_total": 15,
+    "n_train": 10,
+    "n_test": 5,
+    "baselines": {
+      "naive": {
+        "mae": 0.09600000000000004,
+        "rmse": 0.10507140429250962,
+        "mape": 22.205433455433464,
+        "directional_accuracy": 0.0
+      },
+      "moving_average": {
+        "mae": 0.15600000000000008,
+        "rmse": 0.16174053295324592,
+        "mape": 35.536935286935304,
+        "directional_accuracy": 0.0
+      },
+      "ar1": {
+        "mae": 0.13783991872182413,
+        "rmse": 0.14892264037266087,
+        "mape": 31.780258034769098,
+        "directional_accuracy": 0.0
+      },
+      "random_regime": {
+        "mae": 0.09052247335788481,
+        "rmse": 0.10627228146395257,
+        "mape": 20.85118200646061,
+        "directional_accuracy": 0.5
+      },
+      "ets": {
+        "mae": 0.004631643523324014,
+        "rmse": 0.005925438032747213,
+        "mape": 1.0666376672379054,
+        "directional_accuracy": 1.0
+      },
+      "arima": {
+        "mae": 0.07074732888789123,
+        "rmse": 0.08203958030952781,
+        "mape": 16.571477064114198,
+        "directional_accuracy": 1.0
+      },
+      "ridge_lags": {
+        "mae": 0.16068263615570288,
+        "rmse": 0.1664746943130981,
+        "mape": 36.59253486675337,
+        "directional_accuracy": 0.5
+      }
+    },
+    "massive": {
+      "mae": 0.06766593685703826,
+      "rmse": 0.0773115364462111,
+      "mape": 14.997757216445331,
+      "directional_accuracy": 0.75
+    },
+    "dm_tests": {
+      "naive": {
+        "p_raw": 0.26011757337104224,
+        "p_adj_holm": 0.7803527201131267,
+        "significant": false
+      },
+      "moving_average": {
+        "p_raw": 0.029280822467909612,
+        "p_adj_holm": 0.18696508277746374,
+        "significant": false
+      },
+      "ar1": {
+        "p_raw": 0.0757143507508051,
+        "p_adj_holm": 0.3028574030032204,
+        "significant": false
+      },
+      "random_regime": {
+        "p_raw": 0.46267753496051744,
+        "p_adj_holm": 0.9253550699210349,
+        "significant": false
+      },
+      "ets": {
+        "p_raw": 0.0327583108381229,
+        "p_adj_holm": 0.18696508277746374,
+        "significant": false
+      },
+      "arima": {
+        "p_raw": 0.8099339080710423,
+        "p_adj_holm": 0.9253550699210349,
+        "significant": false
+      },
+      "ridge_lags": {
+        "p_raw": 0.026709297539637678,
+        "p_adj_holm": 0.18696508277746374,
+        "significant": false
+      }
+    },
+    "turning_points": {
+      "precision": NaN,
+      "recall": NaN,
+      "f1": 0.0,
+      "mean_timing_error": NaN,
+      "n_true": 0,
+      "n_pred": 0
+    },
+    "skipped": false
+  },
+  {
+    "case": "germany_pegida_2014",
+    "cluster_id": null,
+    "n_total": 15,
+    "n_train": 10,
+    "n_test": 5,
+    "baselines": {
+      "naive": {
+        "mae": 0.02799999999999999,
+        "rmse": 0.03464101615137754,
+        "mape": 7.5862450243255175,
+        "directional_accuracy": 0.0
+      },
+      "moving_average": {
+        "mae": 0.038,
+        "rmse": 0.043127717305695645,
+        "mape": 10.937730355300015,
+        "directional_accuracy": 0.0
+      },
+      "ar1": {
+        "mae": 0.034438987844995196,
+        "rmse": 0.0398326343575673,
+        "mape": 9.641273963297776,
+        "directional_accuracy": 0.0
+      },
+      "random_regime": {
+        "mae": 0.029773444199256417,
+        "rmse": 0.035070057785774406,
+        "mape": 8.00203028145147,
+        "directional_accuracy": 0.5
+      },
+      "ets": {
+        "mae": 0.06231666736916393,
+        "rmse": 0.06290448709452202,
+        "mape": 17.093488059239053,
+        "directional_accuracy": 1.0
+      },
+      "arima": {
+        "mae": 0.02933351940605138,
+        "rmse": 0.03705775579898666,
+        "mape": 7.665726702929651,
+        "directional_accuracy": 1.0
+      },
+      "ridge_lags": {
+        "mae": 0.033014192925721074,
+        "rmse": 0.038692861259088385,
+        "mape": 9.425460544640318,
+        "directional_accuracy": 0.25
+      }
+    },
+    "massive": {
+      "mae": 0.012294707940331395,
+      "rmse": 0.017244536666735404,
+      "mape": 3.2537098291237165,
+      "directional_accuracy": 0.75
+    },
+    "dm_tests": {
+      "naive": {
+        "p_raw": 0.1415756443364014,
+        "p_adj_holm": 0.47481837362030943,
+        "significant": false
+      },
+      "moving_average": {
+        "p_raw": 0.12492034557906123,
+        "p_adj_holm": 0.47481837362030943,
+        "significant": false
+      },
+      "ar1": {
+        "p_raw": 0.08536070252142124,
+        "p_adj_holm": 0.4268035126071062,
+        "significant": false
+      },
+      "random_regime": {
+        "p_raw": 0.04092565590447064,
+        "p_adj_holm": 0.24555393542682385,
+        "significant": false
+      },
+      "ets": {
+        "p_raw": 0.0008937513382441039,
+        "p_adj_holm": 0.006256259367708727,
+        "significant": true
+      },
+      "arima": {
+        "p_raw": 0.20139414541304235,
+        "p_adj_holm": 0.47481837362030943,
+        "significant": false
+      },
+      "ridge_lags": {
+        "p_raw": 0.11870459340507736,
+        "p_adj_holm": 0.47481837362030943,
+        "significant": false
+      }
+    },
+    "turning_points": {
+      "precision": NaN,
+      "recall": NaN,
+      "f1": 0.0,
+      "mean_timing_error": NaN,
+      "n_true": 0,
+      "n_pred": 0
+    },
+    "skipped": false
+  },
+  {
+    "case": "hong_kong_protests_2019",
+    "cluster_id": null,
+    "n_total": 15,
+    "n_train": 10,
+    "n_test": 5,
+    "baselines": {
+      "naive": {
+        "mae": 0.09600000000000004,
+        "rmse": 0.10972693379476166,
+        "mape": 14.752380952380959,
+        "directional_accuracy": 0.0
+      },
+      "moving_average": {
+        "mae": 0.11600000000000006,
+        "rmse": 0.1275931032618927,
+        "mape": 17.694749694749703,
+        "directional_accuracy": 0.0
+      },
+      "ar1": {
+        "mae": 0.135240540535677,
+        "rmse": 0.1507356488566029,
+        "mape": 20.67983457311075,
+        "directional_accuracy": 0.0
+      },
+      "random_regime": {
+        "mae": 0.09209788910828201,
+        "rmse": 0.10701655037749476,
+        "mape": 14.081889354449403,
+        "directional_accuracy": 0.5
+      },
+      "ets": {
+        "mae": 0.03599999821186075,
+        "rmse": 0.044271885330566405,
+        "mape": 5.598778725980417,
+        "directional_accuracy": 1.0
+      },
+      "arima": {
+        "mae": 0.06541563080260586,
+        "rmse": 0.07882692589434306,
+        "mape": 10.145248665022951,
+        "directional_accuracy": 1.0
+      },
+      "ridge_lags": {
+        "mae": 0.1046026182738671,
+        "rmse": 0.11722618224738988,
+        "mape": 16.015442415687627,
+        "directional_accuracy": 0.75
+      }
+    },
+    "massive": {
+      "mae": 0.16097657255834225,
+      "rmse": 0.21604480373246954,
+      "mape": 25.030264349987657,
+      "directional_accuracy": 0.75
+    },
+    "dm_tests": {
+      "naive": {
+        "p_raw": 0.24354896105684057,
+        "p_adj_holm": 1.0,
+        "significant": false
+      },
+      "moving_average": {
+        "p_raw": 0.2854232193855208,
+        "p_adj_holm": 1.0,
+        "significant": false
+      },
+      "ar1": {
+        "p_raw": 0.3536724151587458,
+        "p_adj_holm": 1.0,
+        "significant": false
+      },
+      "random_regime": {
+        "p_raw": 0.28577720048756566,
+        "p_adj_holm": 1.0,
+        "significant": false
+      },
+      "ets": {
+        "p_raw": 0.19395496663817505,
+        "p_adj_holm": 1.0,
+        "significant": false
+      },
+      "arima": {
+        "p_raw": 0.20726391064624594,
+        "p_adj_holm": 1.0,
+        "significant": false
+      },
+      "ridge_lags": {
+        "p_raw": 0.2591249872311131,
+        "p_adj_holm": 1.0,
+        "significant": false
+      }
+    },
+    "turning_points": {
+      "precision": NaN,
+      "recall": NaN,
+      "f1": 0.0,
+      "mean_timing_error": NaN,
+      "n_true": 0,
+      "n_pred": 0
+    },
+    "skipped": false
+  },
+  {
+    "case": "iran_mahsa_amini_2022",
+    "cluster_id": null,
+    "n_total": 14,
+    "n_train": 9,
+    "n_test": 5,
+    "baselines": {
+      "naive": {
+        "mae": 0.13999999999999999,
+        "rmse": 0.1521840990379744,
+        "mape": 45.948872180451126,
+        "directional_accuracy": 0.0
+      },
+      "moving_average": {
+        "mae": 0.20499999999999993,
+        "rmse": 0.21350644018389697,
+        "mape": 65.7127819548872,
+        "directional_accuracy": 0.0
+      },
+      "ar1": {
+        "mae": 0.2032136654020955,
+        "rmse": 0.21821295760118198,
+        "mape": 66.23864995104066,
+        "directional_accuracy": 0.0
+      },
+      "random_regime": {
+        "mae": 0.1321151024198422,
+        "rmse": 0.15216327415157915,
+        "mape": 42.549275190504346,
+        "directional_accuracy": 0.5
+      },
+      "ets": {
+        "mae": 0.019999996125698093,
+        "rmse": 0.020976173042077963,
+        "mape": 6.309773164136071,
+        "directional_accuracy": 1.0
+      },
+      "arima": {
+        "mae": 0.10913510929235934,
+        "rmse": 0.12085677348364283,
+        "mape": 36.14415056212207,
+        "directional_accuracy": 1.0
+      },
+      "ridge_lags": {
+        "mae": 0.19602295423632157,
+        "rmse": 0.2051722711314963,
+        "mape": 63.02518626852047,
+        "directional_accuracy": 0.25
+      }
+    },
+    "massive": {
+      "mae": 0.07016144611182577,
+      "rmse": 0.07889559027219596,
+      "mape": 19.89900141290669,
+      "directional_accuracy": 0.75
+    },
+    "dm_tests": {
+      "naive": {
+        "p_raw": 0.1305340545474915,
+        "p_adj_holm": 0.3916021636424745,
+        "significant": false
+      },
+      "moving_average": {
+        "p_raw": 0.03282581936659577,
+        "p_adj_holm": 0.2087221792614894,
+        "significant": false
+      },
+      "ar1": {
+        "p_raw": 0.05722191244442544,
+        "p_adj_holm": 0.22888764977770176,
+        "significant": false
+      },
+      "random_regime": {
+        "p_raw": 0.1704087929101794,
+        "p_adj_holm": 0.3916021636424745,
+        "significant": false
+      },
+      "ets": {
+        "p_raw": 0.02981745418021277,
+        "p_adj_holm": 0.2087221792614894,
+        "significant": false
+      },
+      "arima": {
+        "p_raw": 0.276281053170547,
+        "p_adj_holm": 0.3916021636424745,
+        "significant": false
+      },
+      "ridge_lags": {
+        "p_raw": 0.0394231768464384,
+        "p_adj_holm": 0.2087221792614894,
+        "significant": false
+      }
+    },
+    "turning_points": {
+      "precision": NaN,
+      "recall": NaN,
+      "f1": 0.0,
+      "mean_timing_error": NaN,
+      "n_true": 0,
+      "n_pred": 0
+    },
+    "skipped": false
+  },
+  {
+    "case": "myanmar_coup_cdm_2021",
+    "cluster_id": null,
+    "n_total": 15,
+    "n_train": 10,
+    "n_test": 5,
+    "baselines": {
+      "naive": {
+        "mae": 0.11600000000000002,
+        "rmse": 0.12821856339859686,
+        "mape": 49.99307359307359,
+        "directional_accuracy": 0.0
+      },
+      "moving_average": {
+        "mae": 0.18099999999999997,
+        "rmse": 0.18906348140241147,
+        "mape": 75.64978354978352,
+        "directional_accuracy": 0.0
+      },
+      "ar1": {
+        "mae": 0.1677032385791603,
+        "rmse": 0.18299454095444828,
+        "mape": 71.84118021208717,
+        "directional_accuracy": 0.0
+      },
+      "random_regime": {
+        "mae": 0.11022283777093525,
+        "rmse": 0.12887401804566107,
+        "mape": 47.26052733045466,
+        "directional_accuracy": 0.5
+      },
+      "ets": {
+        "mae": 0.00800000232458104,
+        "rmse": 0.010954453000089712,
+        "mape": 3.371429611877915,
+        "directional_accuracy": 1.0
+      },
+      "arima": {
+        "mae": 0.06410900563343731,
+        "rmse": 0.07404615212916692,
+        "mape": 28.155014905724514,
+        "directional_accuracy": 1.0
+      },
+      "ridge_lags": {
+        "mae": 0.16517317646214086,
+        "rmse": 0.17418846258585055,
+        "mape": 69.45347052058302,
+        "directional_accuracy": 0.25
+      }
+    },
+    "massive": {
+      "mae": 0.09731629817489966,
+      "rmse": 0.1001506581328107,
+      "mape": 37.61422141376964,
+      "directional_accuracy": 0.75
+    },
+    "dm_tests": {
+      "naive": {
+        "p_raw": 0.3645778080532567,
+        "p_adj_holm": 0.7291556161065134,
+        "significant": false
+      },
+      "moving_average": {
+        "p_raw": 0.0512588976319996,
+        "p_adj_holm": 0.30755338579199765,
+        "significant": false
+      },
+      "ar1": {
+        "p_raw": 0.10317907318767626,
+        "p_adj_holm": 0.41271629275070504,
+        "significant": false
+      },
+      "random_regime": {
+        "p_raw": 0.40804746273653963,
+        "p_adj_holm": 0.7291556161065134,
+        "significant": false
+      },
+      "ets": {
+        "p_raw": 0.009505950797533308,
+        "p_adj_holm": 0.06654165558273316,
+        "significant": false
+      },
+      "arima": {
+        "p_raw": 0.23697355611132886,
+        "p_adj_holm": 0.7109206683339866,
+        "significant": false
+      },
+      "ridge_lags": {
+        "p_raw": 0.07897846155973393,
+        "p_adj_holm": 0.39489230779866963,
+        "significant": false
+      }
+    },
+    "turning_points": {
+      "precision": NaN,
+      "recall": NaN,
+      "f1": 0.0,
+      "mean_timing_error": NaN,
+      "n_true": 0,
+      "n_pred": 0
+    },
+    "skipped": false
+  },
+  {
+    "case": "south_korea_candlelight_2016",
+    "cluster_id": null,
+    "n_total": 14,
+    "n_train": 9,
+    "n_test": 5,
+    "baselines": {
+      "naive": {
+        "mae": 0.07399999999999998,
+        "rmse": 0.08087026647662289,
+        "mape": 28.643115942028974,
+        "directional_accuracy": 0.0
+      },
+      "moving_average": {
+        "mae": 0.12400000000000003,
+        "rmse": 0.12821856339859686,
+        "mape": 47.02070393374741,
+        "directional_accuracy": 0.0
+      },
+      "ar1": {
+        "mae": 0.12363356557823582,
+        "rmse": 0.13220033362785955,
+        "mape": 47.4921229411145,
+        "directional_accuracy": 0.0
+      },
+      "random_regime": {
+        "mae": 0.07033245319427286,
+        "rmse": 0.08094316955881932,
+        "mape": 27.071978426847902,
+        "directional_accuracy": 0.5
+      },
+      "ets": {
+        "mae": 0.01600000149011637,
+        "rmse": 0.018973667547438053,
+        "mape": 6.303934322933206,
+        "directional_accuracy": 1.0
+      },
+      "arima": {
+        "mae": 0.05323426608628854,
+        "rmse": 0.061299107775059807,
+        "mape": 20.91573460391732,
+        "directional_accuracy": 1.0
+      },
+      "ridge_lags": {
+        "mae": 0.13998635343306803,
+        "rmse": 0.14384316811645054,
+        "mape": 52.914669335091936,
+        "directional_accuracy": 0.25
+      }
+    },
+    "massive": {
+      "mae": 0.13494516957870067,
+      "rmse": 0.13941799227829557,
+      "mape": 51.14880937826,
+      "directional_accuracy": 0.5
+    },
+    "dm_tests": {
+      "naive": {
+        "p_raw": 0.00343796729261577,
+        "p_adj_holm": 0.021849395965954192,
+        "significant": true
+      },
+      "moving_average": {
+        "p_raw": 0.009234257567572094,
+        "p_adj_holm": 0.03693703027028838,
+        "significant": true
+      },
+      "ar1": {
+        "p_raw": 0.08658701315820976,
+        "p_adj_holm": 0.08658701315820976,
+        "significant": false
+      },
+      "random_regime": {
+        "p_raw": 0.0184301372984569,
+        "p_adj_holm": 0.03693703027028838,
+        "significant": true
+      },
+      "ets": {
+        "p_raw": 0.010183077116486696,
+        "p_adj_holm": 0.03693703027028838,
+        "significant": true
+      },
+      "arima": {
+        "p_raw": 0.004799314943124456,
+        "p_adj_holm": 0.02399657471562228,
+        "significant": true
+      },
+      "ridge_lags": {
+        "p_raw": 0.003121342280850599,
+        "p_adj_holm": 0.021849395965954192,
+        "significant": true
+      }
+    },
+    "turning_points": {
+      "precision": NaN,
+      "recall": NaN,
+      "f1": 0.0,
+      "mean_timing_error": NaN,
+      "n_true": 0,
+      "n_pred": 0
+    },
+    "skipped": false
+  },
+  {
+    "case": "us_election_2020",
+    "cluster_id": null,
+    "n_total": 14,
+    "n_train": 9,
+    "n_test": 5,
+    "baselines": {
+      "naive": {
+        "mae": 0.03200000000000003,
+        "rmse": 0.03633180424916993,
+        "mape": 4.378318311696668,
+        "directional_accuracy": 0.0
+      },
+      "moving_average": {
+        "mae": 0.05699999999999994,
+        "rmse": 0.05953990258641673,
+        "mape": 7.8428719960554725,
+        "directional_accuracy": 0.0
+      },
+      "ar1": {
+        "mae": 0.035710122547958356,
+        "rmse": 0.04938521156561797,
+        "mape": 4.979515695507493,
+        "directional_accuracy": 0.5
+      },
+      "random_regime": {
+        "mae": 0.03288091624849228,
+        "rmse": 0.03696908963536748,
+        "mape": 4.505781132399243,
+        "directional_accuracy": 0.5
+      },
+      "ets": {
+        "mae": 0.023499933686002894,
+        "rmse": 0.033447620729946406,
+        "mape": 3.276491483770087,
+        "directional_accuracy": 0.5
+      },
+      "arima": {
+        "mae": 0.016371337021575606,
+        "rmse": 0.021927608083767536,
+        "mape": 2.2723250595650457,
+        "directional_accuracy": 0.5
+      },
+      "ridge_lags": {
+        "mae": 0.06909183529268426,
+        "rmse": 0.0712030953214162,
+        "mape": 9.518564134687526,
+        "directional_accuracy": 0.5
+      }
+    },
+    "massive": {
+      "mae": 0.1211817839767323,
+      "rmse": 0.12495220772422687,
+      "mape": 16.717764347188997,
+      "directional_accuracy": 0.5
+    },
+    "dm_tests": {
+      "naive": {
+        "p_raw": 0.008276890347640535,
+        "p_adj_holm": 0.05793823243348374,
+        "significant": false
+      },
+      "moving_average": {
+        "p_raw": 0.01092044288286087,
+        "p_adj_holm": 0.05872007575085286,
+        "significant": false
+      },
+      "ar1": {
+        "p_raw": 0.021238709209946777,
+        "p_adj_holm": 0.05872007575085286,
+        "significant": false
+      },
+      "random_regime": {
+        "p_raw": 0.009786679291808811,
+        "p_adj_holm": 0.05872007575085286,
+        "significant": false
+      },
+      "ets": {
+        "p_raw": 0.012996504877555375,
+        "p_adj_holm": 0.05872007575085286,
+        "significant": false
+      },
+      "arima": {
+        "p_raw": 0.01049897708494884,
+        "p_adj_holm": 0.05872007575085286,
+        "significant": false
+      },
+      "ridge_lags": {
+        "p_raw": 0.014925164939412587,
+        "p_adj_holm": 0.05872007575085286,
+        "significant": false
+      }
+    },
+    "turning_points": {
+      "precision": NaN,
+      "recall": 0.0,
+      "f1": 0.0,
+      "mean_timing_error": NaN,
+      "n_true": 1,
+      "n_pred": 0
+    },
+    "skipped": false
+  }
+]

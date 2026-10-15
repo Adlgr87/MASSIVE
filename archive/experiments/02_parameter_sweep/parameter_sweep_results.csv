@@ -1,0 +1,356 @@
+convergencia,factorial_A,factorial_B,factorial_C,mean_opinion_final,motor,param,polarization_index,seed,std_opinion_final,tiempo_ms,value
+False,,,,0.078729,simulator,propaganda,0.076335,42,0.076335,47.1,0.0
+True,,,,0.58844,simulator,propaganda,0.046135,43,0.046135,45.7,0.0
+False,,,,0.243002,simulator,propaganda,0.14731,44,0.14731,43.4,0.0
+False,,,,0.051761,simulator,propaganda,0.05331,45,0.05331,43.2,0.0
+False,,,,0.226986,simulator,propaganda,0.073923,46,0.073923,42.3,0.0
+False,,,,0.09492,simulator,propaganda,0.074235,42,0.074235,43.6,0.1
+True,,,,0.646958,simulator,propaganda,0.046886,43,0.046886,42.5,0.1
+False,,,,0.275795,simulator,propaganda,0.157641,44,0.157641,42.2,0.1
+False,,,,0.057286,simulator,propaganda,0.053611,45,0.053611,43.2,0.1
+False,,,,0.28847,simulator,propaganda,0.072199,46,0.072199,43.9,0.1
+False,,,,0.111111,simulator,propaganda,0.072916,42,0.072916,42.8,0.2
+True,,,,0.698861,simulator,propaganda,0.048751,43,0.048751,42.5,0.2
+False,,,,0.291339,simulator,propaganda,0.1672,44,0.1672,42.7,0.2
+False,,,,0.085628,simulator,propaganda,0.057029,45,0.057029,43.1,0.2
+False,,,,0.316302,simulator,propaganda,0.078808,46,0.078808,42.4,0.2
+False,,,,0.081282,simulator,propaganda,0.072155,42,0.072155,43.4,0.30000000000000004
+False,,,,0.765001,simulator,propaganda,0.050864,43,0.050864,43.1,0.30000000000000004
+False,,,,0.263709,simulator,propaganda,0.161829,44,0.161829,42.3,0.30000000000000004
+False,,,,0.218282,simulator,propaganda,0.063637,45,0.063637,45.1,0.30000000000000004
+False,,,,0.244347,simulator,propaganda,0.083476,46,0.083476,44.8,0.30000000000000004
+False,,,,0.074843,simulator,propaganda,0.073003,42,0.073003,44.7,0.4
+False,,,,0.768801,simulator,propaganda,0.050653,43,0.050653,44.0,0.4
+False,,,,0.252731,simulator,propaganda,0.158298,44,0.158298,42.2,0.4
+False,,,,0.25321,simulator,propaganda,0.056696,45,0.056696,42.7,0.4
+False,,,,0.265612,simulator,propaganda,0.077428,46,0.077428,41.8,0.4
+False,,,,0.075414,simulator,propaganda,0.072302,42,0.072302,43.3,0.5
+True,,,,0.779499,simulator,propaganda,0.049549,43,0.049549,43.0,0.5
+False,,,,0.24031,simulator,propaganda,0.154458,44,0.154458,42.6,0.5
+False,,,,0.163334,simulator,propaganda,0.058851,45,0.058851,42.9,0.5
+False,,,,0.239598,simulator,propaganda,0.077558,46,0.077558,42.2,0.5
+False,,,,0.201342,simulator,propaganda,0.069562,42,0.069562,42.8,0.6000000000000001
+True,,,,0.789254,simulator,propaganda,0.048662,43,0.048662,43.2,0.6000000000000001
+False,,,,0.286026,simulator,propaganda,0.162537,44,0.162537,41.5,0.6000000000000001
+False,,,,0.478832,simulator,propaganda,0.054291,45,0.054291,45.1,0.6000000000000001
+False,,,,0.53558,simulator,propaganda,0.103358,46,0.103358,46.1,0.6000000000000001
+False,,,,0.220836,simulator,propaganda,0.068971,42,0.068971,44.9,0.7000000000000001
+True,,,,0.798608,simulator,propaganda,0.047924,43,0.047924,45.2,0.7000000000000001
+False,,,,0.292487,simulator,propaganda,0.159229,44,0.159229,44.4,0.7000000000000001
+False,,,,0.505113,simulator,propaganda,0.055727,45,0.055727,45.0,0.7000000000000001
+False,,,,0.412314,simulator,propaganda,0.078,46,0.078,44.0,0.7000000000000001
+False,,,,0.27141,simulator,propaganda,0.063278,42,0.063278,44.6,0.8
+True,,,,0.795055,simulator,propaganda,0.048191,43,0.048191,45.1,0.8
+False,,,,0.476168,simulator,propaganda,0.171279,44,0.171279,43.6,0.8
+False,,,,0.499776,simulator,propaganda,0.056517,45,0.056517,44.3,0.8
+False,,,,0.556371,simulator,propaganda,0.112202,46,0.112202,45.2,0.8
+False,,,,0.476621,simulator,propaganda,0.101985,42,0.101985,45.0,0.9
+True,,,,0.802841,simulator,propaganda,0.047628,43,0.047628,44.4,0.9
+False,,,,0.492215,simulator,propaganda,0.171238,44,0.171238,43.0,0.9
+False,,,,0.583202,simulator,propaganda,0.055148,45,0.055148,43.0,0.9
+False,,,,0.577523,simulator,propaganda,0.111782,46,0.111782,42.7,0.9
+False,,,,0.651596,simulator,propaganda,0.071902,42,0.071902,43.0,1.0
+True,,,,0.810627,simulator,propaganda,0.047147,43,0.047147,42.8,1.0
+False,,,,0.530685,simulator,propaganda,0.166394,44,0.166394,43.0,1.0
+False,,,,0.745638,simulator,propaganda,0.064216,45,0.064216,43.4,1.0
+False,,,,0.569034,simulator,propaganda,0.11206,46,0.11206,43.4,1.0
+False,,,,0.223277,simulator,alpha_blend,0.074892,42,0.074892,41.3,0.0
+False,,,,0.570043,simulator,alpha_blend,0.063152,43,0.063152,42.3,0.0
+False,,,,0.350408,simulator,alpha_blend,0.181367,44,0.181367,41.6,0.0
+False,,,,0.215984,simulator,alpha_blend,0.056556,45,0.056556,44.3,0.0
+False,,,,0.387568,simulator,alpha_blend,0.088632,46,0.088632,44.0,0.0
+False,,,,0.210331,simulator,alpha_blend,0.0745,42,0.0745,45.1,0.1
+False,,,,0.600795,simulator,alpha_blend,0.062091,43,0.062091,44.5,0.1
+False,,,,0.342406,simulator,alpha_blend,0.180243,44,0.180243,44.1,0.1
+False,,,,0.213481,simulator,alpha_blend,0.05645,45,0.05645,45.3,0.1
+False,,,,0.377354,simulator,alpha_blend,0.087703,46,0.087703,43.1,0.1
+False,,,,0.195603,simulator,alpha_blend,0.07431,42,0.07431,44.6,0.2
+False,,,,0.637015,simulator,alpha_blend,0.061285,43,0.061285,44.2,0.2
+False,,,,0.328605,simulator,alpha_blend,0.176713,44,0.176713,44.2,0.2
+False,,,,0.176661,simulator,alpha_blend,0.056567,45,0.056567,45.4,0.2
+False,,,,0.384721,simulator,alpha_blend,0.083501,46,0.083501,43.3,0.2
+False,,,,0.182172,simulator,alpha_blend,0.073935,42,0.073935,44.3,0.30000000000000004
+False,,,,0.681448,simulator,alpha_blend,0.061534,43,0.061534,44.0,0.30000000000000004
+False,,,,0.324093,simulator,alpha_blend,0.17556,44,0.17556,42.4,0.30000000000000004
+False,,,,0.166435,simulator,alpha_blend,0.056558,45,0.056558,44.1,0.30000000000000004
+False,,,,0.384952,simulator,alpha_blend,0.080701,46,0.080701,42.6,0.30000000000000004
+False,,,,0.168478,simulator,alpha_blend,0.073588,42,0.073588,42.8,0.4
+False,,,,0.659802,simulator,alpha_blend,0.056011,43,0.056011,43.5,0.4
+False,,,,0.319636,simulator,alpha_blend,0.174421,44,0.174421,42.0,0.4
+False,,,,0.156987,simulator,alpha_blend,0.056567,45,0.056567,43.6,0.4
+False,,,,0.383822,simulator,alpha_blend,0.07815,46,0.07815,42.3,0.4
+False,,,,0.169038,simulator,alpha_blend,0.071356,42,0.071356,43.6,0.5
+False,,,,0.687155,simulator,alpha_blend,0.05436,43,0.05436,43.3,0.5
+False,,,,0.312639,simulator,alpha_blend,0.172634,44,0.172634,41.6,0.5
+False,,,,0.148066,simulator,alpha_blend,0.056602,45,0.056602,43.1,0.5
+False,,,,0.381266,simulator,alpha_blend,0.075901,46,0.075901,42.1,0.5
+False,,,,0.158845,simulator,alpha_blend,0.070513,42,0.070513,43.3,0.6000000000000001
+False,,,,0.716849,simulator,alpha_blend,0.052797,43,0.052797,42.5,0.6000000000000001
+False,,,,0.309947,simulator,alpha_blend,0.171946,44,0.171946,41.3,0.6000000000000001
+False,,,,0.144163,simulator,alpha_blend,0.055294,45,0.055294,42.8,0.6000000000000001
+False,,,,0.42657,simulator,alpha_blend,0.071421,46,0.071421,43.0,0.6000000000000001
+False,,,,0.132034,simulator,alpha_blend,0.071978,42,0.071978,42.8,0.7000000000000001
+False,,,,0.744405,simulator,alpha_blend,0.051367,43,0.051367,43.0,0.7000000000000001
+False,,,,0.307582,simulator,alpha_blend,0.171342,44,0.171342,42.3,0.7000000000000001
+False,,,,0.136951,simulator,alpha_blend,0.055122,45,0.055122,43.9,0.7000000000000001
+False,,,,0.315245,simulator,alpha_blend,0.082168,46,0.082168,42.8,0.7000000000000001
+False,,,,0.119517,simulator,alpha_blend,0.071562,42,0.071562,42.7,0.8
+False,,,,0.771586,simulator,alpha_blend,0.050353,43,0.050353,42.6,0.8
+False,,,,0.301851,simulator,alpha_blend,0.16988,44,0.16988,42.6,0.8
+False,,,,0.222384,simulator,alpha_blend,0.064342,45,0.064342,46.1,0.8
+False,,,,0.382769,simulator,alpha_blend,0.07677,46,0.07677,44.2,0.8
+False,,,,0.107652,simulator,alpha_blend,0.071113,42,0.071113,42.9,0.9
+True,,,,0.794377,simulator,alpha_blend,0.048244,43,0.048244,42.6,0.9
+False,,,,0.294636,simulator,alpha_blend,0.16804,44,0.16804,43.8,0.9
+False,,,,0.127146,simulator,alpha_blend,0.054885,45,0.054885,43.0,0.9
+False,,,,0.382394,simulator,alpha_blend,0.075189,46,0.075189,42.0,0.9
+False,,,,0.097392,simulator,alpha_blend,0.070485,42,0.070485,42.1,1.0
+True,,,,0.81297,simulator,alpha_blend,0.047019,43,0.047019,42.3,1.0
+False,,,,0.435535,simulator,alpha_blend,0.182894,44,0.182894,42.1,1.0
+False,,,,0.121757,simulator,alpha_blend,0.054862,45,0.054862,42.1,1.0
+False,,,,0.358171,simulator,alpha_blend,0.067082,46,0.067082,42.7,1.0
+True,,,,0.191712,simulator,ruido_base,0.047339,42,0.047339,41.7,0.0
+True,,,,0.686534,simulator,ruido_base,0.030864,43,0.030864,41.6,0.0
+False,,,,0.441728,simulator,ruido_base,0.106423,44,0.106423,42.5,0.0
+True,,,,0.264362,simulator,ruido_base,0.042525,45,0.042525,43.1,0.0
+True,,,,0.390533,simulator,ruido_base,0.044416,46,0.044416,42.3,0.0
+False,,,,0.102473,simulator,ruido_base,0.086611,42,0.086611,42.5,0.05
+False,,,,0.734244,simulator,ruido_base,0.060251,43,0.060251,42.8,0.05
+False,,,,0.351976,simulator,ruido_base,0.217499,44,0.217499,40.8,0.05
+False,,,,0.105759,simulator,ruido_base,0.067505,45,0.067505,42.9,0.05
+False,,,,0.337225,simulator,ruido_base,0.096367,46,0.096367,41.7,0.05
+False,,,,0.102027,simulator,ruido_base,0.123432,42,0.123432,43.6,0.1
+False,,,,0.678911,simulator,ruido_base,0.083254,43,0.083254,42.3,0.1
+False,,,,0.43808,simulator,ruido_base,0.291437,44,0.291437,42.7,0.1
+False,,,,0.064703,simulator,ruido_base,0.084655,45,0.084655,42.9,0.1
+False,,,,0.410013,simulator,ruido_base,0.129633,46,0.129633,42.8,0.1
+False,,,,0.123441,simulator,ruido_base,0.153227,42,0.153227,43.2,0.15000000000000002
+False,,,,0.619438,simulator,ruido_base,0.101732,43,0.101732,42.5,0.15000000000000002
+False,,,,0.541021,simulator,ruido_base,0.331215,44,0.331215,42.1,0.15000000000000002
+False,,,,0.058067,simulator,ruido_base,0.110434,45,0.110434,42.5,0.15000000000000002
+False,,,,0.488051,simulator,ruido_base,0.167609,46,0.167609,43.4,0.15000000000000002
+False,,,,0.146521,simulator,ruido_base,0.181604,42,0.181604,42.9,0.2
+False,,,,0.538261,simulator,ruido_base,0.123003,43,0.123003,42.8,0.2
+False,,,,0.594741,simulator,ruido_base,0.351464,44,0.351464,42.3,0.2
+False,,,,0.067887,simulator,ruido_base,0.13367,45,0.13367,42.6,0.2
+False,,,,0.567397,simulator,ruido_base,0.241878,46,0.241878,41.9,0.2
+False,,,,0.169602,simulator,ruido_base,0.209993,42,0.209993,40.8,0.25
+False,,,,0.486854,simulator,ruido_base,0.146642,43,0.146642,43.1,0.25
+False,,,,0.617156,simulator,ruido_base,0.342615,44,0.342615,41.7,0.25
+False,,,,0.079374,simulator,ruido_base,0.158228,45,0.158228,42.1,0.25
+False,,,,0.600304,simulator,ruido_base,0.235499,46,0.235499,41.2,0.25
+False,,,,0.192682,simulator,ruido_base,0.238389,42,0.238389,42.3,0.30000000000000004
+False,,,,0.43577,simulator,ruido_base,0.171328,43,0.171328,41.8,0.30000000000000004
+False,,,,0.637768,simulator,ruido_base,0.335856,44,0.335856,40.4,0.30000000000000004
+False,,,,0.090467,simulator,ruido_base,0.180933,45,0.180933,40.1,0.30000000000000004
+False,,,,0.639879,simulator,ruido_base,0.228475,46,0.228475,40.8,0.30000000000000004
+False,,,,0.215704,simulator,ruido_base,0.266717,42,0.266717,40.6,0.35000000000000003
+False,,,,0.348743,simulator,ruido_base,0.202609,43,0.202609,41.2,0.35000000000000003
+False,,,,0.658379,simulator,ruido_base,0.330898,44,0.330898,40.2,0.35000000000000003
+False,,,,0.101767,simulator,ruido_base,0.203535,45,0.203535,40.8,0.35000000000000003
+False,,,,0.696609,simulator,ruido_base,0.217193,46,0.217193,40.4,0.35000000000000003
+False,,,,0.250092,simulator,ruido_base,0.311664,42,0.311664,41.0,0.4
+False,,,,0.310136,simulator,ruido_base,0.223308,43,0.223308,41.4,0.4
+False,,,,0.67899,simulator,ruido_base,0.327822,44,0.327822,40.1,0.4
+False,,,,0.113068,simulator,ruido_base,0.226136,45,0.226136,41.4,0.4
+False,,,,0.697577,simulator,ruido_base,0.232255,46,0.232255,40.6,0.4
+False,,,,0.273103,simulator,ruido_base,0.339907,42,0.339907,41.5,0.45
+False,,,,0.289619,simulator,ruido_base,0.242538,43,0.242538,40.5,0.45
+False,,,,0.699602,simulator,ruido_base,0.326682,44,0.326682,40.4,0.45
+False,,,,0.124369,simulator,ruido_base,0.248738,45,0.248738,41.6,0.45
+False,,,,0.735137,simulator,ruido_base,0.235149,46,0.235149,39.3,0.45
+False,,,,0.296114,simulator,ruido_base,0.368163,42,0.368163,42.1,0.5
+False,,,,0.294365,simulator,ruido_base,0.262626,43,0.262626,41.7,0.5
+False,,,,0.720213,simulator,ruido_base,0.327498,44,0.327498,41.1,0.5
+False,,,,0.13567,simulator,ruido_base,0.271339,45,0.271339,42.0,0.5
+False,,,,0.761564,simulator,ruido_base,0.240853,46,0.240853,40.2,0.5
+False,,,,0.130639,simulator,hk_epsilon,0.07193,42,0.07193,41.2,0.05
+False,,,,0.765001,simulator,hk_epsilon,0.050864,43,0.050864,41.5,0.05
+False,,,,0.306937,simulator,hk_epsilon,0.171178,44,0.171178,39.5,0.05
+False,,,,0.136192,simulator,hk_epsilon,0.055105,45,0.055105,41.3,0.05
+False,,,,0.314088,simulator,hk_epsilon,0.082067,46,0.082067,41.1,0.05
+False,,,,0.130639,simulator,hk_epsilon,0.07193,42,0.07193,43.3,0.1
+False,,,,0.765001,simulator,hk_epsilon,0.050864,43,0.050864,42.6,0.1
+False,,,,0.306937,simulator,hk_epsilon,0.171178,44,0.171178,41.3,0.1
+False,,,,0.136192,simulator,hk_epsilon,0.055105,45,0.055105,42.7,0.1
+False,,,,0.314088,simulator,hk_epsilon,0.082067,46,0.082067,42.0,0.1
+False,,,,0.130639,simulator,hk_epsilon,0.07193,42,0.07193,42.8,0.15000000000000002
+False,,,,0.765001,simulator,hk_epsilon,0.050864,43,0.050864,42.7,0.15000000000000002
+False,,,,0.306937,simulator,hk_epsilon,0.171178,44,0.171178,41.2,0.15000000000000002
+False,,,,0.136192,simulator,hk_epsilon,0.055105,45,0.055105,42.9,0.15000000000000002
+False,,,,0.314088,simulator,hk_epsilon,0.082067,46,0.082067,41.6,0.15000000000000002
+False,,,,0.130639,simulator,hk_epsilon,0.07193,42,0.07193,42.8,0.2
+False,,,,0.765001,simulator,hk_epsilon,0.050864,43,0.050864,42.9,0.2
+False,,,,0.306937,simulator,hk_epsilon,0.171178,44,0.171178,40.9,0.2
+False,,,,0.136192,simulator,hk_epsilon,0.055105,45,0.055105,42.9,0.2
+False,,,,0.314088,simulator,hk_epsilon,0.082067,46,0.082067,41.6,0.2
+False,,,,0.130639,simulator,hk_epsilon,0.07193,42,0.07193,42.9,0.25
+False,,,,0.765001,simulator,hk_epsilon,0.050864,43,0.050864,42.7,0.25
+False,,,,0.306937,simulator,hk_epsilon,0.171178,44,0.171178,41.3,0.25
+False,,,,0.136192,simulator,hk_epsilon,0.055105,45,0.055105,42.4,0.25
+False,,,,0.314088,simulator,hk_epsilon,0.082067,46,0.082067,41.1,0.25
+False,,,,0.130639,simulator,hk_epsilon,0.07193,42,0.07193,41.4,0.3
+False,,,,0.765001,simulator,hk_epsilon,0.050864,43,0.050864,41.7,0.3
+False,,,,0.306937,simulator,hk_epsilon,0.171178,44,0.171178,40.1,0.3
+False,,,,0.136192,simulator,hk_epsilon,0.055105,45,0.055105,41.4,0.3
+False,,,,0.314088,simulator,hk_epsilon,0.082067,46,0.082067,39.7,0.3
+False,,,,0.130639,simulator,hk_epsilon,0.07193,42,0.07193,40.8,0.35000000000000003
+False,,,,0.765001,simulator,hk_epsilon,0.050864,43,0.050864,41.3,0.35000000000000003
+False,,,,0.306937,simulator,hk_epsilon,0.171178,44,0.171178,40.1,0.35000000000000003
+False,,,,0.136192,simulator,hk_epsilon,0.055105,45,0.055105,41.1,0.35000000000000003
+False,,,,0.314088,simulator,hk_epsilon,0.082067,46,0.082067,40.2,0.35000000000000003
+False,,,,0.130639,simulator,hk_epsilon,0.07193,42,0.07193,41.2,0.4
+False,,,,0.765001,simulator,hk_epsilon,0.050864,43,0.050864,40.8,0.4
+False,,,,0.306937,simulator,hk_epsilon,0.171178,44,0.171178,40.5,0.4
+False,,,,0.136192,simulator,hk_epsilon,0.055105,45,0.055105,42.2,0.4
+False,,,,0.314088,simulator,hk_epsilon,0.082067,46,0.082067,41.4,0.4
+False,,,,0.130639,simulator,hk_epsilon,0.07193,42,0.07193,42.6,0.45
+False,,,,0.765001,simulator,hk_epsilon,0.050864,43,0.050864,42.7,0.45
+False,,,,0.306937,simulator,hk_epsilon,0.171178,44,0.171178,40.9,0.45
+False,,,,0.136192,simulator,hk_epsilon,0.055105,45,0.055105,42.8,0.45
+False,,,,0.314088,simulator,hk_epsilon,0.082067,46,0.082067,41.7,0.45
+False,,,,0.130639,simulator,hk_epsilon,0.07193,42,0.07193,42.6,0.5
+False,,,,0.765001,simulator,hk_epsilon,0.050864,43,0.050864,42.8,0.5
+False,,,,0.306937,simulator,hk_epsilon,0.171178,44,0.171178,40.7,0.5
+False,,,,0.136192,simulator,hk_epsilon,0.055105,45,0.055105,41.6,0.5
+False,,,,0.314088,simulator,hk_epsilon,0.082067,46,0.082067,40.4,0.5
+False,,,,0.125429,simulator,homofilia_tasa,0.071866,42,0.071866,41.3,0.0
+False,,,,0.756428,simulator,homofilia_tasa,0.05209,43,0.05209,40.6,0.0
+False,,,,0.30509,simulator,homofilia_tasa,0.170706,44,0.170706,40.8,0.0
+False,,,,0.147229,simulator,homofilia_tasa,0.055169,45,0.055169,41.0,0.0
+False,,,,0.306582,simulator,homofilia_tasa,0.081412,46,0.081412,40.6,0.0
+False,,,,0.131847,simulator,homofilia_tasa,0.071945,42,0.071945,41.6,0.1
+False,,,,0.767678,simulator,homofilia_tasa,0.050777,43,0.050777,41.1,0.1
+False,,,,0.307553,simulator,homofilia_tasa,0.171335,44,0.171335,39.9,0.1
+False,,,,0.133657,simulator,homofilia_tasa,0.055092,45,0.055092,43.7,0.1
+False,,,,0.315821,simulator,homofilia_tasa,0.082218,46,0.082218,42.1,0.1
+False,,,,0.135888,simulator,homofilia_tasa,0.071995,42,0.071995,42.4,0.2
+False,,,,0.746324,simulator,homofilia_tasa,0.051226,43,0.051226,42.8,0.2
+False,,,,0.310063,simulator,homofilia_tasa,0.171976,44,0.171976,41.4,0.2
+False,,,,0.210679,simulator,homofilia_tasa,0.063679,45,0.063679,42.8,0.2
+False,,,,0.3216,simulator,homofilia_tasa,0.082725,46,0.082725,41.9,0.2
+False,,,,0.135888,simulator,homofilia_tasa,0.071995,42,0.071995,42.5,0.30000000000000004
+False,,,,0.746324,simulator,homofilia_tasa,0.051226,43,0.051226,42.6,0.30000000000000004
+False,,,,0.310063,simulator,homofilia_tasa,0.171976,44,0.171976,40.8,0.30000000000000004
+False,,,,0.210679,simulator,homofilia_tasa,0.063679,45,0.063679,43.0,0.30000000000000004
+False,,,,0.3216,simulator,homofilia_tasa,0.082725,46,0.082725,41.7,0.30000000000000004
+False,,,,0.135888,simulator,homofilia_tasa,0.071995,42,0.071995,41.7,0.4
+False,,,,0.746324,simulator,homofilia_tasa,0.051226,43,0.051226,41.7,0.4
+False,,,,0.310063,simulator,homofilia_tasa,0.171976,44,0.171976,40.3,0.4
+False,,,,0.210679,simulator,homofilia_tasa,0.063679,45,0.063679,41.8,0.4
+False,,,,0.3216,simulator,homofilia_tasa,0.082725,46,0.082725,41.3,0.4
+False,,,,0.135888,simulator,homofilia_tasa,0.071995,42,0.071995,41.5,0.5
+False,,,,0.746324,simulator,homofilia_tasa,0.051226,43,0.051226,41.3,0.5
+False,,,,0.310063,simulator,homofilia_tasa,0.171976,44,0.171976,40.0,0.5
+False,,,,0.210679,simulator,homofilia_tasa,0.063679,45,0.063679,41.5,0.5
+False,,,,0.3216,simulator,homofilia_tasa,0.082725,46,0.082725,40.4,0.5
+False,,,,0.135888,simulator,homofilia_tasa,0.071995,42,0.071995,41.4,0.6000000000000001
+False,,,,0.746324,simulator,homofilia_tasa,0.051226,43,0.051226,41.7,0.6000000000000001
+False,,,,0.310063,simulator,homofilia_tasa,0.171976,44,0.171976,40.9,0.6000000000000001
+False,,,,0.210679,simulator,homofilia_tasa,0.063679,45,0.063679,43.6,0.6000000000000001
+False,,,,0.3216,simulator,homofilia_tasa,0.082725,46,0.082725,42.3,0.6000000000000001
+False,,,,0.135888,simulator,homofilia_tasa,0.071995,42,0.071995,42.4,0.7000000000000001
+False,,,,0.746324,simulator,homofilia_tasa,0.051226,43,0.051226,42.8,0.7000000000000001
+False,,,,0.310063,simulator,homofilia_tasa,0.171976,44,0.171976,40.7,0.7000000000000001
+False,,,,0.210679,simulator,homofilia_tasa,0.063679,45,0.063679,42.8,0.7000000000000001
+False,,,,0.3216,simulator,homofilia_tasa,0.082725,46,0.082725,41.9,0.7000000000000001
+False,,,,0.135888,simulator,homofilia_tasa,0.071995,42,0.071995,42.6,0.8
+False,,,,0.746324,simulator,homofilia_tasa,0.051226,43,0.051226,43.0,0.8
+False,,,,0.310063,simulator,homofilia_tasa,0.171976,44,0.171976,41.0,0.8
+False,,,,0.210679,simulator,homofilia_tasa,0.063679,45,0.063679,42.9,0.8
+False,,,,0.3216,simulator,homofilia_tasa,0.082725,46,0.082725,42.1,0.8
+False,,,,0.135888,simulator,homofilia_tasa,0.071995,42,0.071995,42.3,0.9
+False,,,,0.746324,simulator,homofilia_tasa,0.051226,43,0.051226,42.7,0.9
+False,,,,0.310063,simulator,homofilia_tasa,0.171976,44,0.171976,41.3,0.9
+False,,,,0.210679,simulator,homofilia_tasa,0.063679,45,0.063679,42.3,0.9
+False,,,,0.3216,simulator,homofilia_tasa,0.082725,46,0.082725,42.0,0.9
+False,,,,0.135888,simulator,homofilia_tasa,0.071995,42,0.071995,42.3,1.0
+False,,,,0.746324,simulator,homofilia_tasa,0.051226,43,0.051226,42.7,1.0
+False,,,,0.310063,simulator,homofilia_tasa,0.171976,44,0.171976,40.6,1.0
+False,,,,0.210679,simulator,homofilia_tasa,0.063679,45,0.063679,43.0,1.0
+False,,,,0.3216,simulator,homofilia_tasa,0.082725,46,0.082725,42.3,1.0
+False,,,,0.050275,massive_engine,layer_weights,0.56688,42,0.56688,2158.9,"(1, 0, 0)"
+False,,,,-0.139648,massive_engine,layer_weights,0.53734,43,0.53734,2.5,"(1, 0, 0)"
+False,,,,0.116569,massive_engine,layer_weights,0.595749,44,0.595749,2.4,"(1, 0, 0)"
+False,,,,0.089294,massive_engine,layer_weights,0.587416,45,0.587416,2.7,"(1, 0, 0)"
+False,,,,-0.003728,massive_engine,layer_weights,0.538163,46,0.538163,2.2,"(1, 0, 0)"
+False,,,,0.052122,massive_engine,layer_weights,0.570859,42,0.570859,2.4,"(0, 1, 0)"
+False,,,,-0.134625,massive_engine,layer_weights,0.538569,43,0.538569,2.2,"(0, 1, 0)"
+False,,,,0.10712,massive_engine,layer_weights,0.599011,44,0.599011,2.5,"(0, 1, 0)"
+False,,,,0.091534,massive_engine,layer_weights,0.581403,45,0.581403,2.2,"(0, 1, 0)"
+False,,,,0.002161,massive_engine,layer_weights,0.531123,46,0.531123,2.1,"(0, 1, 0)"
+False,,,,0.073963,massive_engine,layer_weights,0.566279,42,0.566279,2.6,"(0, 0, 1)"
+False,,,,-0.116002,massive_engine,layer_weights,0.537978,43,0.537978,2.2,"(0, 0, 1)"
+False,,,,0.076825,massive_engine,layer_weights,0.598389,44,0.598389,2.3,"(0, 0, 1)"
+False,,,,0.091112,massive_engine,layer_weights,0.58286,45,0.58286,2.2,"(0, 0, 1)"
+False,,,,0.038407,massive_engine,layer_weights,0.535418,46,0.535418,2.5,"(0, 0, 1)"
+False,,,,0.051227,massive_engine,layer_weights,0.568715,42,0.568715,2.2,"(0.5, 0.5, 0)"
+False,,,,-0.137139,massive_engine,layer_weights,0.537768,43,0.537768,2.1,"(0.5, 0.5, 0)"
+False,,,,0.111783,massive_engine,layer_weights,0.597247,44,0.597247,2.5,"(0.5, 0.5, 0)"
+False,,,,0.09044,massive_engine,layer_weights,0.584279,45,0.584279,2.2,"(0.5, 0.5, 0)"
+False,,,,-0.000764,massive_engine,layer_weights,0.534319,46,0.534319,2.2,"(0.5, 0.5, 0)"
+False,,,,0.062353,massive_engine,layer_weights,0.566498,42,0.566498,2.3,"(0.5, 0, 0.5)"
+False,,,,-0.12783,massive_engine,layer_weights,0.537584,43,0.537584,5.4,"(0.5, 0, 0.5)"
+False,,,,0.09637,massive_engine,layer_weights,0.597134,44,0.597134,2.2,"(0.5, 0, 0.5)"
+False,,,,0.090309,massive_engine,layer_weights,0.585051,45,0.585051,2.2,"(0.5, 0, 0.5)"
+False,,,,0.017491,massive_engine,layer_weights,0.536758,46,0.536758,2.5,"(0.5, 0, 0.5)"
+False,,,,0.063168,massive_engine,layer_weights,0.568492,42,0.568492,2.2,"(0, 0.5, 0.5)"
+False,,,,-0.125256,massive_engine,layer_weights,0.538185,43,0.538185,2.1,"(0, 0.5, 0.5)"
+False,,,,0.09181,massive_engine,layer_weights,0.598674,44,0.598674,2.2,"(0, 0.5, 0.5)"
+False,,,,0.09131,massive_engine,layer_weights,0.582068,45,0.582068,2.5,"(0, 0.5, 0.5)"
+False,,,,0.0205,massive_engine,layer_weights,0.533147,46,0.533147,2.1,"(0, 0.5, 0.5)"
+False,,,,0.058107,massive_engine,layer_weights,0.567752,42,0.567752,2.1,"(0.4, 0.3, 0.3)"
+False,,,,-0.13103,massive_engine,layer_weights,0.537743,43,0.537743,2.5,"(0.4, 0.3, 0.3)"
+False,,,,0.101566,massive_engine,layer_weights,0.597478,44,0.597478,2.2,"(0.4, 0.3, 0.3)"
+False,,,,0.09057,massive_engine,layer_weights,0.584118,45,0.584118,2.2,"(0.4, 0.3, 0.3)"
+False,,,,0.01084,massive_engine,layer_weights,0.535013,46,0.535013,2.4,"(0.4, 0.3, 0.3)"
+False,,,,0.059113,massive_engine,layer_weights,0.56785,42,0.56785,2.2,"(0.33, 0.33, 0.34)"
+False,,,,-0.129928,massive_engine,layer_weights,0.537809,43,0.537809,2.0,"(0.33, 0.33, 0.34)"
+False,,,,0.099691,massive_engine,layer_weights,0.597683,44,0.597683,2.2,"(0.33, 0.33, 0.34)"
+False,,,,0.090704,massive_engine,layer_weights,0.583759,45,0.583759,2.6,"(0.33, 0.33, 0.34)"
+False,,,,0.012716,massive_engine,layer_weights,0.534696,46,0.534696,2.2,"(0.33, 0.33, 0.34)"
+False,,,,0.060654,massive_engine,layer_weights,0.568106,42,0.568106,2.3,"(0.2, 0.4, 0.4)"
+False,,,,-0.128146,massive_engine,layer_weights,0.537947,43,0.537947,2.5,"(0.2, 0.4, 0.4)"
+False,,,,0.096664,massive_engine,layer_weights,0.598072,44,0.598072,2.2,"(0.2, 0.4, 0.4)"
+False,,,,0.090951,massive_engine,layer_weights,0.583079,45,0.583079,2.1,"(0.2, 0.4, 0.4)"
+False,,,,0.015676,massive_engine,layer_weights,0.534056,46,0.534056,2.1,"(0.2, 0.4, 0.4)"
+,0.1,0.0,0.1,0.140211,factorial_2k,AxBxC,,42,0.051318,45.6,"A=0.1,B=0.0,C=0.1"
+,0.1,0.0,0.1,0.686258,factorial_2k,AxBxC,,43,0.034103,43.0,"A=0.1,B=0.0,C=0.1"
+,0.1,0.0,0.1,0.224104,factorial_2k,AxBxC,,44,0.118871,43.7,"A=0.1,B=0.0,C=0.1"
+,0.1,0.0,0.1,0.104435,factorial_2k,AxBxC,,45,0.038293,44.7,"A=0.1,B=0.0,C=0.1"
+,0.1,0.0,0.1,0.290762,factorial_2k,AxBxC,,46,0.058004,42.5,"A=0.1,B=0.0,C=0.1"
+,0.1,0.0,0.4,0.140211,factorial_2k,AxBxC,,42,0.051318,44.5,"A=0.1,B=0.0,C=0.4"
+,0.1,0.0,0.4,0.686258,factorial_2k,AxBxC,,43,0.034103,42.9,"A=0.1,B=0.0,C=0.4"
+,0.1,0.0,0.4,0.224104,factorial_2k,AxBxC,,44,0.118871,45.4,"A=0.1,B=0.0,C=0.4"
+,0.1,0.0,0.4,0.104435,factorial_2k,AxBxC,,45,0.038293,44.5,"A=0.1,B=0.0,C=0.4"
+,0.1,0.0,0.4,0.290762,factorial_2k,AxBxC,,46,0.058004,42.7,"A=0.1,B=0.0,C=0.4"
+,0.1,0.2,0.1,0.143773,factorial_2k,AxBxC,,42,0.178081,48.9,"A=0.1,B=0.2,C=0.1"
+,0.1,0.2,0.1,0.523383,factorial_2k,AxBxC,,43,0.124001,60.0,"A=0.1,B=0.2,C=0.1"
+,0.1,0.2,0.1,0.563675,factorial_2k,AxBxC,,44,0.355699,65.5,"A=0.1,B=0.2,C=0.1"
+,0.1,0.2,0.1,0.067539,factorial_2k,AxBxC,,45,0.133405,58.7,"A=0.1,B=0.2,C=0.1"
+,0.1,0.2,0.1,0.515877,factorial_2k,AxBxC,,46,0.210054,60.2,"A=0.1,B=0.2,C=0.1"
+,0.1,0.2,0.4,0.143773,factorial_2k,AxBxC,,42,0.178081,62.0,"A=0.1,B=0.2,C=0.4"
+,0.1,0.2,0.4,0.523383,factorial_2k,AxBxC,,43,0.124001,61.7,"A=0.1,B=0.2,C=0.4"
+,0.1,0.2,0.4,0.563675,factorial_2k,AxBxC,,44,0.355699,59.9,"A=0.1,B=0.2,C=0.4"
+,0.1,0.2,0.4,0.067539,factorial_2k,AxBxC,,45,0.133405,65.7,"A=0.1,B=0.2,C=0.4"
+,0.1,0.2,0.4,0.515877,factorial_2k,AxBxC,,46,0.210054,66.4,"A=0.1,B=0.2,C=0.4"
+,0.8,0.0,0.1,0.662719,factorial_2k,AxBxC,,42,0.049445,62.4,"A=0.8,B=0.0,C=0.1"
+,0.8,0.0,0.1,0.826337,factorial_2k,AxBxC,,43,0.036162,66.8,"A=0.8,B=0.0,C=0.1"
+,0.8,0.0,0.1,0.732948,factorial_2k,AxBxC,,44,0.120576,60.7,"A=0.8,B=0.0,C=0.1"
+,0.8,0.0,0.1,0.504741,factorial_2k,AxBxC,,45,0.029638,57.7,"A=0.8,B=0.0,C=0.1"
+,0.8,0.0,0.1,0.54152,factorial_2k,AxBxC,,46,0.085102,56.0,"A=0.8,B=0.0,C=0.1"
+,0.8,0.0,0.4,0.662719,factorial_2k,AxBxC,,42,0.049445,56.1,"A=0.8,B=0.0,C=0.4"
+,0.8,0.0,0.4,0.826337,factorial_2k,AxBxC,,43,0.036162,57.3,"A=0.8,B=0.0,C=0.4"
+,0.8,0.0,0.4,0.732948,factorial_2k,AxBxC,,44,0.120576,54.0,"A=0.8,B=0.0,C=0.4"
+,0.8,0.0,0.4,0.504741,factorial_2k,AxBxC,,45,0.029638,55.3,"A=0.8,B=0.0,C=0.4"
+,0.8,0.0,0.4,0.54152,factorial_2k,AxBxC,,46,0.085102,52.2,"A=0.8,B=0.0,C=0.4"
+,0.8,0.2,0.1,0.153441,factorial_2k,AxBxC,,42,0.190488,53.4,"A=0.8,B=0.2,C=0.1"
+,0.8,0.2,0.1,0.576946,factorial_2k,AxBxC,,43,0.12096,53.1,"A=0.8,B=0.2,C=0.1"
+,0.8,0.2,0.1,0.550876,factorial_2k,AxBxC,,44,0.375027,50.6,"A=0.8,B=0.2,C=0.1"
+,0.8,0.2,0.1,0.121103,factorial_2k,AxBxC,,45,0.135626,49.8,"A=0.8,B=0.2,C=0.1"
+,0.8,0.2,0.1,0.683893,factorial_2k,AxBxC,,46,0.187578,48.6,"A=0.8,B=0.2,C=0.1"
+,0.8,0.2,0.4,0.153441,factorial_2k,AxBxC,,42,0.190488,50.4,"A=0.8,B=0.2,C=0.4"
+,0.8,0.2,0.4,0.576946,factorial_2k,AxBxC,,43,0.12096,50.2,"A=0.8,B=0.2,C=0.4"
+,0.8,0.2,0.4,0.550876,factorial_2k,AxBxC,,44,0.375027,46.0,"A=0.8,B=0.2,C=0.4"
+,0.8,0.2,0.4,0.121103,factorial_2k,AxBxC,,45,0.135626,47.3,"A=0.8,B=0.2,C=0.4"
+,0.8,0.2,0.4,0.683893,factorial_2k,AxBxC,,46,0.187578,46.2,"A=0.8,B=0.2,C=0.4"
