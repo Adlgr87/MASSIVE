@@ -34,12 +34,19 @@ Uso::
 """
 
 import logging
+import threading
 from pathlib import Path
 from typing import Optional
 
 import numpy as np
 
 log = logging.getLogger(__name__)
+
+# Thread lock for singleton double-checked initialisation (CONC-007).
+# Without this, concurrent CfCRouter.get() calls can each observe
+# _instance is None and create distinct instances, breaking the
+# singleton invariant and causing divergent model-loading side effects.
+_cfc_router_lock = threading.Lock()
 
 # Umbral de confianza mínimo para aceptar la predicción CfC.
 # Si la probabilidad máxima < CONFIDENCE_THRESHOLD → fallback LLM.
@@ -122,9 +129,18 @@ class CfCRouter:
     # ── Singleton ────────────────────────────────────────────────────────────
     @classmethod
     def get(cls) -> "CfCRouter":
-        """Devuelve la instancia singleton, creándola si no existe."""
+        """Devuelve la instancia singleton, creándola si no existe.
+
+        Thread-safe via double-checked locking (CONC-007). Without the
+        lock, concurrent callers can each observe ``_instance is None``
+        and create multiple instances — breaking the singleton
+        invariant and causing redundant model loading.
+        """
         if cls._instance is None:
-            cls._instance = cls()
+            with _cfc_router_lock:
+                # Re-check inside lock — another thread may have set it
+                if cls._instance is None:
+                    cls._instance = cls()
         return cls._instance
 
     # ── Carga de modelos ─────────────────────────────────────────────────────
