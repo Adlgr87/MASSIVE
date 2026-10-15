@@ -9,6 +9,9 @@ Principio rector: CfC nunca bloquea.
   - Sin PyTorch instalado → fallback transparente.
   - Sin archivos .pt en models/ → fallback transparente.
   - Con confianza baja en la predicción → fallback transparente.
+  - Si el modelo fue descalificado por walk-forward (R² < 0 → peor que
+    persistencia) → la calidad del corrector se marca como NO válida y
+    se suprime la corrección (retorna "disqualified").
   - En todos los casos, MASSIVE funciona exactamente igual que sin CfC.
 
 Uso::
@@ -71,13 +74,52 @@ class CfCRouter:
         self._tau = None  # CfCTauMatrix
         self._arch = None  # CfCArchitectPolicy
         self._residual = None  # CfCResidualCorrector
+        self._residual_valid = False  # quality-gated (disqualified models are suppressed)
         self._lambda_corrector = None  # CfCLambdaCorrector
         self._landscape_corrector = None  # CfCLandscapeModulator
         self._torch_available = False
         self._load()
 
-    # ── Singleton ────────────────────────────────────────────────────────────
+    # ── Quality gate ──────────────────────────────────────────────────────────
 
+    def _check_residual_quality(self) -> bool:
+        """Return True if the residual corrector is fit for use.
+
+        Reads ``models/cfc_calibrated/validation.json`` (produced by
+        ``scripts/validate_cfc_walkforward.py`` and/or training) and returns
+        False when the model's walk-forward R² is worse than the persistence
+        baseline (R² < 0).  A disqualified model must not be applied — doing
+        so would amplify error rather than correct it.
+        """
+        if self._residual is None:
+            return False
+
+        import json
+
+        for candidate in (
+            Path("models/cfc_calibrated/validation.json"),
+            Path("models/validation.json"),
+        ):
+            if candidate.exists():
+                try:
+                    data = json.loads(candidate.read_text(encoding="utf-8"))
+                    r2 = data.get("training_info", {}).get("test_r2")
+                    if r2 is not None and r2 < 0:
+                        log.warning(
+                            f"[CfC] Residual corrector DISQUALIFIED — "
+                            f"walk-forward R²={r2:.3f} < 0 (worse than "
+                            f"persistence). Correction will not be applied."
+                        )
+                        return False
+                    return float(r2) >= 0 if r2 is not None else True
+                except (json.JSONDecodeError, ValueError) as exc:
+                    log.warning(f"[CfC] Could not parse validation data: {exc}")
+                    return True  # don't suppress on parse error alone
+        # No validation file: allow correction but log the gap
+        log.debug("[CfC] No validation.json found for residual corrector — allowing.")
+        return True
+
+    # ── Singleton ────────────────────────────────────────────────────────────
     @classmethod
     def get(cls) -> "CfCRouter":
         """Devuelve la instancia singleton, creándola si no existe."""
@@ -163,6 +205,11 @@ class CfCRouter:
             input_dim=9,
             hidden_size=64,
         )
+        # Quality gate: the residual corrector is disqualified if its
+        # walk-forward R² is worse than the persistence baseline (R² < 0).
+        # See scripts/validate_cfc_walkforward.py — the shipped model has
+        # R² = -18.7 (8.2× worse than persistence) and must NOT be applied.
+        self._residual_valid = self._check_residual_quality()
         # Lambda correction model (CfCLambdaCorrector).
         # Loads models/cfc_lambda_corrector.pt if present.
         self._lambda_corrector = _try_load(
@@ -367,21 +414,32 @@ class CfCRouter:
         Implements calibration_log.md §6: final(t) = ŷ(t) + r̂(t).
 
         The trained model has R² = -18.7 per-step (poor point-wise
-        generalization), so the *bias direction* is used for adaptive
-        correction scaled toward the known baseline error (§7).
+        generalization).  Walk-forward validation
+        (``scripts/validate_cfc_walkforward.py``) disqualified the model
+        (8.2× worse than persistence).  The quality gate in
+        ``_check_residual_quality`` suppresses this corrector: when
+        ``self._residual_valid`` is False, the raw simulated value is
+        returned with source ``"disqualified"`` instead of applying the model.
 
         Args:
             history:  List of simulated leave% / opinion values, ≥ 3.
             simulated: Latest simulated value (scalar) or full series.
-            actual:  Optional ground-truth series for adaptive scaling.
-            dt:      ODE integration step (matches training).
+            actual:  Optional ground-truth series for diagnostic purposes.
+                     **Ignored when the model is disqualified** — the residual
+                     corrector was audited via walk-forward validation and found
+                     to be 8.2× worse than the persistence baseline
+                     (R² = -18.7).  Passing ``actual`` no longer triggers
+                 label-leakage interpolation.
 
         Returns:
             (corrected_value, source) — source is "cfc" or "passthrough".
-            Returns uncorrected value when model unavailable.
+            Returns uncorrected value when the model is unavailable or
+            disqualified by the quality gate.
         """
-        if self._residual is None or not self._torch_available:
+        if self._residual is None or not self._residual_valid:
             sim_val = float(np.asarray(simulated).ravel()[-1]) if simulated is not None else 0.0
+            if self._residual is not None and not self._residual_valid:
+                return sim_val, "disqualified"
             return sim_val, "passthrough"
 
         import torch
@@ -401,19 +459,13 @@ class CfCRouter:
         t_norm = np.arange(n, dtype=np.float64) / max(n, 1)
         mean_sim = float(np.mean(sim_series))
 
-        if actual is not None:
-            actual_arr = np.asarray(actual, dtype=np.float64)
-            if actual_arr.ndim == 0 or actual_arr.size == 1:
-                actual_series = np.full(n, float(actual_arr.ravel()[-1]))
-            else:
-                actual_series = (
-                    actual_arr[:n]
-                    if actual_arr.size >= n
-                    else np.pad(actual_arr, (0, n - actual_arr.size))
-                )
-            residuals = actual_series - sim_series
-        else:
-            residuals = np.full(n, 0.0426)  # training mean (calibration_log §5)
+        # NOTE: ``actual`` is accepted for API backward-compatibility but is
+        # no longer used to scale the correction.  The walk-forward audit
+        # (scripts/validate_cfc_walkforward.py) found R² = -18.7, so the
+        # model's raw prediction is used only when the quality gate passes.
+        # The previous "0.5 * baseline_error → interpolate toward answer"
+        # path was label leakage and has been removed.
+        residuals = np.full(n, 0.0426)  # training mean (calibration_log §5)
 
         # Feature vector: 9 features = [t_norm, sim, mean(sim)] + 6 lags
         u = np.zeros(self._residual.input_dim, dtype=np.float32)
@@ -429,32 +481,26 @@ class CfCRouter:
             r_hat = float(self._residual(x, u_tensor, dt=dt).item())
 
         sim_val = float(sim_series[-1])
-
-        # Adaptive correction: scale 50% toward target when ground truth known;
-        # otherwise use raw model prediction for bias detection only.
-        if actual is not None:
-            baseline_error = sim_val - float(actual_arr.ravel()[-1]) if actual_arr.size else 0.0
-            correction = 0.5 * baseline_error  # positive when sim overestimates
-        else:
-            correction = r_hat
-
-        corrected = sim_val - correction  # subtract to move toward actual
+        corrected = sim_val - r_hat
         return float(np.clip(corrected, -1.0, 1.0)), "cfc"
 
     @property
     def status(self) -> dict:
-        """
-        Estado de disponibilidad de cada componente CfC.
+        """Estado de disponibilidad de cada componente CfC.
 
         Returns:
             Diccionario con claves 'regime_selector', 'tau_matrix',
-            'architect_policy', 'residual_corrector', cada una True/False.
+            'architect_policy', 'residual_corrector', 'residual_valid',
+            'lambda_corrector', 'landscape_corrector', cada una True/False.
+            'residual_valid' indica si el corrector residual pasa la
+            quality gate (no está descalificado por R² < 0 en walk-forward).
         """
         return {
             "regime_selector": self._sel is not None,
             "tau_matrix": self._tau is not None,
             "architect_policy": self._arch is not None,
             "residual_corrector": self._residual is not None,
+            "residual_valid": self._residual_valid,
             "lambda_corrector": self._lambda_corrector is not None,
             "landscape_corrector": self._landscape_corrector is not None,
         }
