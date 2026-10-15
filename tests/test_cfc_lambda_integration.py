@@ -19,6 +19,7 @@ import pytest
 # documented "torch is optional" contract.
 try:
     import torch  # noqa: F401
+
     _TORCH_AVAILABLE = True
 except ImportError:  # pragma: no cover - exercised only without torch
     _TORCH_AVAILABLE = False

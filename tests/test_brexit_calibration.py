@@ -16,6 +16,7 @@ import pytest
 # Guard torch import so the module can be collected without PyTorch.
 try:
     import torch  # noqa: F401
+
     _TORCH_AVAILABLE = True
 except ImportError:  # pragma: no cover
     _TORCH_AVAILABLE = False
@@ -118,7 +119,7 @@ class TestBrexitCalibration:
         result = run_brexit_calibration(n_agents=20, steps=20, seed=42)
         status = result["engine_metrics"]["router_status"]
         assert status["residual_corrector"] is True  # model file exists
-        assert status["residual_valid"] is False     # but quality gate disqualifies it
+        assert status["residual_valid"] is False  # but quality gate disqualifies it
         assert result["corrected"]["correction_source"] == "disqualified"
 
     def test_correction_source_is_passthrough_without_torch(self):
