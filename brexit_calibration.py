@@ -222,7 +222,11 @@ def main():
     print(f"Router status: {results['engine_metrics']['router_status']}")
 
     # Write report
-    report_path = Path(os.environ.get("MASSIVE_CALIBRATION_REPORT_PATH", "reports/calibration/brexit_calibration_report.md"))
+    report_path = Path(
+        os.environ.get(
+            "MASSIVE_CALIBRATION_REPORT_PATH", "reports/calibration/brexit_calibration_report.md"
+        )
+    )
     report_path.parent.mkdir(parents=True, exist_ok=True)
     report_path.write_text(
         f"""# Brexit 2016 Calibration Report

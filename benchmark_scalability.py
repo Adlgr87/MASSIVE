@@ -18,9 +18,9 @@ import csv
 import gc
 import json
 import logging
+import os
 import sys
 import threading
-import os
 import time
 import tracemalloc
 from dataclasses import asdict, dataclass
@@ -31,7 +31,12 @@ import psutil
 from scipy import sparse
 
 # ─── Paths & Constants ───────────────────────────────────────────────────────
-OUT_DIR = Path(os.environ.get("MASSIVE_BENCHMARK_OUT_DIR", str(Path.cwd() / "reports" / "benchmarks" / "performance_metrics")))
+OUT_DIR = Path(
+    os.environ.get(
+        "MASSIVE_BENCHMARK_OUT_DIR",
+        str(Path.cwd() / "reports" / "benchmarks" / "performance_metrics"),
+    )
+)
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 LOG_PATH = OUT_DIR / "benchmark_log.txt"
 JSON_PATH = OUT_DIR / "performance_benchmarks.json"
