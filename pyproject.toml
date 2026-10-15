@@ -79,7 +79,7 @@ py-modules = [
   "langchain_workflows", "massive_engine",
   "micro_engine", "micro_schemas", "multilayer_engine",
   "programmatic_architect", "simulator",
-  "social_architect", "social_connectors",
+  "social_architect",
   "uil_adapter", "visualizations",
 ]
 

@@ -46,7 +46,7 @@ To contribute a new PVU case:
    - `timeseries.csv` — columns: `date` (ISO 8601), `P` (float [0,1]), optional extras.
    - `interventions.json` — list of `{date, label, source}`.
    - `meta.json` — with `case_id`, `domain`, `source`, `cluster_id`, `license`, `note`.
-3. Verify the case loads: `python -m benchmarks.runner --cases datasets/pvu_cases --offline --out /tmp/pvu_test`.
+3. Verify the case loads: `python -m benchmarks.runner --cases datasets/pvu_cases --offline --out reports/benchmarks/pvu_test`.
 4. If the data is real (not synthetic), ensure it is appropriately licensed and anonymised.
 
 > ⚠️ **Anti-leakage reminder:** Pre-register your analysis plan **before** running the benchmark on real data (use `docs/validation/preregistration_template_EN.md`).

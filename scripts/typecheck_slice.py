@@ -46,9 +46,9 @@ def main() -> int:
         targets.append("massive_core/numerics/multilayer_engine_sparse.py")
 
     # Use pyproject.toml as the explicit config so mypy resolves packages
-    # at the repo root (mypy_path = "." in [tool.mypy]).  Without this,
-    # mypy auto-discovers mypy.ini (which lacks a working mypy_path) and
-    # reports "There are no .py[i] files in directory 'services'".
+    # at the repo root (mypy_path = "." in [tool.mypy]).  Without an explicit
+    # config-file, mypy may pick up a stale or incomplete config and report
+    # "There are no .py[i] files in directory 'services'".
     cmd = [sys.executable, "-m", "mypy", "--config-file", "pyproject.toml", *targets]
     print("Running:", " ".join(cmd))
     proc = subprocess.run(cmd, cwd=REPO)
