@@ -28,6 +28,7 @@ import numpy as np
 import yaml
 
 from massive.core.schemas import PhysicsParams as PhysicsParamsSchema
+from massive.core.schemas import scalar_value
 
 # Opinion-domain bounds used to clip every opinion-range quantity on output.
 OPINION_MIN: float = -1.0
@@ -202,8 +203,8 @@ def context_dependent_sigma(
     Returns:
         Effective diffusion coefficient σ(t) (float).
     """
-    base = float(params.langevin.sigma.base.value)
-    k = float(params.langevin.sigma.context_volatility_sensitivity.value)
+    base = scalar_value(params.langevin.sigma.base.value)
+    k = scalar_value(params.langevin.sigma.context_volatility_sensitivity.value)
     mult = float(_resolve_segment_values(params, segment)["sigma_multiplier"])
     k = max(0.0, k)
     return float(base * mult * (1.0 + k * float(volatility)))
@@ -238,7 +239,7 @@ def hk_epsilon_distribution(
         NumPy array of shape ``(n,)`` with every ε ∈ [0.20, 0.35].
     """
     entry = params.hk.epsilon.per_segment.resolve(segment)
-    center = float(entry.value)
+    center = scalar_value(entry.value)
     sem = float(entry.sem)
     band = params.hk.epsilon.band
     lo, hi = float(band[0]), float(band[1])
@@ -288,9 +289,9 @@ def degroot_weight_matrix(
 
     if params is not None:
         if authority_exponent is None:
-            authority_exponent = float(params.degroot.authority_exponent.value)
+            authority_exponent = scalar_value(params.degroot.authority_exponent.value)
         if self_weight is None:
-            self_weight = float(params.degroot.self_weight.value)
+            self_weight = scalar_value(params.degroot.self_weight.value)
 
     alpha = float(authority_exponent if authority_exponent is not None else 0.7)
     s = float(self_weight if self_weight is not None else 0.1)
@@ -396,9 +397,9 @@ class PhysicsParams:
             A :class:`PhysicsParams` with the scalar values extracted.
         """
         return cls(
-            sigma=float(schema.langevin.sigma.base.value),
-            epsilon=float(schema.hk.epsilon.base.value),
-            lambda_social=float(schema.lambda_social.value),
+            sigma=scalar_value(schema.langevin.sigma.base.value),
+            epsilon=scalar_value(schema.hk.epsilon.base.value),
+            lambda_social=scalar_value(schema.lambda_social.value),
         )
 
     def __repr__(self) -> str:

@@ -29,7 +29,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, cast
 
 import numpy as np
 
@@ -94,7 +94,7 @@ try:
     _EMPIRICAL_AVAILABLE: bool = True
 except ImportError:  # pragma: no cover
     _EMPIRICAL_AVAILABLE = False
-    MASSIVE_RUNTIME_PARAMS: dict = {}
+    MASSIVE_RUNTIME_PARAMS = {}
 
     def get_runtime_params(cultural_profile: str = "mixed") -> dict:
         """Fallback runtime params when empirical config is unavailable."""
@@ -328,7 +328,7 @@ def _build_proof(
 def certify_strategy(
     strategy: dict[str, Any],
     engine: Any,
-    initial_state: np.ndarray | dict,
+    initial_state: np.ndarray | float | dict,
 ) -> ConvergenceCertificate:
     """Run an intervention strategy through the engine and certify convergence.
 
@@ -380,7 +380,7 @@ def certify_strategy(
     if isinstance(initial_state, dict):
         opinions = np.array([float(initial_state.get("opinion", 0.0))], dtype=np.float64)
     elif np.isscalar(initial_state):
-        opinions = np.array([float(initial_state)], dtype=np.float64)
+        opinions = np.array([float(cast(float, initial_state))], dtype=np.float64)
     else:
         opinions = np.atleast_1d(np.asarray(initial_state, dtype=np.float64))
 
@@ -564,14 +564,14 @@ class DeterministicPlanner:
         if isinstance(initial_state, dict):
             init_arr = np.array([float(initial_state.get("opinion", 0.0))])
         elif np.isscalar(initial_state):
-            init_arr = np.array([float(initial_state)])
+            init_arr = np.array([float(cast(float, initial_state))])
         else:
             init_arr = np.asarray(initial_state, dtype=np.float64)
 
         if isinstance(goal_state, dict):
             goal_arr = np.array([float(goal_state.get("opinion", 0.0))])
         elif np.isscalar(goal_state):
-            goal_arr = np.array([float(goal_state)])
+            goal_arr = np.array([float(cast(float, goal_state))])
         else:
             goal_arr = np.asarray(goal_state, dtype=np.float64)
 
