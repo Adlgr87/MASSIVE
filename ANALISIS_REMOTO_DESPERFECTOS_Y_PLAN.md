@@ -312,3 +312,61 @@ solo `_layers_flat`, pero `step()` lee `_layers_sparse`. Medido: censura al 90 %
 aristas en la vista densa y **0** en la sparse → **las intervenciones de censura y viral-hub no
 tenían ningún efecto sobre la simulación**. Ahora ambas vistas se reconstruyen juntas
 (`_rebuild_layer_views()`). Verificado: el resultado final cambia con la intensidad de censura.
+
+### FASE 1 — Reconstruir el acoplamiento ✅
+
+**Matriz declarativa.** El acoplamiento deja de estar enterrado en el álgebra del potencial y pasa a
+una tabla auditable: `DEFAULT_COUPLING_GAINS` (origen → destino, ganancia) con `COUPLING_RATIONALE`
+(mecanismo citado por término). `multi_potential_gradient` la lee directamente.
+
+| origen → destino | ganancia | mecanismo |
+|---|---:|---|
+| opinion → cooperation | +0.40 | alineación social *(ya existía)* |
+| hierarchy → cooperation | +0.30 | conformidad / legitimidad **(nuevo)** |
+| hierarchy → income | +0.40 | estratificación **(nuevo, sustituye al vínculo que se anulaba)** |
+| cooperation → info_access | +0.20 | compromiso cívico *(ya existía)* |
+| income → info_access | +0.30 | brecha digital **(nuevo)** |
+| info_access → opinion | +0.50 | exposición selectiva — **cierra el ciclo** **(nuevo)** |
+
+Densidad: **2/20 (10 %) → 6/20 (30 %)**, y ahora **existe un ciclo de retroalimentación**
+(op → coop → info → op) donde antes solo había una cadena.
+
+**Tres defectos de diseño corregidos:**
+1. `income` era muerta: relajaba a 0.5 sin aristas de entrada. Ahora la jerarquía desplaza su *nivel*
+   (no solo la velocidad). Dispersión medida: **0.099 → 0.199**.
+2. `hierarchy` era biestable pero desconectada. Ahora mueve cooperación e ingreso.
+3. La fuerza de red sólo tocaba `opinion`. Ahora actúa sobre las 5 dimensiones con
+   `NETWORK_SUSCEPTIBILITY` (opinión 1.0, cooperación 0.30, jerarquía 0.20, ingreso 0.10, info 0.15),
+   y con **un solo matmul sparse para las K columnas** en vez de K matvec separados.
+
+**El acoplamiento de opinión se reformuló**: el acceso a información ya no aplica una fuerza lineal
+(que daba un empujón del 1 %) sino que desplaza la *posición del pozo* del potencial bimodal. Es la
+lectura correcta del efecto burbuja y produce el rango de respuesta que faltaba.
+
+**Superficie de respuesta medida (antes: 0.697 ± 0.005 con todo):**
+
+| palanca | rango de polarización | Δ |
+|---|---|---:|
+| ganancia exposición selectiva 0.0→0.75 | 0.6909 → 0.7820 | **0.091** |
+| `coupling` 0.0→1.0 | 0.7249 → 0.8408 | **0.116** |
+| `layer_weights` (social vs económico) | coop 0.4284 ↔ 0.5148, info 0.8213 ↔ 0.8447 | real |
+
+**Ablación término por término — los 6 importan** (Δ en el output primario de cada uno):
+
+| término eliminado | efecto medido |
+|---|---|
+| info_access → opinion | Δpolarización −0.0787 |
+| cooperation → info_access | Δpolarización −0.0364 · Δinfo −0.0926 |
+| hierarchy → income | Δincome −0.0407 |
+| income → info_access | Δinfo −0.0165 |
+| opinion → cooperation | Δcooperation −0.0335 |
+| hierarchy → cooperation | Δcooperation −0.0348 |
+
+**Tests.** Nuevo `tests/test_coupling_structure.py` (23 tests): la matriz está declarada y justificada,
+la densidad no es una cadena, existe ciclo, cada término es funcional bajo ablación, `income` no es
+muerta, `hierarchy` sigue biestable y consecuente, la red alcanza las 5 dimensiones, los signos
+positivos mueven en la misma dirección y **un término negativo invierte la relación** (capacidad que
+el modelo no tenía), la superficie de respuesta existe, y no hay saturación por clip.
+
+**De paso:** el núcleo denso `_multilayer_langevin_step_core` pasó de triple bucle Python O(L·N²) a
+un `matmul` vectorizado (P2).

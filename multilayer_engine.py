@@ -80,6 +80,95 @@ COL_INFO = 4
 # ── Nombres canónicos de las capas de red (orden fijo) ───────────────────────
 LAYER_NAMES: tuple[str, str, str] = ("social", "digital", "economic")
 
+# ── Nombres canónicos de las variables de estado ─────────────────────────────
+VAR_OPINION = "opinion"
+VAR_COOP = "cooperation"
+VAR_HIER = "hierarchy"
+VAR_INCOME = "income"
+VAR_INFO = "info_access"
+
+STATE_VARIABLES: tuple[str, ...] = (
+    VAR_OPINION,
+    VAR_COOP,
+    VAR_HIER,
+    VAR_INCOME,
+    VAR_INFO,
+)
+
+# ── MATRIZ DE ACOPLAMIENTO EXPLÍCITA ─────────────────────────────────────────
+#
+# Todo vínculo entre variables del modelo se declara aquí: origen, destino,
+# ganancia y mecanismo citado. `multi_potential_gradient` lee esta tabla
+# directamente, así que el grafo de interacción es auditable y testeable en
+# lugar de estar implícito en el álgebra del potencial.
+#
+# Antes de esta tabla el modelo tenía 2 acoplamientos de 20 posibles (10 % de
+# densidad), NINGUNO negativo y NINGÚN ciclo de retroalimentación: era una
+# cadena feed-forward (opinión → cooperación → información) en la que 4 de las
+# 5 variables no afectaban a ningún resultado.
+#
+# Ganancia > 0 ⇒ misma dirección (una sube, la otra sube).
+# Ganancia < 0 ⇒ direcciones opuestas (una sube, la otra baja).
+DEFAULT_COUPLING_GAINS: dict[tuple[str, str], float] = {
+    # Alineación social: la propia posición ideológica fija el nivel de
+    # cooperación. Es el único vínculo que ya existía.
+    (VAR_OPINION, VAR_COOP): 0.40,
+    # Conformidad: reconocer la autoridad (hierarquía alta) eleva la
+    # cooperación; el rebelde coopera menos.
+    (VAR_HIER, VAR_COOP): 0.30,
+    # Estratificación: las sociedades conformistas concentran renta; las
+    # rebeldes la igualan. Sustituye al vínculo anterior, que se anulaba
+    # exactamente en el punto fijo y por tanto no existía en régimen estable.
+    (VAR_HIER, VAR_INCOME): 0.40,
+    # Compromiso cívico: cooperar aumenta el acceso a información.
+    (VAR_COOP, VAR_INFO): 0.20,
+    # Brecha digital: la renta compra acceso a información.
+    (VAR_INCOME, VAR_INFO): 0.30,
+    # Exposición selectiva: más información amplifica la posición previa
+    # (burbuja de filtro). Cierra el ciclo op → coop → info → op.
+    (VAR_INFO, VAR_OPINION): 0.50,
+}
+
+# ── Susceptibilidad de cada variable a la influencia de red ─────────────────
+# La fuerza social ya no actúa sólo sobre la opinión. Cada comportamiento tiene
+# su propia "contagiosidad": la opinión es plenamente contagiosa; la cooperación
+# y el reconocimiento de autoridad lo son parcialmente; la renta apenas (la renta
+# no se contagia por contacto social: afirmarlo sería falso).
+#
+# Los valores se mantienen por debajo del umbral de amplificación: la fuerza de
+# red aporta ``coupling · susceptibilidad`` y debe quedar bien por debajo de la
+# tasa de relajación del potencial de cada variable (0.3 para info_access, 2.0
+# para cooperation). Con susceptibilidad 0.4 para info_access y coupling 0.3 la
+# razón era 0.12/0.3 = 0.4, lo que sesgaba info_access hasta saturar el clip.
+NETWORK_SUSCEPTIBILITY: np.ndarray = np.array([1.0, 0.30, 0.20, 0.10, 0.15])
+
+COUPLING_RATIONALE: dict[tuple[str, str], str] = {
+    (VAR_OPINION, VAR_COOP): (
+        "Alineación social: la posición ideológica fija el nivel de cooperación "
+        "(el agente coopera con quien comparte su marco)."
+    ),
+    (VAR_HIER, VAR_COOP): (
+        "Conformidad/legitimidad: la aceptación de la autoridad eleva la "
+        "cooperación (Almond & Verba, cultura cívica)."
+    ),
+    (VAR_HIER, VAR_INCOME): (
+        "Estratificación: la jerarquía reconocida se traduce en concentración de "
+        "renta; la ausencia de jerarquía, en mayor igualdad."
+    ),
+    (VAR_COOP, VAR_INFO): (
+        "Compromiso cívico: la cooperación expone al agente a más canales de "
+        "información (Putnam, capital social)."
+    ),
+    (VAR_INCOME, VAR_INFO): (
+        "Brecha digital: la renta determina el acceso efectivo a información " "(van Dijk, 2005)."
+    ),
+    (VAR_INFO, VAR_OPINION): (
+        "Exposición selectiva: más acceso a información no modera, amplifica la "
+        "posición previa (Sunstein 2001; Prior 2007). Signo dependiente de op: "
+        "refuerza el lado en el que el agente ya está."
+    ),
+}
+
 
 # ============================================================
 # GENERADORES DE REDES
@@ -283,7 +372,10 @@ def _bimodal_grad(opinion: float) -> float:
     return 4.0 * opinion * (opinion * opinion - 0.49)
 
 
-def multi_potential_gradient(x: np.ndarray) -> np.ndarray:
+def multi_potential_gradient(
+    x: np.ndarray,
+    coupling_gains: dict[tuple[str, str], float] | None = None,
+) -> np.ndarray:
     """
     Gradiente del potencial social multidimensional U(x).
 
@@ -293,12 +385,20 @@ def multi_potential_gradient(x: np.ndarray) -> np.ndarray:
     Vectorized over agents for O(1) Python-level overhead per dimension
     regardless of N.
 
+    **Acoplamiento explícito.** Cada vínculo entre variables está declarado en
+    ``COUPLING_RATIONALE`` / ``DEFAULT_COUPLING_GAINS`` y se lee de ahí. Nada
+    fuera de esa tabla acopla dos variables, así que el grafo de interacción es
+    auditable en lugar de estar enterrado en el álgebra del potencial.
+
     Args:
         x: Estado actual de forma (N, K).
+        coupling_gains: Sustituto de ``DEFAULT_COUPLING_GAINS``. Las claves
+            ausentes se tratan como acoplamiento nulo.
 
     Returns:
         Gradiente ∇U de forma (N, K).
     """
+    gains = DEFAULT_COUPLING_GAINS if coupling_gains is None else coupling_gains
     grad = np.zeros_like(x)
 
     op = x[:, COL_OPINION]
@@ -307,22 +407,41 @@ def multi_potential_gradient(x: np.ndarray) -> np.ndarray:
     inc = x[:, COL_INCOME]
     info = x[:, COL_INFO]
 
-    # Opinión: doble pozo → polarización emergente en ±0.7
-    grad[:, COL_OPINION] = 4.0 * op * (op * op - 0.49)  # _bimodal_grad vectorized
+    # ── Opinión: doble pozo + amplificación por exposición selectiva ─────────
+    # Más acceso a información no empuja a un lado: separa los pozos, es decir
+    # amplifica *el lado en el que el agente ya está* (burbuja de filtro). Se
+    # modela desplazando la POSICIÓN del pozo y no con una fuerza lineal, porque
+    # así el efecto es el correcto sobre un potencial bimodal y el rango de
+    # respuesta resultante (pozos en ±0.35…±0.85) es real, no un empujón del 1 %.
+    g_info_op = gains.get((VAR_INFO, VAR_OPINION), 0.0)
+    well = np.clip(0.7 + g_info_op * (info - 0.5), 0.35, 0.85)
+    grad[:, COL_OPINION] = 4.0 * op * (op * op - well * well)
 
-    # Cooperación: depende de la opinión del agente (alineación social)
-    # Alto acuerdo de opinión → cooperación se estabiliza en 0.8
-    align = 0.5 * (op + 1.0)  # mapea [-1,1] → [0,1]
-    grad[:, COL_COOP] = 2.0 * (coop - 0.8 * align)
+    # ── Cooperación: alineación con la propia opinión + conformidad social ───
+    # target = 0.4 + g_op·op + g_hier·(hier − 0.5)
+    # Con g_op = 0.4 reproduce la alineación histórica (0.4·(op+1)).
+    g_op_coop = gains.get((VAR_OPINION, VAR_COOP), 0.0)
+    g_hier_coop = gains.get((VAR_HIER, VAR_COOP), 0.0)
+    target_coop = 0.4 + g_op_coop * op + g_hier_coop * (hier - 0.5)
+    grad[:, COL_COOP] = 2.0 * (coop - target_coop)
 
-    # Jerarquía: atracción hacia 0 (rebelde) o 1 (conformista)
+    # ── Jerarquía: atracción hacia 0 (rebelde) o 1 (conformista) ─────────────
     grad[:, COL_HIER] = -2.0 * hier * (1.0 - hier) * (2.0 * hier - 1.0)
 
-    # Ingreso: gradiente suave hacia centro (0.5), con fricción por jerarquía
-    grad[:, COL_INCOME] = 0.5 * (inc - 0.5) * (1.0 + hier)
+    # ── Ingreso: estratificación inducida por la jerarquía ──────────────────
+    # Antes el objetivo era 0.5 fijo (variable muerta) y la jerarquía solo
+    # modulaba la velocidad. Ahora la jerarquía desplaza el NIVEL: sociedades
+    # conformistas concentran renta, las rebeldes la igualan.
+    g_hier_inc = gains.get((VAR_HIER, VAR_INCOME), 0.0)
+    target_income = 0.5 + g_hier_inc * (hier - 0.5)
+    grad[:, COL_INCOME] = 0.5 * (inc - target_income) * (1.0 + hier)
 
-    # Acceso info: decaimiento lento hacia 0.5 modulado por cooperación
-    grad[:, COL_INFO] = 0.3 * (info - 0.5 - 0.2 * coop)
+    # ── Acceso a información: compromiso cívico + brecha digital ───────────
+    # target = 0.5 + g_coop·coop + g_income·(income − 0.5)
+    g_coop_info = gains.get((VAR_COOP, VAR_INFO), 0.0)
+    g_inc_info = gains.get((VAR_INCOME, VAR_INFO), 0.0)
+    target_info = 0.5 + g_coop_info * coop + g_inc_info * (inc - 0.5)
+    grad[:, COL_INFO] = 0.3 * (info - target_info)
 
     return grad
 
@@ -342,6 +461,7 @@ def _multilayer_langevin_step_core(
     x_min: float,
     x_max: float,
     noise: np.ndarray,
+    coupling_gains: dict[tuple[str, str], float] | None = None,
 ) -> np.ndarray:
     """Core of Euler-Maruyama multilayer step (noise pre-sampled).
 
@@ -350,16 +470,16 @@ def _multilayer_langevin_step_core(
     N, Kdim = x_vec.shape
     L = layers_flat.shape[0]
 
+    # Vectorised over both agents and state dimensions: the previous version was
+    # a triple Python loop over (layer, agent, neighbour) — O(L·N²) interpreted
+    # operations — and touched only the opinion column.
     social_force = np.zeros((N, Kdim))
     for ell in range(L):
         w = layer_weights[ell]
-        for i in range(N):
-            s = 0.0
-            for j in range(N):
-                s += layers_flat[ell, i, j] * x_vec[j, COL_OPINION]
-            social_force[i, COL_OPINION] += coupling * w * s
+        social_force += coupling * w * (layers_flat[ell] @ x_vec)
+    social_force *= NETWORK_SUSCEPTIBILITY
 
-    grad_U = multi_potential_gradient(x_vec)
+    grad_U = multi_potential_gradient(x_vec, coupling_gains)
     x_new = (
         x_vec
         + dt * (-grad_U + social_force)
@@ -391,6 +511,7 @@ def _multilayer_langevin_step_core_sparse(
     x_min: float,
     x_max: float,
     noise: np.ndarray,
+    coupling_gains: dict[tuple[str, str], float] | None = None,
 ) -> np.ndarray:
     """Pure-Python core for sparse layers — O(L·N·k) per step instead of O(L·N²).
 
@@ -399,13 +520,15 @@ def _multilayer_langevin_step_core_sparse(
     N, Kdim = x_vec.shape
     L = len(layers_sparse)
 
+    # A single sparse matmul over all K columns replaces K separate matvecs, and
+    # the force now reaches every state dimension instead of only opinion.
     social_force = np.zeros((N, Kdim))
     for ell in range(L):
         w = layer_weights[ell]
-        contribution = np.asarray(layers_sparse[ell] @ x_vec[:, COL_OPINION]).ravel()
-        social_force[:, COL_OPINION] += coupling * w * contribution
+        social_force += coupling * w * np.asarray(layers_sparse[ell] @ x_vec)
+    social_force *= NETWORK_SUSCEPTIBILITY
 
-    grad_U = multi_potential_gradient(x_vec)
+    grad_U = multi_potential_gradient(x_vec, coupling_gains)
     x_new = (
         x_vec
         + dt * (-grad_U + social_force)
@@ -427,6 +550,7 @@ def multilayer_langevin_step(
     x_min: float,
     x_max: float,
     rng: np.random.Generator | None = None,
+    coupling_gains: dict[tuple[str, str], float] | None = None,
 ) -> np.ndarray:
     """
     Paso de Euler-Maruyama de la dinámica de Langevin multicapa.
@@ -475,6 +599,7 @@ def multilayer_langevin_step(
             float(x_min),
             float(x_max),
             noise,
+            coupling_gains,
         )
     return _multilayer_langevin_step_core(
         x_arr,
@@ -486,6 +611,7 @@ def multilayer_langevin_step(
         float(x_min),
         float(x_max),
         noise,
+        coupling_gains,
     )
 
 
@@ -610,6 +736,7 @@ class MultilayerEngine:
         layer_config: dict | None = None,
         seed: int = 42,
         scientific_config: dict | None = None,
+        coupling_gains: dict[tuple[str, str], float] | None = None,
     ):
         """
         Inicializa el motor multicapa.
@@ -629,6 +756,9 @@ class MultilayerEngine:
 
         self.N = N
         self.coupling = float(coupling)
+        self.coupling_gains: dict[tuple[str, str], float] = (
+            dict(DEFAULT_COUPLING_GAINS) if coupling_gains is None else dict(coupling_gains)
+        )
         self.dt = float(dt)
         self.seed = seed
         self.rng = np.random.default_rng(seed)
@@ -780,10 +910,9 @@ class MultilayerEngine:
             del t
             social_force = np.zeros_like(x)
             for ell, weight in enumerate(self.layer_weights):
-                social_force[:, COL_OPINION] += (
-                    self.coupling * weight * (self._layers_flat[ell] @ x[:, COL_OPINION])
-                )
-            return -multi_potential_gradient(x) + social_force
+                social_force += self.coupling * weight * (self._layers_flat[ell] @ x)
+            social_force *= NETWORK_SUSCEPTIBILITY
+            return -multi_potential_gradient(x, self.coupling_gains) + social_force
 
         return drift
 
@@ -836,6 +965,7 @@ class MultilayerEngine:
                 self.x_min,
                 self.x_max,
                 rng=self.rng,
+                coupling_gains=self.coupling_gains,
             )
             from massive_core.numerics import NumericalDiagnostics
 
