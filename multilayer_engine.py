@@ -688,7 +688,12 @@ def targeted_llm_bias(
                 f"El diálogo y la cooperación construyen comunidades más resilientes."
             )
         headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
-        payload = {
+        # Explicitly typed: with `requests` installed its JsonType accepts this
+        # without suppression, and where `requests` is absent (the minimal CI
+        # typecheck env) the whole call is Any — so a `# type: ignore` here would
+        # be flagged as unused by warn_unused_ignores in exactly one of the two
+        # environments. Typing the payload satisfies both.
+        payload: dict[str, Any] = {
             "model": modelo,
             "messages": [{"role": "user", "content": prompt}],
             "temperature": 0.7,
@@ -696,7 +701,7 @@ def targeted_llm_bias(
         }
         resp = requests.post(
             f"{base_url}/chat/completions",
-            json=payload,  # type: ignore[arg-type]
+            json=payload,
             headers=headers,
             timeout=15,
         )
