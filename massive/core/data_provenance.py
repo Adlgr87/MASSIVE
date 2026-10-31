@@ -25,7 +25,11 @@ import numpy as np
 
 # ── Registry persistence ────────────────────────────────────────────────────
 _REGISTRY_PATH = Path(__file__).parent / "_provenance_registry.json"
-_registry: dict[str, dict[str, Any]] = {}
+
+# Cache keyed by *resolved* registry path. A redirected registry (tests,
+# sandboxes, CI) therefore never contaminates the default on-disk registry and
+# vice versa — previously a single module-level dict leaked entries across both.
+_registry_cache: dict[Path, dict[str, dict[str, Any]]] = {}
 
 # Keys stored per dataset entry
 _NAME = "name"
@@ -38,24 +42,47 @@ _REGISTERED_AT = "registered_at"
 # ── Internal helpers ────────────────────────────────────────────────────────
 
 
-def _load_registry() -> dict[str, dict[str, Any]]:
-    """Load the on-disk registry, or return an empty dict."""
-    global _registry
-    if _registry:
-        return _registry
-    if _REGISTRY_PATH.exists():
+def _resolve_registry_path(registry_path: str | Path | None) -> Path:
+    """Resolve the registry location, honouring an explicit override."""
+    if registry_path is None:
+        return _REGISTRY_PATH
+    return Path(registry_path)
+
+
+def _load_registry(registry_path: str | Path | None = None) -> dict[str, dict[str, Any]]:
+    """Load the on-disk registry for *registry_path*, or return an empty dict.
+
+    Args:
+        registry_path: Override for the registry file location. Defaults to the
+            bundled ``_provenance_registry.json``.
+    """
+    resolved = _resolve_registry_path(registry_path)
+    cached = _registry_cache.get(resolved)
+    if cached:
+        return cached
+    registry: dict[str, dict[str, Any]] = {}
+    if resolved.exists():
         try:
-            with open(_REGISTRY_PATH, encoding="utf-8") as fh:
-                _registry = json.load(fh)
+            with open(resolved, encoding="utf-8") as fh:
+                registry = json.load(fh)
         except (json.JSONDecodeError, OSError):
-            _registry = {}
-    return _registry
+            registry = {}
+    _registry_cache[resolved] = registry
+    return registry
 
 
-def _save_registry() -> None:
-    """Persist the in-memory registry to disk."""
-    with open(_REGISTRY_PATH, "w", encoding="utf-8") as fh:
-        json.dump(_registry, fh, indent=2, sort_keys=True)
+def _save_registry(registry_path: str | Path | None = None) -> None:
+    """Persist the in-memory registry for *registry_path* to disk."""
+    resolved = _resolve_registry_path(registry_path)
+    registry = _registry_cache.get(resolved, {})
+    resolved.parent.mkdir(parents=True, exist_ok=True)
+    with open(resolved, "w", encoding="utf-8") as fh:
+        json.dump(registry, fh, indent=2, sort_keys=True)
+
+
+def _reset_registry_cache() -> None:
+    """Drop every cached registry (test isolation helper)."""
+    _registry_cache.clear()
 
 
 def hash_file(path: str | Path) -> str:
@@ -111,12 +138,20 @@ def hash_directory(path: str | Path) -> str:
 # ── Public API ──────────────────────────────────────────────────────────────
 
 
-def register_dataset(name: str, path: str | Path) -> dict[str, Any]:
+def register_dataset(
+    name: str,
+    path: str | Path,
+    *,
+    registry_path: str | Path | None = None,
+) -> dict[str, Any]:
     """Compute SHA-256 for a dataset (file or directory) and store its metadata.
 
     Args:
         name: Human-readable dataset identifier.
         path: Path to a single file or a directory.
+        registry_path: Override for the registry file location. Tests and
+            sandboxes must pass a temporary path so the versioned registry is
+            never mutated as a side effect.
 
     Returns:
         The metadata dict that was stored (sha256, file_count, path).
@@ -129,7 +164,7 @@ def register_dataset(name: str, path: str | Path) -> dict[str, Any]:
     if not path.exists():
         raise FileNotFoundError(f"Dataset path not found: {path}")
 
-    registry = _load_registry()
+    registry = _load_registry(registry_path)
 
     import datetime
 
@@ -147,22 +182,41 @@ def register_dataset(name: str, path: str | Path) -> dict[str, Any]:
         _FILE_COUNT: file_count,
         _REGISTERED_AT: datetime.datetime.now(datetime.UTC).isoformat(),
     }
+
+    # Preserve the original registration time when the dataset is unchanged.
+    # Otherwise every call — including each test run — rewrote the versioned
+    # registry, turning a provenance record into a log of "last time the code
+    # touched this file" and destroying its evidential value.
+    previous = registry.get(name)
+    if (
+        isinstance(previous, dict)
+        and previous.get(_HASH) == digest
+        and previous.get(_PATH) == str(path)
+        and previous.get(_REGISTERED_AT)
+    ):
+        entry[_REGISTERED_AT] = previous[_REGISTERED_AT]
+
     registry[name] = entry
-    _save_registry()
+    _save_registry(registry_path)
     return entry
 
 
-def verify_integrity(name: str) -> bool:
+def verify_integrity(
+    name: str,
+    *,
+    registry_path: str | Path | None = None,
+) -> bool:
     """Check that a registered dataset's current SHA-256 matches the stored hash.
 
     Args:
         name: Dataset name (as passed to :func:`register_dataset`).
+        registry_path: Override for the registry file location.
 
     Returns:
         ``True`` if the hash matches, ``False`` otherwise.
     """
 
-    registry = _load_registry()
+    registry = _load_registry(registry_path)
     entry = registry.get(name)
     if entry is None:
         return False
@@ -196,10 +250,14 @@ def get_seed_sequence(seed: int, n_rounds: int) -> list[int]:
     return [int(child.generate_state(1)[0]) for child in children]
 
 
-def get_registry() -> dict[str, dict[str, Any]]:
-    """Return a copy of the full registry (for inspection / reporting)."""
-    _load_registry()
-    return {k: dict(v) for k, v in _registry.items()}
+def get_registry(*, registry_path: str | Path | None = None) -> dict[str, dict[str, Any]]:
+    """Return a copy of the full registry (for inspection / reporting).
+
+    Args:
+        registry_path: Override for the registry file location.
+    """
+    registry = _load_registry(registry_path)
+    return {k: dict(v) for k, v in registry.items()}
 
 
 __all__ = [

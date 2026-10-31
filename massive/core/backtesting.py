@@ -369,10 +369,17 @@ class Backtester:
         n_agents: int = 100,
         ensemble_size: int = 30,
         seed: int = 42,
+        prereg_dir: str | Path | None = None,
+        registry_path: str | Path | None = None,
     ) -> None:
         self.ground_truth_dir = Path(ground_truth_dir or _GROUND_TRUTH_DIR)
         self.threshold_path = Path(threshold_path or _THRESHOLD_PATH)
         self.param_path = Path(param_path or _PARAM_PATH)
+        # Pre-registration artefacts are *evidence*: they must not be rewritten
+        # as a side effect of running a test or a throw-away backtest. Callers
+        # that do not intend to seal the canonical record pass a temp dir here.
+        self.prereg_dir = Path(prereg_dir or _PREREG_DIR)
+        self.registry_path = registry_path
         self._calibrated_params = calibrated_params
         self.n_agents = n_agents
         self.ensemble_size = ensemble_size
@@ -507,7 +514,7 @@ class Backtester:
         """
         event = self.load_event(case_id)
 
-        prereg_dir = _PREREG_DIR
+        prereg_dir = self.prereg_dir
         prereg_dir.mkdir(parents=True, exist_ok=True)
         prereg_path = prereg_dir / f"prereg_{case_id}.yaml"
 
@@ -577,26 +584,69 @@ class Backtester:
             },
         }
 
-        # Write pre-registration
-        with open(prereg_path, "w", encoding="utf-8") as fh:
-            yaml.safe_dump(record, fh, default_flow_style=False, sort_keys=True)
-
         # Register with provenance
         from massive.core.data_provenance import register_dataset
 
-        register_dataset(case_id, self.ground_truth_dir / case_id)
+        register_dataset(
+            case_id,
+            self.ground_truth_dir / case_id,
+            registry_path=self.registry_path,
+        )
 
         # Verify data integrity
         from massive.core.data_provenance import verify_integrity
 
-        record["seal"]["status"] = "verified" if verify_integrity(case_id) else "unverified"
+        record["seal"]["status"] = (
+            "verified"
+            if verify_integrity(case_id, registry_path=self.registry_path)
+            else "unverified"
+        )
 
-        # Re-write with seal status
+        # ── Immutability of the seal ───────────────────────────────────────
+        # A pre-registration is *evidence*: it records when the hypothesis and
+        # thresholds were locked, i.e. before the data was seen. Re-running the
+        # same registration must therefore not move ``registered_at`` — doing so
+        # silently rewrote the versioned artefact on every call (and on every
+        # test run), which made the seal unable to prove anything.
+        record["registered_at"] = self._preserve_registration_time(prereg_path, record)
+
+        # Single authoritative write, with the final seal status.
         with open(prereg_path, "w", encoding="utf-8") as fh:
             yaml.safe_dump(record, fh, default_flow_style=False, sort_keys=True)
 
         self._registered[case_id] = record
         return record
+
+    @staticmethod
+    def _preserve_registration_time(prereg_path: Path, record: dict[str, Any]) -> str:
+        """Return the original ``registered_at`` when the registration is unchanged.
+
+        The timestamp only advances when the registered *content* changes, which
+        is the only case where a new pre-registration genuinely exists.
+
+        Args:
+            prereg_path: Path of the existing pre-registration file.
+            record: The record about to be written (``registered_at`` ignored).
+
+        Returns:
+            The timestamp to persist.
+        """
+        new_ts = str(record.get("registered_at", ""))
+        if not prereg_path.exists():
+            return new_ts
+        try:
+            with open(prereg_path, encoding="utf-8") as fh:
+                existing = yaml.safe_load(fh) or {}
+        except (OSError, yaml.YAMLError):
+            return new_ts
+        if not isinstance(existing, dict):
+            return new_ts
+
+        existing_ts = existing.pop("registered_at", None)
+        candidate = {k: v for k, v in record.items() if k != "registered_at"}
+        if existing_ts and existing == candidate:
+            return str(existing_ts)
+        return new_ts
 
     # ── Backtest execution ─────────────────────────────────────────────────
 
@@ -628,7 +678,7 @@ class Backtester:
         # ── Pre-register (G1: gate) ────────────────────────────────────────
         self.pre_register(case_id)
         gate_g1 = True  # pre-registration file exists
-        prereg_path = str(_PREREG_DIR / f"prereg_{case_id}.yaml")
+        prereg_path = str(self.prereg_dir / f"prereg_{case_id}.yaml")
 
         # ── Day-0 conditions only (G2) ─────────────────────────────────────
         # The simulation starts from the first observed P value and evolves

@@ -632,13 +632,43 @@ class TestModuleAPI:
         assert len(events) == 12
 
     def test_seal_splits_idempotent(self):
-        """Calling seal_splits twice should produce the same seal."""
-        seal_splits()
-        with open(SPLITS_PATH) as f:
-            hash1 = json.load(f)["seal"]["seal_hash"]
+        """Re-sealing an unchanged payload must not move the seal or its date.
+
+        This is the property that makes a pre-registration seal evidence: the
+        ``sealed_at`` timestamp is what proves the thresholds were locked before
+        the data was seen. If re-sealing bumped it, the seal would only ever
+        prove "when the code last ran".
+        """
+        import ground_truth._seals as seals_mod
 
         seal_splits()
-        with open(SPLITS_PATH) as f:
-            hash2 = json.load(f)["seal"]["seal_hash"]
+        with open(seals_mod.SPLITS_PATH) as f:
+            first = json.load(f)["seal"]
 
-        assert hash1 == hash2
+        seal_splits()
+        with open(seals_mod.SPLITS_PATH) as f:
+            second = json.load(f)["seal"]
+
+        assert first["seal_hash"] == second["seal_hash"]
+        assert first["sealed_at"] == second["sealed_at"]
+
+    def test_seal_advances_only_when_payload_changes(self):
+        """A changed payload is a genuinely new seal, so the date must advance."""
+        import ground_truth._seals as seals_mod
+        from ground_truth._seals import seal_splits as _seal
+
+        _seal()
+        with open(seals_mod.SPLITS_PATH) as f:
+            data = json.load(f)
+        original_ts = data["seal"]["sealed_at"]
+
+        # Mutate a sealed payload, then re-seal.
+        first_case = next(iter(data["events"]))
+        data["events"][first_case]["train"]["indices"] = (
+            data["events"][first_case]["train"]["indices"] + [99999]
+        )
+        with open(seals_mod.SPLITS_PATH, "w") as f:
+            json.dump(data, f)
+
+        resealed = _seal()
+        assert resealed["seal"]["sealed_at"] != original_ts
