@@ -1,8 +1,7 @@
 """Lightweight sentiment scoring for social text — no external deps.
 
-Extracted from the former `social_connectors.py` to provide the
-`_score_text` function used by `compare_arms.py` without pulling in
-Twitter/Reddit API connectors (tweepy/praw).
+Provides keyword-based sentiment scoring ([-1, 1] range) used by the
+stance classification framework (`compare_arms.py`).
 
 Score range: [-1, 1]
   - +1 = fully positive
@@ -100,8 +99,8 @@ def score_text(text: str) -> float:
 
     Positive = +1, Negative = -1, Mixed/Neutral = 0.
 
-    Same algorithm as the former ``social_connectors._score_text``:
-    count positive and negative keyword hits, return (pos - neg) / total.
+    Keyword-based sentiment: count positive and negative keyword hits,
+    return (pos - neg) / total.
     """
     words = re.findall(r"\w+", text.lower())
     pos = sum(1 for w in words if w in _POSITIVE_WORDS)

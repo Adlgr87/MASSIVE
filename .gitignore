@@ -92,3 +92,4 @@ target/
 __pycache__/
 *.pyc
 *.pyo
+results/*.json

@@ -52,8 +52,6 @@ Esto significa que la "Fase 1 del Master Orchestrator" debe **definir** esta sup
 │  GET  /ready       → readiness (LLM + adapter checks)          │
 │  GET  /version     → build metadata                            │
 │  POST /v1/simulate → run_scalar_simulation (simulator.py)      │
-│  POST /v1/scientific → run_scientific_simulation (opt-in)      │
-│  (NOT YET IMPLEMENTED — documented as FUTURE work)              │
 │  POST /v1/factbook → build_engine_from_country                 │
 │  POST /v1/benchmarks → benchmark runner (offline/real/llm)     │
 │  POST /v1/llm/run_simulation → UIL full_pipeline (LLM)         │
@@ -101,7 +99,6 @@ Esto significa que la "Fase 1 del Master Orchestrator" debe **definir** esta sup
 | Método | Path | Wrapper legacy | Service target | Auth | Rate-limit |
 |--------|------|----------------|----------------|------|------------|
 | `POST` | `/v1/simulate` | `simular` + `resumen_historial` | `run_scalar_simulation` | `X-API-Key` | 60/min |
-| `POST` | `/v1/scientific` | `simular` + scientific runner | `run_scientific_simulation` | `X-API-Key` | 30/min |
 | `POST` | `/v1/factbook` | `MassiveEngine.from_factbook` | `build_engine_from_country` | `X-API-Key` | 30/min |
 | `POST` | `/v1/benchmarks` | `benchmarks.runner` | `_massive_offline_forecast` / real / llm | `X-API-Key` | 10/min |
 | `POST` | `/v1/llm/run_simulation` | `UILAdapter.full_pipeline` | `UILAdapter` | `X-API-Key` + LLM key | 30/min |
@@ -189,16 +186,16 @@ massive-cli = "massive.cli:cli_main"
 - **Stack:** React 18, Vite, TypeScript, Tailwind (ya inicializado en `frontend/`).
 - **Contrato con API:** Tipos TS auto-generados desde DTOs pydantic via `scripts/gen_ts_types.py`.
 - **Auth:** API key inyectada via Vite env (`VITE_MASSIVE_API_KEY`); en dev usa fallback `dev-secret-key`.
-- **Endpoints consumidos:** `/v1/simulate`, `/v1/scientific`, `/v1/factbook`, `/v1/benchmarks`, `/v1/llm/run_simulation`.
+- **Endpoints consumidos:** `/v1/simulate`, `/v1/factbook`, `/v1/benchmarks`, `/v1/llm/run_simulation`.
 
 ### 3.3.1 Política de exposición vs. interno
 
 | Elemento | Exposición | Comentario |
 |----------|-----------|-----------|
 | `simular`, `simular_multiples` | **Interno** | Se accede vía service layer, no exportado directamente por API |
-| `run_with_schedule` | **Interno** | Usado por CLI y `/v1/scientific` indirectlyamente |
+| `run_with_schedule` | **Interno** | Usado por CLI y ``/v1/simulate`` indirectlyamente |
 | `buscar_estrategia_inversa` | **Interno** | Envuelto por `/v1/llm/run_simulation` |
-| `SocialEnergyEngine` | **Interno** | Accedido vía `/v1/scientific` |
+| `SocialEnergyEngine` | **Interno** | Accedido vía `/v1/simulate` |
 | `ForecastEngine` | **Interno** | Accedido vía `/v1/forecast` (heredado) |
 | DTOs (`backend.app.models.*`) | **Público (salida)** | Definen el contrato API; versionados |
 | `massive_core.*` | **Interno + opt-in** | Para consumidores científicos avanzados |
