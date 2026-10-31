@@ -13,7 +13,11 @@ from backend.app.models.dto_architect import (
     InterventionRecord,
 )
 from backend.app.models.dto_benchmark import BenchmarkRequest
-from backend.app.models.dto_engine import ArchitectRequest, EngineEnergyRequest
+from backend.app.models.dto_engine import (
+    ArchitectRequest,
+    EngineEnergyRequest,
+    MultilayerRequest,
+)
 from backend.app.models.dto_forecast import (
     Feasibility,
     ForecastPoint,
@@ -84,6 +88,7 @@ __all__ = [
     "SimRequest",
     "ForecastRequest",
     "EngineEnergyRequest",
+    "MultilayerRequest",
     "ArchitectRequest",
     "BenchmarkRequest",
 ]

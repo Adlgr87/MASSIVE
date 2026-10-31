@@ -370,3 +370,26 @@ el modelo no tenía), la superficie de respuesta existe, y no hay saturación po
 
 **De paso:** el núcleo denso `_multilayer_langevin_step_core` pasó de triple bucle Python O(L·N²) a
 un `matmul` vectorizado (P2).
+
+### FASE 4 — Exponer los diales reales en el contrato `/v1` ✅
+Antes, la API sólo ofrecía `n_agents`, `steps`, `seed` y `layer_weights`; los tres primeros no mueven
+el resultado y `coupling` —el único dial con efecto— era inalcanzable.
+
+- Nuevo DTO `MultilayerRequest` (`extra="forbid"`, cotas anti-DoS) con `coupling` (0–5),
+  `dt` (acotado al límite de estabilidad de Euler explícito), `layer_weights` y `coupling_gains`.
+- Nuevo endpoint **`POST /v1/engine/multilayer`**. Devuelve `landscape`, `series` (opinión + señal
+  real por capa), `diagnostics` y `parameters` con la matriz de acoplamiento resuelta.
+- `coupling_gains` acepta claves `"origen->destino"`, lo que permite ablacionar términos y plantear
+  contrafactuales por HTTP. Claves inválidas → **422** con el nombre del error.
+- `run_multilayer_simulation` acepta `coupling`, `dt`, `coupling_gains`.
+- 10 tests de contrato nuevos (`tests/test_multilayer_endpoint.py`), incluido 401 sin clave,
+  422 con campo desconocido, 422 con `dt` inestable y reproducibilidad por semilla.
+
+### FASE 3 (parcial) — Memoria y núcleo denso ✅
+- Eliminada la **copia densa duplicada** `_layers_flat` (L, N, N). Sólo la usaba la función de deriva,
+  que ahora usa la vista sparse. La copia costaba exactamente lo mismo que `self.layers`: 96 MB en
+  N=2 000 → 2,4 GB proyectados en N=10 000.
+  **Pico de inicialización medido: 293 MB → 132 MB en N=2 000 (−55 %).**
+- El núcleo denso `_multilayer_langevin_step_core` pasó de triple bucle Python O(L·N²) a un `matmul`
+  vectorizado (ya en Fase 1).
+- Suite: **918 tests, 0 fallos**.

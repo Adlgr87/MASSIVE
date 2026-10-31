@@ -11,7 +11,11 @@ from typing import Annotated, Any
 from fastapi import APIRouter, Body, Depends, HTTPException, Request
 from pydantic import ValidationError
 
-from backend.app.models import ArchitectRequest, EngineEnergyRequest
+from backend.app.models import (
+    ArchitectRequest,
+    EngineEnergyRequest,
+    MultilayerRequest,
+)
 from backend.app.security import get_api_key, rate_limit_dependency
 
 router = APIRouter(
@@ -109,3 +113,57 @@ async def v1_architect(
         "history_summary": history[:5],
         "history_length": len(history),
     }
+
+
+@router.post(
+    "/multilayer",
+    name="multilayer",
+    dependencies=[Depends(get_api_key), Depends(rate_limit_dependency)],
+)
+async def v1_multilayer(
+    request: Request,
+    payload: Annotated[MultilayerRequest, Body()],
+) -> dict[str, Any]:
+    """Run the multilayer Langevin engine and return its real per-layer series.
+
+    This endpoint exists because the dials with a measurable effect on the model
+    were not reachable over HTTP: ``n_agents``, ``steps`` and ``seed`` do not move
+    the output, while ``coupling`` — the actual phase dial — and the declared
+    coupling matrix were inaccessible.
+
+    Payload fields:
+        n_agents: int          (default 500, bounded 2–200 000)
+        steps: int             (default 400, bounded 1–10 000)
+        seed: int              (default 42)
+        dt: float              (default 0.02, bounded to the explicit-Euler limit)
+        coupling: float        (default 0.3, bounded 0–5)
+        layer_weights: list    (default ``[0.4, 0.3, 0.3]``)
+        coupling_gains: dict   (optional) ``"source->target"`` overrides
+
+    Returns:
+        Dict with ``landscape``, ``series`` (``opinion`` + real ``layer_signal``
+        per layer), ``diagnostics`` and the resolved ``parameters``.
+    """
+    from services.simulation_service import run_multilayer_simulation
+
+    try:
+        return run_multilayer_simulation(
+            n_agents=payload.n_agents,
+            steps=payload.steps,
+            seed=payload.seed,
+            layer_weights=tuple(payload.layer_weights),  # type: ignore[arg-type]
+            coupling=payload.coupling,
+            dt=payload.dt,
+            coupling_gains=payload.coupling_gains,
+        )
+    except HTTPException:
+        raise
+    except ValidationError:
+        raise
+    except ValueError as exc:
+        raise HTTPException(status_code=422, detail=str(exc)) from exc
+    except Exception as _exc:
+        import logging
+
+        logging.getLogger(__name__).exception("v1/engine/multilayer error")
+        raise HTTPException(status_code=500, detail="internal error") from _exc

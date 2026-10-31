@@ -816,14 +816,12 @@ class MultilayerEngine:
         from scipy import sparse as _sparse
 
         self.layers = build_layers(N, layer_config)
-        self._layers_flat = np.stack(
-            [
-                self.layers["social"],
-                self.layers["digital"],
-                self.layers["economic"],
-            ],
-            axis=0,
-        ).astype(np.float64)
+        # NOTE: ``self.layers`` is deliberately the dense public view (it is what
+        # `dynamic_rewiring` edits and what callers inspect). A *second* dense
+        # (L, N, N) copy used to be kept alongside it as ``_layers_flat`` and cost
+        # as much memory again: 96 MB at N=2 000, 2.4 GB at N=10 000. The drift
+        # function was its only consumer and it can use the sparse view, so the
+        # duplicate is gone.
         self._layers_sparse = [
             _sparse.csr_matrix(self.layers["social"]),
             _sparse.csr_matrix(self.layers["digital"]),
@@ -860,22 +858,15 @@ class MultilayerEngine:
         ]
 
     def _rebuild_layer_views(self) -> None:
-        """Rebuild every derived layer view after the topology changed.
+        """Rebuild the derived sparse layer views after the topology changed.
 
-        ``dynamic_rewiring`` used to refresh only the dense ``_layers_flat``,
+        ``dynamic_rewiring`` used to refresh only a dense ``_layers_flat`` copy,
         while ``step()`` reads the sparse view — so censorship / viral-hub
-        interventions were silently inert. Both views are now rebuilt together.
+        interventions were silently inert. Rewiring now rebuilds the views the
+        dynamics actually use.
         """
         from scipy import sparse as _sp
 
-        self._layers_flat = np.stack(
-            [
-                self.layers["social"],
-                self.layers["digital"],
-                self.layers["economic"],
-            ],
-            axis=0,
-        ).astype(np.float64)
         self._layers_sparse = [
             _sp.csr_matrix(self.layers["social"]),
             _sp.csr_matrix(self.layers["digital"]),
@@ -910,7 +901,7 @@ class MultilayerEngine:
             del t
             social_force = np.zeros_like(x)
             for ell, weight in enumerate(self.layer_weights):
-                social_force += self.coupling * weight * (self._layers_flat[ell] @ x)
+                social_force += self.coupling * weight * (self._layers_sparse[ell] @ x)
             social_force *= NETWORK_SUSCEPTIBILITY
             return -multi_potential_gradient(x, self.coupling_gains) + social_force
 
