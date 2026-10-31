@@ -544,3 +544,48 @@ vuelva a referenciar `/api/*`).
 - `docs/index.md` — tabla **canónico vs histórico** que dice en qué confiar y para qué: no todos los
   `.md` valen igual, y ahora eso está escrito.
 - `mkdocs.yml` — añadido al nav. `mkdocs build` verificado.
+
+### R14 — Los workflows no validaban los PRs
+
+Todos los workflows filtraban `pull_request: branches: [main, master]`. Consecuencia: **un PR a
+`prod-readiness` o `release/*` no ejecutaba pytest, ni ruff, ni mypy, ni build de Docker, ni escaneo
+de secretos**. Es exactamente el mecanismo por el que los cuatro defectos anteriores sobrevivieron:
+nada se ejecutaba en la rama donde se trabajaba.
+
+Corregido: `pull_request` sin filtro de ramas (valida cualquier PR); `push` sigue restringido a la
+rama por defecto; `validate_ts_types` conserva su filtro `paths`.
+
+### Verificación en el CI real (no local)
+
+Con los PRs abiertos, el CI empezó a correr de verdad. Estado de **PR #161** tras las correcciones:
+
+| check | resultado |
+|---|---|
+| `core`, `api`, `scientific`, `full-suite` (pytest) | ✅ pass |
+| `Type Check (MyPy)` | ✅ pass |
+| `mypy-slice` (bloqueante) | ✅ pass |
+| `Python Lint` (ruff + black) | ✅ pass |
+| `Frontend Lint`, `Build Frontend` | ✅ pass |
+| `incremental` (gitleaks) | ✅ pass |
+| `PVU-BS Benchmark`, `pvu`, `validate`, `semgrep` | ✅ pass |
+
+Dos fallos reales que sólo aparecieron al ejecutar en CI y que ya están corregidos:
+
+1. **`mypy-slice`**: `multilayer_engine.py:699: error: Unused "type: ignore" comment`. El job de
+   tipos instala un set mínimo de dependencias, así que allí **no existe `requests`** → `requests.post`
+   es `Any` → el `# type: ignore[arg-type]` sobraba, y `warn_unused_ignores = true` lo convertía en
+   error. Es un fallo *bimodal*: el ignore hacía falta **sólo** en el entorno que sí tiene `requests`.
+   Solución: tipar el payload como `dict[str, Any]` en vez de silenciar. Verificado en los dos
+   entornos (con `requests` y con `requests` bloqueado).
+2. **`Python Lint`** y **`incremental`**: ya descritos arriba (pin de versiones y `fetch-depth`).
+
+### Cobertura adicional
+
+- `tests/test_http_routers_contract.py` (24 tests): los routers con peor cobertura son la superficie
+  pública del producto. Se fija el contrato real, no el "devuelve 200": 401 sin clave y con clave
+  incorrecta en cada router; el router de benchmark rechaza rutas absolutas y `..`, y **falla cerrado
+  (503)** si se pide modo LLM sin proveedor configurado en lugar de degradar en silencio a offline;
+  el de forecast exige `simulation_state`, valida `mode` y la cota de `n_runs`, y devuelve la forma
+  real de `ForecastResponse` (`sim_id`/`horizon_ticks`/`points`/`feasibility`); el de engine rechaza
+  `coupling` fuera de rango y población < 2.
+  Cobertura: **forecast 29 % → 87 %**, **benchmarks 18 % → 62 %**.
