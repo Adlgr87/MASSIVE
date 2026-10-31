@@ -473,3 +473,74 @@ La última fila es la prueba de regresión más elocuente: ablacionar los seis t
 exactamente la patología del modelo original** — `income` vuelve a morir (`sd` 0.1985 → 0.0885, el
 0.099 medido en la auditoría) y `info_access` deja de estar acoplado. Si alguien deshace la matriz,
 el comportamiento antiguo reaparece de inmediato y los tests lo detectan.
+
+---
+
+## 9. Segunda pasada: el CI real estaba en rojo (y por qué)
+
+Al abrir los PRs descubrí que **`main` tenía 4 jobs de CI en rojo**, no por mi cambio sino por
+defectos preexistentes que ningún análisis estático local podía ver. Los logs de GitHub Actions los
+expusieron uno por uno.
+
+| Job | Causa real | Estado |
+|---|---|---|
+| `Type Check (MyPy)` | `mypy: error: Cannot find config file 'mypy.ini'` → exit 2 | ✅ arreglado en Fase 2 |
+| `Python Lint` | CI instalaba `ruff black mypy` **sin pin**, obteniendo un black más nuevo que el que el repo fija (`black==24.10.0`), que exigía reformatear `cache_manager.py` y `compare_arms.py` | ✅ arreglado |
+| `incremental` (Secret scan) | gitleaks escanea `BASE^..HEAD`; con `fetch-depth` por defecto (1) el padre del commit base no existe → `ambiguous argument`, 0 bytes escaneados, exit 1 | ✅ arreglado |
+| `compose-build-health` (Docker E2E) | **`Dockerfile:61-62` hace `COPY nginx.conf` y `COPY supervisord.conf`, y NINGUNO de los dos archivos existía en el repositorio.** `failed to compute cache key: "/supervisord.conf": not found` | ✅ arreglado |
+
+### R12 — El Dockerfile no podía construir la imagen (CRÍTICO)
+
+La imagen Docker era **imposible de construir**, no lenta ni frágil: faltaban dos archivos de
+entrada. Se han creado, escritos para las restricciones que el propio Dockerfile impone:
+
+- **`nginx.conf`** — sirve el SPA desde `/usr/share/nginx/html` y hace de gateway inverso a uvicorn.
+  Escrito para nginx **sin root** (`USER appuser` + `setcap`): sin directiva `user`, `pid` y todos
+  los directorios `*_temp_path` en `/tmp`, logs en `/var/log/nginx` (chown a appuser en el
+  Dockerfile). Proxy para `/v1/*`, `/api/v1/*`, `/health`, `/ready`, `/metrics`, `/version`,
+  `/docs`, `/redoc`, `/openapi*.json`; caché inmutable para `/assets/` (hashes de Vite) y
+  `no-store` para `index.html`; fallback SPA.
+- **`supervisord.conf`** — `uvicorn` en 127.0.0.1:8000 (loopback: nginx es la única entrada pública)
+  y `nginx -g "daemon off;"`. Sin `user=`, porque el contenedor ya arranca como `appuser` y
+  supervisord sólo puede *bajar* privilegios desde root, no cambiar entre usuarios no privilegiados.
+  Sin `[eventlistener]`: un listener debe implementar el protocolo por stdin, y poner
+  `supervisorctl status` ahí bloquearía el bucle de eventos.
+
+**Verificación real, no asumida:**
+- `nginx -t` en contenedor → `syntax is ok` / `test is successful`.
+- Parseo con el propio parser de supervisor (`ServerOptions.realize`) → `CONFIG PARSED OK`, con
+  ambos programas y `nodaemon=True`.
+- `docker build` completo: no termina en tiempo razonable porque `requirements.txt` fija
+  `torch>=2.2.0` sin índice CPU y descarga **~2,6 GB de stack CUDA** (`torch 539 MB`, `cudnn 519 MB`,
+  `cublas 405 MB`, `triton 286 MB`…). **Hallazgo R13:** la imagen de un simulador que corre en CPU
+  arrastra el stack CUDA completo; `torch --index-url .../whl/cpu` lo reduciría a ~200 MB. No lo
+  cambié porque altera la resolución de dependencias para todos los usuarios.
+
+### Corrección a mi propia auditoría — `api.py` sí es obsoleto, y el runbook era el defecto
+
+Había clasificado `api.py` como "duplicado legacy" sin resolver quién lo consumía. Lo verifiqué y la
+respuesta es contundente:
+
+- `frontend/src/services/api.ts` usa `baseURL: "/v1"` y sus rutas son `/simulate`, `/llm/extract`,
+  `/llm/wizard`, `/forecast`, `/engine/architect`, `/engine/energy`. **Cero** consumidores de `/api/*`,
+  y el propio archivo lo documenta: *"The deprecated /api/* aliases are no longer referenced by this
+  client."*
+- El runbook `docs/runbooks/local-development.md` decía literalmente *"API legacy /api/* (la que usa
+  el frontend React)"*. **Era falso**, y era lo que mantenía viva la API antigua.
+
+Acciones: runbook corregido; `api.py` emite `DeprecationWarning` al importarse (con el destino
+canónico en el mensaje); `massive serve --legacy` avisa en voz alta; 3 tests nuevos blindan las
+afirmaciones (que el warning se emita, que nombre `backend.app.main`/`/v1`, y que el frontend no
+vuelva a referenciar `/api/*`).
+
+### Documentación
+
+- `docs/architecture/coupling_matrix.md` — nuevo documento de referencia: vector de estado, matriz
+  declarada con mecanismos citados, autodinámica, susceptibilidad de red, superficie de respuesta
+  medida, tabla de ablación, invariantes que exigen los tests y guía para cambiar el modelo
+  (incluido el recordatorio de re-derivar la calibración).
+- `docs/api.md` — documentado `POST /v1/engine/multilayer` con su tabla de parámetros, forma de la
+  respuesta y ejemplos de ablación por HTTP.
+- `docs/index.md` — tabla **canónico vs histórico** que dice en qué confiar y para qué: no todos los
+  `.md` valen igual, y ahora eso está escrito.
+- `mkdocs.yml` — añadido al nav. `mkdocs build` verificado.

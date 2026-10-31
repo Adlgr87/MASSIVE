@@ -175,3 +175,69 @@ def test_constant_time_comparison_helper():
     assert api_key_matches(None, "k") is False
     assert api_key_matches("k", "") is False
     assert api_key_matches("ключ", "ключ") is True  # non-ascii safe
+
+
+class TestLegacyApiIsDeprecated:
+    """``api.py`` must announce its own deprecation.
+
+    The module serves the old ``/api/*`` contract. It has **no** frontend
+    consumers (``frontend/src/services/api.ts`` uses ``baseURL: "/v1"``), but the
+    local-development runbook used to claim the React app depended on it — which
+    is what kept it alive. A silent deprecation is indistinguishable from a
+    supported surface, so the warning is the contract.
+    """
+
+    def test_importing_api_emits_a_deprecation_warning(self):
+        import importlib
+        import sys
+        import warnings
+
+        sys.modules.pop("api", None)
+        try:
+            with warnings.catch_warnings(record=True) as caught:
+                warnings.simplefilter("always")
+                importlib.import_module("api")
+        finally:
+            sys.modules.pop("api", None)
+
+        assert any(issubclass(w.category, DeprecationWarning) for w in caught), (
+            "importing api.py must emit DeprecationWarning; it currently serves the "
+            "retired /api/* contract"
+        )
+
+    def test_deprecation_message_names_the_canonical_app(self):
+        import importlib
+        import sys
+        import warnings
+
+        sys.modules.pop("api", None)
+        try:
+            with warnings.catch_warnings(record=True) as caught:
+                warnings.simplefilter("always")
+                importlib.import_module("api")
+        finally:
+            sys.modules.pop("api", None)
+
+        messages = " ".join(str(w.message) for w in caught)
+        assert "backend.app.main" in messages
+        assert "/v1" in messages
+
+    def test_frontend_does_not_reference_the_legacy_contract(self):
+        """Guard the runbook's old claim: the frontend must not use /api/*."""
+        from pathlib import Path
+
+        api_ts = Path(__file__).resolve().parent.parent / "frontend" / "src" / "services" / "api.ts"
+        if not api_ts.is_file():  # pragma: no cover - frontend may be absent
+            import pytest
+
+            pytest.skip("frontend sources not present")
+        text = api_ts.read_text(encoding="utf-8")
+        # Comments legitimately mention the old paths ("was /api/simulate-uil"),
+        # so only real string literals count.
+        offending = [
+            line
+            for line in text.splitlines()
+            if ("`/api/" in line or '"/api/' in line or "'/api/" in line)
+            and not line.lstrip().startswith(("*", "//"))
+        ]
+        assert not offending, f"frontend still calls the legacy contract: {offending}"

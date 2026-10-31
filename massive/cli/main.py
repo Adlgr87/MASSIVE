@@ -136,7 +136,14 @@ def _cmd_serve(args: argparse.Namespace) -> int:
     """
     import uvicorn
 
-    app_target = "backend.app.main:app" if not args.legacy else "api:app"
+    app_target = "backend.app.main:app"
+    if args.legacy:
+        log.warning(
+            "DEPRECATED: --legacy serves the old /api/* contract from api.py. "
+            "It has no frontend consumers; the canonical API is backend.app.main:app "
+            "under /v1."
+        )
+        app_target = "api:app"
     config = uvicorn.Config(
         app_target,
         host=args.host,
@@ -238,7 +245,11 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     p_serve.add_argument("--port", type=int, default=8000, help="Bind port")
     p_serve.add_argument("--workers", type=int, default=1, help="Number of uvicorn workers")
-    p_serve.add_argument("--legacy", action="store_true", help="Use legacy api:app entry point")
+    p_serve.add_argument(
+        "--legacy",
+        action="store_true",
+        help="DEPRECATED: serve the old /api/* contract from api.py instead of backend.app.main:app",
+    )
     p_serve.set_defaults(func=_cmd_serve)
 
     return parser

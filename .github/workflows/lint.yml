@@ -24,7 +24,20 @@ jobs:
       - name: Install lint tools
         run: |
           python -m pip install --upgrade pip
-          pip install ruff black mypy
+          # Install EXACTLY the versions pinned in [project.optional-dependencies].dev.
+          # Installing unpinned `ruff black mypy` gave CI a newer black than the one
+          # the repo pins, so `black --check` demanded reformatting of files that are
+          # correctly formatted per the project's own pin (cache_manager.py,
+          # compare_arms.py) and the job failed on every run.
+          python - <<'PY' > /tmp/lint-pins.txt
+          import pathlib, tomllib
+          pyproject = tomllib.loads(pathlib.Path("pyproject.toml").read_text())
+          dev = pyproject["project"]["optional-dependencies"]["dev"]
+          print("\n".join(p for p in dev if p.split("=")[0].split(">")[0].split("<")[0]
+                          .strip().lower() in {"ruff", "black", "mypy"}))
+          PY
+          cat /tmp/lint-pins.txt
+          pip install -r /tmp/lint-pins.txt
 
       - name: Run ruff
         run: ruff check .
