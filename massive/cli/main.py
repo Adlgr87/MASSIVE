@@ -22,6 +22,31 @@ from massive import __version__ as __VERSION__
 log = logging.getLogger(__name__)
 
 
+def _positive_int(raw: str) -> int:
+    """argparse type enforcing a positive step/iteration count.
+
+    The HTTP DTOs bound these values (``pasos`` 1–10 000). The CLI accepted any
+    integer, including 0 and negatives, which reached the engine as a silent
+    no-op instead of a usage error.
+
+    Args:
+        raw: Raw command-line value.
+
+    Returns:
+        The parsed integer.
+
+    Raises:
+        argparse.ArgumentTypeError: If the value is not a positive integer.
+    """
+    try:
+        value = int(raw)
+    except (TypeError, ValueError) as exc:
+        raise argparse.ArgumentTypeError(f"{raw!r} is not an integer") from exc
+    if value < 1:
+        raise argparse.ArgumentTypeError(f"must be >= 1 (got {value})")
+    return value
+
+
 def _configure_logging(verbose: bool = False) -> None:
     level = logging.DEBUG if verbose else logging.INFO
     logging.basicConfig(
@@ -39,6 +64,7 @@ def _cmd_simulate(args: argparse.Namespace) -> int:
         estado_inicial=json.loads(args.estado) if args.estado else {},
         escenario=args.escenario,
         pasos=args.pasos,
+        config={"seed": args.seed},
         verbose=args.verbose if args.verbose else False,
     )
     print(json.dumps(result["summary"], indent=2, default=str))
@@ -136,7 +162,8 @@ def _build_parser() -> argparse.ArgumentParser:
     p_sim = sub.add_parser("simulate", help="Run a scalar MASSIVE simulation")
     p_sim.add_argument("--estado", type=str, default=None, help="JSON initial state dict")
     p_sim.add_argument("--escenario", type=str, default="campana", help="Scenario key")
-    p_sim.add_argument("--pasos", type=int, default=50, help="Number of simulation steps")
+    p_sim.add_argument("--pasos", type=_positive_int, default=50, help="Number of simulation steps")
+    p_sim.add_argument("--seed", type=int, default=42, help="RNG seed (default 42, reproducible)")
     p_sim.set_defaults(func=_cmd_simulate)
 
     # scientific
@@ -145,7 +172,9 @@ def _build_parser() -> argparse.ArgumentParser:
     )
     p_sci.add_argument("--estado", type=str, default=None, help="JSON initial state dict")
     p_sci.add_argument("--escenario", type=str, default="campana", help="Scenario key")
-    p_sci.add_argument("--pasos", type=int, default=100, help="Number of simulation steps")
+    p_sci.add_argument(
+        "--pasos", type=_positive_int, default=100, help="Number of simulation steps"
+    )
     p_sci.add_argument("--report", action="store_true", help="Generate scientific report")
     p_sci.add_argument(
         "--enkf", action="store_true", help="Enable Ensemble Kalman Filter data assimilation"
@@ -176,7 +205,7 @@ def _build_parser() -> argparse.ArgumentParser:
         choices=["analytical", "monte_carlo"],
         help="Forecast mode",
     )
-    p_fc.add_argument("--n-runs", type=int, default=200, help="Monte Carlo iterations")
+    p_fc.add_argument("--n-runs", type=_positive_int, default=200, help="Monte Carlo iterations")
     p_fc.set_defaults(func=_cmd_forecast)
 
     # benchmark

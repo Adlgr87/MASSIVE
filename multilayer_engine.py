@@ -25,6 +25,7 @@ Columnas de x_i (K=5):
 """
 
 import logging
+import os
 
 import networkx as nx
 import numpy as np
@@ -737,6 +738,7 @@ class MultilayerEngine:
         seed: int = 42,
         scientific_config: dict | None = None,
         coupling_gains: dict[tuple[str, str], float] | None = None,
+        use_cfc: bool | None = None,
     ):
         """
         Inicializa el motor multicapa.
@@ -790,26 +792,19 @@ class MultilayerEngine:
         self.attributes_df = generate_attributes(N, seed=seed, **attr_cfg)
         self.theta = compute_theta(self.attributes_df)
 
-        # CfC INTEGRATION — τ aprendido sustituye la theta manual si está disponible
-        try:
-            from cfc_router import CfCRouter
-
-            _cfc_tau = CfCRouter.get().compute_tau_matrix(
-                np.stack(
-                    [
-                        self.attributes_df["religion"].to_numpy(dtype=np.float32),
-                        self.attributes_df["education"].to_numpy(dtype=np.float32),
-                        (self.attributes_df["age_group"].to_numpy(dtype=np.float32) / 3.0),
-                        self.attributes_df["gender"].to_numpy(dtype=np.float32),
-                    ],
-                    axis=1,
-                )
-            )
-            if _cfc_tau is not None:
-                # Escalar al rango de la theta manual para compatibilidad
-                self.theta = (_cfc_tau * self.theta.max()).astype(np.float64)
-        except ImportError:
-            pass
+        # ── CfC (opt-in, lazily loaded) ──────────────────────────────────────
+        # The residual corrector was disqualified by walk-forward validation
+        # (R² = -18.7, i.e. 8.2x worse than the persistence baseline), so loading
+        # it produced no correction at all — only a disclaimer logged on every
+        # engine instantiation, plus a torch import and a τ matrix computed only
+        # to be thrown away. It is now opt-in via ``use_cfc=True`` (or
+        # MASSIVE_ENABLE_CFC=1), and when the quality gate rejects it the engine
+        # silently keeps the analytic θ instead of paying for a dead model.
+        self.use_cfc = bool(
+            use_cfc if use_cfc is not None else os.environ.get("MASSIVE_ENABLE_CFC") == "1"
+        )
+        if self.use_cfc:
+            self._apply_cfc_tau()
 
         # Capas de red (sparse CSR keeps the step kernel O(L·N·k) for sparse graphs
         # such as Watts-Strogatz, with a dense fallback only when explicitly needed).
@@ -838,6 +833,43 @@ class MultilayerEngine:
         self._history: list[np.ndarray] = [self.x.copy()]
         self._history_compact: list[dict] = []
         self.mps_state = None
+
+    def _apply_cfc_tau(self) -> None:
+        """Replace the analytic θ with the CfC-learned τ, if the gate allows it.
+
+        Failures are non-fatal: the engine simply keeps the analytic θ.
+        """
+        try:
+            from cfc_router import CfCRouter
+        except ImportError:
+            log.info(
+                "[MultilayerEngine] use_cfc=True but cfc_router is unavailable; "
+                "keeping analytic theta."
+            )
+            return
+        try:
+            learned_tau = CfCRouter.get().compute_tau_matrix(
+                np.stack(
+                    [
+                        self.attributes_df["religion"].to_numpy(dtype=np.float32),
+                        self.attributes_df["education"].to_numpy(dtype=np.float32),
+                        (self.attributes_df["age_group"].to_numpy(dtype=np.float32) / 3.0),
+                        self.attributes_df["gender"].to_numpy(dtype=np.float32),
+                    ],
+                    axis=1,
+                )
+            )
+        except (RuntimeError, ValueError) as exc:
+            log.warning(f"[MultilayerEngine] CfC τ computation failed ({exc}); using analytic θ.")
+            return
+        if learned_tau is None:
+            log.info(
+                "[MultilayerEngine] CfC corrector rejected by the quality gate; "
+                "keeping analytic theta."
+            )
+            return
+        # Rescale to the analytic θ range for backward compatibility.
+        self.theta = (learned_tau * self.theta.max()).astype(np.float64)
 
     # ── Layer bookkeeping ───────────────────────────────────────────────────
 

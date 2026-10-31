@@ -66,7 +66,7 @@ Issues = "https://github.com/Adlgr87/MASSIVE/issues"
 where = ["."]
 include = [
   "massive*", "backend*", "services*", "benchmarks*", "micro_massive*",
-  "forecast*", "massive_core*", "metrics*", "adapters*", "monitoring*",
+  "forecast*", "massive_core*", "metrics*", "adapters*",
 ]
 
 # The legacy root-level .py modules are distributed

@@ -194,6 +194,11 @@ PROVEEDORES: dict[str, dict] = {
 DEFAULT_CONFIG: dict[str, Any] = {
     # Rango
     "rango": "[0, 1] — Probabilístico",
+    # Reproducibilidad: sin semilla por defecto cada ejecución usaba un RNG
+    # distinto, así que dos llamadas idénticas devolvían resultados distintos
+    # (el README promete "seeded RNG everywhere"). Sigue siendo sobreescribible
+    # pasando ``seed`` en la config o ``--seed`` por CLI.
+    "seed": 42,
     # LLM
     "proveedor": "heurístico",
     "modelo": "",
