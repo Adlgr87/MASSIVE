@@ -355,11 +355,14 @@ def _dispatch(
             layer_weights=layer_weights,
         )
         # Build a timeline-compatible history for _extract_timeline.
+        # ``series["opinion"]`` is the single real global trajectory; the
+        # per-layer data now lives in ``series["layer_signal"]`` because the
+        # three layers are genuinely different time series.
         series = result.get("series", {})
-        social_series = series.get("social", [])
+        opinion_series = series.get("opinion", [])
         history = [
             {"_paso": i, "mean_opinion": v, "polarizacion": 0.0}
-            for i, v in enumerate(social_series)
+            for i, v in enumerate(opinion_series)
         ]
         result["history"] = history
         result["motor"] = "multilayer_engine"

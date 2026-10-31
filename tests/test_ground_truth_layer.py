@@ -664,9 +664,9 @@ class TestModuleAPI:
 
         # Mutate a sealed payload, then re-seal.
         first_case = next(iter(data["events"]))
-        data["events"][first_case]["train"]["indices"] = (
-            data["events"][first_case]["train"]["indices"] + [99999]
-        )
+        data["events"][first_case]["train"]["indices"] = data["events"][first_case]["train"][
+            "indices"
+        ] + [99999]
         with open(seals_mod.SPLITS_PATH, "w") as f:
             json.dump(data, f)
 

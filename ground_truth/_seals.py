@@ -97,8 +97,7 @@ def _load_splits(splits_path: str | Path | None = None) -> dict[str, Any]:
     resolved = _resolve_splits_path(splits_path)
     if not resolved.exists():
         raise FileNotFoundError(
-            f"splits.json not found at {resolved}. "
-            "Run `python -m ground_truth._generate` first."
+            f"splits.json not found at {resolved}. " "Run `python -m ground_truth._generate` first."
         )
     with open(resolved, encoding="utf-8") as f:
         return json.load(f)

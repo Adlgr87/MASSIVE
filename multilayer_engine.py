@@ -77,6 +77,9 @@ COL_HIER = 2
 COL_INCOME = 3
 COL_INFO = 4
 
+# ── Nombres canónicos de las capas de red (orden fijo) ───────────────────────
+LAYER_NAMES: tuple[str, str, str] = ("social", "digital", "economic")
+
 
 # ============================================================
 # GENERADORES DE REDES
@@ -696,6 +699,7 @@ class MultilayerEngine:
             _sparse.csr_matrix(self.layers["digital"]),
             _sparse.csr_matrix(self.layers["economic"]),
         ]
+        self._rebuild_layer_colmass()
 
         # Estado inicial
         rng = np.random.default_rng(seed)
@@ -706,6 +710,68 @@ class MultilayerEngine:
         self._history: list[np.ndarray] = [self.x.copy()]
         self._history_compact: list[dict] = []
         self.mps_state = None
+
+    # ── Layer bookkeeping ───────────────────────────────────────────────────
+
+    def _rebuild_layer_colmass(self) -> None:
+        """Precompute the per-layer column mass used for per-layer opinion tracking.
+
+        Because every layer is row-normalised, the mean opinion an agent is
+        *exposed to* through layer ℓ is exactly
+
+            mean_i (A_ℓ · x)_i = (1/N) · Σ_j x_j · colsum(A_ℓ)_j
+
+        so the per-layer signal is an O(N) dot product per step instead of a
+        second O(N·k) matvec.
+        """
+        n = max(self.N, 1)
+        self._layer_colmass: list[np.ndarray] = [
+            np.asarray(layer.sum(axis=0)).ravel() / n for layer in self._layers_sparse
+        ]
+
+    def _rebuild_layer_views(self) -> None:
+        """Rebuild every derived layer view after the topology changed.
+
+        ``dynamic_rewiring`` used to refresh only the dense ``_layers_flat``,
+        while ``step()`` reads the sparse view — so censorship / viral-hub
+        interventions were silently inert. Both views are now rebuilt together.
+        """
+        from scipy import sparse as _sp
+
+        self._layers_flat = np.stack(
+            [
+                self.layers["social"],
+                self.layers["digital"],
+                self.layers["economic"],
+            ],
+            axis=0,
+        ).astype(np.float64)
+        self._layers_sparse = [
+            _sp.csr_matrix(self.layers["social"]),
+            _sp.csr_matrix(self.layers["digital"]),
+            _sp.csr_matrix(self.layers["economic"]),
+        ]
+        self._rebuild_layer_colmass()
+
+    def layer_opinion_profile(self, state: np.ndarray | None = None) -> dict[str, float]:
+        """Mean opinion each agent is exposed to through each network layer.
+
+        This is the genuinely per-layer quantity. It is **not** the global mean
+        opinion, which is identical for every layer by construction — returning
+        the same trajectory under three layer keys was a long-standing fiction.
+
+        Args:
+            state: Optional ``(N, K)`` state; defaults to the current state.
+
+        Returns:
+            Mapping ``{"social": float, "digital": float, "economic": float}``.
+        """
+        xv = self.x if state is None else state
+        opinions = xv[:, COL_OPINION]
+        return {
+            name: float(colmass @ opinions)
+            for name, colmass in zip(LAYER_NAMES, self._layer_colmass, strict=True)
+        }
 
     def _create_drift_function(self):
         """Create drift matching ``multilayer_langevin_step`` (no noise)."""
@@ -817,6 +883,7 @@ class MultilayerEngine:
                     "std_opinion": float(ops0.std()),
                     "polarization": calculate_polarization(ops0, self.range_type),
                     "sample_size": int(ops0.size),
+                    "layer_signal": self.layer_opinion_profile(initial),
                 }
             ]
             # Clear pre-existing history to avoid double-counting.
@@ -831,6 +898,7 @@ class MultilayerEngine:
                         "std_opinion": float(ops.std()),
                         "polarization": calculate_polarization(ops, self.range_type),
                         "sample_size": int(ops.size),
+                        "layer_signal": self.layer_opinion_profile(snap),
                     }
                 )
             # Retain only final state so get_landscape() / get_opinions() work.
@@ -852,6 +920,7 @@ class MultilayerEngine:
                         "std_opinion": float(ops.std()),
                         "polarization": calculate_polarization(ops, self.range_type),
                         "sample_size": int(ops.size),
+                        "layer_signal": self.layer_opinion_profile(snap),
                     }
                 )
             # Free the large snapshots; keep compact aggregates + final state.
@@ -1008,9 +1077,10 @@ class MultilayerEngine:
         rewired = _normalize_rows(adjacency)
         self.layers[layer_name] = rewired
 
-        layer_order = ("social", "digital", "economic")
-        for idx, name in enumerate(layer_order):
-            self._layers_flat[idx] = self.layers[name]
+        # Rebuild *every* derived view. Refreshing only the dense ``_layers_flat``
+        # left ``_layers_sparse`` — which ``step()`` actually reads — untouched,
+        # so censorship / viral-hub interventions had no effect on the dynamics.
+        self._rebuild_layer_views()
 
     def behavior_correlation_matrix(self) -> np.ndarray:
         """

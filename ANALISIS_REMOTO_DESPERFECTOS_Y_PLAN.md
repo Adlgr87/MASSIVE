@@ -298,3 +298,17 @@ Cambios:
 - Tests endurecidos: `test_seal_splits_idempotent` ahora exige `sealed_at` estable; nuevos `test_seal_advances_only_when_payload_changes` y `test_registration_timestamp_is_immutable`.
 
 Resultado: `pytest` deja el árbol **limpio** (antes ensuciaba 6 archivos versionados).
+
+### FASE 0.3 — `/v1` deja de fingir tres capas (R1) + hallazgo R11 ✅
+- `MultilayerEngine` gana `layer_opinion_profile()`: señal **real** por capa, `mean(A_ℓ · opinión)`.
+  Aprovecha que las capas son row-stochastic → `mean(A_ℓ·x) = colsum(A_ℓ)/N · x`, un producto
+  escalar O(N) por paso en vez de un segundo matvec.
+- `series` pasa de `{social, digital, economic}` (idénticos) a
+  `{opinion, layer_signal{social, digital, economic}}` con valores **distintos y veraces**.
+- `llm_orchestrator` actualizado al nuevo contrato.
+
+**Hallazgo R11 (nuevo, encontrado al implementar lo anterior):** `dynamic_rewiring()` refrescaba
+solo `_layers_flat`, pero `step()` lee `_layers_sparse`. Medido: censura al 90 % eliminaba 720
+aristas en la vista densa y **0** en la sparse → **las intervenciones de censura y viral-hub no
+tenían ningún efecto sobre la simulación**. Ahora ambas vistas se reconstruyen juntas
+(`_rebuild_layer_views()`). Verificado: el resultado final cambia con la intensidad de censura.

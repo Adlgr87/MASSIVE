@@ -101,9 +101,7 @@ def _sealed_artefact_digests() -> dict[str, str]:
     digests: dict[str, str] = {}
     for pattern in _SEALED_ARTEFACT_GLOBS:
         for path in sorted(root.glob(pattern)):
-            digests[str(path.relative_to(root))] = hashlib.sha256(
-                path.read_bytes()
-            ).hexdigest()
+            digests[str(path.relative_to(root))] = hashlib.sha256(path.read_bytes()).hexdigest()
     return digests
 
 
@@ -118,13 +116,11 @@ def _isolate_mutable_artefacts(tmp_path_factory):
     for the whole session; the originals are restored on teardown.
     """
     import shutil
-    from pathlib import Path
 
     import ground_truth._seals as seals_mod
     import massive.core.backtesting as bt_mod
     import massive.core.data_provenance as dp_mod
 
-    root = Path(__file__).resolve().parent.parent
     tmp = tmp_path_factory.mktemp("artefacts")
 
     prereg_tmp = tmp / "pre_registration"
@@ -159,9 +155,7 @@ def _protect_sealed_artefacts():
     after = _sealed_artefact_digests()
 
     mutated = sorted(
-        name
-        for name in before.keys() | after.keys()
-        if before.get(name) != after.get(name)
+        name for name in before.keys() | after.keys() if before.get(name) != after.get(name)
     )
     if mutated:
         raise AssertionError(

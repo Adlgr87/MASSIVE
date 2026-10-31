@@ -44,6 +44,9 @@ def run_scalar_simulation(
     }
 
 
+LAYER_NAMES: tuple[str, str, str] = ("social", "digital", "economic")
+
+
 def run_multilayer_simulation(
     *,
     n_agents: int = 100,
@@ -69,16 +72,25 @@ def run_multilayer_simulation(
     # store_history=False → compact per-step aggregates, O(1 snapshot) peak memory.
     history: list[dict] = engine.run(steps=steps, store_history=False)  # type: ignore[assignment]
     opinion_trajectory = [h["mean_opinion"] for h in history]
-    # MultilayerEngine tracks a single global opinion; the same trajectory is
-    # returned for each layer key until per-layer tracking is implemented.
+
+    # Per-layer series are REAL now. Previously the same global opinion
+    # trajectory was returned under all three layer keys, which made the
+    # "multilayer" output a fiction: three identical arrays. Each layer is a
+    # distinct topology, so what actually differs is the mean opinion an agent
+    # is exposed to through that layer — ``mean(A_ℓ · opinion)``.
+    layer_signal: dict[str, list[float]] = {name: [] for name in LAYER_NAMES}
+    for step_aggregate in history:
+        per_layer = step_aggregate.get("layer_signal") or {}
+        for name in LAYER_NAMES:
+            layer_signal[name].append(float(per_layer.get(name, 0.0)))
+
     return {
         "landscape": engine.get_landscape(),
         "n_steps": len(history) - 1,
         "n_agents": n_agents,
         "series": {
-            "social": opinion_trajectory,
-            "digital": opinion_trajectory,
-            "economic": opinion_trajectory,
+            "opinion": opinion_trajectory,
+            "layer_signal": layer_signal,
         },
         "diagnostics": engine.diagnose(),
     }
