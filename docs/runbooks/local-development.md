@@ -26,14 +26,20 @@ python scripts/typecheck_slice.py                 # mypy gradual
 uvicorn backend.app.main:app --host 0.0.0.0 --port 8000
 # → docs: http://localhost:8000/docs ; smoke: curl localhost:8000/health
 
-# API legacy /api/* (la que usa el frontend React)
-uvicorn api:app --host 0.0.0.0 --port 8000
+# (DEPRECADO — no usar) API legacy /api/*
+# El frontend React NO la usa: frontend/src/services/api.ts trabaja contra
+# baseURL "/v1" y documenta que "the deprecated /api/* aliases are no longer
+# referenced by this client". Este comando solo sirve para reproducir el
+# contrato antiguo mientras se retira: uvicorn api:app --host 127.0.0.1 --port 8000
 
 # Auth en dev: X-API-Key: dev-secret-key (solo MASSIVE_ENV=development/unset en backend canónico)
 curl -H "X-API-Key: dev-secret-key" -X POST localhost:8000/v1/simulate -H 'Content-Type: application/json' -d '{"pasos":5}'
 ```
 
-> ⚠️ En `api.py` legacy el fallback dev exige `MASSIVE_ENV=dev` exacto (inconsistencia conocida SEC-02).
+> ⚠️ `api.py` está deprecado: sirve el contrato antiguo `/api/*`, no tiene consumidores en el
+> frontend y emite `DeprecationWarning` al importarse. En él el fallback dev exige
+> `MASSIVE_ENV=dev` exacto (inconsistencia conocida SEC-02). Usa siempre
+> `backend.app.main:app`.
 
 ## 4. Frontend React (`frontend/`)
 

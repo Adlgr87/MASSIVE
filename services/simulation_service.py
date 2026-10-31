@@ -44,12 +44,18 @@ def run_scalar_simulation(
     }
 
 
+LAYER_NAMES: tuple[str, str, str] = ("social", "digital", "economic")
+
+
 def run_multilayer_simulation(
     *,
     n_agents: int = 100,
     steps: int = 50,
     seed: int = 42,
     layer_weights: tuple[float, float, float] = (0.4, 0.3, 0.3),
+    coupling: float = 0.3,
+    dt: float = 0.02,
+    coupling_gains: dict[str, float] | None = None,
 ) -> dict[str, Any]:
     """Run ``MultilayerEngine`` via the service boundary.
 
@@ -58,30 +64,92 @@ def run_multilayer_simulation(
         steps: Integration steps.
         seed: RNG seed for reproducibility.
         layer_weights: Relative weights of social/digital/economic layers.
+        coupling: Social coupling intensity λ. The only parameter that moves the
+            headline output; previously not reachable from the API at all.
+        dt: Integration step.
+        coupling_gains: Override of the declared coupling matrix, keyed
+            ``"source->target"``. ``None`` keeps ``DEFAULT_COUPLING_GAINS``.
 
     Returns:
         Dict with landscape metrics, step count, agent count, and ``series``
-        opinion trajectory for each layer.
+        holding the global opinion trajectory plus the real per-layer signals.
     """
     from multilayer_engine import MultilayerEngine
 
-    engine = MultilayerEngine(N=n_agents, seed=seed, layer_weights=layer_weights)
+    engine = MultilayerEngine(
+        N=n_agents,
+        seed=seed,
+        dt=dt,
+        coupling=coupling,
+        layer_weights=layer_weights,
+        coupling_gains=_parse_coupling_gains(coupling_gains),
+    )
     # store_history=False → compact per-step aggregates, O(1 snapshot) peak memory.
     history: list[dict] = engine.run(steps=steps, store_history=False)  # type: ignore[assignment]
     opinion_trajectory = [h["mean_opinion"] for h in history]
-    # MultilayerEngine tracks a single global opinion; the same trajectory is
-    # returned for each layer key until per-layer tracking is implemented.
+
+    # Per-layer series are REAL now. Previously the same global opinion
+    # trajectory was returned under all three layer keys, which made the
+    # "multilayer" output a fiction: three identical arrays. Each layer is a
+    # distinct topology, so what actually differs is the mean opinion an agent
+    # is exposed to through that layer — ``mean(A_ℓ · opinion)``.
+    layer_signal: dict[str, list[float]] = {name: [] for name in LAYER_NAMES}
+    for step_aggregate in history:
+        per_layer = step_aggregate.get("layer_signal") or {}
+        for name in LAYER_NAMES:
+            layer_signal[name].append(float(per_layer.get(name, 0.0)))
+
     return {
         "landscape": engine.get_landscape(),
         "n_steps": len(history) - 1,
         "n_agents": n_agents,
         "series": {
-            "social": opinion_trajectory,
-            "digital": opinion_trajectory,
-            "economic": opinion_trajectory,
+            "opinion": opinion_trajectory,
+            "layer_signal": layer_signal,
         },
         "diagnostics": engine.diagnose(),
+        "parameters": {
+            "coupling": coupling,
+            "dt": dt,
+            "layer_weights": list(layer_weights),
+            "coupling_gains": {
+                f"{source}->{target}": gain
+                for (source, target), gain in engine.coupling_gains.items()
+            },
+        },
     }
+
+
+def _parse_coupling_gains(
+    raw: dict[str, float] | None,
+) -> dict[tuple[str, str], float] | None:
+    """Translate ``{"source->target": gain}`` into the engine's tuple keys.
+
+    Args:
+        raw: Mapping keyed ``"source->target"``; ``None`` means "use defaults".
+
+    Returns:
+        Mapping keyed ``(source, target)``, or ``None``.
+
+    Raises:
+        ValueError: If a key is malformed or names an unknown state variable.
+    """
+    if raw is None:
+        return None
+    from multilayer_engine import STATE_VARIABLES
+
+    parsed: dict[tuple[str, str], float] = {}
+    for key, gain in raw.items():
+        if "->" not in key:
+            raise ValueError(f"coupling_gains key {key!r} must look like 'source->target'")
+        source, target = (part.strip() for part in key.split("->", 1))
+        if source not in STATE_VARIABLES or target not in STATE_VARIABLES:
+            raise ValueError(
+                f"coupling_gains key {key!r} names an unknown state variable; "
+                f"valid names are {sorted(STATE_VARIABLES)}"
+            )
+        parsed[(source, target)] = float(gain)
+    return parsed
 
 
 def run_massive_sim(

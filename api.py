@@ -1,13 +1,27 @@
 """
-⚠️ DEPRECATED - Legacy API Module
-================================
-This is a legacy API layer. The canonical API is now in:
-  backend/app/  (FastAPI with routers: sim.py, forecast.py, engine.py, llm.py)
+⚠️ DEPRECATED - Legacy API module (`/api/*` contract)
 
-This file is maintained for backward compatibility only.
-Please migrate to backend/app/ immediately.
+The canonical API is ``backend.app.main:app``, which mounts everything under
+``/v1`` (and the ``/api/v1`` compatibility alias). This module serves a
+*different, older* contract:
 
-Migration guide: See docs/architecture/current-state.md
+    POST /api/extract, /api/wizard, /api/simulate-uil
+    POST /api/v1/architect, /api/v1/forecast, /api/v1/energy
+
+Status of its consumers (verified):
+
+  * the React frontend — **no** consumers. ``frontend/src/services/api.ts`` uses
+    ``baseURL: "/v1"`` and documents that "the deprecated /api/* aliases are no
+    longer referenced by this client";
+  * ``tests/test_api_security.py`` and a smoke line in ``.github/workflows/pytest.yml``;
+  * ``massive serve --legacy``, ``install.sh`` and ``Makefile``.
+
+There is no sunset date yet, so the module still works and still imports without
+error — but importing it now emits :class:`DeprecationWarning`, and the
+documentation no longer recommends it. Removing it requires retiring the three
+paths above, which is a separate decision.
+
+Migration guide: docs/architecture/current-state.md
 """
 
 from __future__ import annotations
@@ -16,6 +30,7 @@ import contextlib
 import logging
 import os
 import tempfile
+import warnings
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, File, Header, HTTPException, Request, UploadFile
@@ -23,6 +38,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import APIKeyHeader
 
 log = logging.getLogger(__name__)
+
+warnings.warn(
+    "api.py is deprecated: the canonical API is backend.app.main:app and its "
+    "contract lives under /v1. This module still serves the older /api/* "
+    "contract but has no frontend consumers and is scheduled for removal.",
+    DeprecationWarning,
+    stacklevel=2,
+)
 
 app = FastAPI(title="MASSIVE UIL API", version="1.0.0")
 

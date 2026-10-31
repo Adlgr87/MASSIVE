@@ -136,8 +136,11 @@ def _iterative_proportional_fitting(
         for axis, target in marginals.items():
             reduce_axes = tuple(i for i in range(len(shape)) if i != axis)
             current = table.sum(axis=reduce_axes)
-            # Guard against division-by-zero
-            ratio = np.where(current > 0, target / current, 1.0)
+            # Guard against division-by-zero: np.divide only evaluates the
+            # quotient where current > 0, so no NaN is ever produced (the old
+            # np.where(target / current, ...) computed the division everywhere
+            # and then masked the NaN, emitting a RuntimeWarning each time).
+            ratio = np.divide(target, current, out=np.ones_like(current), where=current > 0)
             table *= np.expand_dims(ratio, axis=reduce_axes)
 
         # Convergence check

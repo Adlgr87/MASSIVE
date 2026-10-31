@@ -236,11 +236,18 @@ class TestBacktesterRun:
     def test_preregistration_file_exists(self):
         bt = Backtester(n_agents=20, ensemble_size=5, seed=42)
         bt.run_backtest("brexit_referendum_2016")
-        # Check that pre-registration files exist
-        import glob
-
-        prereg_files = glob.glob("configs/calibrated/pre_registration/prereg_brexit*.yaml")
+        # The pre-registration must land in the Backtester's own prereg dir.
+        # (Asserting a hardcoded repo path would both miss a redirected
+        # `prereg_dir` and depend on artefacts left behind by other runs.)
+        prereg_files = sorted(bt.prereg_dir.glob("prereg_brexit*.yaml"))
         assert len(prereg_files) >= 1
+        # …and it must be a sealed record, not an empty placeholder.
+        import yaml
+
+        record = yaml.safe_load(prereg_files[0].read_text())
+        assert record["case_id"] == "brexit_referendum_2016"
+        assert "registered_at" in record
+        assert record["seal"]["status"] in {"verified", "unverified"}
 
     def test_trajectories_correct_length(self):
         bt = Backtester(n_agents=20, ensemble_size=5, seed=42)
@@ -470,13 +477,33 @@ class TestDataProvenance:
             d.mkdir()
             (d / "meta.json").write_text('{"case_id": "test"}')
             (d / "timeseries.csv").write_text("date,P\n2020-W01,0.5\n")
+            # Isolated registry: a synthetic "test_case" must never leak into
+            # the versioned provenance registry.
+            registry = Path(tmpdir) / "registry.json"
 
-            register_dataset("test_case", str(d))
-            assert verify_integrity("test_case")
+            register_dataset("test_case", str(d), registry_path=registry)
+            assert verify_integrity("test_case", registry_path=registry)
 
             # Corrupt the file
             (d / "meta.json").write_text('{"case_id": "corrupted"}')
-            assert not verify_integrity("test_case")
+            assert not verify_integrity("test_case", registry_path=registry)
+
+    def test_registration_timestamp_is_immutable(self):
+        """Re-registering an unchanged dataset must keep the original timestamp."""
+        with tempfile.TemporaryDirectory() as tmpdir:
+            d = Path(tmpdir) / "case_a"
+            d.mkdir()
+            (d / "meta.json").write_text('{"case_id": "case_a"}')
+            registry = Path(tmpdir) / "registry.json"
+
+            first = register_dataset("case_a", str(d), registry_path=registry)
+            second = register_dataset("case_a", str(d), registry_path=registry)
+            assert first["registered_at"] == second["registered_at"]
+
+            # Changing the data *is* a new registration, so the timestamp moves.
+            (d / "meta.json").write_text('{"case_id": "case_a", "v": 2}')
+            third = register_dataset("case_a", str(d), registry_path=registry)
+            assert third["sha256"] != first["sha256"]
 
 
 # ═══════════════════════════════════════════════════════════════════════════════

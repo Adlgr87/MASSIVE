@@ -318,7 +318,7 @@ def main():
     import torch
 
     try:
-        state = torch.load(model_path)
+        state = torch.load(model_path, weights_only=True)  # no arbitrary pickle execution
         log.info(f"Successfully loaded model from {model_path}")
         log.info(f"Keys in state: {list(state.keys())}")
     except Exception as e:

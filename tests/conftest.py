@@ -10,6 +10,8 @@ from __future__ import annotations
 import sys
 import types
 
+import pytest
+
 # ── Neutralise the broken libtmux pytest11 entry-point plugin ────────────
 #
 # ``libtmux`` registers itself as a pytest plugin via the ``pytest11`` entry
@@ -70,3 +72,96 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
     stats = getattr(terminalreporter, "stats", {})
     failures = len(stats.get("failed", [])) + len(stats.get("error", []))
     terminalreporter.write_line(f"{failures} failed")
+
+
+# ── Sealed-artefact protection ────────────────────────────────────────────────
+#
+# `configs/calibrated/pre_registration/*.yaml`, `datasets/ground_truth/splits.json`
+# and `massive/core/_provenance_registry.json` are *evidence*: they record when
+# a hypothesis and its thresholds were locked, i.e. before the data was seen.
+#
+# Before this guard existed, simply running the test suite re-stamped all of
+# them (fresh `registered_at` / `sealed_at` on every run), so the seals were
+# unable to prove anything. The guard below snapshots their bytes before the
+# session and fails loudly if any of them changed.
+
+_SEALED_ARTEFACT_GLOBS = (
+    "configs/calibrated/pre_registration/*.yaml",
+    "datasets/ground_truth/splits.json",
+    "massive/core/_provenance_registry.json",
+)
+
+
+def _sealed_artefact_digests() -> dict[str, str]:
+    """SHA-256 of every sealed artefact currently in the working tree."""
+    import hashlib
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parent.parent
+    digests: dict[str, str] = {}
+    for pattern in _SEALED_ARTEFACT_GLOBS:
+        for path in sorted(root.glob(pattern)):
+            digests[str(path.relative_to(root))] = hashlib.sha256(path.read_bytes()).hexdigest()
+    return digests
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _isolate_mutable_artefacts(tmp_path_factory):
+    """Redirect every mutable, versioned artefact to a temporary root.
+
+    Tests legitimately exercise pre-registration, sealing and provenance with
+    their own parameters (``n_agents=20``, ``ensemble_size=5``…). Writing those
+    runs into the canonical files overwrote the real seals with test values on
+    every test run. The three mutable artefacts therefore point at a temp copy
+    for the whole session; the originals are restored on teardown.
+    """
+    import shutil
+
+    import ground_truth._seals as seals_mod
+    import massive.core.backtesting as bt_mod
+    import massive.core.data_provenance as dp_mod
+
+    tmp = tmp_path_factory.mktemp("artefacts")
+
+    prereg_tmp = tmp / "pre_registration"
+    registry_tmp = tmp / "_provenance_registry.json"
+    splits_tmp = tmp / "splits.json"
+
+    prereg_src = bt_mod._PREREG_DIR
+    if prereg_src.is_dir():
+        shutil.copytree(prereg_src, prereg_tmp, dirs_exist_ok=True)
+    if dp_mod._REGISTRY_PATH.exists():
+        shutil.copy2(dp_mod._REGISTRY_PATH, registry_tmp)
+    if seals_mod.SPLITS_PATH.exists():
+        shutil.copy2(seals_mod.SPLITS_PATH, splits_tmp)
+
+    originals = (bt_mod._PREREG_DIR, dp_mod._REGISTRY_PATH, seals_mod.SPLITS_PATH)
+    bt_mod._PREREG_DIR = prereg_tmp
+    dp_mod._REGISTRY_PATH = registry_tmp
+    seals_mod.SPLITS_PATH = splits_tmp
+    dp_mod._reset_registry_cache()
+    try:
+        yield
+    finally:
+        bt_mod._PREREG_DIR, dp_mod._REGISTRY_PATH, seals_mod.SPLITS_PATH = originals
+        dp_mod._reset_registry_cache()
+
+
+@pytest.fixture(scope="session", autouse=True)
+def _protect_sealed_artefacts():
+    """Fail the session if any sealed artefact was mutated by the tests."""
+    before = _sealed_artefact_digests()
+    yield
+    after = _sealed_artefact_digests()
+
+    mutated = sorted(
+        name for name in before.keys() | after.keys() if before.get(name) != after.get(name)
+    )
+    if mutated:
+        raise AssertionError(
+            "The test suite mutated sealed artefacts (pre-registration seals must "
+            "be immutable once written):\n  "
+            + "\n  ".join(mutated)
+            + "\n\nRegister/seal into a temporary directory instead — pass "
+            "`prereg_dir=` / `registry_path=` / `splits_path=`."
+        )

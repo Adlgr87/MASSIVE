@@ -83,21 +83,36 @@ def derive_unlock_key(case_id: str, seed: int = SPLITS_SEED) -> str:
 # ── Internal helpers ───────────────────────────────────────────────────
 
 
-def _load_splits() -> dict[str, Any]:
-    """Load the splits definition from disk."""
-    if not SPLITS_PATH.exists():
+def _resolve_splits_path(splits_path: str | Path | None) -> Path:
+    """Resolve the splits location, honouring an explicit override."""
+    return SPLITS_PATH if splits_path is None else Path(splits_path)
+
+
+def _load_splits(splits_path: str | Path | None = None) -> dict[str, Any]:
+    """Load the splits definition from disk.
+
+    Args:
+        splits_path: Override for the splits file location.
+    """
+    resolved = _resolve_splits_path(splits_path)
+    if not resolved.exists():
         raise FileNotFoundError(
-            f"splits.json not found at {SPLITS_PATH}. "
-            "Run `python -m ground_truth._generate` first."
+            f"splits.json not found at {resolved}. " "Run `python -m ground_truth._generate` first."
         )
-    with open(SPLITS_PATH, encoding="utf-8") as f:
+    with open(resolved, encoding="utf-8") as f:
         return json.load(f)
 
 
-def _save_splits(data: dict[str, Any]) -> None:
-    """Save the splits definition to disk."""
-    SPLITS_PATH.parent.mkdir(parents=True, exist_ok=True)
-    with open(SPLITS_PATH, "w", encoding="utf-8") as f:
+def _save_splits(data: dict[str, Any], splits_path: str | Path | None = None) -> None:
+    """Save the splits definition to disk.
+
+    Args:
+        data: Splits payload to persist.
+        splits_path: Override for the splits file location.
+    """
+    resolved = _resolve_splits_path(splits_path)
+    resolved.parent.mkdir(parents=True, exist_ok=True)
+    with open(resolved, "w", encoding="utf-8") as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
 
 
@@ -141,17 +156,27 @@ def _compute_test_indices(case_id: str, n_timesteps: int) -> list[int]:
 # ── Public API ─────────────────────────────────────────────────────────
 
 
-def seal_splits() -> dict[str, Any]:
+def seal_splits(splits_path: str | Path | None = None) -> dict[str, Any]:
     """Compute and store hash locks for all splits.
 
     This function re-reads ``splits.json``, recomputes the SHA-256 hash
     of every split definition, updates the overall seal hash, and writes
     the result back to disk.
 
+    **Idempotency contract:** ``sealed_at`` only advances when the seal hash
+    actually changes. Re-sealing an unchanged payload is a no-op, so the
+    sealed artefact is byte-stable and a pre-registered seal keeps proving
+    *when* the thresholds were locked rather than *when the code last ran*.
+
+    Args:
+        splits_path: Override for the splits file location. Callers that must
+            not mutate the versioned artefact (tests, sandboxes) pass a
+            temporary copy.
+
     Returns:
         The updated splits definition with fresh hash locks.
     """
-    splits = _load_splits()
+    splits = _load_splits(splits_path)
 
     # Recompute hash locks for each event's train and validation splits
     for case_id, event_data in splits["events"].items():
@@ -178,28 +203,36 @@ def seal_splits() -> dict[str, Any]:
         splits["events"],
         sort_keys=True,
     )
-    splits["seal"]["seal_hash"] = _sha256_str(seal_payload)
-    splits["seal"]["sealed_at"] = _sha256_str  # placeholder; updated below
+    new_seal_hash = _sha256_str(seal_payload)
+    previous_seal_hash = splits["seal"].get("seal_hash")
+    splits["seal"]["seal_hash"] = new_seal_hash
 
     from datetime import datetime
 
-    splits["seal"]["sealed_at"] = datetime.now(UTC).isoformat()
+    # Only advance the timestamp when the sealed payload actually changed.
+    # Otherwise the artefact would drift on every call (and every test run),
+    # destroying the evidential value of the seal.
+    if new_seal_hash != previous_seal_hash or not splits["seal"].get("sealed_at"):
+        splits["seal"]["sealed_at"] = datetime.now(UTC).isoformat()
 
-    _save_splits(splits)
+    _save_splits(splits, splits_path)
     return splits
 
 
-def verify_seal() -> bool:
+def verify_seal(splits_path: str | Path | None = None) -> bool:
     """Verify the integrity of the sealed splits file.
 
     Checks that:
     * The seal hash matches the current event definitions.
     * The overall file structure is valid.
 
+    Args:
+        splits_path: Override for the splits file location.
+
     Returns:
         ``True`` if the seal is valid.
     """
-    splits = _load_splits()
+    splits = _load_splits(splits_path)
 
     # Recompute seal hash from events
     seal_payload = json.dumps(splits["events"], sort_keys=True)
@@ -223,6 +256,7 @@ def verify_seal() -> bool:
 def unlock_historical_test(
     case_id: str,
     unlock_key: str | None = None,
+    splits_path: str | Path | None = None,
 ) -> dict[str, Any]:
     """Unlock the historical-test split for a given event.
 
@@ -251,7 +285,7 @@ def unlock_historical_test(
             "the correct key to access it."
         )
 
-    splits = _load_splits()
+    splits = _load_splits(splits_path)
 
     if case_id not in splits["events"]:
         raise KeyError(f"Event '{case_id}' not found in splits.")
@@ -291,6 +325,7 @@ def get_split(
     case_id: str,
     split_name: str,
     unlock_key: str | None = None,
+    splits_path: str | Path | None = None,
 ) -> dict[str, Any]:
     """Access a split for a given event.
 
@@ -301,6 +336,7 @@ def get_split(
         case_id: Event case identifier.
         split_name: One of ``"train"``, ``"validation"``, ``"historical_test"``.
         unlock_key: Required only for ``"historical_test"``.
+        splits_path: Override for the splits file location.
 
     Returns:
         Dict with ``indices``, ``dates``, and ``hash``.
@@ -317,9 +353,9 @@ def get_split(
         )
 
     if split_name == "historical_test":
-        return unlock_historical_test(case_id, unlock_key)
+        return unlock_historical_test(case_id, unlock_key, splits_path)
 
-    splits = _load_splits()
+    splits = _load_splits(splits_path)
 
     if case_id not in splits["events"]:
         raise KeyError(f"Event '{case_id}' not found in splits.")

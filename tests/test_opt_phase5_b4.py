@@ -21,7 +21,10 @@ def test_typecheck_slice_script_exists():
     script = REPO / "scripts" / "typecheck_slice.py"
     assert script.is_file()
     text = script.read_text(encoding="utf-8")
-    assert "massive_core/numerics/steppers.py" in text
+    # The slice graduated to the full directory scope (previously it listed
+    # individual numerics files). It must still cover massive_core, and the
+    # mypy overrides (disallow_untyped_defs) must live in pyproject, not here.
+    assert "massive_core/" in text
     assert "disallow_untyped" not in text  # policy lives in pyproject.toml
     pyproject = REPO / "pyproject.toml"
     assert "massive_core.numerics" in pyproject.read_text(encoding="utf-8")

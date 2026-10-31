@@ -276,7 +276,7 @@ class NetworkReconstructor:
         def objective(flat_matrix: np.ndarray) -> float:
             matrix = _matrix_reshape(flat_matrix, dim)
             residuals = _squared_penalty(matrix, indices, flat_target)
-            return residuals.sum()
+            return float(residuals.sum())
 
         result = differential_evolution(
             objective,

@@ -81,7 +81,9 @@ cmd_run() {
     if $PY -c "import backend.app.main" 2>/dev/null; then
         $PY -m uvicorn backend.app.main:app --host 0.0.0.0 --port 8000
     else
-        echo -e "${YELLOW}>>> backend.app.main not importable, falling back to api:app${NC}"
+        echo -e "${YELLOW}>>> backend.app.main not importable, falling back to DEPRECATED api:app${NC}"
+        echo -e "${YELLOW}>>>   (api.py serves the retired /api/* contract; it has no frontend${NC}"
+        echo -e "${YELLOW}>>>    consumer and will be removed — migrate to backend.app.main)${NC}"
         $PY -m uvicorn api:app --host 0.0.0.0 --port 8000
     fi
 }

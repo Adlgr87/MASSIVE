@@ -72,6 +72,66 @@ curl -X POST http://localhost:8000/v1/engine/architect \
 
 ---
 
+### POST /v1/engine/multilayer
+
+Multilayer Langevin engine. This is the endpoint that exposes the parameters with
+a **measurable effect** on the result — see
+[architecture/coupling_matrix.md](architecture/coupling_matrix.md) for what each
+one does and why.
+
+| Field | Default | Meaning |
+|---|---|---|
+| `n_agents` | 500 | population size (2 – 200 000) |
+| `steps` | 400 | integration steps (1 – 10 000) |
+| `seed` | 42 | RNG seed |
+| `dt` | 0.02 | integration step (≤ 0.2 — the explicit-Euler stability limit) |
+| `coupling` | 0.3 | social coupling λ, the phase dial of the model (0 – 5) |
+| `layer_weights` | `[0.4, 0.3, 0.3]` | social / digital / economic |
+| `coupling_gains` | — | override the declared matrix, keyed `"source->target"` |
+
+```bash
+curl -X POST http://localhost:8000/v1/engine/multilayer \
+  -H "X-API-Key: $MASSIVE_API_KEY" \
+  -H 'Content-Type: application/json' \
+  -d '{"n_agents": 500, "steps": 400, "coupling": 0.6}'
+```
+
+Response shape:
+
+```json
+{
+  "landscape": {"mean_opinion": 0.0, "std_opinion": 0.0, "polarization": 0.0,
+                 "mean_cooperation": 0.0, "mean_hierarchy": 0.0},
+  "n_steps": 400,
+  "n_agents": 500,
+  "series": {
+    "opinion":      [0.0, "..."],
+    "layer_signal": {"social": [0.0, "..."], "digital": [], "economic": []}
+  },
+  "diagnostics": {"n_agents": 500, "n_features": 5, "...": "..."},
+  "parameters": {"coupling": 0.3, "dt": 0.02, "layer_weights": [0.4, 0.3, 0.3],
+                  "coupling_gains": {"opinion->cooperation": 0.4, "...": 0.0}}
+}
+```
+
+`series.opinion` is the single global trajectory. `series.layer_signal` holds the
+**real** per-layer quantity — the mean opinion an agent is exposed to through that
+layer, `mean(A_l · opinion)` — which differs per layer because each layer is a
+different topology. (It used to return the same array three times.)
+
+`coupling_gains` makes counterfactuals expressible over HTTP. Ablating a term is
+how you test whether it is load-bearing:
+
+```bash
+# Remove the selective-exposure feedback and keep everything else
+-d '{"coupling_gains": {"info_access->opinion": 0.0}}'
+```
+
+Omitted keys receive **no** coupling, so `"coupling_gains": {}` is the fully
+ablated model. Unknown state-variable names and malformed keys return `422`.
+
+---
+
 ## LLM Endpoints
 
 ### POST /v1/llm/run_simulation

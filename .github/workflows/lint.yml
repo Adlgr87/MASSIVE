@@ -4,7 +4,11 @@ on:
   push:
     branches: ["main", "master"]
   pull_request:
-    branches: ["main", "master"]
+    # Validate PRs regardless of target branch. Filtering pull_request to
+    # [main, master] meant a PR into any other long-lived branch
+    # (prod-readiness, release/*) received NO checks at all, which is how
+    # the broken type gate, the unbuildable Dockerfile and the unpinned lint
+    # tools went unnoticed. `push` stays restricted to the default branch.
 
 permissions:
   contents: read
@@ -24,7 +28,20 @@ jobs:
       - name: Install lint tools
         run: |
           python -m pip install --upgrade pip
-          pip install ruff black mypy
+          # Install EXACTLY the versions pinned in [project.optional-dependencies].dev.
+          # Installing unpinned `ruff black mypy` gave CI a newer black than the one
+          # the repo pins, so `black --check` demanded reformatting of files that are
+          # correctly formatted per the project's own pin (cache_manager.py,
+          # compare_arms.py) and the job failed on every run.
+          python - <<'PY' > /tmp/lint-pins.txt
+          import pathlib, tomllib
+          pyproject = tomllib.loads(pathlib.Path("pyproject.toml").read_text())
+          dev = pyproject["project"]["optional-dependencies"]["dev"]
+          print("\n".join(p for p in dev if p.split("=")[0].split(">")[0].split("<")[0]
+                          .strip().lower() in {"ruff", "black", "mypy"}))
+          PY
+          cat /tmp/lint-pins.txt
+          pip install -r /tmp/lint-pins.txt
 
       - name: Run ruff
         run: ruff check .
@@ -49,10 +66,15 @@ jobs:
           pip install -r requirements.txt
           pip install mypy
 
-      - name: Run mypy
+      # NOTE: this step used to run `mypy --config-file mypy.ini`, but mypy.ini
+      # was removed when [tool.mypy] moved into pyproject.toml. mypy exits 2 with
+      # "Cannot find config file", so the whole Lint & Type Check job failed on
+      # every run and the advertised type gate was inert. The type check now
+      # delegates to the single working gate (same script typecheck.yml runs), so
+      # there is one authoritative definition of "the type slice".
+      - name: Run mypy (delegates to the typecheck slice)
         run: |
-          PYTHONHASHSEED=42 mypy --config-file mypy.ini \
-            massive/ backend/ services/ massive_core/ 2>&1
+          PYTHONHASHSEED=42 python scripts/typecheck_slice.py
 
   lint-frontend:
     name: Frontend Lint

@@ -25,6 +25,8 @@ Columnas de x_i (K=5):
 """
 
 import logging
+import os
+from typing import Any
 
 import networkx as nx
 import numpy as np
@@ -58,6 +60,9 @@ _THETA_EDUCATION_INFO: float = 0.4
 # redes corporativas empíricas suelen tener 5-15% de nodos de alta centralidad
 # (Watts & Strogatz, 1998; Barabási & Albert, 1999).
 _HIERARCHY_HUB_FRACTION: float = 0.10
+# Grado del núcleo de hubs en la red jerárquica (aristas por hub). Reemplaza al
+# antiguo clique casi denso O(n_hubs²); ver generate_hierarchical().
+_HUB_HUB_DEGREE: int = 8
 
 # Coeficiente de intensidad estocástica (ruido theta-modulado).
 # Escala el término de difusión en la integración Euler-Maruyama.
@@ -77,13 +82,107 @@ COL_HIER = 2
 COL_INCOME = 3
 COL_INFO = 4
 
+# ── Nombres canónicos de las capas de red (orden fijo) ───────────────────────
+LAYER_NAMES: tuple[str, str, str] = ("social", "digital", "economic")
+
+# ── Nombres canónicos de las variables de estado ─────────────────────────────
+VAR_OPINION = "opinion"
+VAR_COOP = "cooperation"
+VAR_HIER = "hierarchy"
+VAR_INCOME = "income"
+VAR_INFO = "info_access"
+
+STATE_VARIABLES: tuple[str, ...] = (
+    VAR_OPINION,
+    VAR_COOP,
+    VAR_HIER,
+    VAR_INCOME,
+    VAR_INFO,
+)
+
+# ── MATRIZ DE ACOPLAMIENTO EXPLÍCITA ─────────────────────────────────────────
+#
+# Todo vínculo entre variables del modelo se declara aquí: origen, destino,
+# ganancia y mecanismo citado. `multi_potential_gradient` lee esta tabla
+# directamente, así que el grafo de interacción es auditable y testeable en
+# lugar de estar implícito en el álgebra del potencial.
+#
+# Antes de esta tabla el modelo tenía 2 acoplamientos de 20 posibles (10 % de
+# densidad), NINGUNO negativo y NINGÚN ciclo de retroalimentación: era una
+# cadena feed-forward (opinión → cooperación → información) en la que 4 de las
+# 5 variables no afectaban a ningún resultado.
+#
+# Ganancia > 0 ⇒ misma dirección (una sube, la otra sube).
+# Ganancia < 0 ⇒ direcciones opuestas (una sube, la otra baja).
+DEFAULT_COUPLING_GAINS: dict[tuple[str, str], float] = {
+    # Alineación social: la propia posición ideológica fija el nivel de
+    # cooperación. Es el único vínculo que ya existía.
+    (VAR_OPINION, VAR_COOP): 0.40,
+    # Conformidad: reconocer la autoridad (hierarquía alta) eleva la
+    # cooperación; el rebelde coopera menos.
+    (VAR_HIER, VAR_COOP): 0.30,
+    # Estratificación: las sociedades conformistas concentran renta; las
+    # rebeldes la igualan. Sustituye al vínculo anterior, que se anulaba
+    # exactamente en el punto fijo y por tanto no existía en régimen estable.
+    (VAR_HIER, VAR_INCOME): 0.40,
+    # Compromiso cívico: cooperar aumenta el acceso a información.
+    (VAR_COOP, VAR_INFO): 0.20,
+    # Brecha digital: la renta compra acceso a información.
+    (VAR_INCOME, VAR_INFO): 0.30,
+    # Exposición selectiva: más información amplifica la posición previa
+    # (burbuja de filtro). Cierra el ciclo op → coop → info → op.
+    (VAR_INFO, VAR_OPINION): 0.50,
+}
+
+# ── Susceptibilidad de cada variable a la influencia de red ─────────────────
+# La fuerza social ya no actúa sólo sobre la opinión. Cada comportamiento tiene
+# su propia "contagiosidad": la opinión es plenamente contagiosa; la cooperación
+# y el reconocimiento de autoridad lo son parcialmente; la renta apenas (la renta
+# no se contagia por contacto social: afirmarlo sería falso).
+#
+# Los valores se mantienen por debajo del umbral de amplificación: la fuerza de
+# red aporta ``coupling · susceptibilidad`` y debe quedar bien por debajo de la
+# tasa de relajación del potencial de cada variable (0.3 para info_access, 2.0
+# para cooperation). Con susceptibilidad 0.4 para info_access y coupling 0.3 la
+# razón era 0.12/0.3 = 0.4, lo que sesgaba info_access hasta saturar el clip.
+NETWORK_SUSCEPTIBILITY: np.ndarray = np.array([1.0, 0.30, 0.20, 0.10, 0.15])
+
+COUPLING_RATIONALE: dict[tuple[str, str], str] = {
+    (VAR_OPINION, VAR_COOP): (
+        "Alineación social: la posición ideológica fija el nivel de cooperación "
+        "(el agente coopera con quien comparte su marco)."
+    ),
+    (VAR_HIER, VAR_COOP): (
+        "Conformidad/legitimidad: la aceptación de la autoridad eleva la "
+        "cooperación (Almond & Verba, cultura cívica)."
+    ),
+    (VAR_HIER, VAR_INCOME): (
+        "Estratificación: la jerarquía reconocida se traduce en concentración de "
+        "renta; la ausencia de jerarquía, en mayor igualdad."
+    ),
+    (VAR_COOP, VAR_INFO): (
+        "Compromiso cívico: la cooperación expone al agente a más canales de "
+        "información (Putnam, capital social)."
+    ),
+    (VAR_INCOME, VAR_INFO): (
+        "Brecha digital: la renta determina el acceso efectivo a información " "(van Dijk, 2005)."
+    ),
+    (VAR_INFO, VAR_OPINION): (
+        "Exposición selectiva: más acceso a información no modera, amplifica la "
+        "posición previa (Sunstein 2001; Prior 2007). Signo dependiente de op: "
+        "refuerza el lado en el que el agente ya está."
+    ),
+}
+
 
 # ============================================================
 # GENERADORES DE REDES
 # ============================================================
 
 
-def generate_watts_strogatz(N: int, k: int = 5, p: float = 0.1, seed: int = 42) -> np.ndarray:
+def generate_watts_strogatz(
+    N: int, k: int = 5, p: float = 0.1, seed: int = 42, *, sparse: bool = False
+) -> np.ndarray:
     """
     Genera la matriz de adyacencia de una red Watts-Strogatz (mundo pequeño).
 
@@ -97,11 +196,13 @@ def generate_watts_strogatz(N: int, k: int = 5, p: float = 0.1, seed: int = 42) 
         Matriz de adyacencia (N, N) normalizada por grado.
     """
     G = nx.watts_strogatz_graph(N, k=min(k, N - 1), p=p, seed=seed)
+    if sparse:
+        return _normalize_rows_sparse(nx.to_scipy_sparse_array(G, format="csr"))
     A = nx.to_numpy_array(G, dtype=np.float64)
     return _normalize_rows(A)
 
 
-def generate_scale_free(N: int, m: int = 2, seed: int = 42) -> np.ndarray:
+def generate_scale_free(N: int, m: int = 2, seed: int = 42, *, sparse: bool = False) -> np.ndarray:
     """
     Genera la matriz de adyacencia de una red libre de escala (Barabási-Albert).
 
@@ -114,11 +215,13 @@ def generate_scale_free(N: int, m: int = 2, seed: int = 42) -> np.ndarray:
         Matriz de adyacencia (N, N) normalizada por grado.
     """
     G = nx.barabasi_albert_graph(N, m=m, seed=seed)
+    if sparse:
+        return _normalize_rows_sparse(nx.to_scipy_sparse_array(G, format="csr"))
     A = nx.to_numpy_array(G, dtype=np.float64)
     return _normalize_rows(A)
 
 
-def generate_hierarchical(N: int, seed: int = 42) -> np.ndarray:
+def generate_hierarchical(N: int, seed: int = 42, *, sparse: bool = False) -> np.ndarray:
     """
     Genera una red económica jerárquica: unos pocos nodos de alta autoridad
     (hubs) conectados en estrella a grupos de nodos subordinados.
@@ -134,12 +237,20 @@ def generate_hierarchical(N: int, seed: int = 42) -> np.ndarray:
     rng = np.random.default_rng(seed)
     n_hubs = max(1, int(N * _HIERARCHY_HUB_FRACTION))
     G = nx.star_graph(N - 1)  # base estrella
-    # Añadir conexiones aleatorias entre hubs para conectividad
+    # Conectividad entre hubs con grado acotado. La versión anterior enlazaba
+    # CADA par de hubs con probabilidad 0.7 (un clique casi denso O(n_hubs²)):
+    # N=16000 → 2.36 M aristas y ~4.3 GB de pico transitorio. Un grado fijo
+    # mantiene la jerarquía (núcleo mucho más conectado que las hojas) con
+    # O(N) aristas.
     hub_ids = list(range(n_hubs))
     for i in hub_ids:
-        for j in hub_ids:
-            if i != j and rng.random() < 0.7:
+        n_peers = min(_HUB_HUB_DEGREE, n_hubs - 1)
+        peers = rng.choice(hub_ids, size=n_peers, replace=False)
+        for j in peers:
+            if j != i:
                 G.add_edge(i, j)
+    if sparse:
+        return _normalize_rows_sparse(nx.to_scipy_sparse_array(G, format="csr"))
     A = nx.to_numpy_array(G, dtype=np.float64)
     return _normalize_rows(A)
 
@@ -151,35 +262,49 @@ def _normalize_rows(A: np.ndarray) -> np.ndarray:
     return A / row_sums
 
 
-def build_layers(N: int, config: dict | None = None) -> dict:
+def _normalize_rows_sparse(A: "sparse.csr_matrix") -> "sparse.csr_matrix":
+    """Row-normalize a sparse adjacency without ever materialising a dense (N, N)."""
+    row_sums = np.asarray(A.sum(axis=1)).ravel()
+    row_sums[row_sums == 0] = 1.0
+    return (sparse.diags(1.0 / row_sums) @ A).tocsr()
+
+
+def build_layers(N: int, config: dict | None = None, *, dense: bool = True) -> dict:
     """
     Construye el diccionario de capas de red para N agentes.
 
     Args:
         N: Número de agentes.
         config: Configuración de capas (opcional). Si es None, usa valores por defecto.
+        dense: Cuando ``False`` devuelve matrices ``scipy.sparse.csr_matrix`` en
+            lugar de ``numpy.ndarray`` (N, N). Las redes son row-stochastic y
+            ralas (grado ~5), así que la representación densa es O(N²) y la
+            rala O(N·k). Medido: N=4000 → 384 MB denso vs ~6 MB ralo.
 
     Returns:
         Dict con claves 'social', 'digital', 'economic', cada una mapea a
-        una matriz numpy (N, N) normalizada.
+        una matriz normalizada (densa por defecto, CSR si ``dense=False``).
     """
     cfg = config or {}
     social_cfg = cfg.get("social", {})
     digital_cfg = cfg.get("digital", {})
     cfg.get("economic", {})
 
-    return {
+    layers = {
         "social": generate_watts_strogatz(
             N,
             k=social_cfg.get("k", 5),
             p=social_cfg.get("p", 0.1),
+            sparse=not dense,
         ),
         "digital": generate_scale_free(
             N,
             m=digital_cfg.get("m", 2),
+            sparse=not dense,
         ),
-        "economic": generate_hierarchical(N),
+        "economic": generate_hierarchical(N, sparse=not dense),
     }
+    return layers
 
 
 # ============================================================
@@ -280,7 +405,10 @@ def _bimodal_grad(opinion: float) -> float:
     return 4.0 * opinion * (opinion * opinion - 0.49)
 
 
-def multi_potential_gradient(x: np.ndarray) -> np.ndarray:
+def multi_potential_gradient(
+    x: np.ndarray,
+    coupling_gains: dict[tuple[str, str], float] | None = None,
+) -> np.ndarray:
     """
     Gradiente del potencial social multidimensional U(x).
 
@@ -290,12 +418,20 @@ def multi_potential_gradient(x: np.ndarray) -> np.ndarray:
     Vectorized over agents for O(1) Python-level overhead per dimension
     regardless of N.
 
+    **Acoplamiento explícito.** Cada vínculo entre variables está declarado en
+    ``COUPLING_RATIONALE`` / ``DEFAULT_COUPLING_GAINS`` y se lee de ahí. Nada
+    fuera de esa tabla acopla dos variables, así que el grafo de interacción es
+    auditable en lugar de estar enterrado en el álgebra del potencial.
+
     Args:
         x: Estado actual de forma (N, K).
+        coupling_gains: Sustituto de ``DEFAULT_COUPLING_GAINS``. Las claves
+            ausentes se tratan como acoplamiento nulo.
 
     Returns:
         Gradiente ∇U de forma (N, K).
     """
+    gains = DEFAULT_COUPLING_GAINS if coupling_gains is None else coupling_gains
     grad = np.zeros_like(x)
 
     op = x[:, COL_OPINION]
@@ -304,22 +440,41 @@ def multi_potential_gradient(x: np.ndarray) -> np.ndarray:
     inc = x[:, COL_INCOME]
     info = x[:, COL_INFO]
 
-    # Opinión: doble pozo → polarización emergente en ±0.7
-    grad[:, COL_OPINION] = 4.0 * op * (op * op - 0.49)  # _bimodal_grad vectorized
+    # ── Opinión: doble pozo + amplificación por exposición selectiva ─────────
+    # Más acceso a información no empuja a un lado: separa los pozos, es decir
+    # amplifica *el lado en el que el agente ya está* (burbuja de filtro). Se
+    # modela desplazando la POSICIÓN del pozo y no con una fuerza lineal, porque
+    # así el efecto es el correcto sobre un potencial bimodal y el rango de
+    # respuesta resultante (pozos en ±0.35…±0.85) es real, no un empujón del 1 %.
+    g_info_op = gains.get((VAR_INFO, VAR_OPINION), 0.0)
+    well = np.clip(0.7 + g_info_op * (info - 0.5), 0.35, 0.85)
+    grad[:, COL_OPINION] = 4.0 * op * (op * op - well * well)
 
-    # Cooperación: depende de la opinión del agente (alineación social)
-    # Alto acuerdo de opinión → cooperación se estabiliza en 0.8
-    align = 0.5 * (op + 1.0)  # mapea [-1,1] → [0,1]
-    grad[:, COL_COOP] = 2.0 * (coop - 0.8 * align)
+    # ── Cooperación: alineación con la propia opinión + conformidad social ───
+    # target = 0.4 + g_op·op + g_hier·(hier − 0.5)
+    # Con g_op = 0.4 reproduce la alineación histórica (0.4·(op+1)).
+    g_op_coop = gains.get((VAR_OPINION, VAR_COOP), 0.0)
+    g_hier_coop = gains.get((VAR_HIER, VAR_COOP), 0.0)
+    target_coop = 0.4 + g_op_coop * op + g_hier_coop * (hier - 0.5)
+    grad[:, COL_COOP] = 2.0 * (coop - target_coop)
 
-    # Jerarquía: atracción hacia 0 (rebelde) o 1 (conformista)
+    # ── Jerarquía: atracción hacia 0 (rebelde) o 1 (conformista) ─────────────
     grad[:, COL_HIER] = -2.0 * hier * (1.0 - hier) * (2.0 * hier - 1.0)
 
-    # Ingreso: gradiente suave hacia centro (0.5), con fricción por jerarquía
-    grad[:, COL_INCOME] = 0.5 * (inc - 0.5) * (1.0 + hier)
+    # ── Ingreso: estratificación inducida por la jerarquía ──────────────────
+    # Antes el objetivo era 0.5 fijo (variable muerta) y la jerarquía solo
+    # modulaba la velocidad. Ahora la jerarquía desplaza el NIVEL: sociedades
+    # conformistas concentran renta, las rebeldes la igualan.
+    g_hier_inc = gains.get((VAR_HIER, VAR_INCOME), 0.0)
+    target_income = 0.5 + g_hier_inc * (hier - 0.5)
+    grad[:, COL_INCOME] = 0.5 * (inc - target_income) * (1.0 + hier)
 
-    # Acceso info: decaimiento lento hacia 0.5 modulado por cooperación
-    grad[:, COL_INFO] = 0.3 * (info - 0.5 - 0.2 * coop)
+    # ── Acceso a información: compromiso cívico + brecha digital ───────────
+    # target = 0.5 + g_coop·coop + g_income·(income − 0.5)
+    g_coop_info = gains.get((VAR_COOP, VAR_INFO), 0.0)
+    g_inc_info = gains.get((VAR_INCOME, VAR_INFO), 0.0)
+    target_info = 0.5 + g_coop_info * coop + g_inc_info * (inc - 0.5)
+    grad[:, COL_INFO] = 0.3 * (info - target_info)
 
     return grad
 
@@ -339,6 +494,7 @@ def _multilayer_langevin_step_core(
     x_min: float,
     x_max: float,
     noise: np.ndarray,
+    coupling_gains: dict[tuple[str, str], float] | None = None,
 ) -> np.ndarray:
     """Core of Euler-Maruyama multilayer step (noise pre-sampled).
 
@@ -347,16 +503,16 @@ def _multilayer_langevin_step_core(
     N, Kdim = x_vec.shape
     L = layers_flat.shape[0]
 
+    # Vectorised over both agents and state dimensions: the previous version was
+    # a triple Python loop over (layer, agent, neighbour) — O(L·N²) interpreted
+    # operations — and touched only the opinion column.
     social_force = np.zeros((N, Kdim))
     for ell in range(L):
         w = layer_weights[ell]
-        for i in range(N):
-            s = 0.0
-            for j in range(N):
-                s += layers_flat[ell, i, j] * x_vec[j, COL_OPINION]
-            social_force[i, COL_OPINION] += coupling * w * s
+        social_force += coupling * w * (layers_flat[ell] @ x_vec)
+    social_force *= NETWORK_SUSCEPTIBILITY
 
-    grad_U = multi_potential_gradient(x_vec)
+    grad_U = multi_potential_gradient(x_vec, coupling_gains)
     x_new = (
         x_vec
         + dt * (-grad_U + social_force)
@@ -380,7 +536,7 @@ def _multilayer_langevin_step_core(
 
 def _multilayer_langevin_step_core_sparse(
     x_vec: np.ndarray,
-    layers_sparse: list,
+    layers_sparse: list,  # list of scipy.sparse.csr_matrix
     layer_weights: np.ndarray,
     theta_matrix: np.ndarray,
     coupling: float,
@@ -388,6 +544,7 @@ def _multilayer_langevin_step_core_sparse(
     x_min: float,
     x_max: float,
     noise: np.ndarray,
+    coupling_gains: dict[tuple[str, str], float] | None = None,
 ) -> np.ndarray:
     """Pure-Python core for sparse layers — O(L·N·k) per step instead of O(L·N²).
 
@@ -396,13 +553,15 @@ def _multilayer_langevin_step_core_sparse(
     N, Kdim = x_vec.shape
     L = len(layers_sparse)
 
+    # A single sparse matmul over all K columns replaces K separate matvecs, and
+    # the force now reaches every state dimension instead of only opinion.
     social_force = np.zeros((N, Kdim))
     for ell in range(L):
         w = layer_weights[ell]
-        contribution = np.asarray(layers_sparse[ell] @ x_vec[:, COL_OPINION]).ravel()
-        social_force[:, COL_OPINION] += coupling * w * contribution
+        social_force += coupling * w * np.asarray(layers_sparse[ell] @ x_vec)
+    social_force *= NETWORK_SUSCEPTIBILITY
 
-    grad_U = multi_potential_gradient(x_vec)
+    grad_U = multi_potential_gradient(x_vec, coupling_gains)
     x_new = (
         x_vec
         + dt * (-grad_U + social_force)
@@ -416,7 +575,7 @@ def _multilayer_langevin_step_core_sparse(
 
 def multilayer_langevin_step(
     x_vec: np.ndarray,
-    layers_flat: np.ndarray,
+    layers_flat: np.ndarray | list,  # dense (L,N,N) stack or list of CSR matrices
     layer_weights: np.ndarray,
     theta_matrix: np.ndarray,
     coupling: float,
@@ -424,6 +583,7 @@ def multilayer_langevin_step(
     x_min: float,
     x_max: float,
     rng: np.random.Generator | None = None,
+    coupling_gains: dict[tuple[str, str], float] | None = None,
 ) -> np.ndarray:
     """
     Paso de Euler-Maruyama de la dinámica de Langevin multicapa.
@@ -464,7 +624,7 @@ def multilayer_langevin_step(
     if is_sparse:
         return _multilayer_langevin_step_core_sparse(
             x_arr,
-            layers_flat,
+            layers_flat,  # type: ignore[arg-type]  # narrowed by the is_sparse check
             layer_weights,
             theta_matrix,
             float(coupling),
@@ -472,6 +632,7 @@ def multilayer_langevin_step(
             float(x_min),
             float(x_max),
             noise,
+            coupling_gains,
         )
     return _multilayer_langevin_step_core(
         x_arr,
@@ -483,6 +644,7 @@ def multilayer_langevin_step(
         float(x_min),
         float(x_max),
         noise,
+        coupling_gains,
     )
 
 
@@ -557,14 +719,22 @@ def targeted_llm_bias(
                 f"El diálogo y la cooperación construyen comunidades más resilientes."
             )
         headers = {"Authorization": f"Bearer {key}", "Content-Type": "application/json"}
-        payload = {
+        # Explicitly typed: with `requests` installed its JsonType accepts this
+        # without suppression, and where `requests` is absent (the minimal CI
+        # typecheck env) the whole call is Any — so a `# type: ignore` here would
+        # be flagged as unused by warn_unused_ignores in exactly one of the two
+        # environments. Typing the payload satisfies both.
+        payload: dict[str, Any] = {
             "model": modelo,
             "messages": [{"role": "user", "content": prompt}],
             "temperature": 0.7,
             "max_tokens": 100,
         }
         resp = requests.post(
-            f"{base_url}/chat/completions", json=payload, headers=headers, timeout=15
+            f"{base_url}/chat/completions",
+            json=payload,
+            headers=headers,
+            timeout=15,
         )
         resp.raise_for_status()
         return resp.json()["choices"][0]["message"]["content"].strip()
@@ -607,6 +777,9 @@ class MultilayerEngine:
         layer_config: dict | None = None,
         seed: int = 42,
         scientific_config: dict | None = None,
+        coupling_gains: dict[tuple[str, str], float] | None = None,
+        use_cfc: bool | None = None,
+        dense_layers: bool = True,
     ):
         """
         Inicializa el motor multicapa.
@@ -626,6 +799,9 @@ class MultilayerEngine:
 
         self.N = N
         self.coupling = float(coupling)
+        self.coupling_gains: dict[tuple[str, str], float] = (
+            dict(DEFAULT_COUPLING_GAINS) if coupling_gains is None else dict(coupling_gains)
+        )
         self.dt = float(dt)
         self.seed = seed
         self.rng = np.random.default_rng(seed)
@@ -646,7 +822,7 @@ class MultilayerEngine:
         else:
             self._drift = None
             self._diffusion = None
-        self.last_numerical_diagnostics = None
+        self.last_numerical_diagnostics: Any = None
 
         # Pesos de capas normalizados
         w = np.array(layer_weights, dtype=np.float64)
@@ -657,11 +833,64 @@ class MultilayerEngine:
         self.attributes_df = generate_attributes(N, seed=seed, **attr_cfg)
         self.theta = compute_theta(self.attributes_df)
 
-        # CfC INTEGRATION — τ aprendido sustituye la theta manual si está disponible
+        # ── CfC (opt-in, lazily loaded) ──────────────────────────────────────
+        # The residual corrector was disqualified by walk-forward validation
+        # (R² = -18.7, i.e. 8.2x worse than the persistence baseline), so loading
+        # it produced no correction at all — only a disclaimer logged on every
+        # engine instantiation, plus a torch import and a τ matrix computed only
+        # to be thrown away. It is now opt-in via ``use_cfc=True`` (or
+        # MASSIVE_ENABLE_CFC=1), and when the quality gate rejects it the engine
+        # silently keeps the analytic θ instead of paying for a dead model.
+        self.use_cfc = bool(
+            use_cfc if use_cfc is not None else os.environ.get("MASSIVE_ENABLE_CFC") == "1"
+        )
+        if self.use_cfc:
+            self._apply_cfc_tau()
+
+        # Capas de red (sparse CSR keeps the step kernel O(L·N·k) for sparse graphs
+        # such as Watts-Strogatz, with a dense fallback only when explicitly needed).
+        from scipy import sparse as _sparse
+
+        self.dense_layers = bool(dense_layers)
+        self.layers = build_layers(N, layer_config, dense=self.dense_layers)
+        # NOTE: ``self.layers`` is deliberately the dense public view (it is what
+        # `dynamic_rewiring` edits and what callers inspect). A *second* dense
+        # (L, N, N) copy used to be kept alongside it as ``_layers_flat`` and cost
+        # as much memory again: 96 MB at N=2 000, 2.4 GB at N=10 000. The drift
+        # function was its only consumer and it can use the sparse view, so the
+        # duplicate is gone.
+        self._layers_sparse = [
+            _sparse.csr_matrix(self.layers["social"]),
+            _sparse.csr_matrix(self.layers["digital"]),
+            _sparse.csr_matrix(self.layers["economic"]),
+        ]
+        self._rebuild_layer_colmass()
+
+        # Estado inicial
+        rng = np.random.default_rng(seed)
+        x0_opinion = rng.uniform(self.x_min * 0.5, self.x_max * 0.5, N)
+        x0_rest = rng.uniform(0.2, 0.8, (N, K - 1))
+        self.x = np.column_stack([x0_opinion, x0_rest]).astype(np.float64)
+
+        self._history: list[np.ndarray] = [self.x.copy()]
+        self._history_compact: list[dict] = []
+        self.mps_state: dict | None = None
+
+    def _apply_cfc_tau(self) -> None:
+        """Replace the analytic θ with the CfC-learned τ, if the gate allows it.
+
+        Failures are non-fatal: the engine simply keeps the analytic θ.
+        """
         try:
             from cfc_router import CfCRouter
-
-            _cfc_tau = CfCRouter.get().compute_tau_matrix(
+        except ImportError:
+            log.info(
+                "[MultilayerEngine] use_cfc=True but cfc_router is unavailable; "
+                "keeping analytic theta."
+            )
+            return
+        try:
+            learned_tau = CfCRouter.get().compute_tau_matrix(
                 np.stack(
                     [
                         self.attributes_df["religion"].to_numpy(dtype=np.float32),
@@ -672,40 +901,72 @@ class MultilayerEngine:
                     axis=1,
                 )
             )
-            if _cfc_tau is not None:
-                # Escalar al rango de la theta manual para compatibilidad
-                self.theta = (_cfc_tau * self.theta.max()).astype(np.float64)
-        except ImportError:
-            pass
+        except (RuntimeError, ValueError) as exc:
+            log.warning(f"[MultilayerEngine] CfC τ computation failed ({exc}); using analytic θ.")
+            return
+        if learned_tau is None:
+            log.info(
+                "[MultilayerEngine] CfC corrector rejected by the quality gate; "
+                "keeping analytic theta."
+            )
+            return
+        # Rescale to the analytic θ range for backward compatibility.
+        self.theta = (learned_tau * self.theta.max()).astype(np.float64)
 
-        # Capas de red (sparse CSR keeps the step kernel O(L·N·k) for sparse graphs
-        # such as Watts-Strogatz, with a dense fallback only when explicitly needed).
-        from scipy import sparse as _sparse
+    # ── Layer bookkeeping ───────────────────────────────────────────────────
 
-        self.layers = build_layers(N, layer_config)
-        self._layers_flat = np.stack(
-            [
-                self.layers["social"],
-                self.layers["digital"],
-                self.layers["economic"],
-            ],
-            axis=0,
-        ).astype(np.float64)
-        self._layers_sparse = [
-            _sparse.csr_matrix(self.layers["social"]),
-            _sparse.csr_matrix(self.layers["digital"]),
-            _sparse.csr_matrix(self.layers["economic"]),
+    def _rebuild_layer_colmass(self) -> None:
+        """Precompute the per-layer column mass used for per-layer opinion tracking.
+
+        Because every layer is row-normalised, the mean opinion an agent is
+        *exposed to* through layer ℓ is exactly
+
+            mean_i (A_ℓ · x)_i = (1/N) · Σ_j x_j · colsum(A_ℓ)_j
+
+        so the per-layer signal is an O(N) dot product per step instead of a
+        second O(N·k) matvec.
+        """
+        n = max(self.N, 1)
+        self._layer_colmass: list[np.ndarray] = [
+            np.asarray(layer.sum(axis=0)).ravel() / n for layer in self._layers_sparse
         ]
 
-        # Estado inicial
-        rng = np.random.default_rng(seed)
-        x0_opinion = rng.uniform(self.x_min * 0.5, self.x_max * 0.5, N)
-        x0_rest = rng.uniform(0.2, 0.8, (N, K - 1))
-        self.x = np.column_stack([x0_opinion, x0_rest]).astype(np.float64)
+    def _rebuild_layer_views(self) -> None:
+        """Rebuild the derived sparse layer views after the topology changed.
 
-        self._history: list[np.ndarray] = [self.x.copy()]
-        self._history_compact: list[dict] = []
-        self.mps_state = None
+        ``dynamic_rewiring`` used to refresh only a dense ``_layers_flat`` copy,
+        while ``step()`` reads the sparse view — so censorship / viral-hub
+        interventions were silently inert. Rewiring now rebuilds the views the
+        dynamics actually use.
+        """
+        from scipy import sparse as _sp
+
+        self._layers_sparse = [
+            _sp.csr_matrix(self.layers["social"]),
+            _sp.csr_matrix(self.layers["digital"]),
+            _sp.csr_matrix(self.layers["economic"]),
+        ]
+        self._rebuild_layer_colmass()
+
+    def layer_opinion_profile(self, state: np.ndarray | None = None) -> dict[str, float]:
+        """Mean opinion each agent is exposed to through each network layer.
+
+        This is the genuinely per-layer quantity. It is **not** the global mean
+        opinion, which is identical for every layer by construction — returning
+        the same trajectory under three layer keys was a long-standing fiction.
+
+        Args:
+            state: Optional ``(N, K)`` state; defaults to the current state.
+
+        Returns:
+            Mapping ``{"social": float, "digital": float, "economic": float}``.
+        """
+        xv = self.x if state is None else state
+        opinions = xv[:, COL_OPINION]
+        return {
+            name: float(colmass @ opinions)
+            for name, colmass in zip(LAYER_NAMES, self._layer_colmass, strict=True)
+        }
 
     def _create_drift_function(self):
         """Create drift matching ``multilayer_langevin_step`` (no noise)."""
@@ -714,10 +975,9 @@ class MultilayerEngine:
             del t
             social_force = np.zeros_like(x)
             for ell, weight in enumerate(self.layer_weights):
-                social_force[:, COL_OPINION] += (
-                    self.coupling * weight * (self._layers_flat[ell] @ x[:, COL_OPINION])
-                )
-            return -multi_potential_gradient(x) + social_force
+                social_force += self.coupling * weight * (self._layers_sparse[ell] @ x)
+            social_force *= NETWORK_SUSCEPTIBILITY
+            return -multi_potential_gradient(x, self.coupling_gains) + social_force
 
         return drift
 
@@ -770,6 +1030,7 @@ class MultilayerEngine:
                 self.x_min,
                 self.x_max,
                 rng=self.rng,
+                coupling_gains=self.coupling_gains,
             )
             from massive_core.numerics import NumericalDiagnostics
 
@@ -817,6 +1078,7 @@ class MultilayerEngine:
                     "std_opinion": float(ops0.std()),
                     "polarization": calculate_polarization(ops0, self.range_type),
                     "sample_size": int(ops0.size),
+                    "layer_signal": self.layer_opinion_profile(initial),
                 }
             ]
             # Clear pre-existing history to avoid double-counting.
@@ -831,6 +1093,7 @@ class MultilayerEngine:
                         "std_opinion": float(ops.std()),
                         "polarization": calculate_polarization(ops, self.range_type),
                         "sample_size": int(ops.size),
+                        "layer_signal": self.layer_opinion_profile(snap),
                     }
                 )
             # Retain only final state so get_landscape() / get_opinions() work.
@@ -852,6 +1115,7 @@ class MultilayerEngine:
                         "std_opinion": float(ops.std()),
                         "polarization": calculate_polarization(ops, self.range_type),
                         "sample_size": int(ops.size),
+                        "layer_signal": self.layer_opinion_profile(snap),
                     }
                 )
             # Free the large snapshots; keep compact aggregates + final state.
@@ -947,8 +1211,8 @@ class MultilayerEngine:
             "state_bytes": int(self.x.nbytes),
             "opinion_mean": float(ops.mean()),
             "opinion_std": float(ops.std()),
-            "opinion_min": float(ops.min()),
-            "opinion_max": float(ops.max()),
+            "opinion_min": float(np.min(ops)),
+            "opinion_max": float(np.max(ops)),
         }
 
     @property
@@ -977,7 +1241,13 @@ class MultilayerEngine:
             return
 
         rng = self._rewire_rng
-        adjacency = (self.layers[layer_name] > 0).astype(np.float64)
+        layer = self.layers[layer_name]
+        adjacency = (layer > 0).astype(np.float64)
+        if hasattr(adjacency, "toarray"):
+            # Sparse layers: materialise the ONE layer being rewired (the edit
+            # is O(N²) by nature of arbitrary edge insertion/removal), not all
+            # of them. The rest stay CSR.
+            adjacency = adjacency.toarray()
         np.fill_diagonal(adjacency, 0.0)
         adjacency = np.maximum(adjacency, adjacency.T)
 
@@ -1006,11 +1276,12 @@ class MultilayerEngine:
             raise ValueError("mode must be 'censorship' or 'viral_hub'")
 
         rewired = _normalize_rows(adjacency)
-        self.layers[layer_name] = rewired
+        self.layers[layer_name] = rewired if self.dense_layers else sparse.csr_matrix(rewired)
 
-        layer_order = ("social", "digital", "economic")
-        for idx, name in enumerate(layer_order):
-            self._layers_flat[idx] = self.layers[name]
+        # Rebuild *every* derived view. Refreshing only the dense ``_layers_flat``
+        # left ``_layers_sparse`` — which ``step()`` actually reads — untouched,
+        # so censorship / viral-hub interventions had no effect on the dynamics.
+        self._rebuild_layer_views()
 
     def behavior_correlation_matrix(self) -> np.ndarray:
         """
@@ -1020,7 +1291,7 @@ class MultilayerEngine:
         Returns:
             Matriz de correlación numpy (K, K).
         """
-        return np.corrcoef(self.x.T)
+        return np.atleast_2d(np.corrcoef(self.x.T))
 
     def plot(self) -> "dict":
         """

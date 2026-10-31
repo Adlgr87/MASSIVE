@@ -339,8 +339,8 @@ class ABCCalibrator:
                         # Weight by inverse distance (closer = higher weight)
                         w = 1.0 / (posterior_dist + 1e-8)
                     w = w / w.sum()
-                    idx = rng_r.choice(len(posterior), p=w)
-                    base = posterior[idx].copy()
+                    pick = rng_r.choice(len(posterior), p=w)
+                    base = posterior[pick].copy()
                 else:
                     base = self.simulate_prior(1)[0]
 
@@ -600,15 +600,17 @@ class NeuralPosteriorEstimator:
         if not self._fitted:
             raise RuntimeError("Call fit() before sampling")
 
+        weights, means, stds = self._weights, self._means, self._stds
+        assert weights is not None and means is not None and stds is not None
         rng = np.random.default_rng(self.seed)
-        components = rng.choice(self.n_components, size=n, p=self._weights)
-        n_dim = self._means.shape[1]
+        components = rng.choice(self.n_components, size=n, p=weights)
+        n_dim = means.shape[1]
         out = np.empty((n, n_dim), dtype=np.float64)
         for k in range(self.n_components):
             mask = components == k
             nk = int(mask.sum())
             if nk > 0:
-                out[mask] = rng.normal(self._means[k], self._stds[k], size=(nk, n_dim))
+                out[mask] = rng.normal(means[k], stds[k], size=(nk, n_dim))
         return out
 
     def density(self, points: np.ndarray) -> np.ndarray:
@@ -627,14 +629,16 @@ class NeuralPosteriorEstimator:
         if points.ndim == 1:
             points = points.reshape(1, -1)
 
-        n_dim = self._means.shape[1]
+        weights, means, stds = self._weights, self._means, self._stds
+        assert weights is not None and means is not None and stds is not None
+        n_dim = means.shape[1]
         total = np.zeros(points.shape[0])
         for k in range(self.n_components):
-            comp_log_std = np.sum(np.log(self._stds[k] + 1e-300))
-            diff = points - self._means[k]
-            mahal = -0.5 * np.sum((diff / self._stds[k]) ** 2, axis=1)
+            comp_log_std = np.sum(np.log(stds[k] + 1e-300))
+            diff = points - means[k]
+            mahal = -0.5 * np.sum((diff / stds[k]) ** 2, axis=1)
             log_gaussian = mahal - comp_log_std - 0.5 * n_dim * np.log(2 * np.pi)
-            total += self._weights[k] * np.exp(log_gaussian)
+            total += weights[k] * np.exp(log_gaussian)
         return total
 
 

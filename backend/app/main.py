@@ -223,7 +223,15 @@ async def request_context(request: Request, call_next):
 # are processed.  When MASSIVE_ALLOWED_HOSTS is unset the middleware is a
 # no-op (open mode) so local dev / CI never fails on Host validation alone.
 # In development, localhost / 127.0.0.1 / testserver are always allowed.
-_ALLOWED_HOSTS_DEV = {"", "localhost", "127.0.0.1", "0.0.0.0", "testserver"}
+# This is the set of accepted Host *header* values, not a bind address: "0.0.0.0"
+# is a legitimate Host value when the app runs inside a container.
+_ALLOWED_HOSTS_DEV = {  # nosec B104 - Host-header allow-list, not a bind address
+    "",
+    "localhost",
+    "127.0.0.1",
+    "0.0.0.0",
+    "testserver",
+}
 _ALLOWED_HOSTS_ENV = os.getenv("MASSIVE_ALLOWED_HOSTS", "")
 _explicit_allowed_hosts: set[str] = {h.strip() for h in _ALLOWED_HOSTS_ENV.split(",") if h.strip()}
 # Wildcard is only honoured in dev; production treats it as fail-closed.

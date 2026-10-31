@@ -121,6 +121,18 @@ class StrategyMatrix(BaseModel):
 CalibratedValue = float | list[float]
 
 
+def scalar_value(value: CalibratedValue) -> float:
+    """Coerce a ``CalibratedValue`` to a scalar point estimate.
+
+    A calibrated value is either a scalar float or a ``[min, max]`` interval.
+    For an interval the midpoint is used. This also removes a latent TypeError:
+    ``float([a, b])`` raises at runtime, which mypy now surfaces.
+    """
+    if isinstance(value, (list, tuple)):
+        return float(sum(value) / len(value)) if value else 0.0
+    return float(value)
+
+
 def _check_opinion_positions(positions: list[float]) -> None:
     """Ensure every reported position lives inside the MASSIVE [-1, 1] spectrum."""
     for pos in positions:
@@ -349,9 +361,9 @@ class PhysicsParams(BaseModel):
             Dict with ``cognitive_rigidity``, ``sigma_multiplier`` and
             ``hk_epsilon`` scalar floats for the requested segment.
         """
-        rigidity = float(self.langevin.drift.cognitive_rigidity.resolve(segment).value)
-        multiplier = float(self.langevin.sigma.segment_multiplier.resolve(segment).value)
-        epsilon = float(self.hk.epsilon.per_segment.resolve(segment).value)
+        rigidity = scalar_value(self.langevin.drift.cognitive_rigidity.resolve(segment).value)
+        multiplier = scalar_value(self.langevin.sigma.segment_multiplier.resolve(segment).value)
+        epsilon = scalar_value(self.hk.epsilon.per_segment.resolve(segment).value)
         return {
             "cognitive_rigidity": rigidity,
             "sigma_multiplier": multiplier,
