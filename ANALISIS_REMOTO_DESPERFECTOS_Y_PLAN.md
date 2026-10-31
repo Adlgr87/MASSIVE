@@ -589,3 +589,44 @@ Dos fallos reales que sólo aparecieron al ejecutar en CI y que ya están correg
   real de `ForecastResponse` (`sim_id`/`horizon_ticks`/`points`/`feasibility`); el de engine rechaza
   `coupling` fuera de rango y población < 2.
   Cobertura: **forecast 29 % → 87 %**, **benchmarks 18 % → 62 %**.
+
+### Estado final del CI (ejecución real en GitHub Actions)
+
+**PR #161 — todos los checks en verde:**
+
+| check | tiempo |
+|---|---|
+| `core` / `api` / `scientific` (pytest) | ~2 min ✅ |
+| `full-suite` | 3m 02s ✅ |
+| `compose-build-health` (**Docker: build + up + /health + smoke**) | 3m 53s ✅ |
+| `Type Check (MyPy)` | 2m 05s ✅ |
+| `mypy-slice` (bloqueante) | 21 s ✅ |
+| `Python Lint`, `Frontend Lint`, `Build Frontend` | ✅ |
+| `incremental` (gitleaks), `PVU-BS Benchmark`, `pvu`, `validate`, `semgrep` | ✅ |
+
+**PR #160 — mismos checks en verde** (incluido `compose-build-health` y `Type Check (MyPy)`, que
+antes fallaban).
+
+Dos detalles que sólo se confirmaron ejecutando de verdad:
+
+- El `supervisord.conf` inicial bindeaba uvicorn a `127.0.0.1` **dentro** del contenedor. El workflow
+  hace `curl http://127.0.0.1:8000/health` **desde el host**, y Docker publica puertos contra la
+  interfaz externa del contenedor, no contra su loopback → el puerto publicado habría estado muerto y
+  el health check habría agotado los 40 intentos. Detectado leyendo el workflow que consume el
+  contenedor, no el Dockerfile. Corregido a `0.0.0.0:8000` (nginx en :80 sigue siendo la entrada
+  pública para el navegador; `--forwarded-allow-ips=127.0.0.1` se mantiene porque ése es el peer que
+  uvicorn ve al ser proxied por nginx).
+- `nginx.conf` validado con `nginx -t` **ejecutando como UID 1000** (la condición real de `appuser`),
+  no sólo como root.
+
+### Resumen de la segunda pasada
+
+| Gate | Antes (en `main`) | Después |
+|---|---|---|
+| `compose-build-health` | ❌ imagen **imposible de construir** | ✅ build + arranque + smoke, 3m53s |
+| `Type Check (MyPy)` | ❌ `mypy.ini` inexistente, exit 2 | ✅ |
+| `Python Lint` | ❌ black sin pin | ✅ |
+| `incremental` (gitleaks) | ❌ 0 bytes escaneados | ✅ |
+| PRs a ramas no-default | ❌ **cero checks** | ✅ validados |
+| Tests totales | 883 | **989** |
+| Docker build | roto | funciona |
