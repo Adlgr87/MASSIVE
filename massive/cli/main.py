@@ -16,6 +16,7 @@ import json
 import logging
 import sys
 from collections.abc import Sequence
+from typing import cast
 
 from massive import __version__ as __VERSION__
 
@@ -108,10 +109,15 @@ def _cmd_scientific(args: argparse.Namespace) -> int:
 def _cmd_forecast(args: argparse.Namespace) -> int:
     """Run the temporal forecast engine on a simulation snapshot."""
     from forecast.engine import forecast
-    from forecast.temporal_config import TemporalConfig
+    from forecast.temporal_config import EventType, TemporalConfig
 
     sim_state = json.loads(args.state) if args.state else {"opinion": 0.0}
-    tc = TemporalConfig(event_type=args.event_type)
+    # from_event_type() applies the per-event-type defaults (step_duration_days /
+    # time_horizon_days). Constructing TemporalConfig(event_type=...) directly used
+    # the generic 7/90 defaults for EVERY event, so `policy_adoption` (365 days) and
+    # `viral_online` (14 days) silently shared the same horizon. The parser's
+    # choices= list already constrains args.event_type to EventType values.
+    tc = TemporalConfig.from_event_type(cast(EventType, args.event_type))
     result = forecast(
         sim_state,
         temporal_config=tc,

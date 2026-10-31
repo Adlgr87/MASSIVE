@@ -60,6 +60,9 @@ _THETA_EDUCATION_INFO: float = 0.4
 # redes corporativas empíricas suelen tener 5-15% de nodos de alta centralidad
 # (Watts & Strogatz, 1998; Barabási & Albert, 1999).
 _HIERARCHY_HUB_FRACTION: float = 0.10
+# Grado del núcleo de hubs en la red jerárquica (aristas por hub). Reemplaza al
+# antiguo clique casi denso O(n_hubs²); ver generate_hierarchical().
+_HUB_HUB_DEGREE: int = 8
 
 # Coeficiente de intensidad estocástica (ruido theta-modulado).
 # Escala el término de difusión en la integración Euler-Maruyama.
@@ -177,7 +180,9 @@ COUPLING_RATIONALE: dict[tuple[str, str], str] = {
 # ============================================================
 
 
-def generate_watts_strogatz(N: int, k: int = 5, p: float = 0.1, seed: int = 42) -> np.ndarray:
+def generate_watts_strogatz(
+    N: int, k: int = 5, p: float = 0.1, seed: int = 42, *, sparse: bool = False
+) -> np.ndarray:
     """
     Genera la matriz de adyacencia de una red Watts-Strogatz (mundo pequeño).
 
@@ -191,11 +196,13 @@ def generate_watts_strogatz(N: int, k: int = 5, p: float = 0.1, seed: int = 42) 
         Matriz de adyacencia (N, N) normalizada por grado.
     """
     G = nx.watts_strogatz_graph(N, k=min(k, N - 1), p=p, seed=seed)
+    if sparse:
+        return _normalize_rows_sparse(nx.to_scipy_sparse_array(G, format="csr"))
     A = nx.to_numpy_array(G, dtype=np.float64)
     return _normalize_rows(A)
 
 
-def generate_scale_free(N: int, m: int = 2, seed: int = 42) -> np.ndarray:
+def generate_scale_free(N: int, m: int = 2, seed: int = 42, *, sparse: bool = False) -> np.ndarray:
     """
     Genera la matriz de adyacencia de una red libre de escala (Barabási-Albert).
 
@@ -208,11 +215,13 @@ def generate_scale_free(N: int, m: int = 2, seed: int = 42) -> np.ndarray:
         Matriz de adyacencia (N, N) normalizada por grado.
     """
     G = nx.barabasi_albert_graph(N, m=m, seed=seed)
+    if sparse:
+        return _normalize_rows_sparse(nx.to_scipy_sparse_array(G, format="csr"))
     A = nx.to_numpy_array(G, dtype=np.float64)
     return _normalize_rows(A)
 
 
-def generate_hierarchical(N: int, seed: int = 42) -> np.ndarray:
+def generate_hierarchical(N: int, seed: int = 42, *, sparse: bool = False) -> np.ndarray:
     """
     Genera una red económica jerárquica: unos pocos nodos de alta autoridad
     (hubs) conectados en estrella a grupos de nodos subordinados.
@@ -228,12 +237,20 @@ def generate_hierarchical(N: int, seed: int = 42) -> np.ndarray:
     rng = np.random.default_rng(seed)
     n_hubs = max(1, int(N * _HIERARCHY_HUB_FRACTION))
     G = nx.star_graph(N - 1)  # base estrella
-    # Añadir conexiones aleatorias entre hubs para conectividad
+    # Conectividad entre hubs con grado acotado. La versión anterior enlazaba
+    # CADA par de hubs con probabilidad 0.7 (un clique casi denso O(n_hubs²)):
+    # N=16000 → 2.36 M aristas y ~4.3 GB de pico transitorio. Un grado fijo
+    # mantiene la jerarquía (núcleo mucho más conectado que las hojas) con
+    # O(N) aristas.
     hub_ids = list(range(n_hubs))
     for i in hub_ids:
-        for j in hub_ids:
-            if i != j and rng.random() < 0.7:
+        n_peers = min(_HUB_HUB_DEGREE, n_hubs - 1)
+        peers = rng.choice(hub_ids, size=n_peers, replace=False)
+        for j in peers:
+            if j != i:
                 G.add_edge(i, j)
+    if sparse:
+        return _normalize_rows_sparse(nx.to_scipy_sparse_array(G, format="csr"))
     A = nx.to_numpy_array(G, dtype=np.float64)
     return _normalize_rows(A)
 
@@ -245,35 +262,49 @@ def _normalize_rows(A: np.ndarray) -> np.ndarray:
     return A / row_sums
 
 
-def build_layers(N: int, config: dict | None = None) -> dict:
+def _normalize_rows_sparse(A: "sparse.csr_matrix") -> "sparse.csr_matrix":
+    """Row-normalize a sparse adjacency without ever materialising a dense (N, N)."""
+    row_sums = np.asarray(A.sum(axis=1)).ravel()
+    row_sums[row_sums == 0] = 1.0
+    return (sparse.diags(1.0 / row_sums) @ A).tocsr()
+
+
+def build_layers(N: int, config: dict | None = None, *, dense: bool = True) -> dict:
     """
     Construye el diccionario de capas de red para N agentes.
 
     Args:
         N: Número de agentes.
         config: Configuración de capas (opcional). Si es None, usa valores por defecto.
+        dense: Cuando ``False`` devuelve matrices ``scipy.sparse.csr_matrix`` en
+            lugar de ``numpy.ndarray`` (N, N). Las redes son row-stochastic y
+            ralas (grado ~5), así que la representación densa es O(N²) y la
+            rala O(N·k). Medido: N=4000 → 384 MB denso vs ~6 MB ralo.
 
     Returns:
         Dict con claves 'social', 'digital', 'economic', cada una mapea a
-        una matriz numpy (N, N) normalizada.
+        una matriz normalizada (densa por defecto, CSR si ``dense=False``).
     """
     cfg = config or {}
     social_cfg = cfg.get("social", {})
     digital_cfg = cfg.get("digital", {})
     cfg.get("economic", {})
 
-    return {
+    layers = {
         "social": generate_watts_strogatz(
             N,
             k=social_cfg.get("k", 5),
             p=social_cfg.get("p", 0.1),
+            sparse=not dense,
         ),
         "digital": generate_scale_free(
             N,
             m=digital_cfg.get("m", 2),
+            sparse=not dense,
         ),
-        "economic": generate_hierarchical(N),
+        "economic": generate_hierarchical(N, sparse=not dense),
     }
+    return layers
 
 
 # ============================================================
@@ -748,6 +779,7 @@ class MultilayerEngine:
         scientific_config: dict | None = None,
         coupling_gains: dict[tuple[str, str], float] | None = None,
         use_cfc: bool | None = None,
+        dense_layers: bool = True,
     ):
         """
         Inicializa el motor multicapa.
@@ -819,7 +851,8 @@ class MultilayerEngine:
         # such as Watts-Strogatz, with a dense fallback only when explicitly needed).
         from scipy import sparse as _sparse
 
-        self.layers = build_layers(N, layer_config)
+        self.dense_layers = bool(dense_layers)
+        self.layers = build_layers(N, layer_config, dense=self.dense_layers)
         # NOTE: ``self.layers`` is deliberately the dense public view (it is what
         # `dynamic_rewiring` edits and what callers inspect). A *second* dense
         # (L, N, N) copy used to be kept alongside it as ``_layers_flat`` and cost
@@ -1208,7 +1241,13 @@ class MultilayerEngine:
             return
 
         rng = self._rewire_rng
-        adjacency = (self.layers[layer_name] > 0).astype(np.float64)
+        layer = self.layers[layer_name]
+        adjacency = (layer > 0).astype(np.float64)
+        if hasattr(adjacency, "toarray"):
+            # Sparse layers: materialise the ONE layer being rewired (the edit
+            # is O(N²) by nature of arbitrary edge insertion/removal), not all
+            # of them. The rest stay CSR.
+            adjacency = adjacency.toarray()
         np.fill_diagonal(adjacency, 0.0)
         adjacency = np.maximum(adjacency, adjacency.T)
 
@@ -1237,7 +1276,7 @@ class MultilayerEngine:
             raise ValueError("mode must be 'censorship' or 'viral_hub'")
 
         rewired = _normalize_rows(adjacency)
-        self.layers[layer_name] = rewired
+        self.layers[layer_name] = rewired if self.dense_layers else sparse.csr_matrix(rewired)
 
         # Rebuild *every* derived view. Refreshing only the dense ``_layers_flat``
         # left ``_layers_sparse`` — which ``step()`` actually reads — untouched,

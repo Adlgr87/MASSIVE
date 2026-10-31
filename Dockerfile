@@ -16,8 +16,17 @@ RUN apt-get update \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt /wheels/requirements.txt
+# torch resolves to its CUDA build by default, pulling ~2.6 GB of nvidia-*
+# wheels (torch 539 MB, cudnn 519 MB, cublas 405 MB, triton 286 MB…) into a
+# simulator that runs on CPU. Default to the CPU index; the torch+cpu wheels
+# carry a local version segment so pip prefers them over the same version on
+# PyPI, and they pull no nvidia-* dependency. GPU builds opt in explicitly:
+#   docker build --build-arg TORCH_INDEX="https://download.pytorch.org/whl/cu124" .
+ARG TORCH_INDEX="https://download.pytorch.org/whl/cpu"
 RUN python -m pip install --upgrade pip setuptools wheel \
-    && pip wheel --wheel-dir=/wheels -r /wheels/requirements.txt
+    && pip wheel --wheel-dir=/wheels \
+         --extra-index-url "${TORCH_INDEX}" \
+         -r /wheels/requirements.txt
 
 # --- Stage 2: Frontend build ------------------------------------------------
 FROM node:20-alpine AS builder-fe

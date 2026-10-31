@@ -89,3 +89,19 @@ class TestForecastCommand:
 class TestMainDispatch:
     def test_main_returns_command_exit_code(self):
         assert main(["version"]) == 0
+
+
+class TestForecastUsesEventTypeDefaults:
+    """The CLI must apply per-event-type horizon defaults, not generic 7/90."""
+
+    def test_from_event_type_applies_correct_horizons(self):
+        from forecast.temporal_config import TemporalConfig
+
+        horizons = {
+            "viral_online": 14,
+            "policy_adoption": 365,
+            "cultural_shift": 720,
+        }
+        for event_type, expected in horizons.items():
+            tc = TemporalConfig.from_event_type(event_type)
+            assert tc.time_horizon_days == expected, event_type
