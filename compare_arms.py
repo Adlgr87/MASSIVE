@@ -20,6 +20,7 @@ import statistics
 import sys
 import time
 import urllib.error
+import urllib.parse
 import urllib.request
 import zlib
 from datetime import datetime
@@ -135,7 +136,13 @@ class JevArm(Arm):
             self._last = time.time()
             t0 = time.perf_counter()
             try:
-                with urllib.request.urlopen(req, timeout=60) as resp:
+                # Restrict to http(s): urllib would otherwise happily open
+                # file://, ftp:// or data: URLs supplied through configuration.
+                if urllib.parse.urlparse(req.full_url).scheme not in {"http", "https"}:
+                    raise ValueError(f"refusing non-HTTP(S) endpoint: {req.full_url!r}")
+                with urllib.request.urlopen(
+                    req, timeout=60
+                ) as resp:  # nosec B310 - scheme checked above
                     data = json.loads(resp.read())
                 ans = data["answers"]["stance"]
                 return {

@@ -29,6 +29,10 @@ DEFAULT_TARGETS = [
     "massive_core/numerics/solvers.py",
     "massive_core/numerics/stability.py",
     "massive_core/numerics/__init__.py",
+    # Added after the coupling rebuild made it type-clean. This root-level engine
+    # was outside every gate, which is how the duplicate dense layer stack and the
+    # inert dynamic_rewiring survived. (`services/` is already covered above.)
+    "multilayer_engine.py",
 ]
 
 

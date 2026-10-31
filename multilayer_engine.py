@@ -26,6 +26,7 @@ Columnas de x_i (K=5):
 
 import logging
 import os
+from typing import Any
 
 import networkx as nx
 import numpy as np
@@ -504,7 +505,7 @@ def _multilayer_langevin_step_core(
 
 def _multilayer_langevin_step_core_sparse(
     x_vec: np.ndarray,
-    layers_sparse: list,
+    layers_sparse: list,  # list of scipy.sparse.csr_matrix
     layer_weights: np.ndarray,
     theta_matrix: np.ndarray,
     coupling: float,
@@ -543,7 +544,7 @@ def _multilayer_langevin_step_core_sparse(
 
 def multilayer_langevin_step(
     x_vec: np.ndarray,
-    layers_flat: np.ndarray,
+    layers_flat: np.ndarray | list,  # dense (L,N,N) stack or list of CSR matrices
     layer_weights: np.ndarray,
     theta_matrix: np.ndarray,
     coupling: float,
@@ -592,7 +593,7 @@ def multilayer_langevin_step(
     if is_sparse:
         return _multilayer_langevin_step_core_sparse(
             x_arr,
-            layers_flat,
+            layers_flat,  # type: ignore[arg-type]  # narrowed by the is_sparse check
             layer_weights,
             theta_matrix,
             float(coupling),
@@ -694,7 +695,10 @@ def targeted_llm_bias(
             "max_tokens": 100,
         }
         resp = requests.post(
-            f"{base_url}/chat/completions", json=payload, headers=headers, timeout=15
+            f"{base_url}/chat/completions",
+            json=payload,  # type: ignore[arg-type]
+            headers=headers,
+            timeout=15,
         )
         resp.raise_for_status()
         return resp.json()["choices"][0]["message"]["content"].strip()
@@ -781,7 +785,7 @@ class MultilayerEngine:
         else:
             self._drift = None
             self._diffusion = None
-        self.last_numerical_diagnostics = None
+        self.last_numerical_diagnostics: Any = None
 
         # Pesos de capas normalizados
         w = np.array(layer_weights, dtype=np.float64)
@@ -832,7 +836,7 @@ class MultilayerEngine:
 
         self._history: list[np.ndarray] = [self.x.copy()]
         self._history_compact: list[dict] = []
-        self.mps_state = None
+        self.mps_state: dict | None = None
 
     def _apply_cfc_tau(self) -> None:
         """Replace the analytic θ with the CfC-learned τ, if the gate allows it.
@@ -1169,8 +1173,8 @@ class MultilayerEngine:
             "state_bytes": int(self.x.nbytes),
             "opinion_mean": float(ops.mean()),
             "opinion_std": float(ops.std()),
-            "opinion_min": float(ops.min()),
-            "opinion_max": float(ops.max()),
+            "opinion_min": float(np.min(ops)),
+            "opinion_max": float(np.max(ops)),
         }
 
     @property
@@ -1243,7 +1247,7 @@ class MultilayerEngine:
         Returns:
             Matriz de correlación numpy (K, K).
         """
-        return np.corrcoef(self.x.T)
+        return np.atleast_2d(np.corrcoef(self.x.T))
 
     def plot(self) -> "dict":
         """

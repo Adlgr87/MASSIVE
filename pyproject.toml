@@ -104,7 +104,9 @@ omit = [
 ]
 
 [tool.coverage.report]
-fail_under = 30
+# Raised from 30: the real figure is 70%, so a 30% floor could never catch a
+# regression — it only fired if two thirds of the suite stopped running.
+fail_under = 65
 show_missing = true
 skip_covered = false
 exclude_lines = [

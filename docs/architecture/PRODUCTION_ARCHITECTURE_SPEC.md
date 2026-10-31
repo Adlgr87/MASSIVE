@@ -524,7 +524,7 @@ validate_ts_types.yml → regenerate TS types y fail si drift
 | Integration | Service layer + API endpoints | `pytest tests/test_services_layer.py`, `tests/test_api_security.py` |
 | E2E | Docker compose + curl smoke tests | `docker-e2e.yml` |
 | Contract | TS types sync | `validate_ts_types.yml` |
-| Type-check | MyPy estricto | `mypy.ini` + `typecheck.yml` |
+| Type-check | MyPy (slice bloqueante) | `[tool.mypy]` en `pyproject.toml` + `scripts/typecheck_slice.py` + `typecheck.yml` |
 
 ---
 

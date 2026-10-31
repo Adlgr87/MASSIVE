@@ -1277,6 +1277,23 @@ def _with_retry_and_circuit(fn, cfg: dict, proveedor: str) -> dict | None:
     return None
 
 
+def _positive_timeout(raw: object, fallback: float = 20.0) -> float:
+    """Return a usable HTTP timeout in seconds.
+
+    Args:
+        raw: Configured timeout value (may be ``None`` or invalid).
+        fallback: Value used when ``raw`` is unusable.
+
+    Returns:
+        A strictly positive timeout in seconds.
+    """
+    try:
+        value = float(raw)  # type: ignore[arg-type]
+    except (TypeError, ValueError):
+        return fallback
+    return value if value > 0 else fallback
+
+
 def _llamar_openai_compatible(
     prompt: str,
     base_url: str,
@@ -1299,7 +1316,11 @@ def _llamar_openai_compatible(
                 "temperature": cfg.get("llm_temperature", DEFAULT_CONFIG["llm_temperature"]),
                 "max_tokens": 300,
             },
-            timeout=cfg.get("llm_timeout", DEFAULT_CONFIG["llm_timeout"]),
+            # Coerce explicitly: an unset/None ``llm_timeout`` would make requests
+            # wait forever, so this call could hang the whole simulation loop.
+            # nosec B113 - a timeout IS passed, via _positive_timeout(); bandit
+            # only recognises a numeric literal and cannot see through the call.
+            timeout=_positive_timeout(cfg.get("llm_timeout", DEFAULT_CONFIG["llm_timeout"])),
         )
         resp.raise_for_status()
         return _extraer_json(resp.json()["choices"][0]["message"]["content"])
@@ -1322,6 +1343,8 @@ def _llamar_ollama(prompt: str, cfg: dict) -> dict | None:
                 "stream": False,
                 "options": {"temperature": cfg["llm_temperature"]},
             },
+            # nosec B113 - a timeout IS passed (cfg["llm_timeout"], from
+            # DEFAULT_CONFIG = 20s); bandit cannot resolve dict lookups.
             timeout=cfg["llm_timeout"],
         )
         resp.raise_for_status()

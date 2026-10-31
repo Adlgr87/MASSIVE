@@ -393,3 +393,67 @@ el resultado y `coupling` —el único dial con efecto— era inalcanzable.
 - El núcleo denso `_multilayer_langevin_step_core` pasó de triple bucle Python O(L·N²) a un `matmul`
   vectorizado (ya en Fase 1).
 - Suite: **918 tests, 0 fallos**.
+
+### FASE 2 (resto) + FASE 3 (resto) ✅
+
+**Hallazgo nuevo y grave — el gate de tipos del CI estaba roto.**
+`.github/workflows/lint.yml` ejecutaba `mypy --config-file mypy.ini`, pero `mypy.ini` se había
+eliminado al mover `[tool.mypy]` a `pyproject.toml`. mypy sale con código 2
+(*"Cannot find config file"*) → **el job "Lint & Type Check" fallaba en cada ejecución** y el badge
+*"Type-check: MyPy (blocking)"* del README no respaldaba nada. Además duplicaba el gate que
+`typecheck.yml` sí hacía bien.
+- `lint.yml` delega ahora en `scripts/typecheck_slice.py` (una sola definición autoritativa del slice).
+- `PRODUCTION_ARCHITECTURE_SPEC.md` corregido (apuntaba a `mypy.ini`).
+- Slice de tipos ampliado: **25 → 32 archivos**, incluyendo `multilayer_engine.py`,
+  que quedó fuera de todo gate y por eso conservó la pila densa duplicada y el rewiring inerte.
+
+**Obsoleto**
+- CfC: ya no se carga por defecto (era un `torch` import + matriz τ + disclaimer en **cada**
+  instanciación para aplicar cero corrección). Ahora opt-in (`use_cfc=True` / `MASSIVE_ENABLE_CFC=1`).
+- `docs/archive/README.md`: el archivo se declara histórico y no normativo, con la lista de módulos
+  muertos. Es lo que faltaba para que ~120 referencias a `rust_core`, `social_connectors`,
+  `neural_physics`, `mamba_engine`… fueran *historia* en vez de documentación engañosa.
+- **0 referencias en código** a módulos eliminados (blindado por test).
+
+**Seguridad (bandit 48 → 41 hallazgos, 7 MEDIUM → 0)**
+- `simulator.py`: timeout HTTP coercido con `_positive_timeout()`; antes un `llm_timeout` nulo dejaba
+  la petición sin timeout y podía colgar el bucle de simulación.
+- `compare_arms.py`: validación de esquema antes de `urlopen` (rechaza `file://`, `data:`, `ftp://`).
+- `docs/examples/*`: `torch.load(..., weights_only=True)`.
+- `massive serve`: bind por defecto **0.0.0.0 → 127.0.0.1**; exponer en todas las interfaces ahora es
+  explícito.
+- Falsos positivos documentados con `# nosec` + justificación (allow-list de Host, timeouts indirectos).
+
+**Cobertura y calidad**
+- `massive/cli/main.py`: **0 % → 74 %** (el quickstart del README no tenía ni un test).
+- `massive/core/sentiment.py`: **0 % → 100 %** (decide el resultado de `compare_arms`).
+- Total: **69.02 % → 70.03 %**. `fail_under` **30 → 65** (con 30 % el umbral no podía detectar nada).
+- `--pasos` / `--n-runs` acotados como sus equivalentes HTTP; `--seed` añadido.
+
+**Reproducibilidad — defecto de honestidad científica**
+`DEFAULT_CONFIG` no tenía `seed`, así que **dos ejecuciones idénticas del CLI devolvían resultados
+distintos**, pese a que el README promete *"seeded RNG everywhere"*. Lo detectó un test de
+determinismo. Ahora la semilla por defecto es 42 y es sobreescribible.
+
+**Contrato de empaquetado** (`tests/test_packaging_contract.py`) — encontró dos defectos reales:
+- `metrics/py.typed` declarado como package-data pero **ausente** → los type-checkers ignoraban el paquete. Creado (PEP 561).
+- el glob `adapters*` no resolvía a ningún paquete (`adapters/__init__.py` faltaba). Añadido.
+- glob muerto `monitoring*` eliminado (no hay paquete Python; sólo hay YAML/JSON de despliegue).
+
+---
+
+## 8. Estado final verificado
+
+| Gate | Antes | Después |
+|---|---|---|
+| `ruff check .` | limpio | limpio |
+| `black --check .` | limpio | limpio |
+| `mypy` (slice bloqueante) | **CI roto** (`mypy.ini` inexistente), 25 archivos | ✅ verde, **32 archivos** |
+| `pytest` | 883 tests | **918 tests, 0 fallos** |
+| Cobertura | 69.02 % (umbral 30) | **70.03 % (umbral 65)** |
+| `bandit` | 48 (7 MEDIUM) | **41 (0 MEDIUM)** |
+| Árbol tras `pytest` | **6 archivos sellados reescritos** | **limpio** |
+| Acoplamientos entre variables | 2/20, sin ciclos, 0 negativos | **6/20, con ciclo, signo configurable** |
+| Superficie de respuesta (polarización) | 0.697 ± 0.005 | **0.691 → 0.841** según palancas |
+| Diales efectivos en la API | ninguno (`coupling` inaccesible) | `coupling`, `dt`, `coupling_gains` |
+| Memoria init (N=2 000) | 293 MB | **132 MB** |

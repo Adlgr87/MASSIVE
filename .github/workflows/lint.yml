@@ -49,10 +49,15 @@ jobs:
           pip install -r requirements.txt
           pip install mypy
 
-      - name: Run mypy
+      # NOTE: this step used to run `mypy --config-file mypy.ini`, but mypy.ini
+      # was removed when [tool.mypy] moved into pyproject.toml. mypy exits 2 with
+      # "Cannot find config file", so the whole Lint & Type Check job failed on
+      # every run and the advertised type gate was inert. The type check now
+      # delegates to the single working gate (same script typecheck.yml runs), so
+      # there is one authoritative definition of "the type slice".
+      - name: Run mypy (delegates to the typecheck slice)
         run: |
-          PYTHONHASHSEED=42 mypy --config-file mypy.ini \
-            massive/ backend/ services/ massive_core/ 2>&1
+          PYTHONHASHSEED=42 python scripts/typecheck_slice.py
 
   lint-frontend:
     name: Frontend Lint

@@ -321,7 +321,7 @@ def main():
 
     from cfc_engine import CfCCell
 
-    checkpoint = torch.load(model_path)
+    checkpoint = torch.load(model_path, weights_only=True)  # no arbitrary pickle execution
     cell = CfCCell(5, 32)
     cell.load_state_dict(checkpoint["cell_state"])
     readout = nn.Linear(32, 5)

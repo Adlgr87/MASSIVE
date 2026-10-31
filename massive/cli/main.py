@@ -227,7 +227,15 @@ def _build_parser() -> argparse.ArgumentParser:
 
     # serve
     p_serve = sub.add_parser("serve", help="Start the FastAPI server (uvicorn)")
-    p_serve.add_argument("--host", type=str, default="0.0.0.0", help="Bind host")
+    p_serve.add_argument(
+        "--host",
+        type=str,
+        default="127.0.0.1",
+        help=(
+            "Bind host (default 127.0.0.1 = local only). Pass 0.0.0.0 explicitly "
+            "to expose the API on all interfaces, e.g. inside a container."
+        ),
+    )
     p_serve.add_argument("--port", type=int, default=8000, help="Bind port")
     p_serve.add_argument("--workers", type=int, default=1, help="Number of uvicorn workers")
     p_serve.add_argument("--legacy", action="store_true", help="Use legacy api:app entry point")
