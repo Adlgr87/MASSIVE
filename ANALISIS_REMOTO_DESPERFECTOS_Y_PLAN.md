@@ -454,6 +454,22 @@ determinismo. Ahora la semilla por defecto es 42 y es sobreescribible.
 | `bandit` | 48 (7 MEDIUM) | **41 (0 MEDIUM)** |
 | Árbol tras `pytest` | **6 archivos sellados reescritos** | **limpio** |
 | Acoplamientos entre variables | 2/20, sin ciclos, 0 negativos | **6/20, con ciclo, signo configurable** |
-| Superficie de respuesta (polarización) | 0.697 ± 0.005 | **0.691 → 0.841** según palancas |
+| Superficie de respuesta (polarización) | 0.697 ± 0.005 | **0.6909 → 0.8408** según palancas |
 | Diales efectivos en la API | ninguno (`coupling` inaccesible) | `coupling`, `dt`, `coupling_gains` |
 | Memoria init (N=2 000) | 293 MB | **132 MB** |
+
+### Medición final del modelo reconstruido
+
+| configuración | polarización | coop | `income` sd | `hierarchy` sd | `info` |
+|---|---:|---:|---:|---:|---:|
+| baseline (6 términos, coupling 0.3) | 0.7696 | 0.4834 | **0.1985** | 0.4432 | **0.6773** |
+| ganancia exposición selectiva = 0.0 | 0.6909 | 0.4763 | 0.1985 | 0.4432 | 0.6767 |
+| ganancia exposición selectiva = 0.75 | 0.7820 | 0.4814 | 0.1985 | 0.4432 | 0.6769 |
+| `coupling` = 0.0 | 0.7249 | 0.4282 | 0.2088 | 0.4511 | 0.5688 |
+| `coupling` = 1.0 | 0.8408 | 0.6398 | 0.1324 | 0.2914 | 0.9108 |
+| **todos los acoplamientos ablacionados** | 0.6909 | 0.4202 | **0.0885** | 0.4432 | **0.5659** |
+
+La última fila es la prueba de regresión más elocuente: ablacionar los seis términos **reproduce
+exactamente la patología del modelo original** — `income` vuelve a morir (`sd` 0.1985 → 0.0885, el
+0.099 medido en la auditoría) y `info_access` deja de estar acoplado. Si alguien deshace la matriz,
+el comportamiento antiguo reaparece de inmediato y los tests lo detectan.
