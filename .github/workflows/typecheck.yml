@@ -4,7 +4,11 @@ on:
   push:
     branches: [ "main", "master" ]
   pull_request:
-    branches: [ "main", "master" ]
+    # Validate PRs regardless of target branch. Filtering pull_request to
+    # [main, master] meant a PR into any other long-lived branch
+    # (prod-readiness, release/*) received NO checks at all, which is how
+    # the broken type gate, the unbuildable Dockerfile and the unpinned lint
+    # tools went unnoticed. `push` stays restricted to the default branch.
 
 jobs:
   typecheck:
